@@ -22,7 +22,7 @@ Route::prefix('v1')->group(function (): void {
 
     Route::post('staff/auth/login', StaffLoginController::class)->middleware('throttle:10,1');
 
-    Route::middleware(['auth:sanctum', 'staff.editor:admin,supervisor,expert,finance,support'])
+    Route::middleware(['auth:sanctum', 'staff.role:admin,supervisor,expert,finance,support'])
         ->prefix('staff')
         ->group(function (): void {
             Route::post('auth/logout', LogoutController::class);
