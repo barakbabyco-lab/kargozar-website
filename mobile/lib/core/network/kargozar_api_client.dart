@@ -56,6 +56,28 @@ class KargozarApiClient {
         statusCode: 0,
       );
     }
+    // Remote customer traffic must never use cleartext HTTP. Allow HTTP only
+    // for local emulator/development hosts.
+    const localHosts = {'localhost', '127.0.0.1', '::1', '10.0.2.2'};
+    if (_baseUri.scheme != 'https' &&
+        !(_baseUri.scheme == 'http' &&
+            localHosts.contains(_baseUri.host.toLowerCase()))) {
+      throw const KargozarApiException(
+        code: 'API_INSECURE_URL',
+        message: 'ارتباط با سرور باید از طریق نشانی امن HTTPS انجام شود.',
+        statusCode: 0,
+      );
+    }
+    if (_baseUri.userInfo.isNotEmpty ||
+        _baseUri.hasQuery ||
+        _baseUri.hasFragment) {
+      throw const KargozarApiException(
+        code: 'API_INVALID_URL',
+        message: 'نشانی سرور معتبر نیست.',
+        statusCode: 0,
+      );
+    }
+
     final root = _baseUri.toString().endsWith('/')
         ? _baseUri
         : Uri.parse('${_baseUri.toString()}/');
