@@ -41,7 +41,7 @@ jobs:
         run: flutter analyze lib --no-fatal-infos
 
       - name: Test API client
-        run: flutter test test/core/network/kargozar_api_client_test.dart
+        run: flutter test
 
       - name: Build debug APK
         run: flutter build apk --debug
