@@ -35,12 +35,18 @@ paths:
                   pattern: '^09[0-9]{9}$'
                   example: '09120000000'
       responses:
-        '200':
+        '202':
           description: Generic response that does not reveal account existence.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/MessageResponse'
+        '503':
+          description: OTP delivery is unavailable until an SMS provider is configured.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
         '422':
           $ref: '#/components/responses/ValidationError'
         '429':
