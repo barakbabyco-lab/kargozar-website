@@ -33,11 +33,15 @@ jobs:
         run: composer create-project laravel/laravel backend "^13.0" --no-interaction --prefer-dist
 
       - name: Install Sanctum API foundation
-        if: ${{ !hashFiles('backend/composer.json') }}
+        if: ${{ hashFiles('backend/composer.json') }}
         working-directory: backend
         run: |
-          composer require laravel/sanctum --no-interaction
-          php artisan install:api --no-interaction
+          if ! composer show laravel/sanctum >/dev/null 2>&1; then
+            composer require laravel/sanctum --no-interaction
+          fi
+          if [ ! -f routes/api.php ]; then
+            php artisan install:api --no-interaction
+          fi
 
       - name: Validate Composer project
         working-directory: backend
