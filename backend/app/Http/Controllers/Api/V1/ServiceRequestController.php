@@ -22,7 +22,10 @@ class ServiceRequestController extends Controller
     {
         $requests = ServiceRequest::query()
             ->where('customer_id', $request->user()->getAuthIdentifier())
-            ->with(['events' => fn ($events) => $events->whereNull('internal_note')])
+            ->with([
+                'service:id,title',
+                'events' => fn ($events) => $events->whereNull('internal_note'),
+            ])
             ->latest()
             ->paginate(20);
 
@@ -130,7 +133,7 @@ class ServiceRequestController extends Controller
 
                 $body = [
                     'data' => (new ServiceRequestResource(
-                        $serviceRequest->load('events'),
+                        $serviceRequest->load(['service:id,title', 'events']),
                     ))->resolve(),
                 ];
 
@@ -182,7 +185,10 @@ class ServiceRequestController extends Controller
         $serviceRequest = ServiceRequest::query()
             ->where('customer_id', $request->user()->getAuthIdentifier())
             ->where('tracking_code', $trackingCode)
-            ->with(['events' => fn ($events) => $events->whereNull('internal_note')])
+            ->with([
+                'service:id,title',
+                'events' => fn ($events) => $events->whereNull('internal_note'),
+            ])
             ->firstOrFail();
 
         return new ServiceRequestResource($serviceRequest);
