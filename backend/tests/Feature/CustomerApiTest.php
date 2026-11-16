@@ -298,6 +298,65 @@ class CustomerApiTest extends TestCase
         ]);
     }
 
+    public function test_supervisor_can_manage_service_catalog_but_expert_cannot(): void
+    {
+        $supervisor = StaffUser::create([
+            'name' => 'Catalog Supervisor',
+            'email' => 'catalog-supervisor@example.test',
+            'password' => 'strong-test-password',
+            'role' => 'supervisor',
+            'is_active' => true,
+        ]);
+        $expert = StaffUser::create([
+            'name' => 'Catalog Expert',
+            'email' => 'catalog-expert@example.test',
+            'password' => 'strong-test-password',
+            'role' => 'expert',
+            'is_active' => true,
+        ]);
+        $supervisorToken = $supervisor->createToken('staff')->plainTextToken;
+        $expertToken = $expert->createToken('staff')->plainTextToken;
+
+        $category = $this->withToken($supervisorToken)
+            ->postJson('/api/v1/staff/catalog/categories', [
+                'name' => 'خدمات آزمایشی',
+                'slug' => 'test-services',
+                'is_active' => true,
+            ])
+            ->assertCreated()
+            ->json('data');
+
+        $service = $this->withToken($supervisorToken)
+            ->postJson('/api/v1/staff/catalog/services', [
+                'category_id' => (int) $category['id'],
+                'title' => 'خدمت آزمایشی',
+                'slug' => 'test-service-item',
+                'description' => 'توضیحات آزمایشی خدمت',
+                'requirements' => ['مدرک نمونه'],
+                'is_active' => true,
+            ])
+            ->assertCreated()
+            ->assertJsonPath('data.slug', 'test-service-item');
+
+        $this->withToken($expertToken)
+            ->postJson('/api/v1/staff/catalog/categories', [
+                'name' => 'نباید ساخته شود',
+                'slug' => 'forbidden-category',
+            ])
+            ->assertForbidden();
+
+        $this->getJson('/api/v1/services/test-service-item')
+            ->assertOk()
+            ->assertJsonPath('data.title', 'خدمت آزمایشی');
+
+        $this->assertDatabaseHas('audit_logs', [
+            'action' => 'catalog.category_created',
+        ]);
+        $this->assertDatabaseHas('audit_logs', [
+            'action' => 'catalog.service_created',
+        ]);
+    }
+
     private function makeService(): Service
     {
         $category = ServiceCategory::create([
