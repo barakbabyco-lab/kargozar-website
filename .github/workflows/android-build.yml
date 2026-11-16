@@ -40,6 +40,9 @@ jobs:
       - name: Analyze Dart code
         run: flutter analyze lib --no-fatal-infos
 
+      - name: Test API client
+        run: flutter test test/core/network/kargozar_api_client_test.dart
+
       - name: Build debug APK
         run: flutter build apk --debug
 
