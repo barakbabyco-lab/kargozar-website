@@ -1,8 +1,8 @@
 <?php
 
-namespace App\\Services;
+namespace App\Services;
 
-use Illuminate\\Support\\Facades\\Http;
+use Illuminate\Support\Facades\Http;
 use RuntimeException;
 
 class IppanelOtpDelivery implements OtpDelivery
@@ -41,7 +41,7 @@ class IppanelOtpDelivery implements OtpDelivery
 
     private function toE164(string $mobile): string
     {
-        $digits = preg_replace('/\\D+/', '', $mobile) ?? '';
+        $digits = preg_replace('/\D+/', '', $mobile) ?? '';
 
         if (preg_match('/^09[0-9]{9}$/', $digits) === 1) {
             return '+98'.substr($digits, 1);
