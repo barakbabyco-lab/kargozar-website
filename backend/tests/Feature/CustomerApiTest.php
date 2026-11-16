@@ -338,7 +338,7 @@ class CustomerApiTest extends TestCase
             ->assertCreated()
             ->assertJsonPath('data.slug', 'test-service-item');
 
-        $this->withToken($expertToken)
+        $this->actingAs($expert, 'sanctum')
             ->postJson('/api/v1/staff/catalog/categories', [
                 'name' => 'نباید ساخته شود',
                 'slug' => 'forbidden-category',
