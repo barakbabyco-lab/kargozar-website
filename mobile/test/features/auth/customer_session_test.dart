@@ -19,8 +19,6 @@ void main() {
         headers: {'content-type': 'application/json; charset=utf-8'},
       )),
     );
-    const session = CustomerSessionPlaceholder();
-
     final customerSession = CustomerSession(api);
     expect(customerSession.isAuthenticated, isFalse);
     expect(await customerSession.restore(), isTrue);
@@ -40,8 +38,4 @@ class _MemoryTokenStore implements AccessTokenStore {
 
   @override
   Future<void> clear() async => token = null;
-}
-
-class CustomerSessionPlaceholder {
-  const CustomerSessionPlaceholder();
 }
