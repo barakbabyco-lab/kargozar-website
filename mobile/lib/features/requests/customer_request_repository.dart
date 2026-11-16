@@ -1,5 +1,25 @@
 import '../../core/network/kargozar_api_client.dart';
 
+class CustomerRequestEvent {
+  const CustomerRequestEvent({
+    required this.status,
+    this.publicMessage,
+    this.createdAt,
+    this.events = const [],
+  });
+
+  final String status;
+  final String? publicMessage;
+  final DateTime? createdAt;
+
+  factory CustomerRequestEvent.fromJson(Map<String, dynamic> json) =>
+      CustomerRequestEvent(
+        status: json['status']?.toString() ?? '',
+        publicMessage: json['public_message']?.toString(),
+        createdAt: DateTime.tryParse(json['created_at']?.toString() ?? ''),
+      );
+}
+
 class CustomerServiceRequest {
   const CustomerServiceRequest({
     required this.id,
@@ -16,6 +36,7 @@ class CustomerServiceRequest {
   final String? customerNote;
   final String? serviceTitle;
   final DateTime? createdAt;
+  final List<CustomerRequestEvent> events;
 
   factory CustomerServiceRequest.fromJson(Map<String, dynamic> json) {
     final service = json['service'];
@@ -27,6 +48,12 @@ class CustomerServiceRequest {
       customerNote: json['customer_note']?.toString(),
       serviceTitle: serviceMap?['title']?.toString(),
       createdAt: DateTime.tryParse(json['created_at']?.toString() ?? ''),
+      events: json['events'] is List
+          ? (json['events'] as List)
+              .whereType<Map<String, dynamic>>()
+              .map(CustomerRequestEvent.fromJson)
+              .toList(growable: false)
+          : const [],
     );
   }
 }
