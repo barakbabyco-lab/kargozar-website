@@ -10,6 +10,7 @@ use App\Models\Service;
 use App\Models\ServiceCategory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
@@ -36,8 +37,12 @@ class StaffCatalogController extends Controller
             return $this->validationError($validator->errors()->toArray());
         }
 
-        $category = ServiceCategory::create($validator->validated());
-        $this->audit($request, 'catalog.category_created', $category, ['slug' => $category->slug]);
+        $category = DB::transaction(function () use ($request, $validator) {
+            $category = ServiceCategory::create($validator->validated());
+            $this->audit($request, 'catalog.category_created', $category, ['slug' => $category->slug]);
+
+            return $category;
+        });
 
         return response()->json([
             'data' => (new ServiceCategoryResource($category))->resolve(),
@@ -59,8 +64,10 @@ class StaffCatalogController extends Controller
             return $this->validationError($validator->errors()->toArray());
         }
 
-        $category->update($validator->validated());
-        $this->audit($request, 'catalog.category_updated', $category, ['fields' => array_keys($validator->validated())]);
+        DB::transaction(function () use ($request, $category, $validator): void {
+            $category->update($validator->validated());
+            $this->audit($request, 'catalog.category_updated', $category, ['fields' => array_keys($validator->validated())]);
+        });
 
         return response()->json([
             'data' => (new ServiceCategoryResource($category->refresh()))->resolve(),
@@ -104,8 +111,12 @@ class StaffCatalogController extends Controller
             return $this->validationError($validator->errors()->toArray());
         }
 
-        $service = Service::create($validator->validated());
-        $this->audit($request, 'catalog.service_created', $service, ['slug' => $service->slug]);
+        $service = DB::transaction(function () use ($request, $validator) {
+            $service = Service::create($validator->validated());
+            $this->audit($request, 'catalog.service_created', $service, ['slug' => $service->slug]);
+
+            return $service;
+        });
 
         return response()->json([
             'data' => (new ServiceResource($service->load('category')))->resolve(),
@@ -132,8 +143,10 @@ class StaffCatalogController extends Controller
             return $this->validationError($validator->errors()->toArray());
         }
 
-        $service->update($validator->validated());
-        $this->audit($request, 'catalog.service_updated', $service, ['fields' => array_keys($validator->validated())]);
+        DB::transaction(function () use ($request, $service, $validator): void {
+            $service->update($validator->validated());
+            $this->audit($request, 'catalog.service_updated', $service, ['fields' => array_keys($validator->validated())]);
+        });
 
         return response()->json([
             'data' => (new ServiceResource($service->refresh()->load('category')))->resolve(),
