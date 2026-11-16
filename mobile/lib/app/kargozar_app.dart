@@ -129,12 +129,8 @@ class _ServicesState extends State<ServicesPage> {
       if (!s.hasData) return const Center(child: CircularProgressIndicator());
       return Column(children: s.data!.map((v) => Card(color: Colors.white, child: ListTile(
         title: Text(v.title), subtitle: Text(v.description ?? v.categoryName ?? ''),
-        trailing: const Icon(Icons.chevron_left), onTap: () => showModalBottomSheet<void>(context: context, builder: (ctx) => Padding(padding: const EdgeInsets.all(22), child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(v.title, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-          Text(v.description ?? 'برای ثبت درخواست این خدمت اقدام کنید.'),
-          if (v.requirements.isNotEmpty) ...[const SizedBox(height: 10), const Text('مدارک لازم'), ...v.requirements.map((x) => Text('• ' + x))],
-          const SizedBox(height: 16), SizedBox(width: double.infinity, child: FilledButton(onPressed: () { Navigator.pop(ctx); makeRequest(v); }, child: const Text('درخواست این خدمت'))),
-        ]))))).toList());
+        trailing: const Icon(Icons.chevron_left), onTap: () => makeRequest(v),
+      ))).toList());
     }),
   ]);
 }
@@ -154,7 +150,9 @@ class _RequestsState extends State<RequestsPage> {
       if (s.hasError) return ErrorPanel(error: s.error, retry: () => setState(() => future = widget.repository.getMine()));
       if (!s.hasData) return const Center(child: CircularProgressIndicator());
       if (s.data!.isEmpty) return const EmptyPanel(title: 'هنوز درخواستی ثبت نکرده‌ای');
-      return Column(children: s.data!.map((r) => Card(color: Colors.white, child: ListTile(title: Text(r.trackingCode), subtitle: Text('وضعیت: ' + r.status), onTap: () => showDialog<void>(context: context, builder: (ctx) => AlertDialog(title: Text(r.trackingCode), content: Text('وضعیت: ' + r.status), actions: [TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('بستن'))])))).toList());
+      return Column(children: s.data!.map((r) => Card(color: Colors.white, child: ListTile(
+        title: Text(r.trackingCode), subtitle: Text('وضعیت: ' + r.status),
+      ))).toList());
     }),
   ]);
 }
