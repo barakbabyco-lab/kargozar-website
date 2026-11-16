@@ -8,6 +8,38 @@ import 'package:kargozar_mobile/core/network/kargozar_api_client.dart';
 
 void main() {
   group('KargozarApiClient', () {
+    test('rejects remote HTTP API URLs before sending customer data', () async {
+      final client = KargozarApiClient(
+        baseUrl: 'http://api.example.test/api/v1',
+        httpClient: MockClient((request) async {
+          fail('An insecure remote URL must never receive a request.');
+        }),
+      );
+
+      await expectLater(
+        client.requestOtp('09120000000'),
+        throwsA(
+          isA<KargozarApiException>()
+              .having((error) => error.code, 'code', 'API_INSECURE_URL'),
+        ),
+      );
+      client.close();
+    });
+
+    test('allows local emulator HTTP URLs for development', () async {
+      final client = KargozarApiClient(
+        baseUrl: 'http://10.0.2.2:8000/api/v1',
+        httpClient: MockClient((request) async => http.Response(
+          jsonEncode({'data': <dynamic>[]}),
+          200,
+          headers: {'content-type': 'application/json; charset=utf-8'},
+        )),
+      );
+
+      await client.getServices();
+      client.close();
+    });
+
     test('requests services with versioned URL and query parameters', () async {
       late http.Request captured;
       final client = KargozarApiClient(
