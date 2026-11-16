@@ -41,6 +41,9 @@ jobs:
       - name: Prepare application key
         run: cp .env.example .env && php artisan key:generate
 
+      - name: Verify staff provisioning command
+        run: php artisan list --raw | grep -q '^kargozar:staff-create'
+
       - name: Verify migrations and seed data
         env:
           DB_CONNECTION: sqlite
