@@ -241,8 +241,7 @@ class CustomerApiTest extends TestCase
             'subject_id' => $serviceRequest->id,
         ]);
 
-        $customerToken = $customer->createToken('customer')->plainTextToken;
-        $this->withHeaders(['Authorization' => 'Bearer '.$customerToken])
+        $this->actingAs($customer, 'sanctum')
             ->getJson('/api/v1/staff/service-requests')
             ->assertForbidden();
     }
