@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Services\DisabledOtpDelivery;
 use App\Services\IppanelOtpDelivery;
 use App\Services\OtpDelivery;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -30,6 +31,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        Schema::defaultStringLength(191);
     }
 }
