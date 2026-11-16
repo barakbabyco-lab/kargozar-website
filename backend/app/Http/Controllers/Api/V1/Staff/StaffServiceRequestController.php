@@ -44,12 +44,23 @@ class StaffServiceRequestController extends Controller
         return StaffServiceRequestResource::collection($query->paginate(30)->withQueryString());
     }
 
-    public function show(string $trackingCode): StaffServiceRequestResource
+    public function show(Request $request, string $trackingCode): StaffServiceRequestResource
     {
         $serviceRequest = ServiceRequest::query()
             ->with(['customer', 'service', 'assignedStaff', 'events'])
             ->where('tracking_code', $trackingCode)
             ->firstOrFail();
+
+        AuditLog::create([
+            'actor_type' => 'staff',
+            'actor_id' => $request->user()->getAuthIdentifier(),
+            'action' => 'service_request.viewed',
+            'subject_type' => ServiceRequest::class,
+            'subject_id' => $serviceRequest->id,
+            'request_id' => $request->header('X-Request-Id', (string) Str::uuid()),
+            'ip_hash' => hash('sha256', (string) $request->ip()),
+            'metadata' => ['tracking_code' => $serviceRequest->tracking_code],
+        ]);
 
         return new StaffServiceRequestResource($serviceRequest);
     }
