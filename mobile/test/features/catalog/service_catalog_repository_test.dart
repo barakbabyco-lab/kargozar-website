@@ -12,11 +12,11 @@ void main() {
       baseUrl: 'https://api.example.test/api/v1',
       httpClient: MockClient((request) async {
         if (request.url.path.endsWith('/service-categories')) {
-          return http.Response(jsonEncode({
+          return http.Response.bytes(utf8.encode(jsonEncode({
             'data': [
               {'id': 4, 'name': 'مجوزها', 'slug': 'licenses', 'is_active': true}
             ]
-          }), 200);
+          })), 200, headers: {'content-type': 'application/json; charset=utf-8'});
         }
         return http.Response(jsonEncode({
           'data': [
@@ -31,7 +31,7 @@ void main() {
             }
           ],
           'meta': {'current_page': 1}
-        }), 200);
+        })), 200, headers: {'content-type': 'application/json; charset=utf-8'});
       }),
     );
     final categories = await ServiceCatalogRepository(api).getCategories();
