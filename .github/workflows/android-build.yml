@@ -25,6 +25,12 @@ jobs:
       - name: Checkout source
         uses: actions/checkout@v4
 
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
@@ -46,10 +52,51 @@ jobs:
       - name: Build debug APK
         run: flutter build apk --debug
 
-      - name: Upload APK artifact
+      - name: Upload debug APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: kargozar-android-debug
           path: mobile/build/app/outputs/flutter-apk/app-debug.apk
           if-no-files-found: error
           retention-days: 14
+
+      - name: Configure private release signing
+        id: signing
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        shell: bash
+        run: |
+          if [[ -z "$ANDROID_KEYSTORE_BASE64" || -z "$ANDROID_KEYSTORE_PASSWORD" || -z "$ANDROID_KEY_ALIAS" || -z "$ANDROID_KEY_PASSWORD" ]]; then
+            echo "Release signing secrets are not configured; skipping signed release build."
+            echo "release_ready=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 --decode > android/app/upload-keystore.jks
+          cat > android/key.properties <<EOF
+          storePassword=$ANDROID_KEYSTORE_PASSWORD
+          keyPassword=$ANDROID_KEY_PASSWORD
+          keyAlias=$ANDROID_KEY_ALIAS
+          storeFile=app/upload-keystore.jks
+          EOF
+          python3 tool/configure_android_signing.py
+          echo "release_ready=true" >> "$GITHUB_OUTPUT"
+
+      - name: Build signed release APK and App Bundle
+        if: steps.signing.outputs.release_ready == 'true'
+        run: |
+          flutter build apk --release
+          flutter build appbundle --release
+
+      - name: Upload signed release artifacts
+        if: steps.signing.outputs.release_ready == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: kargozar-android-release
+          path: |
+            mobile/build/app/outputs/flutter-apk/app-release.apk
+            mobile/build/app/outputs/bundle/release/app-release.aab
+          if-no-files-found: error
+          retention-days: 30
