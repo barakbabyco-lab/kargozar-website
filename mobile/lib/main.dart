@@ -667,7 +667,7 @@ class _RequestFormState extends State<_RequestForm> {
                 controller: _mobile,
                 keyboardType: TextInputType.phone,
                 decoration: const InputDecoration(labelText: 'شماره موبایل'),
-                validator: (v) => (v == null || !RegExp(r'^09\d{9}).hasMatch(v.trim()))
+                validator: (v) => (v == null || !RegExp(r'^09\d{9}$').hasMatch(v.trim()))
                     ? 'شماره موبایل معتبر وارد کن' : null,
               ),
               const SizedBox(height: 12),
