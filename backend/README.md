@@ -1,58 +1,89 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Kargozar API Backend
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Laravel 13 REST API for the Kargozar customer application and staff portal.
 
-## About Laravel
+## Runtime
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- PHP 8.3+
+- Composer 2
+- MySQL 8.0+ for staging/production
+- SQLite is used only in automated tests
+- Laravel Sanctum for customer and staff bearer tokens
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
-
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
-
-## Learning Laravel
-
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+## Local setup
 
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+composer install
+cp .env.example .env
+php artisan key:generate
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+Configure the database in `.env`, then run:
 
-## Contributing
+```bash
+php artisan migrate --seed
+php artisan serve
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+The API base path is `/api/v1`.
 
-## Code of Conduct
+## Implemented API areas
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### Customer
+- OTP request and verification
+- Token revocation
+- Active service categories and service catalog
+- Idempotent service request creation
+- Customer-owned request list and detail
 
-## Security Vulnerabilities
+### Staff
+- Email/password staff login
+- Role-protected request queue and detail
+- Request assignment
+- Status changes, public updates and internal notes
+- Audit logging for staff login, detail access, assignment and events
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Staff roles:
+- `admin`, `supervisor`: assign requests
+- `admin`, `supervisor`, `expert`: record request events and status changes
+- `finance`, `support`: read-only access in the current MVP
 
-## License
+Create the first staff account through a trusted terminal. The password is entered interactively and is never passed as a command-line argument:
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```bash
+php artisan kargozar:staff-create --name="Administrator" --email="admin@example.com" --role=admin
+```
+
+## OTP delivery
+
+The `OtpDelivery` interface isolates the SMS provider. The default binding is deliberately disabled and returns HTTP 503; no OTP is logged or returned to the client. Select and configure a real SMS provider, implement the adapter, and test delivery before enabling production login.
+
+OTP codes are stored only as password hashes, expire after five minutes, and are limited to five verification attempts. Customer tokens expire after 30 days; staff tokens expire after 12 hours.
+
+## Scheduled cleanup
+
+The daily `kargozar:cleanup-expired` task removes old OTP challenges and expired idempotency records. On the production host, configure Laravel's scheduler by running this command every minute:
+
+```cron
+* * * * * cd /path/to/backend && php artisan schedule:run >> /dev/null 2>&1
+```
+
+## Tests
+
+```bash
+php artisan test
+php artisan migrate:fresh --seed
+```
+
+GitHub Actions runs Composer validation, command registration checks, migrations, seeders and feature tests on PHP 8.3.
+
+## Production readiness gates
+
+Do not expose this API publicly until:
+1. The destination host is confirmed to support PHP 8.3+, Composer 2, required extensions and CLI/cron.
+2. MySQL 8, HTTPS, document root, private storage and backup/restore are configured.
+3. A real SMS provider is selected and the OTP adapter is tested.
+4. Staff accounts are provisioned securely.
+5. Rate limits, monitoring, logging retention and backup recovery are verified.
+
+Never commit `.env`, API keys, SMS credentials, production data, or staff passwords. Customer documents, payments and e-signatures are not enabled in this MVP.
