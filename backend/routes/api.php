@@ -17,6 +17,20 @@ Route::prefix('v1')->group(function (): void {
     Route::get('services', [ServiceController::class, 'index']);
     Route::get('services/{slug}', [ServiceController::class, 'show']);
 
+    Route::post('staff/auth/login', StaffLoginController::class)->middleware('throttle:10,1');
+
+    Route::middleware(['auth:sanctum', 'staff.role:admin,supervisor,expert,finance,support'])
+        ->prefix('staff')
+        ->group(function (): void {
+            Route::post('auth/logout', LogoutController::class);
+            Route::get('service-requests', [StaffServiceRequestController::class, 'index']);
+            Route::get('service-requests/{trackingCode}', [StaffServiceRequestController::class, 'show']);
+            Route::post('service-requests/{trackingCode}/events', [StaffServiceRequestController::class, 'recordEvent'])
+                ->middleware('staff.role:admin,supervisor,expert');
+            Route::patch('service-requests/{trackingCode}/assignment', [StaffServiceRequestController::class, 'assign'])
+                ->middleware('staff.role:admin,supervisor');
+        });
+
     Route::middleware('auth:sanctum')->group(function (): void {
         Route::post('auth/logout', LogoutController::class);
         Route::post('service-requests', [ServiceRequestController::class, 'store']);
