@@ -52,8 +52,8 @@ void main() {
         idempotencyKey: 'request-once-001',
       );
 
-      expect(captured.headers['authorization'], 'Bearer test-token');
-      expect(captured.headers['idempotency-key'], 'request-once-001');
+      expect(captured.headers['Authorization'], 'Bearer test-token');
+      expect(captured.headers['Idempotency-Key'], 'request-once-001');
       expect(jsonDecode(captured.body)['service_id'], 'service-123');
       client.close();
     });
