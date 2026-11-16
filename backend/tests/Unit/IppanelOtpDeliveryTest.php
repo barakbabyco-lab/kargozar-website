@@ -1,11 +1,11 @@
 <?php
 
-namespace Tests\\Unit;
+namespace Tests\Unit;
 
-use App\\Services\\IppanelOtpDelivery;
-use Illuminate\\Support\\Facades\\Http;
+use App\Services\IppanelOtpDelivery;
+use Illuminate\Support\Facades\Http;
 use RuntimeException;
-use Tests\\TestCase;
+use Tests\TestCase;
 
 class IppanelOtpDeliveryTest extends TestCase
 {
