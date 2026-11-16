@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Customer;
+use App\Models\IdempotencyKey;
 use App\Models\RequestEvent;
 use App\Models\Service;
 use App\Models\ServiceCategory;
@@ -257,6 +258,44 @@ class CustomerApiTest extends TestCase
         $this->actingAs($customer, 'sanctum')
             ->getJson('/api/v1/staff/service-requests')
             ->assertForbidden();
+    }
+
+    public function test_expired_idempotency_key_can_be_reused(): void
+    {
+        $customer = Customer::create([
+            'mobile' => '09120000008',
+            'status' => 'active',
+        ]);
+        $service = $this->makeService();
+        $key = 'expired-request-key-001';
+        $requestHash = hash('sha256', json_encode([
+            'service_id' => (int) $service->id,
+            'customer_note' => null,
+        ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
+
+        IdempotencyKey::create([
+            'customer_id' => $customer->id,
+            'key_hash' => hash('sha256', $key),
+            'request_hash' => $requestHash,
+            'response_json' => ['data' => ['tracking_code' => 'KG-OLD']],
+            'response_status' => 201,
+            'expires_at' => now()->subMinute(),
+        ]);
+
+        $token = $customer->createToken('test')->plainTextToken;
+        $this->withToken($token)
+            ->withHeader('Idempotency-Key', $key)
+            ->postJson('/api/v1/service-requests', [
+                'service_id' => $service->id,
+            ])
+            ->assertCreated()
+            ->assertJsonMissing(['tracking_code' => 'KG-OLD']);
+
+        $this->assertDatabaseCount('service_requests', 1);
+        $this->assertDatabaseHas('idempotency_keys', [
+            'customer_id' => $customer->id,
+            'key_hash' => hash('sha256', $key),
+        ]);
     }
 
     private function makeService(): Service
