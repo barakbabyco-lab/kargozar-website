@@ -315,7 +315,6 @@ class CustomerApiTest extends TestCase
             'is_active' => true,
         ]);
         $supervisorToken = $supervisor->createToken('staff')->plainTextToken;
-        $expertToken = $expert->createToken('staff')->plainTextToken;
 
         $category = $this->withToken($supervisorToken)
             ->postJson('/api/v1/staff/catalog/categories', [
