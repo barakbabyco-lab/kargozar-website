@@ -1,5 +1,6 @@
 <?php
 
+use App\Console\Commands\CleanupExpiredRecords;
 use App\Console\Commands\CreateStaffUser;
 use App\Http\Middleware\EnsureStaffRole;
 use Illuminate\Auth\AuthenticationException;
@@ -17,7 +18,7 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
-    ->withCommands([CreateStaffUser::class])
+    ->withCommands([CreateStaffUser::class, CleanupExpiredRecords::class])
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
             'staff.role' => EnsureStaffRole::class,
