@@ -152,7 +152,7 @@ class _RequestsState extends State<RequestsPage> {
       if (s.data!.isEmpty) return const EmptyPanel(title: 'هنوز درخواستی ثبت نکرده‌ای');
       return Column(children: s.data!.map((r) => Card(color: Colors.white, child: ListTile(
         title: Text(r.trackingCode),
-        subtitle: Text('وضعیت: ' + r.status),
+        subtitle: Text('وضعیت: ${requestStatusLabel(r.status)}'),
         trailing: const Icon(Icons.chevron_left),
         onTap: () => showModalBottomSheet<void>(
           context: context,
@@ -176,8 +176,8 @@ class _RequestsState extends State<RequestsPage> {
                 ...r.events.map((event) => ListTile(
                   contentPadding: EdgeInsets.zero,
                   leading: const Icon(Icons.timeline),
-                  title: Text(event.publicMessage ?? event.status),
-                  subtitle: Text(event.status),
+                  title: Text(event.publicMessage ?? requestStatusLabel(event.status)),
+                  subtitle: Text(requestStatusLabel(event.status)),
                 )),
               ]),
             ),
@@ -204,4 +204,15 @@ class EmptyPanel extends StatelessWidget {
   const EmptyPanel({super.key, required this.title, this.action}); final String title; final Widget? action;
   @override Widget build(BuildContext context) => Card(color: Colors.white, child: Padding(padding: const EdgeInsets.all(24), child: Column(children: [const Icon(Icons.inbox_outlined, size: 40), Text(title), if (action != null) action!])));
 }
+String requestStatusLabel(String status) => switch (status) {
+  'submitted' => 'ثبت‌شده',
+  'reviewing' => 'در حال بررسی',
+  'awaiting_customer' => 'نیازمند اقدام شما',
+  'in_progress' => 'در حال انجام',
+  'completed' => 'تکمیل‌شده',
+  'rejected' => 'ردشده',
+  'cancelled' => 'لغوشده',
+  _ => status,
+};
+
 String errorText(Object? e) => e is KargozarApiException ? e.message : 'دریافت اطلاعات با مشکل روبه‌رو شد. نشانی سرور و اتصال اینترنت را بررسی کنید.';
