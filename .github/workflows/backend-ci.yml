@@ -41,6 +41,15 @@ jobs:
       - name: Prepare application key
         run: cp .env.example .env && php artisan key:generate
 
+      - name: Verify migrations and seed data
+        env:
+          DB_CONNECTION: sqlite
+          DB_DATABASE: ":memory:"
+          CACHE_STORE: array
+          SESSION_DRIVER: array
+          QUEUE_CONNECTION: sync
+        run: php artisan migrate:fresh --seed --force
+
       - name: Run backend tests
         env:
           DB_CONNECTION: sqlite
