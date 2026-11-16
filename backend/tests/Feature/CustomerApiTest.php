@@ -175,6 +175,77 @@ class CustomerApiTest extends TestCase
             ->assertJsonPath('error.code', 'NOT_FOUND');
     }
 
+    public function test_staff_login_role_protection_assignment_and_internal_events(): void
+    {
+        $supervisor = StaffUser::create([
+            'name' => 'Supervisor',
+            'email' => 'supervisor@example.test',
+            'password' => 'strong-test-password',
+            'role' => 'supervisor',
+            'is_active' => true,
+        ]);
+        $expert = StaffUser::create([
+            'name' => 'Expert',
+            'email' => 'expert@example.test',
+            'password' => 'strong-test-password',
+            'role' => 'expert',
+            'is_active' => true,
+        ]);
+
+        $login = $this->postJson('/api/v1/staff/auth/login', [
+            'email' => 'supervisor@example.test',
+            'password' => 'strong-test-password',
+        ])->assertOk()
+            ->assertJsonPath('data.staff.role', 'supervisor');
+
+        $token = $login->json('data.access_token');
+        $customer = Customer::create([
+            'mobile' => '09120000006',
+            'status' => 'active',
+        ]);
+        $service = $this->makeService();
+        $serviceRequest = ServiceRequest::create([
+            'public_id' => (string) \Illuminate\Support\Str::uuid(),
+            'customer_id' => $customer->id,
+            'service_id' => $service->id,
+            'tracking_code' => 'KG-STAFF-REQUEST-001',
+            'status' => 'submitted',
+        ]);
+
+        $headers = ['Authorization' => 'Bearer '.$token];
+
+        $this->withHeaders($headers)
+            ->patchJson('/api/v1/staff/service-requests/'.$serviceRequest->tracking_code.'/assignment', [
+                'assigned_staff_id' => $expert->id,
+            ])
+            ->assertOk()
+            ->assertJsonPath('data.assigned_staff.id', (string) $expert->id);
+
+        $this->withHeaders($headers)
+            ->postJson('/api/v1/staff/service-requests/'.$serviceRequest->tracking_code.'/events', [
+                'status' => 'reviewing',
+                'public_message' => 'پرونده در حال بررسی است.',
+                'internal_note' => 'یادداشت داخلی کارشناسی',
+            ])
+            ->assertOk()
+            ->assertJsonPath('data.status', 'reviewing')
+            ->assertJsonPath('data.events.0.internal_note', 'یادداشت داخلی کارشناسی');
+
+        $this->assertDatabaseHas('audit_logs', [
+            'action' => 'service_request.assigned',
+            'subject_id' => $serviceRequest->id,
+        ]);
+        $this->assertDatabaseHas('audit_logs', [
+            'action' => 'service_request.event_recorded',
+            'subject_id' => $serviceRequest->id,
+        ]);
+
+        $customerToken = $customer->createToken('customer')->plainTextToken;
+        $this->withHeaders(['Authorization' => 'Bearer '.$customerToken])
+            ->getJson('/api/v1/staff/service-requests')
+            ->assertForbidden();
+    }
+
     private function makeService(): Service
     {
         $category = ServiceCategory::create([
