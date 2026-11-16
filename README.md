@@ -13,7 +13,7 @@ Kargozar is a nationwide, primarily remote administrative-services platform. Thi
 
 - Laravel 13 and Sanctum foundation is committed under `backend/`.
 - Customer OTP, service catalog, customer request creation and customer-owned request retrieval are implemented.
-- Staff authentication, role-protected request queue, assignment, status events and audit logging are implemented.
+- Staff authentication, role-protected request queue, assignment, status events, service catalog management and audit logging are implemented.
 - OTP delivery remains disabled until an SMS provider is selected and configured.
 - Flutter API client supports secure token persistence and session restoration. Its sample UI is not yet connected to the live API.
 - No production host, database, SMS provider, customer document storage, payment provider or e-signature provider has been configured.
