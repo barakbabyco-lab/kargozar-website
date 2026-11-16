@@ -233,6 +233,10 @@ class CustomerApiTest extends TestCase
             ->assertJsonPath('data.events.0.internal_note', 'یادداشت داخلی کارشناسی');
 
         $this->assertDatabaseHas('audit_logs', [
+            'action' => 'staff.auth.login',
+            'subject_id' => $supervisor->id,
+        ]);
+        $this->assertDatabaseHas('audit_logs', [
             'action' => 'service_request.assigned',
             'subject_id' => $serviceRequest->id,
         ]);
