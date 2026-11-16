@@ -482,6 +482,9 @@ paths:
         id: { type: string }
         name: { type: string }
         slug: { type: string }
+        description: { type: [string, 'null'] }
+        is_active: { type: boolean }
+        sort_order: { type: integer }
     Service:
       type: object
       required: [id, title, slug, description, is_active]
@@ -496,6 +499,12 @@ paths:
         estimated_days: { type: [integer, 'null'] }
         base_price: { type: [string, 'null'], description: Decimal amount as string. }
         is_active: { type: boolean }
+        sort_order: { type: integer }
+        category:
+          type: [object, 'null']
+          properties:
+            name: { type: string }
+            slug: { type: string }
     ServiceRequest:
       type: object
       required: [id, tracking_code, status, created_at]
