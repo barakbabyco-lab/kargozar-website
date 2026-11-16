@@ -1,20 +1,24 @@
 import 'dart:convert';
 
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
+
+import 'access_token_store.dart';
 
 /// Lightweight client for the versioned Kargozar API.
 ///
 /// Configure the API root at build time, for example:
 /// flutter run --dart-define=API_BASE_URL=https://api.example.com/api/v1
 ///
-/// No credentials or customer data are persisted by this class. The caller
-/// supplies the current bearer token and is responsible for secure storage.
+/// Access tokens are persisted through the platform secure-storage facility.
 class KargozarApiClient {
   KargozarApiClient({
     String? baseUrl,
     http.Client? httpClient,
     String? accessToken,
-  })  : _baseUri = Uri.parse(
+    AccessTokenStore? tokenStore,
+  })  : _tokenStore = tokenStore ?? SecureAccessTokenStore(),
+        _baseUri = Uri.parse(
           (baseUrl ?? const String.fromEnvironment('API_BASE_URL')).trim(),
         ),
         _http = httpClient ?? http.Client(),
@@ -22,7 +26,13 @@ class KargozarApiClient {
 
   final Uri _baseUri;
   final http.Client _http;
+  final AccessTokenStore _tokenStore;
   String? _accessToken;
+
+  /// Restore the previous customer session before making authenticated calls.
+  Future<void> restoreAccessToken() async {
+    _accessToken = await _tokenStore.read();
+  }
 
   void setAccessToken(String? token) {
     _accessToken = token;
@@ -121,16 +131,32 @@ class KargozarApiClient {
   Future<Map<String, dynamic>> verifyOtp({
     required String mobile,
     required String code,
-  }) =>
-      _send(
-        'POST',
-        'auth/otp/verify',
-        body: {'mobile': mobile, 'code': code},
+  }) async {
+    final response = await _send(
+      'POST',
+      'auth/otp/verify',
+      body: {'mobile': mobile, 'code': code},
+    );
+    final data = response['data'];
+    final token = data is Map<String, dynamic>
+        ? data['access_token']?.toString()
+        : null;
+    if (token == null || token.isEmpty) {
+      throw const KargozarApiException(
+        code: 'INVALID_AUTH_RESPONSE',
+        message: 'پاسخ احراز هویت سرور معتبر نیست.',
+        statusCode: 502,
       );
+    }
+    await _tokenStore.write(token);
+    _accessToken = token;
+    return response;
+  }
 
   Future<void> logout() async {
     await _send('POST', 'auth/logout', authenticated: true);
     _accessToken = null;
+    await _tokenStore.clear();
   }
 
   Future<Map<String, dynamic>> getCategories() =>
