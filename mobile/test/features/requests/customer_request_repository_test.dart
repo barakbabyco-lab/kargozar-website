@@ -41,23 +41,27 @@ void main() {
     final api = KargozarApiClient(
       baseUrl: 'https://api.example.test/api/v1',
       accessToken: 'customer-token',
-      httpClient: MockClient((request) async => http.Response(jsonEncode({
-        'data': [
-          {
-            'id': 'public-id-2',
-            'tracking_code': 'KG-XYZ',
-            'status': 'reviewing',
-            'events': [
-              {
-                'status': 'reviewing',
-                'public_message': 'پرونده شما توسط کارشناس بررسی می‌شود.',
-                'created_at': '2026-11-16T05:30:00Z'
-              }
-            ]
-          }
-        ],
-        'meta': {'current_page': 1}
-      }), 200)),
+      httpClient: MockClient((request) async => http.Response.bytes(
+        utf8.encode(jsonEncode({
+          'data': [
+            {
+              'id': 'public-id-2',
+              'tracking_code': 'KG-XYZ',
+              'status': 'reviewing',
+              'events': [
+                {
+                  'status': 'reviewing',
+                  'public_message': 'پرونده شما توسط کارشناس بررسی می‌شود.',
+                  'created_at': '2026-11-16T05:30:00Z'
+                }
+              ]
+            }
+          ],
+          'meta': {'current_page': 1}
+        })),
+        200,
+        headers: {'content-type': 'application/json; charset=utf-8'},
+      )),
     );
 
     final results = await CustomerRequestRepository(api).getMine();
