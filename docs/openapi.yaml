@@ -508,6 +508,55 @@ components:
           type: array
           items: { $ref: '#/components/schemas/ServiceRequest' }
         meta: { $ref: '#/components/schemas/PaginationMeta' }
+    StaffServiceRequest:
+      type: object
+      required: [id, tracking_code, status, created_at]
+      properties:
+        id: { type: string }
+        tracking_code: { type: string }
+        status: { type: string, enum: [submitted, reviewing, awaiting_customer, in_progress, completed, rejected, cancelled] }
+        customer_note: { type: [string, 'null'] }
+        quoted_price: { type: [string, 'null'] }
+        currency: { type: string }
+        created_at: { type: string, format: date-time }
+        updated_at: { type: string, format: date-time }
+        customer:
+          type: object
+          properties:
+            id: { type: string }
+            mobile: { type: string }
+            full_name: { type: [string, 'null'] }
+        service:
+          type: object
+          properties:
+            id: { type: string }
+            title: { type: string }
+            slug: { type: string }
+        assigned_staff:
+          type: [object, 'null']
+          properties:
+            id: { type: string }
+            name: { type: string }
+            role: { type: string }
+        events:
+          type: array
+          items:
+            type: object
+            properties:
+              status: { type: string }
+              public_message: { type: [string, 'null'] }
+              internal_note: { type: [string, 'null'] }
+              actor_type: { type: string }
+              actor_id: { type: [integer, 'null'] }
+              created_at: { type: string, format: date-time }
+    PaginatedStaffRequests:
+      type: object
+      required: [data, meta]
+      properties:
+        data:
+          type: array
+          items: { $ref: '#/components/schemas/StaffServiceRequest' }
+        meta: { $ref: '#/components/schemas/PaginationMeta' }
     PaginationMeta:
       type: object
       properties:
