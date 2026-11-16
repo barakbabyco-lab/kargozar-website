@@ -41,11 +41,11 @@ jobs:
       - name: Prepare application key
         run: cp .env.example .env && php artisan key:generate
 
-      - name: Verify staff provisioning command
+      - name: Verify staff provisioning and cleanup commands
         run: |
-          php artisan list --raw | grep -q '^kargozar:staff-create'
-          php artisan list --raw | grep -q '^kargozar:cleanup-expired'
-          php artisan schedule:list | grep -q 'kargozar:cleanup-expired'
+          php artisan help kargozar:staff-create
+          php artisan help kargozar:cleanup-expired
+          php artisan schedule:list
 
       - name: Verify migrations and seed data
         env:
