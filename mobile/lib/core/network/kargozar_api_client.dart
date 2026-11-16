@@ -28,6 +28,8 @@ class KargozarApiClient {
   final AccessTokenStore _tokenStore;
   String? _accessToken;
 
+  bool get hasAccessToken => _accessToken != null && _accessToken!.isNotEmpty;
+
   /// Restore the previous customer session before making authenticated calls.
   Future<void> restoreAccessToken() async {
     _accessToken = await _tokenStore.read();
@@ -158,9 +160,13 @@ class KargozarApiClient {
   }
 
   Future<void> logout() async {
-    await _send('POST', 'auth/logout', authenticated: true);
-    _accessToken = null;
-    await _tokenStore.clear();
+    try {
+      await _send('POST', 'auth/logout', authenticated: true);
+    } finally {
+      // A failed network request must not leave a locally usable session.
+      _accessToken = null;
+      await _tokenStore.clear();
+    }
   }
 
   Future<Map<String, dynamic>> getCategories() =>
