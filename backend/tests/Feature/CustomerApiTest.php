@@ -133,7 +133,7 @@ class CustomerApiTest extends TestCase
             ->getJson('/api/v1/me/service-requests/'.$serviceRequest->tracking_code)
             ->assertOk()
             ->assertJsonMissing(['internal_note' => 'PRIVATE INTERNAL NOTE'])
-            ->assertJsonMissingText('PRIVATE INTERNAL NOTE');
+            ->assertDontSee('PRIVATE INTERNAL NOTE');
     }
 
     public function test_public_catalog_returns_only_active_services(): void
