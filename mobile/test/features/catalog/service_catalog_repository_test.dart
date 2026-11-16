@@ -34,8 +34,6 @@ void main() {
         }), 200);
       }),
     );
-    const repository = ServiceCatalogRepositoryPlaceholder();
-
     final categories = await ServiceCatalogRepository(api).getCategories();
     final services = await ServiceCatalogRepository(api).getServices();
 
@@ -46,8 +44,4 @@ void main() {
     expect(services.single.categoryName, 'مجوزها');
     api.close();
   });
-}
-
-class ServiceCatalogRepositoryPlaceholder {
-  const ServiceCatalogRepositoryPlaceholder();
 }
