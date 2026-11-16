@@ -63,12 +63,16 @@ class KargozarApiClient {
     Map<String, String>? query,
     Map<String, dynamic>? body,
     bool authenticated = false,
+    String? idempotencyKey,
   }) async {
     final uri = _uri(path, query);
     late final http.Response response;
     try {
       final request = http.Request(method, uri)
         ..headers.addAll(_headers(authenticated: authenticated));
+      if (idempotencyKey != null && idempotencyKey.isNotEmpty) {
+        request.headers['Idempotency-Key'] = idempotencyKey;
+      }
       if (body != null) request.body = jsonEncode(body);
       final streamed = await _http.send(request);
       response = await http.Response.fromStream(streamed);
@@ -157,6 +161,7 @@ class KargozarApiClient {
         'POST',
         'service-requests',
         authenticated: true,
+        idempotencyKey: idempotencyKey,
         body: {
           'service_id': serviceId,
           if (customerNote != null && customerNote.isNotEmpty)
