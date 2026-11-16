@@ -75,7 +75,7 @@ php artisan test
 php artisan migrate:fresh --seed
 ```
 
-GitHub Actions runs Composer validation, command registration checks, migrations, seeders and feature tests on PHP 8.3.
+GitHub Actions runs Composer validation, command registration checks, migrations and seeders on both SQLite and MySQL 8, plus feature tests on PHP 8.3.
 
 ## Production readiness gates
 
