@@ -59,6 +59,17 @@ class StaffLoginController extends Controller
         RateLimiter::clear($limitKey);
         $staff->forceFill(['last_login_at' => now()])->save();
 
+        AuditLog::create([
+            'actor_type' => 'staff',
+            'actor_id' => $staff->id,
+            'action' => 'staff.auth.login',
+            'subject_type' => StaffUser::class,
+            'subject_id' => $staff->id,
+            'request_id' => $request->header('X-Request-Id', (string) Str::uuid()),
+            'ip_hash' => hash('sha256', (string) $request->ip()),
+            'metadata' => ['role' => $staff->role],
+        ]);
+
         $token = $staff->createToken(
             'staff-portal',
             ['staff:'.$staff->role],
