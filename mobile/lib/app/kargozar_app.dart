@@ -151,7 +151,38 @@ class _RequestsState extends State<RequestsPage> {
       if (!s.hasData) return const Center(child: CircularProgressIndicator());
       if (s.data!.isEmpty) return const EmptyPanel(title: 'هنوز درخواستی ثبت نکرده‌ای');
       return Column(children: s.data!.map((r) => Card(color: Colors.white, child: ListTile(
-        title: Text(r.trackingCode), subtitle: Text('وضعیت: ' + r.status),
+        title: Text(r.trackingCode),
+        subtitle: Text('وضعیت: ' + r.status),
+        trailing: const Icon(Icons.chevron_left),
+        onTap: () => showModalBottomSheet<void>(
+          context: context,
+          isScrollControlled: true,
+          builder: (ctx) => SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: ListView(shrinkWrap: true, children: [
+                Text('پیگیری ' + r.trackingCode,
+                    style: const TextStyle(fontSize: 19, fontWeight: FontWeight.w800)),
+                const SizedBox(height: 8),
+                Text('وضعیت فعلی: ' + r.status),
+                const SizedBox(height: 16),
+                const Text('آخرین رویدادها',
+                    style: TextStyle(fontWeight: FontWeight.bold)),
+                if (r.events.isEmpty)
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 16),
+                    child: Text('هنوز رویداد قابل نمایشی برای این درخواست ثبت نشده است.'),
+                  ),
+                ...r.events.map((event) => ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: const Icon(Icons.timeline),
+                  title: Text(event.publicMessage ?? event.status),
+                  subtitle: Text(event.status),
+                )),
+              ]),
+            ),
+          ),
+        ),
       ))).toList());
     }),
   ]);
