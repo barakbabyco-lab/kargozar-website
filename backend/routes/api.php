@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\V1\ServiceCategoryController;
 use App\Http\Controllers\Api\V1\ServiceController;
 use App\Http\Controllers\Api\V1\ServiceRequestController;
 use App\Http\Controllers\Api\V1\Staff\Auth\StaffLoginController;
+use App\Http\Controllers\Api\V1\Staff\StaffCatalogController;
 use App\Http\Controllers\Api\V1\Staff\StaffServiceRequestController;
 use Illuminate\Support\Facades\Route;
 
@@ -25,6 +26,16 @@ Route::prefix('v1')->group(function (): void {
         ->prefix('staff')
         ->group(function (): void {
             Route::post('auth/logout', LogoutController::class);
+            Route::get('catalog/categories', [StaffCatalogController::class, 'categories']);
+            Route::get('catalog/services', [StaffCatalogController::class, 'services']);
+            Route::post('catalog/categories', [StaffCatalogController::class, 'storeCategory'])
+                ->middleware('staff.role:admin,supervisor');
+            Route::patch('catalog/categories/{categoryId}', [StaffCatalogController::class, 'updateCategory'])
+                ->middleware('staff.role:admin,supervisor');
+            Route::post('catalog/services', [StaffCatalogController::class, 'storeService'])
+                ->middleware('staff.role:admin,supervisor');
+            Route::patch('catalog/services/{serviceId}', [StaffCatalogController::class, 'updateService'])
+                ->middleware('staff.role:admin,supervisor');
             Route::get('service-requests', [StaffServiceRequestController::class, 'index']);
             Route::get('service-requests/{trackingCode}', [StaffServiceRequestController::class, 'show']);
             Route::post('service-requests/{trackingCode}/events', [StaffServiceRequestController::class, 'recordEvent'])
