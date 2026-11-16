@@ -33,8 +33,13 @@ class KargozarApiClient {
     _accessToken = await _tokenStore.read();
   }
 
-  void setAccessToken(String? token) {
+  Future<void> setAccessToken(String? token) async {
     _accessToken = token;
+    if (token == null || token.isEmpty) {
+      await _tokenStore.clear();
+    } else {
+      await _tokenStore.write(token);
+    }
   }
 
   void close() {
