@@ -13,6 +13,7 @@ tags:
   - name: Authentication
   - name: Services
   - name: Customer requests
+  - name: Staff
 security:
   - bearerAuth: []
 paths:
@@ -261,6 +262,177 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '404':
           description: Not found or not owned by the authenticated customer.
+  /staff/auth/login:
+    post:
+      tags: [Staff]
+      operationId: staffLogin
+      security: []
+      summary: Sign in a staff member
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email: { type: string, format: email }
+                password: { type: string, format: password }
+      responses:
+        '200':
+          description: Staff session with a 12-hour bearer token.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: object
+                    required: [access_token, token_type, expires_at, staff]
+                    properties:
+                      access_token: { type: string }
+                      token_type: { type: string, const: Bearer }
+                      expires_at: { type: string, format: date-time }
+                      staff:
+                        type: object
+                        required: [id, name, email, role]
+                        properties:
+                          id: { type: string }
+                          name: { type: string }
+                          email: { type: string, format: email }
+                          role: { type: string, enum: [admin, supervisor, expert, finance, support] }
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /staff/auth/logout:
+    post:
+      tags: [Staff]
+      operationId: staffLogout
+      summary: Revoke the current staff token
+      responses:
+        '204':
+          description: Token revoked.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          description: The token does not belong to an active staff account.
+  /staff/service-requests:
+    get:
+      tags: [Staff]
+      operationId: listStaffServiceRequests
+      summary: Search and filter the staff request queue
+      parameters:
+        - in: query
+          name: status
+          schema: { type: string, enum: [submitted, reviewing, awaiting_customer, in_progress, completed, rejected, cancelled] }
+        - in: query
+          name: q
+          schema: { type: string, maxLength: 100 }
+        - in: query
+          name: assigned_to_me
+          schema: { type: boolean, default: false }
+        - in: query
+          name: page
+          schema: { type: integer, minimum: 1, default: 1 }
+      responses:
+        '200':
+          description: Staff-visible paginated request queue, including internal notes.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedStaffRequests'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          description: Staff role required.
+  /staff/service-requests/{tracking_code}:
+    get:
+      tags: [Staff]
+      operationId: getStaffServiceRequest
+      summary: View a request with staff-only information
+      parameters:
+        - in: path
+          name: tracking_code
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Staff-visible request details.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    $ref: '#/components/schemas/StaffServiceRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          description: Staff role required.
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /staff/service-requests/{tracking_code}/assignment:
+    patch:
+      tags: [Staff]
+      operationId: assignStaffRequest
+      summary: Assign a request to an active staff member
+      parameters:
+        - in: path
+          name: tracking_code
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [assigned_staff_id]
+              properties:
+                assigned_staff_id: { type: integer, minimum: 1 }
+      responses:
+        '200':
+          description: Updated assignment.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          description: Admin or supervisor role required.
+        '422':
+          $ref: '#/components/responses/ValidationError'
+  /staff/service-requests/{tracking_code}/events:
+    post:
+      tags: [Staff]
+      operationId: recordStaffRequestEvent
+      summary: Change request status and/or add public message or internal note
+      parameters:
+        - in: path
+          name: tracking_code
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status: { type: string, enum: [submitted, reviewing, awaiting_customer, in_progress, completed, rejected, cancelled] }
+                public_message: { type: string, maxLength: 2000 }
+                internal_note: { type: string, maxLength: 4000 }
+      responses:
+        '200':
+          description: Event recorded with permitted status transition.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          description: Admin, supervisor, or expert role required.
+        '422':
+          $ref: '#/components/responses/ValidationError'
 components:
   securitySchemes:
     bearerAuth:
