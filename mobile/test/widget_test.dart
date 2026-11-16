@@ -5,6 +5,6 @@ void main() {
   testWidgets('renders the Kargozar customer app', (tester) async {
     await tester.pumpWidget(const KargozarApp());
     expect(find.text('کارگزار'), findsWidgets);
-    expect(find.text('همه خدمات'), findsOneWidget);
+    expect(find.text('خدمات پرکاربرد'), findsOneWidget);
   });
 }
