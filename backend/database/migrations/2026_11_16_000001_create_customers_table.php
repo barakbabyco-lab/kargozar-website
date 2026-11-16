@@ -13,6 +13,7 @@ return new class extends Migration
             $table->string('mobile', 11)->unique();
             $table->string('full_name', 160)->nullable();
             $table->string('status', 24)->default('active')->index();
+            $table->timestamp('mobile_verified_at')->nullable();
             $table->timestamps();
         });
     }
