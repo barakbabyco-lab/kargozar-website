@@ -648,7 +648,7 @@ class _RequestFormState extends State<_RequestForm> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('درخواست ' + widget.service.title,
+              Text('درخواست ${widget.service.title}',
                 style: const TextStyle(
                   color: _ink, fontWeight: FontWeight.w900, fontSize: 19)),
               const SizedBox(height: 8),
@@ -667,7 +667,72 @@ class _RequestFormState extends State<_RequestForm> {
                 controller: _mobile,
                 keyboardType: TextInputType.phone,
                 decoration: const InputDecoration(labelText: 'شماره موبایل'),
-                validator: (v) => (v == null || !RegExp(r'^09\\d{9}$').hasMatch(v.trim()))
+                validator: (v) => (v == null || !RegExp(r'^09\d{9}).hasMatch(v.trim()))
+                    ? 'شماره موبایل معتبر وارد کن' : null,
+              ),
+              const SizedBox(height: 12),
+              TextFormField(
+                controller: _details,
+                minLines: 2,
+                maxLines: 4,
+                decoration: const InputDecoration(
+                  labelText: 'توضیحات درخواست (اختیاری)'),
+              ),
+              const SizedBox(height: 18),
+              SizedBox(
+                width: double.infinity,
+                child: FilledButton(
+                  onPressed: () {
+                    if (!_formKey.currentState!.validate()) return;
+                    Navigator.pop(context);
+                    showDialog<void>(
+                      context: widget.hostContext,
+                      builder: (dialogContext) => AlertDialog(
+                        title: const Text('پیش‌نمایش تکمیل فرم'),
+                        content: const Text(
+                          'فرم آزمایشی تکمیل شد؛ اما هنوز به سرور متصل نیست و هیچ اطلاعاتی ذخیره یا ارسال نشده است. در نسخه عملیاتی، این مرحله به ثبت درخواست و صدور کد پیگیری متصل می‌شود.'),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(dialogContext),
+                            child: const Text('متوجه شدم'),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                  child: const Text('بررسی فرم آزمایشی'),
+                ),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'اطلاعات واقعی یا مدارک هویتی وارد نکن؛ این فرم هنوز آزمایشی است.',
+                textAlign: TextAlign.center,
+                style: TextStyle(color: _muted, fontSize: 10)),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+void _showInfo(BuildContext context) {
+  showDialog<void>(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: const Text('نسخه آزمایشی'),
+      content: const Text(
+        'این بخش در حال آماده‌سازی است. در نسخه عملیاتی، درخواست‌ها به سامانه کارگزار ارسال و قابل پیگیری خواهند بود.'),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('متوجه شدم'),
+        ),
+      ],
+    ),
+  );
+}
+).hasMatch(v.trim()))
                     ? 'شماره موبایل معتبر وارد کن' : null,
               ),
               const SizedBox(height: 12),
