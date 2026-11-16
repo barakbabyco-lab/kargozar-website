@@ -5,7 +5,6 @@ class CustomerRequestEvent {
     required this.status,
     this.publicMessage,
     this.createdAt,
-    this.events = const [],
   });
 
   final String status;
@@ -28,6 +27,7 @@ class CustomerServiceRequest {
     this.customerNote,
     this.serviceTitle,
     this.createdAt,
+    this.events = const [],
   });
 
   final String id;
