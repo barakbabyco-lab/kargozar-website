@@ -232,9 +232,18 @@ class CustomerApiTest extends TestCase
             ->assertJsonPath('data.status', 'reviewing')
             ->assertJsonPath('data.events.0.internal_note', 'یادداشت داخلی کارشناسی');
 
+        $this->withHeaders($headers)
+            ->getJson('/api/v1/staff/service-requests/'.$serviceRequest->tracking_code)
+            ->assertOk()
+            ->assertJsonPath('data.events.0.internal_note', 'یادداشت داخلی کارشناسی');
+
         $this->assertDatabaseHas('audit_logs', [
             'action' => 'staff.auth.login',
             'subject_id' => $supervisor->id,
+        ]);
+        $this->assertDatabaseHas('audit_logs', [
+            'action' => 'service_request.viewed',
+            'subject_id' => $serviceRequest->id,
         ]);
         $this->assertDatabaseHas('audit_logs', [
             'action' => 'service_request.assigned',
