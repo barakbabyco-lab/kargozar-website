@@ -145,7 +145,8 @@ class RequestsPage extends StatefulWidget {
 }
 class _RequestsState extends State<RequestsPage> {
   late Future<List<CustomerServiceRequest>> future;
-  @override void initState() { super.initState(); future = widget.repository.getMine(); }
+  @override void initState() { super.initState(); future = widget.signedIn ? widget.repository.getMine() : Future.value(<CustomerServiceRequest>[]); }
+  @override void didUpdateWidget(covariant RequestsPage oldWidget) { super.didUpdateWidget(oldWidget); if (!oldWidget.signedIn && widget.signedIn) future = widget.repository.getMine(); }
   @override Widget build(BuildContext context) => ListView(padding: const EdgeInsets.all(20), children: [
     const Text('درخواست‌های من', style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900)),
     if (!widget.signedIn) EmptyPanel(title: 'برای مشاهده درخواست‌ها وارد شو', action: FilledButton(onPressed: widget.login, child: const Text('ورود به حساب')))
