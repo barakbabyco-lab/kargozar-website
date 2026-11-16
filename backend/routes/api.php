@@ -22,26 +22,26 @@ Route::prefix('v1')->group(function (): void {
 
     Route::post('staff/auth/login', StaffLoginController::class)->middleware('throttle:10,1');
 
-    Route::middleware(['auth:sanctum', 'staff.role:admin,supervisor,expert,finance,support'])
+    Route::middleware(['auth:sanctum', 'staff.editor:admin,supervisor,expert,finance,support'])
         ->prefix('staff')
         ->group(function (): void {
             Route::post('auth/logout', LogoutController::class);
             Route::get('catalog/categories', [StaffCatalogController::class, 'categories']);
             Route::get('catalog/services', [StaffCatalogController::class, 'services']);
             Route::post('catalog/categories', [StaffCatalogController::class, 'storeCategory'])
-                ->middleware('staff.role:admin,supervisor');
+                ->middleware('staff.manager:admin,supervisor');
             Route::patch('catalog/categories/{categoryId}', [StaffCatalogController::class, 'updateCategory'])
-                ->middleware('staff.role:admin,supervisor');
+                ->middleware('staff.manager:admin,supervisor');
             Route::post('catalog/services', [StaffCatalogController::class, 'storeService'])
-                ->middleware('staff.role:admin,supervisor');
+                ->middleware('staff.manager:admin,supervisor');
             Route::patch('catalog/services/{serviceId}', [StaffCatalogController::class, 'updateService'])
-                ->middleware('staff.role:admin,supervisor');
+                ->middleware('staff.manager:admin,supervisor');
             Route::get('service-requests', [StaffServiceRequestController::class, 'index']);
             Route::get('service-requests/{trackingCode}', [StaffServiceRequestController::class, 'show']);
             Route::post('service-requests/{trackingCode}/events', [StaffServiceRequestController::class, 'recordEvent'])
-                ->middleware('staff.role:admin,supervisor,expert');
+                ->middleware('staff.editor:admin,supervisor,expert');
             Route::patch('service-requests/{trackingCode}/assignment', [StaffServiceRequestController::class, 'assign'])
-                ->middleware('staff.role:admin,supervisor');
+                ->middleware('staff.manager:admin,supervisor');
         });
 
     Route::middleware('auth:sanctum')->group(function (): void {
