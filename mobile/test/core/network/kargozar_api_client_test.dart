@@ -84,5 +84,79 @@ void main() {
       );
       client.close();
     });
+
+    test('stores the access token returned by OTP verification', () async {
+      final tokenStore = FakeAccessTokenStore();
+      late http.Request authenticatedRequest;
+      final client = KargozarApiClient(
+        baseUrl: 'https://api.example.test/api/v1',
+        tokenStore: tokenStore,
+        httpClient: MockClient((request) async {
+          if (request.url.path.endsWith('/auth/otp/verify')) {
+            return http.Response(
+              jsonEncode({
+                'data': {
+                  'access_token': 'issued-token',
+                  'token_type': 'Bearer',
+                  'expires_at': '2026-12-01T00:00:00Z',
+                  'customer': {'id': 'cust-1', 'mobile': '09120000000'},
+                },
+              }),
+              200,
+              headers: {'content-type': 'application/json; charset=utf-8'},
+            );
+          }
+          authenticatedRequest = request;
+          return http.Response(
+            jsonEncode({'data': <dynamic>[]}),
+            200,
+            headers: {'content-type': 'application/json; charset=utf-8'},
+          );
+        }),
+      );
+
+      await client.verifyOtp(mobile: '09120000000', code: '123456');
+      expect(tokenStore.value, 'issued-token');
+      await client.getMyRequests();
+      expect(authenticatedRequest.headers['Authorization'], 'Bearer issued-token');
+      client.close();
+    });
+
+    test('restores a saved token and clears it after logout', () async {
+      final tokenStore = FakeAccessTokenStore()..value = 'saved-token';
+      late http.Request logoutRequest;
+      final client = KargozarApiClient(
+        baseUrl: 'https://api.example.test/api/v1',
+        tokenStore: tokenStore,
+        httpClient: MockClient((request) async {
+          logoutRequest = request;
+          return http.Response('', 204);
+        }),
+      );
+
+      await client.restoreAccessToken();
+      await client.logout();
+
+      expect(logoutRequest.headers['Authorization'], 'Bearer saved-token');
+      expect(tokenStore.value, isNull);
+      client.close();
+    });
   });
+}
+
+class FakeAccessTokenStore implements AccessTokenStore {
+  String? value;
+
+  @override
+  Future<String?> read() async => value;
+
+  @override
+  Future<void> write(String token) async {
+    value = token;
+  }
+
+  @override
+  Future<void> clear() async {
+    value = null;
+  }
 }
