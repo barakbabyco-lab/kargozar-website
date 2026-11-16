@@ -338,6 +338,14 @@ class CustomerApiTest extends TestCase
             ->assertCreated()
             ->assertJsonPath('data.slug', 'test-service-item');
 
+        $serviceId = (int) $service->json('data.id');
+        $this->withToken($supervisorToken)
+            ->patchJson('/api/v1/staff/catalog/services/'.$serviceId, [
+                'is_active' => false,
+            ])
+            ->assertOk()
+            ->assertJsonPath('data.is_active', false);
+
         $this->actingAs($expert, 'sanctum')
             ->postJson('/api/v1/staff/catalog/categories', [
                 'name' => 'نباید ساخته شود',
@@ -346,8 +354,8 @@ class CustomerApiTest extends TestCase
             ->assertForbidden();
 
         $this->getJson('/api/v1/services/test-service-item')
-            ->assertOk()
-            ->assertJsonPath('data.title', 'خدمت آزمایشی');
+            ->assertNotFound()
+            ->assertJsonPath('error.code', 'NOT_FOUND');
 
         $this->assertDatabaseHas('audit_logs', [
             'action' => 'catalog.category_created',
