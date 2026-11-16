@@ -117,6 +117,9 @@
 - `PATCH /staff/service-requests/{id}/assignment`: ارجاع به کارشناس مجاز.
 - `POST /staff/service-requests/{id}/events`: ثبت تغییر وضعیت و پیام عمومی/یادداشت داخلی.
 - `PATCH /staff/documents/{id}/review`: تأیید یا رد مدرک.
+- مجوزها در سمت سرور اعمال می‌شوند: admin و supervisor مجاز به ارجاع پرونده‌اند؛ admin، supervisor و expert می‌توانند رویداد و تغییر وضعیت ثبت کنند؛ finance و support در نسخه فعلی دسترسی مشاهده دارند.
+- تغییر وضعیت باید از گردش مجاز عبور کند؛ وضعیت‌های completed، rejected و cancelled در نسخه اول نهایی هستند.
+- ورود کارکنان، مشاهده جزئیات پرونده، ارجاع و ثبت رویداد در audit log ثبت می‌شوند. متن یادداشت داخلی در metadata ممیزی کپی نمی‌شود.
 
 نقش‌ها حداقل شامل admin، supervisor، expert، finance و support هستند. هر عملیات حساس باید در audit log ثبت شود. کنترل دسترسی باید در سرور اعمال شود، نه صرفاً با مخفی‌کردن دکمه‌ها در رابط کاربری.
 
