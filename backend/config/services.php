@@ -3,15 +3,9 @@
 return [
 
     /*
-    |--------------------------------------------------------------------------
+    |----------------------------------------------------------------------
     | Third Party Services
-    |--------------------------------------------------------------------------
-    |
-    | This file is for storing the credentials for third party services such
-    | as Resend, Postmark, AWS, and more. This file provides the de facto
-    | location for this type of information, allowing packages to have
-    | a conventional file to locate the various service credentials.
-    |
+    |----------------------------------------------------------------------
     */
 
     'postmark' => [
@@ -33,6 +27,12 @@ return [
             'bot_user_oauth_token' => env('SLACK_BOT_USER_OAUTH_TOKEN'),
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
+    ],
+
+    'ippanel' => [
+        'api_key' => env('IPPANEL_API_KEY'),
+        'pattern_code' => env('IPPANEL_OTP_PATTERN_CODE'),
+        'from_number' => env('IPPANEL_FROM_NUMBER'),
     ],
 
 ];
