@@ -1,0 +1,375 @@
+openapi: 3.1.0
+info:
+  title: Kargozar API
+  version: 1.0.0
+  description: >
+    Versioned API contract for the Kargozar customer application and staff
+    portal. This specification describes the agreed MVP contract; it does
+    not imply that the backend has been deployed.
+servers:
+  - url: https://api.example.com/api/v1
+    description: Replace with the configured production API host.
+tags:
+  - name: Authentication
+  - name: Services
+  - name: Customer requests
+security:
+  - bearerAuth: []
+paths:
+  /auth/otp/request:
+    post:
+      tags: [Authentication]
+      operationId: requestOtp
+      security: []
+      summary: Request a one-time password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [mobile]
+              properties:
+                mobile:
+                  type: string
+                  pattern: '^09[0-9]{9}$'
+                  example: '09120000000'
+      responses:
+        '200':
+          description: Generic response that does not reveal account existence.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /auth/otp/verify:
+    post:
+      tags: [Authentication]
+      operationId: verifyOtp
+      security: []
+      summary: Verify a one-time password and issue a token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [mobile, code]
+              properties:
+                mobile:
+                  type: string
+                  pattern: '^09[0-9]{9}$'
+                code:
+                  type: string
+                  minLength: 4
+                  maxLength: 8
+      responses:
+        '200':
+          description: Authenticated customer session.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: object
+                    required: [access_token, token_type, expires_at, customer]
+                    properties:
+                      access_token:
+                        type: string
+                      token_type:
+                        type: string
+                        const: Bearer
+                      expires_at:
+                        type: string
+                        format: date-time
+                      customer:
+                        $ref: '#/components/schemas/Customer'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /auth/logout:
+    post:
+      tags: [Authentication]
+      operationId: logout
+      summary: Revoke the current access token
+      responses:
+        '204':
+          description: Token revoked.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /service-categories:
+    get:
+      tags: [Services]
+      operationId: listServiceCategories
+      security: []
+      summary: List active service categories
+      responses:
+        '200':
+          description: Categories.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Category'
+  /services:
+    get:
+      tags: [Services]
+      operationId: listServices
+      security: []
+      summary: Search active services
+      parameters:
+        - in: query
+          name: category
+          schema: { type: string }
+        - in: query
+          name: q
+          schema: { type: string, maxLength: 100 }
+        - in: query
+          name: page
+          schema: { type: integer, minimum: 1, default: 1 }
+      responses:
+        '200':
+          description: Paginated services.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedServices'
+  /services/{slug}:
+    get:
+      tags: [Services]
+      operationId: getService
+      security: []
+      summary: Get service details
+      parameters:
+        - in: path
+          name: slug
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Service details.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Service'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /service-requests:
+    post:
+      tags: [Customer requests]
+      operationId: createServiceRequest
+      summary: Create a customer service request
+      parameters:
+        - in: header
+          name: Idempotency-Key
+          required: true
+          schema:
+            type: string
+            minLength: 16
+            maxLength: 128
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [service_id]
+              properties:
+                service_id:
+                  type: string
+                customer_note:
+                  type: string
+                  maxLength: 2000
+      responses:
+        '201':
+          description: Request created.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ServiceRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '409':
+          description: Idempotency key was reused with a different request body.
+        '422':
+          $ref: '#/components/responses/ValidationError'
+  /me/service-requests:
+    get:
+      tags: [Customer requests]
+      operationId: listMyServiceRequests
+      summary: List requests owned by the authenticated customer
+      parameters:
+        - in: query
+          name: page
+          schema: { type: integer, minimum: 1, default: 1 }
+      responses:
+        '200':
+          description: Customer's paginated requests.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedRequests'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /me/service-requests/{tracking_code}:
+    get:
+      tags: [Customer requests]
+      operationId: getMyServiceRequest
+      summary: Get one request after ownership verification
+      parameters:
+        - in: path
+          name: tracking_code
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Customer-visible request details only.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ServiceRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          description: Not found or not owned by the authenticated customer.
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: Sanctum token
+  schemas:
+    MessageResponse:
+      type: object
+      properties:
+        message: { type: string }
+    Customer:
+      type: object
+      required: [id, mobile]
+      properties:
+        id: { type: string }
+        mobile: { type: string }
+        full_name: { type: [string, 'null'] }
+    Category:
+      type: object
+      required: [id, name, slug]
+      properties:
+        id: { type: string }
+        name: { type: string }
+        slug: { type: string }
+    Service:
+      type: object
+      required: [id, title, slug, description, is_active]
+      properties:
+        id: { type: string }
+        title: { type: string }
+        slug: { type: string }
+        description: { type: string }
+        requirements:
+          type: array
+          items: { type: string }
+        estimated_days: { type: [integer, 'null'] }
+        base_price: { type: [string, 'null'], description: Decimal amount as string. }
+        is_active: { type: boolean }
+    ServiceRequest:
+      type: object
+      required: [id, tracking_code, status, created_at]
+      properties:
+        id: { type: string }
+        tracking_code: { type: string }
+        status:
+          type: string
+          enum: [submitted, reviewing, awaiting_customer, in_progress, completed, rejected, cancelled]
+        customer_note: { type: [string, 'null'] }
+        created_at: { type: string, format: date-time }
+        updated_at: { type: string, format: date-time }
+        events:
+          type: array
+          items:
+            type: object
+            properties:
+              status: { type: string }
+              public_message: { type: [string, 'null'] }
+              created_at: { type: string, format: date-time }
+    PaginatedServices:
+      type: object
+      required: [data, meta]
+      properties:
+        data:
+          type: array
+          items: { $ref: '#/components/schemas/Service' }
+        meta: { $ref: '#/components/schemas/PaginationMeta' }
+    PaginatedRequests:
+      type: object
+      required: [data, meta]
+      properties:
+        data:
+          type: array
+          items: { $ref: '#/components/schemas/ServiceRequest' }
+        meta: { $ref: '#/components/schemas/PaginationMeta' }
+    PaginationMeta:
+      type: object
+      properties:
+        current_page: { type: integer }
+        last_page: { type: integer }
+        per_page: { type: integer }
+        total: { type: integer }
+    ApiError:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [code, message]
+          properties:
+            code: { type: string }
+            message: { type: string }
+            fields:
+              type: object
+              additionalProperties:
+                type: array
+                items: { type: string }
+  responses:
+    Unauthorized:
+      description: Authentication required.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ApiError' }
+    NotFound:
+      description: Resource not found.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ApiError' }
+    ValidationError:
+      description: Validation failed.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ApiError' }
+    RateLimited:
+      description: Rate limit exceeded.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ApiError' }
