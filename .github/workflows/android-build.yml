@@ -79,7 +79,7 @@ jobs:
           storePassword=$ANDROID_KEYSTORE_PASSWORD
           keyPassword=$ANDROID_KEY_PASSWORD
           keyAlias=$ANDROID_KEY_ALIAS
-          storeFile=app/upload-keystore.jks
+          storeFile=upload-keystore.jks
           EOF
           python3 tool/configure_android_signing.py
           echo "release_ready=true" >> "$GITHUB_OUTPUT"
