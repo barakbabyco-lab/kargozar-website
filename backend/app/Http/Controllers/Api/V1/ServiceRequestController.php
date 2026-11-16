@@ -73,6 +73,11 @@ class ServiceRequestController extends Controller
                     ->lockForUpdate()
                     ->first();
 
+                if ($existing && $existing->expires_at?->isPast()) {
+                    $existing->delete();
+                    $existing = null;
+                }
+
                 if ($existing) {
                     if (! hash_equals($existing->request_hash, $requestHash)) {
                         return ['conflict' => true];
