@@ -1,0 +1,6 @@
+---
+deployment:
+  tasks:
+    - export DEPLOYPATH="${HOME}/apps/kargozar-api/"
+    - /bin/mkdir -p "$DEPLOYPATH"
+    - /bin/cp -R backend/. "$DEPLOYPATH"
