@@ -1,0 +1,83 @@
+# Mobile API Integration Plan (Preserve Existing UI)
+
+## Goal
+
+Connect the existing customer-facing Flutter UI in `mobile/lib/main.dart` to the Laravel API without changing its visual design, navigation labels, spacing, colors, typography, cards, dialogs, or page layout.
+
+The alternate implementation in `mobile/lib/app/kargozar_app.dart` is a technical reference only. It must not replace the current entry point because its widgets and layouts differ from the existing app.
+
+## Verified repository state
+
+- Flutter entry point: `mobile/lib/main.dart`.
+- Current entry point still uses the local `services` constant and explicitly labels service/request forms as demonstrations.
+- API infrastructure already exists:
+  - `mobile/lib/core/network/kargozar_api_client.dart`
+  - `mobile/lib/core/network/access_token_store.dart`
+  - `mobile/lib/features/auth/customer_session.dart`
+  - `mobile/lib/features/catalog/service_catalog_repository.dart`
+  - `mobile/lib/features/requests/customer_request_repository.dart`
+- The API client requires a build-time `API_BASE_URL` and rejects non-HTTPS remote URLs.
+- The Android workflow builds with `--dart-define=API_BASE_URL` sourced from the GitHub Actions repository variable `KARGOZAR_API_BASE_URL`.
+- Backend API routes are versioned under `/api/v1`.
+- OTP delivery intentionally returns `503 OTP_DELIVERY_UNAVAILABLE` until a real SMS provider is configured. Do not represent OTP as production-ready before that is resolved.
+- Existing Flutter tests cover API URL security, request headers, token persistence, OTP response parsing, catalog mapping, and request repository mapping.
+
+## Confirmed integration gaps
+
+1. `main.dart` does not instantiate or use the API client/repositories. It continues to render hard-coded service data.
+2. The request form in `main.dart` is explicitly a preview and does not send data.
+3. The requests page in `main.dart` is a static empty state.
+4. The alternate `kargozar_app.dart` is wired to the API but has a visibly different layout. Replacing the entry point with it would violate the UI-preservation requirement.
+5. The production API hostname is not yet confirmed because hosting support is still checking SSH, PHP CLI, Composer, subdomain document-root support, and database compatibility.
+6. The OTP provider is not active yet; real sign-in cannot be fully verified until server-side delivery is configured.
+
+## Safe implementation sequence
+
+### Phase A — Preserve the existing presentation
+
+- Keep `main.dart` as the only production app entry point.
+- Keep the existing visual widget tree and styling unchanged.
+- Introduce a small application-level dependency container for the API client, session, catalog repository, and request repository.
+- Add state/data adapters behind existing widgets rather than copying the alternate app's screens.
+
+### Phase B — Public catalog
+
+- Load categories/services from the API for the existing Home and Services pages.
+- Map API service identifiers, title, subtitle/description, and category to the existing `ServiceItem` view model.
+- Preserve the existing icon mapping and visual cards; unknown service categories receive a neutral existing icon.
+- Add loading, retry, and offline/error states using the existing typography and color palette.
+- Keep the local catalog only as a clearly marked development fallback when no API base URL is configured; never silently treat fallback data as live server data.
+
+### Phase C — Customer sign-in
+
+- Connect the existing account entry point to the existing OTP session flow.
+- Keep the current app navigation and style; implement the OTP dialog with existing theme components.
+- Restore the secure token at startup and clear it on logout.
+- Do not enable real OTP until the SMS adapter is configured and verified on the server.
+
+### Phase D — Requests
+
+- Require an authenticated customer before creating a request.
+- Submit the selected API service ID and optional customer note with a fresh idempotency key.
+- Display the returned tracking code in the existing confirmation style.
+- Load the authenticated customer's requests and public event timeline in the existing Requests page.
+- Never collect identity documents until private storage and file validation are implemented server-side.
+
+### Phase E — Verification
+
+- Add widget tests asserting that the existing home header, four-tab navigation, colors/styles, and service card layout remain intact.
+- Add tests for loading, empty, API error/retry, unauthenticated request, successful request, and request history.
+- Run `flutter analyze` and `flutter test`.
+- Build a debug APK only after the correct HTTPS API URL is configured.
+- Do not deploy a release APK until OTP, database, HTTPS, and production API checks pass.
+
+## Current decision
+
+No production UI or application source has been modified as part of this audit. The next implementation should be a minimal, reviewable integration into the existing `main.dart` UI, not a replacement with `kargozar_app.dart`.
+
+## External prerequisites
+
+- Hosting provider confirms PHP CLI 8.3+, Composer 2, required PHP extensions, SSH/Shell, cron, MySQL compatibility, and custom API subdomain document root.
+- API subdomain and valid TLS certificate are provisioned.
+- A separate production database is created.
+- SMS provider credentials and template are configured only in the server environment, never in Git.
