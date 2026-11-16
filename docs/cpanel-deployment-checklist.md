@@ -64,6 +64,35 @@
 - فعال‌کردن پیامک واقعی پیش از تأیید پترن و ثبت secrets فقط روی سرور.
 - اعلام production-ready بودن صرفاً به‌دلیل موفقیت Composer یا اجرای migrations.
 
+
+## مسیر جایگزین برای هاست بدون SSH و Terminal
+
+پشتیبانی هاست اعلام کرده است SSH/Terminal ارائه نمی‌شود، اما PHP CLI نسخه 8.3 از مسیر زیر برای اجرای Artisan در دسترس است و Cron Job نیز قابل استفاده است:
+
+```text
+/opt/cpanel/ea-php83/root/usr/bin/php
+```
+
+برای حل نبود Composer روی خود هاست، workflow زیر در GitHub Actions وابستگی‌های production را با PHP 8.3 و Composer 2 نصب می‌کند و یک ZIP آماده cPanel می‌سازد:
+
+- Workflow: `.github/workflows/laravel-cpanel-bundle.yml`
+- Artifact: `kargozar-laravel-production-bundle`
+- خروجی: `kargozar-laravel-production.zip` به‌همراه فایل SHA-256
+- فایل ZIP شامل سورس Laravel و `vendor/` است و فایل‌های محیطی، تست‌ها و logها را شامل نمی‌شود.
+
+### روش استفاده پس از موفقیت workflow
+
+1. در GitHub به Actions بروید و اجرای workflow با نام **Build Laravel production bundle for cPanel** را باز کنید.
+2. فقط پس از موفقیت کامل، artifact با نام `kargozar-laravel-production-bundle` را دریافت کنید.
+3. پیش از استخراج، از پوشه فعلی `/home/CPANEL_USER/apps/kargozar-api` نسخه پشتیبان بگیرید.
+4. ZIP را در همان پوشه خصوصی `apps/kargozar-api` بارگذاری و Extract کنید؛ آن را داخل `public_html` یا ریشه وب وردپرس استخراج نکنید.
+5. فایل `.env` را جداگانه و فقط روی هاست بسازید؛ آن را از GitHub یا artifact کپی نکنید.
+6. Document Root زیردامنه API باید فقط به `/home/CPANEL_USER/apps/kargozar-api/public` اشاره کند.
+7. پس از تأیید دیتابیس اختصاصی و تنظیم امن `.env`، فرمان‌های لازم Artisan را با PHP CLI اعلام‌شده از طریق Cron Job اجرا و سپس Cron موقت را حذف کنید.
+8. زمان‌بندی دائمی Laravel Scheduler نیز فقط پس از نصب موفق و تأیید فرمان‌ها تنظیم شود.
+
+**محدودیت مهم:** workflow فقط بسته نرم‌افزاری production را آماده می‌کند؛ دیتابیس، فایل `.env`، APP_KEY، مهاجرت‌ها، SSL و تنظیم Document Root را ایجاد یا تغییر نمی‌دهد. تا زمان تأیید نسخه MySQL و Composer build موفق، هیچ مهاجرت production یا اتصال اپ به API انجام نشود.
+
 ## وضعیت فعلی
 
-بک‌اند Laravel 13 و تست‌های CI در مخزن آماده‌اند، اما هاست cPanel هنوز از نظر PHP 8.3، Composer، MySQL، SSH، cron و جداسازی Document Root تأیید نشده است. بنابراین استقرار واقعی تا عبور از دروازه‌های فنی بالا انجام نمی‌شود.
+بک‌اند Laravel 13 و تست‌های CI در مخزن آماده‌اند. پشتیبانی هاست نبود SSH/Terminal را تأیید کرده، اما مسیر PHP CLI 8.3، فعال بودن افزونه‌ها، امکان Cron Job و Document Root سفارشی را اعلام کرده است. برای جبران نبود Composer روی هاست، workflow ساخت بسته production به مخزن اضافه شده است؛ اجرای موفق آن و تأیید نسخه MySQL هنوز لازم است. هیچ نصب عملیاتی یا مهاجرت دیتابیس production انجام نشده است.
