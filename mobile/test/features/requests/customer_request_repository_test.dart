@@ -43,7 +43,18 @@ void main() {
       accessToken: 'customer-token',
       httpClient: MockClient((request) async => http.Response(jsonEncode({
         'data': [
-          {'id': 'public-id-2', 'tracking_code': 'KG-XYZ', 'status': 'reviewing'}
+          {
+            'id': 'public-id-2',
+            'tracking_code': 'KG-XYZ',
+            'status': 'reviewing',
+            'events': [
+              {
+                'status': 'reviewing',
+                'public_message': 'پرونده شما توسط کارشناس بررسی می‌شود.',
+                'created_at': '2026-11-16T05:30:00Z'
+              }
+            ]
+          }
         ],
         'meta': {'current_page': 1}
       }), 200)),
@@ -53,6 +64,11 @@ void main() {
 
     expect(results.single.trackingCode, 'KG-XYZ');
     expect(results.single.status, 'reviewing');
+    expect(results.single.events.single.status, 'reviewing');
+    expect(
+      results.single.events.single.publicMessage,
+      'پرونده شما توسط کارشناس بررسی می‌شود.',
+    );
     api.close();
   });
 }
