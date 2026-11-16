@@ -164,6 +164,17 @@ class CustomerApiTest extends TestCase
             ->assertJsonMissing(['slug' => 'inactive-service']);
     }
 
+    public function test_api_authentication_and_not_found_errors_follow_the_contract(): void
+    {
+        $this->getJson('/api/v1/me/service-requests')
+            ->assertUnauthorized()
+            ->assertJsonPath('error.code', 'UNAUTHENTICATED');
+
+        $this->getJson('/api/v1/services/not-a-real-service')
+            ->assertNotFound()
+            ->assertJsonPath('error.code', 'NOT_FOUND');
+    }
+
     private function makeService(): Service
     {
         $category = ServiceCategory::create([
