@@ -14,6 +14,9 @@ class ServiceRequestResource extends JsonResource
             'tracking_code' => $this->tracking_code,
             'status' => $this->status,
             'customer_note' => $this->customer_note,
+            'service' => $this->whenLoaded('service', fn () => [
+                'title' => $this->service?->title,
+            ]),
             'created_at' => $this->created_at?->toISOString(),
             'updated_at' => $this->updated_at?->toISOString(),
             'events' => $this->whenLoaded('events', fn () => $this->events
