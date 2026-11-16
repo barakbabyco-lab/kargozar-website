@@ -1,11 +1,11 @@
 <?php
 
-namespace App\\Providers;
+namespace App\Providers;
 
-use App\\Services\\DisabledOtpDelivery;
-use App\\Services\\IppanelOtpDelivery;
-use App\\Services\\OtpDelivery;
-use Illuminate\\Support\\ServiceProvider;
+use App\Services\DisabledOtpDelivery;
+use App\Services\IppanelOtpDelivery;
+use App\Services\OtpDelivery;
+use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
