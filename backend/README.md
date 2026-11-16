@@ -40,6 +40,7 @@ The API base path is `/api/v1`.
 - Email/password staff login
 - Role-protected request queue and detail
 - Request assignment
+- Staff-managed service category and service catalog CRUD with soft deactivation
 - Status changes, public updates and internal notes
 - Audit logging for staff login, detail access, assignment and events
 
