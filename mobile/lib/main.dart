@@ -553,6 +553,7 @@ class ProfileOption extends StatelessWidget {
 }
 
 void _showService(BuildContext context, ServiceItem service) {
+  final pageContext = context;
   showModalBottomSheet<void>(
     context: context,
     isScrollControlled: true,
@@ -583,20 +584,150 @@ void _showService(BuildContext context, ServiceItem service) {
             child: FilledButton(
               onPressed: () {
                 Navigator.pop(context);
-                _showInfo(context);
+                _showRequestForm(pageContext, service);
               },
               child: const Text('درخواست این خدمت'),
             ),
           ),
           const SizedBox(height: 8),
           const Text(
-            'ثبت نهایی درخواست در نسخه بعدی به سامانه مرکزی متصل می‌شود.',
+            'این فرم صرفاً پیش‌نمایش است و اطلاعات را به سرور ارسال نمی‌کند.',
             textAlign: TextAlign.center,
             style: TextStyle(color: _muted, fontSize: 10)),
         ],
       ),
     ),
   );
+}
+
+
+void _showRequestForm(BuildContext context, ServiceItem service) {
+  showModalBottomSheet<void>(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.white,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+    builder: (sheetContext) => _RequestForm(service: service),
+  );
+}
+
+class _RequestForm extends StatefulWidget {
+  const _RequestForm({required this.service});
+  final ServiceItem service;
+
+  @override
+  State<_RequestForm> createState() => _RequestFormState();
+}
+
+class _RequestFormState extends State<_RequestForm> {
+  final _formKey = GlobalKey<FormState>();
+  final _name = TextEditingController();
+  final _mobile = TextEditingController();
+  final _details = TextEditingController();
+
+  @override
+  void dispose() {
+    _name.dispose();
+    _mobile.dispose();
+    _details.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.fromLTRB(
+        22, 24, 22, MediaQuery.of(context).viewInsets.bottom + 24),
+      child: SingleChildScrollView(
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('درخواست ' + widget.service.title,
+                style: const TextStyle(
+                  color: _ink, fontWeight: FontWeight.w900, fontSize: 19)),
+              const SizedBox(height: 8),
+              const Text(
+                'برای آشنایی با روند ثبت درخواست، فرم نمونه را تکمیل کن.',
+                style: TextStyle(color: _muted, height: 1.8, fontSize: 12)),
+              const SizedBox(height: 18),
+              TextFormField(
+                controller: _name,
+                decoration: const InputDecoration(labelText: 'نام و نام خانوادگی'),
+                validator: (v) => (v == null || v.trim().isEmpty)
+                    ? 'نام را وارد کن' : null,
+              ),
+              const SizedBox(height: 12),
+              TextFormField(
+                controller: _mobile,
+                keyboardType: TextInputType.phone,
+                decoration: const InputDecoration(labelText: 'شماره موبایل'),
+                validator: (v) => (v == null || !RegExp(r'^09\\d{9}
+  showDialog<void>(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: const Text('نسخه آزمایشی'),
+      content: const Text(
+        'این بخش در حال آماده‌سازی است. در نسخه عملیاتی، درخواست‌ها به سامانه کارگزار ارسال و قابل پیگیری خواهند بود.'),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('متوجه شدم'),
+        ),
+      ],
+    ),
+  );
+}
+).hasMatch(v.trim()))
+                    ? 'شماره موبایل معتبر وارد کن' : null,
+              ),
+              const SizedBox(height: 12),
+              TextFormField(
+                controller: _details,
+                minLines: 2,
+                maxLines: 4,
+                decoration: const InputDecoration(
+                  labelText: 'توضیحات درخواست (اختیاری)'),
+              ),
+              const SizedBox(height: 18),
+              SizedBox(
+                width: double.infinity,
+                child: FilledButton(
+                  onPressed: () {
+                    if (!_formKey.currentState!.validate()) return;
+                    Navigator.pop(context);
+                    showDialog<void>(
+                      context: context,
+                      builder: (dialogContext) => AlertDialog(
+                        title: const Text('پیش‌نمایش تکمیل فرم'),
+                        content: const Text(
+                          'فرم آزمایشی تکمیل شد؛ اما هنوز به سرور متصل نیست و هیچ اطلاعاتی ذخیره یا ارسال نشده است. در نسخه عملیاتی، این مرحله به ثبت درخواست و صدور کد پیگیری متصل می‌شود.'),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(dialogContext),
+                            child: const Text('متوجه شدم'),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                  child: const Text('بررسی فرم آزمایشی'),
+                ),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'اطلاعات واقعی یا مدارک هویتی وارد نکن؛ این فرم هنوز آزمایشی است.',
+                textAlign: TextAlign.center,
+                style: TextStyle(color: _muted, fontSize: 10)),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 void _showInfo(BuildContext context) {
