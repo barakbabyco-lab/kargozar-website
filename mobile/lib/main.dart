@@ -608,13 +608,15 @@ void _showRequestForm(BuildContext context, ServiceItem service) {
     backgroundColor: Colors.white,
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
-    builder: (sheetContext) => _RequestForm(service: service),
+    builder: (sheetContext) => _RequestForm(
+      service: service, hostContext: context),
   );
 }
 
 class _RequestForm extends StatefulWidget {
-  const _RequestForm({required this.service});
+  const _RequestForm({required this.service, required this.hostContext});
   final ServiceItem service;
+  final BuildContext hostContext;
 
   @override
   State<_RequestForm> createState() => _RequestFormState();
@@ -700,7 +702,7 @@ class _RequestFormState extends State<_RequestForm> {
                     if (!_formKey.currentState!.validate()) return;
                     Navigator.pop(context);
                     showDialog<void>(
-                      context: context,
+                      context: widget.hostContext,
                       builder: (dialogContext) => AlertDialog(
                         title: const Text('پیش‌نمایش تکمیل فرم'),
                         content: const Text(
