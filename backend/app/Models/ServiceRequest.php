@@ -12,6 +12,7 @@ class ServiceRequest extends Model
         'public_id',
         'customer_id',
         'service_id',
+        'assigned_staff_id',
         'tracking_code',
         'status',
         'customer_note',
@@ -32,6 +33,11 @@ class ServiceRequest extends Model
     public function service(): BelongsTo
     {
         return $this->belongsTo(Service::class);
+    }
+
+    public function assignedStaff(): BelongsTo
+    {
+        return $this->belongsTo(StaffUser::class, 'assigned_staff_id');
     }
 
     public function events(): HasMany
