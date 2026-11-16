@@ -7,6 +7,7 @@ use App\Models\RequestEvent;
 use App\Models\Service;
 use App\Models\ServiceCategory;
 use App\Models\ServiceRequest;
+use App\Models\StaffUser;
 use App\Services\OtpDelivery;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
