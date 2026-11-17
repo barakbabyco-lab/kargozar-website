@@ -54,7 +54,7 @@ Document Root وب‌سرور باید به `/var/www/kargozar-staging/current/p
 1. کاربر اختصاصی deploy ساخته شود؛ این کاربر نباید دسترسی root یا sudo عمومی داشته باشد.
 2. یک کلید SSH اختصاصی Ed25519 برای GitHub Actions ساخته شود. کلید خصوصی فقط در GitHub Actions Secret ذخیره می‌شود؛ کلید عمومی در `authorized_keys` کاربر deploy قرار می‌گیرد.
 3. کلید میزبان SSH سرور از کنسول معتبر ارائه‌دهنده دریافت و fingerprint آن مستقلاً بررسی شود. از اعتماد کورکورانه به خروجی `ssh-keyscan` استفاده نشود.
-4. کلید عمومی میزبان در Secret با نام `DEPLOY_KNOWN_HOSTS` ثبت شود؛ کلید خصوصی deploy در `DEPLOY_SSH_KEY`.
+4. کلید عمومی میزبان در Secret با نام `DEPLOY_KNOWN_HOSTS` ثبت شود؛ کلید خصوصی deploy در `DEPLOY_SSH_KEY`. مقدار known_hosts باید برای همان میزبان و پورت SSH باشد (برای پورت غیر از ۲۲، قالب `[host]:port`). workflow تطبیق این ورودی را کنترل می‌کند و میزبان ناشناخته را نمی‌پذیرد.
 5. مسیر staging و فایل محیطی آن آماده شود. فایل `.env` باید `APP_ENV=staging` داشته باشد و فقط به دیتابیس آزمایشی اشاره کند.
 6. Document Root به پوشه `current/public` متصل شود.
 
