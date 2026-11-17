@@ -77,7 +77,7 @@ jobs:
           echo "deploy_path=$DEPLOY_PATH" >> "$GITHUB_OUTPUT"
           echo "ssh_config=$RUNNER_TEMP/kargozar-ssh/config" >> "$GITHUB_OUTPUT"
 
-      - name: Run selected read-only task
+      - name: Run selected restricted task
         shell: bash
         env:
           SSH_CONFIG: ${{ steps.ssh.outputs.ssh_config }}
