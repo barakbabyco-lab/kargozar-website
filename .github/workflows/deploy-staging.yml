@@ -81,7 +81,89 @@ jobs:
           DEPLOY_PATH: ${{ steps.ssh.outputs.deploy_path }}
         run: |
           set -euo pipefail
-          ssh -F "$SSH_CONFIG" kargozar-staging "set -eu; test -d '$DEPLOY_PATH/shared'; test -f '$DEPLOY_PATH/shared/.env'; grep -Eq '^APP_ENV=(staging|\\\"staging\\\")$' '$DEPLOY_PATH/shared/.env'"
+          ssh -F "$SSH_CONFIG" kargozar-staging "set -eu; test -d '$DEPLOY_PATH/shared'; test -f '$DEPLOY_PATH/shared/.env'; grep -Eq '^APP_ENV=staging '$DEPLOY_PATH/shared/.env'"
+
+      - name: Create release directory
+        shell: bash
+        env:
+          SSH_CONFIG: ${{ steps.ssh.outputs.ssh_config }}
+          DEPLOY_PATH: ${{ steps.ssh.outputs.deploy_path }}
+          RELEASE_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          ssh -F "$SSH_CONFIG" kargozar-staging "mkdir -p '$DEPLOY_PATH/releases/$RELEASE_SHA'"
+
+      - name: Upload backend source
+        shell: bash
+        env:
+          SSH_CONFIG: ${{ steps.ssh.outputs.ssh_config }}
+          DEPLOY_PATH: ${{ steps.ssh.outputs.deploy_path }}
+          RELEASE_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          rsync -az --no-owner --no-group \
+            --exclude='.env' \
+            --exclude='storage/' \
+            --exclude='vendor/' \
+            --exclude='bootstrap/cache/' \
+            --exclude='database/*.sqlite' \
+            -e "ssh -F $SSH_CONFIG" \
+            backend/ "kargozar-staging:$DEPLOY_PATH/releases/$RELEASE_SHA/"
+
+      - name: Install dependencies and activate staging release
+        id: activate
+        shell: bash
+        env:
+          SSH_CONFIG: ${{ steps.ssh.outputs.ssh_config }}
+          DEPLOY_PATH: ${{ steps.ssh.outputs.deploy_path }}
+          RELEASE_SHA: ${{ github.sha }}
+          RUN_MIGRATIONS: ${{ inputs.run_migrations }}
+        run: |
+          set -euo pipefail
+          PREVIOUS_TARGET="$(ssh -F "$SSH_CONFIG" kargozar-staging "readlink '$DEPLOY_PATH/current' || true")"
+          ssh -F "$SSH_CONFIG" kargozar-staging "bash -s -- '$DEPLOY_PATH' '$RELEASE_SHA' '$RUN_MIGRATIONS'" <<'REMOTE'
+          set -euo pipefail
+          deploy_root="$1"
+          release_sha="$2"
+          run_migrations="$3"
+          release="$deploy_root/releases/$release_sha"
+
+          test -f "$deploy_root/shared/.env"
+          grep -Eq '^APP_ENV=(staging|"staging")$' "$deploy_root/shared/.env"
+
+          ln -sfn "$deploy_root/shared/.env" "$release/.env"
+          mkdir -p "$deploy_root/shared/storage" "$release/bootstrap/cache"
+          rm -rf "$release/storage"
+          ln -s "$deploy_root/shared/storage" "$release/storage"
+          chmod -R ug+rwX "$deploy_root/shared/storage" "$release/bootstrap/cache"
+
+          cd "$release"
+          composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
+
+          if [[ "$run_migrations" == "true" ]]; then
+            php artisan migrate --force
+          fi
+
+          previous_target="$(readlink "$deploy_root/current" || true)"
+          ln -sfn "$release" "$deploy_root/current.next"
+          mv -Tf "$deploy_root/current.next" "$deploy_root/current"
+          printf 'Activated release %s\n' "$release_sha"
+          printf '%s\n' "$previous_target" > "$deploy_root/shared/.previous-release"
+          REMOTE
+          echo "previous_target=$PREVIOUS_TARGET" >> "$GITHUB_OUTPUT"
+
+      - name: Optional staging health check
+        shell: bash
+        env:
+          HEALTHCHECK_URL: ${{ secrets.STAGING_HEALTHCHECK_URL }}
+        run: |
+          set -euo pipefail
+          if [[ -z "${HEALTHCHECK_URL:-}" ]]; then
+            echo "No STAGING_HEALTHCHECK_URL configured; deployment completed without an external HTTP health check."
+            exit 0
+          fi
+          curl --fail --silent --show-error --retry 5 --retry-delay 3 --retry-connrefused "$HEALTHCHECK_URL"
+ '$DEPLOY_PATH/shared/.env'"
 
       - name: Create release directory
         shell: bash
