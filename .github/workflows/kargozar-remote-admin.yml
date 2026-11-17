@@ -4,11 +4,12 @@ on:
   workflow_dispatch:
     inputs:
       task:
-        description: "Choose a restricted server task"
+        description: "Choose a restricted read-only server task"
         required: true
         type: choice
         options:
           - health
+          - system
           - routes
           - migrations
           - storage
@@ -85,6 +86,9 @@ jobs:
           case "$TASK" in
             health)
               REMOTE_COMMAND='cd "$1/current" && php artisan about --only=environment'
+              ;;
+            system)
+              REMOTE_COMMAND='printf "HOST: "; hostname; printf "\\nUPTIME: "; uptime; printf "\\nMEMORY:\\n"; free -h; printf "\\nDISK:\\n"; df -h "$1"; printf "\\nSERVICES:\\n"; for svc in nginx mysql php8.3-fpm; do state="$(systemctl is-active "$svc" 2>/dev/null || true)"; printf "%-12s %s\\n" "$svc" "${state:-unknown}"; done; printf "\\nCURRENT RELEASE: "; readlink "$1/current"'
               ;;
             routes)
               REMOTE_COMMAND='cd "$1/current" && php artisan route:list --path=api'
