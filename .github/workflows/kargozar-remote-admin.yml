@@ -1,0 +1,103 @@
+name: Kargozar remote admin
+
+on:
+  workflow_dispatch:
+    inputs:
+      task:
+        description: "Choose a restricted server task"
+        required: true
+        type: choice
+        options:
+          - health
+          - routes
+          - migrations
+          - storage
+        default: health
+
+permissions:
+  contents: read
+
+concurrency:
+  group: kargozar-staging-admin
+  cancel-in-progress: false
+
+jobs:
+  remote-admin:
+    name: Run approved read-only server task
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Validate SSH configuration
+        id: ssh
+        shell: bash
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_PORT: ${{ secrets.DEPLOY_PORT }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          DEPLOY_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+          DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+        run: |
+          set -euo pipefail
+          for name in DEPLOY_HOST DEPLOY_USER DEPLOY_SSH_KEY DEPLOY_KNOWN_HOSTS DEPLOY_PATH; do
+            if [[ -z "${!name:-}" ]]; then
+              echo "::error::Missing required secret: $name"
+              exit 1
+            fi
+          done
+          [[ "$DEPLOY_HOST" =~ ^[A-Za-z0-9][A-Za-z0-9.-]*$ ]] || { echo "::error::Invalid host"; exit 1; }
+          [[ "$DEPLOY_USER" =~ ^[a-z_][a-z0-9_-]*[$]?$ ]] || { echo "::error::Invalid user"; exit 1; }
+          DEPLOY_PORT="${DEPLOY_PORT:-22}"
+          [[ "$DEPLOY_PORT" =~ ^[0-9]{1,5}$ ]] && (( DEPLOY_PORT >= 1 && DEPLOY_PORT <= 65535 )) || { echo "::error::Invalid port"; exit 1; }
+          [[ "$DEPLOY_PATH" =~ ^/[A-Za-z0-9._/-]+$ ]] && [[ "$DEPLOY_PATH" != "/" ]] && [[ "$DEPLOY_PATH" != *"/../"* ]] && [[ "$DEPLOY_PATH" != */.. ]] || { echo "::error::Invalid deploy path"; exit 1; }
+
+          install -d -m 700 "$RUNNER_TEMP/kargozar-ssh"
+          printf '%s\n' "$DEPLOY_SSH_KEY" > "$RUNNER_TEMP/kargozar-ssh/id_ed25519"
+          printf '%s\n' "$DEPLOY_KNOWN_HOSTS" > "$RUNNER_TEMP/kargozar-ssh/known_hosts"
+          chmod 600 "$RUNNER_TEMP/kargozar-ssh/"*
+          target="$DEPLOY_HOST"
+          if [[ "$DEPLOY_PORT" != "22" ]]; then target="[$DEPLOY_HOST]:$DEPLOY_PORT"; fi
+          ssh-keygen -F "$target" -f "$RUNNER_TEMP/kargozar-ssh/known_hosts" >/dev/null || { echo "::error::Pinned host key mismatch"; exit 1; }
+          cat > "$RUNNER_TEMP/kargozar-ssh/config" <<EOF
+          Host kargozar-staging
+            HostName $DEPLOY_HOST
+            Port $DEPLOY_PORT
+            User $DEPLOY_USER
+            IdentityFile $RUNNER_TEMP/kargozar-ssh/id_ed25519
+            IdentitiesOnly yes
+            BatchMode yes
+            StrictHostKeyChecking yes
+            UserKnownHostsFile $RUNNER_TEMP/kargozar-ssh/known_hosts
+            ConnectTimeout 15
+          EOF
+          chmod 600 "$RUNNER_TEMP/kargozar-ssh/config"
+          echo "deploy_path=$DEPLOY_PATH" >> "$GITHUB_OUTPUT"
+          echo "ssh_config=$RUNNER_TEMP/kargozar-ssh/config" >> "$GITHUB_OUTPUT"
+
+      - name: Run selected read-only task
+        shell: bash
+        env:
+          SSH_CONFIG: ${{ steps.ssh.outputs.ssh_config }}
+          DEPLOY_PATH: ${{ steps.ssh.outputs.deploy_path }}
+          TASK: ${{ inputs.task }}
+        run: |
+          set -euo pipefail
+          case "$TASK" in
+            health)
+              REMOTE_COMMAND='cd "$1/current" && php artisan about --only=environment'
+              ;;
+            routes)
+              REMOTE_COMMAND='cd "$1/current" && php artisan route:list --path=api'
+              ;;
+            migrations)
+              REMOTE_COMMAND='cd "$1/current" && php artisan migrate:status'
+              ;;
+            storage)
+              REMOTE_COMMAND='printf "current=%s\\n" "$(readlink "$1/current")"; test -f "$1/current/artisan"; test -d "$1/current/vendor"; test -d "$1/shared/storage"; stat -c "%U:%G %a %n" "$1/shared/.env" "$1/shared/storage"'
+              ;;
+            *)
+              echo "::error::Unsupported task"
+              exit 1
+              ;;
+          esac
+          ssh -F "$SSH_CONFIG" kargozar-staging "bash -lc $(printf '%q' "$REMOTE_COMMAND") -- $(printf '%q' "$DEPLOY_PATH")"
