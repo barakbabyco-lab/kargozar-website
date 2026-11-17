@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       task:
-        description: "Choose a restricted read-only server task"
+        description: "Choose a restricted server diagnostics or maintenance task"
         required: true
         type: choice
         options:
@@ -13,6 +13,7 @@ on:
           - routes
           - migrations
           - storage
+          - cache-clear
         default: health
 
 permissions:
@@ -24,7 +25,7 @@ concurrency:
 
 jobs:
   remote-admin:
-    name: Run approved read-only server task
+    name: Run approved restricted server task
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -98,6 +99,9 @@ jobs:
               ;;
             storage)
               REMOTE_COMMAND='printf "current=%s\\n" "$(readlink "$1/current")"; test -f "$1/current/artisan"; test -d "$1/current/vendor"; test -d "$1/shared/storage"; stat -c "%U:%G %a %n" "$1/shared/.env" "$1/shared/storage"'
+              ;;
+            cache-clear)
+              REMOTE_COMMAND='cd "$1/current" && php artisan optimize:clear'
               ;;
             *)
               echo "::error::Unsupported task"
