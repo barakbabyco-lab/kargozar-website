@@ -14,6 +14,7 @@ on:
           - migrations
           - storage
           - cache-clear
+          - rollback
         default: health
 
 permissions:
@@ -102,6 +103,33 @@ jobs:
               ;;
             cache-clear)
               REMOTE_COMMAND='cd "$1/current" && php artisan optimize:clear'
+              ;;
+            rollback)
+              REMOTE_COMMAND='set -euo pipefail
+              deploy_root="$1"
+              previous_file="$deploy_root/shared/.previous-release"
+              test -f "$previous_file" || { echo "No previous release record"; exit 1; }
+              target="$(cat "$previous_file")"
+              case "$target" in "$deploy_root"/releases/*) ;; *) echo "Previous release path rejected"; exit 1 ;; esac
+              target_real="$(realpath -e "$target")"
+              releases_real="$(realpath -e "$deploy_root/releases")"
+              case "$target_real" in "$releases_real"/*) ;; *) echo "Previous release is outside releases directory"; exit 1 ;; esac
+              test -f "$target_real/artisan" && test -d "$target_real/vendor" || { echo "Previous release is incomplete"; exit 1; }
+              current_target="$(readlink "$deploy_root/current")"
+              case "$current_target" in "$deploy_root"/releases/*) ;; *) echo "Current release path rejected"; exit 1 ;; esac
+              current_real="$(realpath -e "$current_target")"
+              original_previous="$(cat "$previous_file")"
+              ln -sfn "$target_real" "$deploy_root/current.next"
+              mv -Tf "$deploy_root/current.next" "$deploy_root/current"
+              printf "%s\\n" "$current_real" > "$previous_file"
+              if ! (cd "$deploy_root/current" && php artisan about --only=environment); then
+                ln -sfn "$current_real" "$deploy_root/current.rollback"
+                mv -Tf "$deploy_root/current.rollback" "$deploy_root/current"
+                printf "%s\\n" "$original_previous" > "$previous_file"
+                echo "Rollback health check failed; restored original release"
+                exit 1
+              fi
+              echo "Rollback completed and application health check passed"'
               ;;
             *)
               echo "::error::Unsupported task"
