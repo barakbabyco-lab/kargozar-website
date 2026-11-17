@@ -1,0 +1,165 @@
+name: Deploy Kargozar staging
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_migrations:
+        description: "Run Laravel migrations on the staging database"
+        required: true
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: kargozar-staging-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy-staging:
+    name: Deploy backend to staging VPS
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Validate deployment configuration and prepare SSH
+        id: ssh
+        shell: bash
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_PORT: ${{ secrets.DEPLOY_PORT }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+        run: |
+          set -euo pipefail
+          for name in DEPLOY_HOST DEPLOY_USER DEPLOY_SSH_KEY DEPLOY_KNOWN_HOSTS DEPLOY_PATH; do
+            if [[ -z "${!name:-}" ]]; then
+              echo "::error::Missing GitHub Actions secret: $name"
+              exit 1
+            fi
+          done
+          DEPLOY_PORT="${DEPLOY_PORT:-22}"
+          if ! [[ "$DEPLOY_PORT" =~ ^[0-9]{1,5}$ ]] || (( DEPLOY_PORT < 1 || DEPLOY_PORT > 65535 )); then
+            echo "::error::DEPLOY_PORT must be a valid TCP port."
+            exit 1
+          fi
+          if ! [[ "$DEPLOY_PATH" =~ ^/[A-Za-z0-9._/-]+$ ]] || [[ "$DEPLOY_PATH" == "/" ]] || [[ "$DEPLOY_PATH" == *"/../"* ]] || [[ "$DEPLOY_PATH" == */.. ]]; then
+            echo "::error::DEPLOY_PATH must be a safe absolute path without spaces or parent-directory segments."
+            exit 1
+          fi
+
+          install -d -m 700 "$RUNNER_TEMP/kargozar-ssh"
+          printf '%s\n' "$DEPLOY_SSH_KEY" > "$RUNNER_TEMP/kargozar-ssh/id_ed25519"
+          printf '%s\n' "$DEPLOY_KNOWN_HOSTS" > "$RUNNER_TEMP/kargozar-ssh/known_hosts"
+          chmod 600 "$RUNNER_TEMP/kargozar-ssh/id_ed25519" "$RUNNER_TEMP/kargozar-ssh/known_hosts"
+
+          cat > "$RUNNER_TEMP/kargozar-ssh/config" <<EOF
+          Host kargozar-staging
+            HostName $DEPLOY_HOST
+            Port $DEPLOY_PORT
+            User $DEPLOY_USER
+            IdentityFile $RUNNER_TEMP/kargozar-ssh/id_ed25519
+            IdentitiesOnly yes
+            BatchMode yes
+            StrictHostKeyChecking yes
+            UserKnownHostsFile $RUNNER_TEMP/kargozar-ssh/known_hosts
+            ConnectTimeout 15
+          EOF
+          chmod 600 "$RUNNER_TEMP/kargozar-ssh/config"
+          echo "deploy_path=$DEPLOY_PATH" >> "$GITHUB_OUTPUT"
+          echo "ssh_config=$RUNNER_TEMP/kargozar-ssh/config" >> "$GITHUB_OUTPUT"
+
+      - name: Verify staging target before deployment
+        shell: bash
+        env:
+          SSH_CONFIG: ${{ steps.ssh.outputs.ssh_config }}
+          DEPLOY_PATH: ${{ steps.ssh.outputs.deploy_path }}
+        run: |
+          set -euo pipefail
+          ssh -F "$SSH_CONFIG" kargozar-staging "set -eu; test -d '$DEPLOY_PATH/shared'; test -f '$DEPLOY_PATH/shared/.env'; grep -Eq '^APP_ENV=(staging|\\\"staging\\\")$' '$DEPLOY_PATH/shared/.env'"
+
+      - name: Create release directory
+        shell: bash
+        env:
+          SSH_CONFIG: ${{ steps.ssh.outputs.ssh_config }}
+          DEPLOY_PATH: ${{ steps.ssh.outputs.deploy_path }}
+          RELEASE_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          ssh -F "$SSH_CONFIG" kargozar-staging "mkdir -p '$DEPLOY_PATH/releases/$RELEASE_SHA'"
+
+      - name: Upload backend source
+        shell: bash
+        env:
+          SSH_CONFIG: ${{ steps.ssh.outputs.ssh_config }}
+          DEPLOY_PATH: ${{ steps.ssh.outputs.deploy_path }}
+          RELEASE_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          rsync -az --no-owner --no-group \
+            --exclude='.env' \
+            --exclude='storage/' \
+            --exclude='vendor/' \
+            --exclude='bootstrap/cache/' \
+            --exclude='database/*.sqlite' \
+            -e "ssh -F $SSH_CONFIG" \
+            backend/ "kargozar-staging:$DEPLOY_PATH/releases/$RELEASE_SHA/"
+
+      - name: Install dependencies and activate staging release
+        id: activate
+        shell: bash
+        env:
+          SSH_CONFIG: ${{ steps.ssh.outputs.ssh_config }}
+          DEPLOY_PATH: ${{ steps.ssh.outputs.deploy_path }}
+          RELEASE_SHA: ${{ github.sha }}
+          RUN_MIGRATIONS: ${{ inputs.run_migrations }}
+        run: |
+          set -euo pipefail
+          PREVIOUS_TARGET="$(ssh -F "$SSH_CONFIG" kargozar-staging "readlink '$DEPLOY_PATH/current' || true")"
+          ssh -F "$SSH_CONFIG" kargozar-staging "bash -s -- '$DEPLOY_PATH' '$RELEASE_SHA' '$RUN_MIGRATIONS'" <<'REMOTE'
+          set -euo pipefail
+          deploy_root="$1"
+          release_sha="$2"
+          run_migrations="$3"
+          release="$deploy_root/releases/$release_sha"
+
+          test -f "$deploy_root/shared/.env"
+          grep -Eq '^APP_ENV=(staging|"staging")$' "$deploy_root/shared/.env"
+
+          ln -sfn "$deploy_root/shared/.env" "$release/.env"
+          mkdir -p "$deploy_root/shared/storage" "$release/bootstrap/cache"
+          rm -rf "$release/storage"
+          ln -s "$deploy_root/shared/storage" "$release/storage"
+          chmod -R ug+rwX "$deploy_root/shared/storage" "$release/bootstrap/cache"
+
+          cd "$release"
+          composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
+
+          if [[ "$run_migrations" == "true" ]]; then
+            php artisan migrate --force
+          fi
+
+          previous_target="$(readlink "$deploy_root/current" || true)"
+          ln -sfn "$release" "$deploy_root/current.next"
+          mv -Tf "$deploy_root/current.next" "$deploy_root/current"
+          printf 'Activated release %s\n' "$release_sha"
+          printf '%s\n' "$previous_target" > "$deploy_root/shared/.previous-release"
+          REMOTE
+          echo "previous_target=$PREVIOUS_TARGET" >> "$GITHUB_OUTPUT"
+
+      - name: Optional staging health check
+        shell: bash
+        env:
+          HEALTHCHECK_URL: ${{ secrets.STAGING_HEALTHCHECK_URL }}
+        run: |
+          set -euo pipefail
+          if [[ -z "${HEALTHCHECK_URL:-}" ]]; then
+            echo "No STAGING_HEALTHCHECK_URL configured; deployment completed without an external HTTP health check."
+            exit 0
+          fi
+          curl --fail --silent --show-error --retry 5 --retry-delay 3 --retry-connrefused "$HEALTHCHECK_URL"
