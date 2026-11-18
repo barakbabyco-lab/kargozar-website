@@ -9,15 +9,60 @@ import 'package:kargozar_mobile/main.dart';
 
 void main() {
   testWidgets('starts the API-backed Kargozar customer app', (tester) async {
+    String? requestedCategory;
     final api = KargozarApiClient(
       baseUrl: 'https://api.example.test/api/v1',
       tokenStore: _MemoryTokenStore(),
       httpClient: MockClient((request) async {
-        return http.Response(
-          jsonEncode({'data': []}),
-          200,
-          headers: {'content-type': 'application/json; charset=utf-8'},
-        );
+        if (request.url.path.endsWith('/service-categories')) {
+          return _jsonResponse({
+            'data': [
+              {
+                'id': 4,
+                'parent_id': null,
+                'name': 'مجوزها',
+                'slug': 'licenses',
+                'has_children': true,
+                'is_active': true,
+              },
+              {
+                'id': 5,
+                'parent_id': 4,
+                'name': 'مشاغل خانگی',
+                'slug': 'home-businesses',
+                'has_children': true,
+                'is_active': true,
+              },
+              {
+                'id': 6,
+                'parent_id': 5,
+                'name': 'تولیدی و صنعتی',
+                'slug': 'home-production',
+                'has_children': false,
+                'is_active': true,
+              },
+            ],
+          });
+        }
+
+        requestedCategory = request.url.queryParameters['category'];
+        return _jsonResponse({
+          'data': requestedCategory == 'home-production'
+              ? [
+                  {
+                    'id': 12,
+                    'title': 'مجوز تولیدی خانگی',
+                    'slug': 'home-production-license',
+                    'description': 'خدمت آزمایشی زیرشاخه',
+                    'requirements': [],
+                    'category': {
+                      'name': 'تولیدی و صنعتی',
+                      'slug': 'home-production',
+                    },
+                  },
+                ]
+              : [],
+        });
       }),
     );
 
@@ -32,9 +77,24 @@ void main() {
 
     expect(find.text('همه خدمات'), findsOneWidget);
     expect(find.text('دسته‌بندی خدمات'), findsOneWidget);
-    expect(find.text('نمایش همه خدمات'), findsOneWidget);
+
+    await tester.tap(find.text('مجوزها'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('مشاغل خانگی'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('تولیدی و صنعتی'));
+    await tester.pumpAndSettle();
+
+    expect(requestedCategory, 'home-production');
+    expect(find.text('مجوز تولیدی خانگی'), findsOneWidget);
   });
 }
+
+http.Response _jsonResponse(Map<String, dynamic> body) => http.Response(
+      jsonEncode(body),
+      200,
+      headers: {'content-type': 'application/json; charset=utf-8'},
+    );
 
 class _MemoryTokenStore implements AccessTokenStore {
   String? token;
