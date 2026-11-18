@@ -1,11 +1,11 @@
 <?php
 
-namespace App\\Http\\Controllers\\Api\\V1;
+namespace App\Http\Controllers\Api\V1;
 
-use App\\Http\\Controllers\\Controller;
-use App\\Http\\Resources\\ServiceCategoryResource;
-use App\\Models\\ServiceCategory;
-use Illuminate\\Http\\Resources\\Json\\AnonymousResourceCollection;
+use App\Http\Controllers\Controller;
+use App\Http\Resources\ServiceCategoryResource;
+use App\Models\ServiceCategory;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class ServiceCategoryController extends Controller
 {
