@@ -166,6 +166,39 @@ class CustomerApiTest extends TestCase
             ->assertJsonMissing(['slug' => 'inactive-service']);
     }
 
+    public function test_filtering_public_catalog_by_parent_category_includes_descendant_services(): void
+    {
+        $root = ServiceCategory::create([
+            'name' => 'مجوزهای کسب‌وکار',
+            'slug' => 'parent-permits',
+            'is_active' => true,
+        ]);
+        $child = ServiceCategory::create([
+            'parent_id' => $root->id,
+            'name' => 'مشاغل خانگی',
+            'slug' => 'parent-home-businesses',
+            'is_active' => true,
+        ]);
+        $leaf = ServiceCategory::create([
+            'parent_id' => $child->id,
+            'name' => 'تولیدی و صنعتی',
+            'slug' => 'parent-home-production',
+            'is_active' => true,
+        ]);
+
+        Service::create([
+            'category_id' => $leaf->id,
+            'title' => 'مجوز تولیدی خانگی',
+            'slug' => 'parent-filter-descendant-service',
+            'description' => 'خدمت زیرمجموعه دسته اصلی',
+            'is_active' => true,
+        ]);
+
+        $this->getJson('/api/v1/services?category=parent-permits')
+            ->assertOk()
+            ->assertJsonPath('data.0.slug', 'parent-filter-descendant-service');
+    }
+
     public function test_public_categories_include_parent_ids_for_multilevel_navigation(): void
     {
         $root = ServiceCategory::create([
