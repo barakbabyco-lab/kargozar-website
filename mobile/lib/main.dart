@@ -322,8 +322,12 @@ class _ServicesPageState extends State<ServicesPage> {
     _api = KargozarApiClient();
     _catalog = ServiceCatalogRepository(_api);
     _apiConfigured = const String.fromEnvironment('API_BASE_URL').trim().isNotEmpty;
-    _remoteServices = _catalog.getServices();
-    _remoteCategories = _catalog.getCategoryTree();
+    _remoteServices = _apiConfigured
+        ? _catalog.getServices()
+        : Future.value(const <CatalogService>[]);
+    _remoteCategories = _apiConfigured
+        ? _catalog.getCategoryTree()
+        : Future.value(const <ServiceCategory>[]);
   }
 
   @override
