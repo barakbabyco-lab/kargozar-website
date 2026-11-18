@@ -24,7 +24,7 @@ class _KargozarAppState extends State<KargozarApp>{
  bool _loading=true,_signedIn=false;
  @override void initState(){super.initState();_api=widget.apiClient??KargozarApiClient();_session=CustomerSession(_api);_requests=CustomerRequestRepository(_api);_restore();}
  Future<void> _restore()async{try{final ok=await _session.restore();if(mounted)setState(()=>_signedIn=ok);}catch(_){}finally{if(mounted)setState(()=>_loading=false);}}
- Future<void> _login()async{final ok=await showDialog<bool>(context:context,barrierDismissible:false,builder:(_)=>OtpDialog(session:_session));if(ok==true&&mounted)setState(()=>_signedIn=true);}
+ Future<bool> _login()async{final ok=await showDialog<bool>(context:context,barrierDismissible:false,builder:(_)=>OtpDialog(session:_session));final authenticated=ok==true&&_session.isAuthenticated;if(mounted)setState(()=>_signedIn=authenticated);return authenticated;}
  Future<void> _logout()async{try{await _session.signOut();}catch(_){}if(mounted)setState(()=>_signedIn=false);}
  @override void dispose(){_api.close();super.dispose();}
  @override Widget build(BuildContext context)=>MaterialApp(
@@ -136,15 +136,15 @@ const services = <ServiceItem>[
 
 class MainShell extends StatefulWidget{
  const MainShell({super.key,required this.requests,required this.signedIn,required this.onLogin,required this.onLogout});
- final CustomerRequestRepository requests;final bool signedIn;final VoidCallback onLogin,onLogout;
+ final CustomerRequestRepository requests;final bool signedIn;final Future<bool> Function() onLogin;final VoidCallback onLogout;
  @override State<MainShell> createState()=>_MainShellState();
 }
 class _MainShellState extends State<MainShell>{
  int _index=0,_revision=0;
  Future<void> _request(ServiceItem service)async{
- if(!widget.signedIn){widget.onLogin();return;}
  final id=service.apiId;
  if(id==null||id.isEmpty){ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content:Text('برای ثبت واقعی این خدمت، ابتدا باید کاتالوگ آنلاین سرور در دسترس باشد.')));return;}
+ if(!widget.signedIn){final authenticated=await widget.onLogin();if(!authenticated||!mounted)return;}
  final note=await showDialog<String>(context:context,builder:(ctx){final c=TextEditingController();return AlertDialog(title:Text('درخواست ${service.title}'),content:TextField(controller:c,minLines:2,maxLines:4,decoration:const InputDecoration(labelText:'توضیحات درخواست (اختیاری)')),actions:[TextButton(onPressed:()=>Navigator.pop(ctx),child:const Text('انصراف')),FilledButton(onPressed:()=>Navigator.pop(ctx,c.text.trim()),child:const Text('ادامه و ثبت درخواست'))]);});
  if(note==null||!mounted)return;
  final key='${DateTime.now().microsecondsSinceEpoch}-${Random.secure().nextInt(1<<32)}';
@@ -153,7 +153,7 @@ class _MainShellState extends State<MainShell>{
  }
  @override Widget build(BuildContext context)=>Scaffold(
  body:SafeArea(child:IndexedStack(index:_index,children:[
- HomePage(onRequest:_request),ServicesPage(onRequest:_request),
+ HomePage(onRequest:_request,onBrowse:()=>setState(()=>_index=1)),ServicesPage(onRequest:_request),
  RequestsPage(repository:widget.requests,signedIn:widget.signedIn,onLogin:widget.onLogin,refreshRevision:_revision),
  ProfilePage(signedIn:widget.signedIn,onLogin:widget.onLogin,onLogout:widget.onLogout),
  ])),
@@ -167,8 +167,9 @@ class _MainShellState extends State<MainShell>{
 }
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key, required this.onRequest});
+  const HomePage({super.key, required this.onRequest, required this.onBrowse});
   final Future<void> Function(ServiceItem service) onRequest;
+  final VoidCallback onBrowse;
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -262,7 +263,7 @@ class _HomePageState extends State<HomePage> {
                   padding: const EdgeInsets.symmetric(
                       horizontal: 18, vertical: 13),
                 ),
-                onPressed: () => _showInfo(context),
+                onPressed: widget.onBrowse,
                 child: const Text('ثبت درخواست مشاوره رایگان'),
               ),
             ],
@@ -639,7 +640,7 @@ class _RequestsPageState extends State<RequestsPage>{
  void _reload()=>setState(()=>_future=widget.repository.getMine());
  @override Widget build(BuildContext context)=>ListView(padding:const EdgeInsets.all(20),children:[
  const Text('درخواست‌های من',style:TextStyle(color:_ink,fontSize:25,fontWeight:FontWeight.w900)),const SizedBox(height:8),const Text('وضعیت درخواست‌هایت را از این قسمت پیگیری می‌کنی.',style:TextStyle(color:_muted,height:1.8)),const SizedBox(height:24),
- if(!widget.signedIn)const EmptyState(icon:Icons.lock_outline,title:'برای مشاهده درخواست‌ها وارد شو',subtitle:'پس از ورود، درخواست‌های ثبت‌شده و آخرین وضعیت آن‌ها نمایش داده می‌شود.')
+ if(!widget.signedIn)Column(children:[const EmptyState(icon:Icons.lock_outline,title:'برای مشاهده درخواست‌ها وارد شو',subtitle:'پس از ورود، درخواست‌های ثبت‌شده و آخرین وضعیت آن‌ها نمایش داده می‌شود.'),const SizedBox(height:12),FilledButton(onPressed:widget.onLogin,child:const Text('ورود / ثبت‌نام'))])
  else FutureBuilder<List<CustomerServiceRequest>>(future:_future,builder:(context,snap){
  if(snap.hasError)return Column(children:[EmptyState(icon:Icons.cloud_off_outlined,title:'دریافت درخواست‌ها ممکن نشد',subtitle:errorText(snap.error)),TextButton(onPressed:_reload,child:const Text('تلاش دوباره'))]);
  if(!snap.hasData)return const Padding(padding:EdgeInsets.all(24),child:Center(child:CircularProgressIndicator()));
