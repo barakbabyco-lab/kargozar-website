@@ -6,6 +6,9 @@ class ServiceCategory {
     required this.name,
     required this.slug,
     this.description,
+    this.parentId,
+    this.hasChildren = false,
+    this.children = const [],
     this.isActive = true,
     this.sortOrder = 0,
   });
@@ -14,8 +17,25 @@ class ServiceCategory {
   final String name;
   final String slug;
   final String? description;
+  final String? parentId;
+  final bool hasChildren;
+  final List<ServiceCategory> children;
   final bool isActive;
   final int sortOrder;
+
+  ServiceCategory copyWith({List<ServiceCategory>? children}) {
+    return ServiceCategory(
+      id: id,
+      name: name,
+      slug: slug,
+      description: description,
+      parentId: parentId,
+      hasChildren: hasChildren,
+      children: children ?? this.children,
+      isActive: isActive,
+      sortOrder: sortOrder,
+    );
+  }
 
   factory ServiceCategory.fromJson(Map<String, dynamic> json) {
     return ServiceCategory(
@@ -23,6 +43,8 @@ class ServiceCategory {
       name: json['name']?.toString() ?? '',
       slug: json['slug']?.toString() ?? '',
       description: json['description']?.toString(),
+      parentId: json['parent_id']?.toString(),
+      hasChildren: json['has_children'] as bool? ?? false,
       isActive: json['is_active'] as bool? ?? true,
       sortOrder: _asInt(json['sort_order']),
     );
@@ -88,6 +110,35 @@ class ServiceCatalogRepository {
     return _listFrom(response)
         .map(ServiceCategory.fromJson)
         .toList(growable: false);
+  }
+
+  Future<List<ServiceCategory>> getCategoryTree() async {
+    final categories = await getCategories();
+    final childrenByParent = <String?, List<ServiceCategory>>{};
+
+    for (final category in categories) {
+      childrenByParent.putIfAbsent(category.parentId, () => []).add(category);
+    }
+
+    List<ServiceCategory> buildChildren(
+      String? parentId,
+      Set<String> ancestors,
+    ) {
+      final children = childrenByParent[parentId] ?? const <ServiceCategory>[];
+      return children.map((category) {
+        if (ancestors.contains(category.id)) {
+          return category;
+        }
+        return category.copyWith(
+          children: buildChildren(
+            category.id,
+            {...ancestors, category.id},
+          ),
+        );
+      }).toList(growable: false);
+    }
+
+    return buildChildren(null, <String>{});
   }
 
   Future<List<CatalogService>> getServices({
