@@ -13,6 +13,12 @@ class ServiceCategoryController extends Controller
     {
         $categories = ServiceCategory::query()
             ->where('is_active', true)
+            ->where(function ($query): void {
+                $query->whereNull('parent_id')
+                    ->orWhereHas('parent', fn ($parent) => $parent->where('is_active', true));
+            })
+            ->withCount('children')
+            ->orderBy('parent_id')
             ->orderBy('sort_order')
             ->orderBy('name')
             ->get();
