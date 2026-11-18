@@ -1,13 +1,13 @@
 <?php
 
-namespace App\\Http\\Controllers\\Api\\V1;
+namespace App\Http\Controllers\Api\V1;
 
-use App\\Http\\Controllers\\Controller;
-use App\\Http\\Resources\\ServiceResource;
-use App\\Models\\Service;
-use App\\Models\\ServiceCategory;
-use Illuminate\\Http\\Request;
-use Illuminate\\Http\\Resources\\Json\\AnonymousResourceCollection;
+use App\Http\Controllers\Controller;
+use App\Http\Resources\ServiceResource;
+use App\Models\Service;
+use App\Models\ServiceCategory;
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class ServiceController extends Controller
 {
@@ -26,7 +26,7 @@ class ServiceController extends Controller
         }
 
         if ($request->filled('q')) {
-            $term = '%'.str_replace(['%', '_'], ['\\%', '\\_'], $request->string('q')->toString()).'%';
+            $term = '%'.str_replace(['%', '_'], ['\%', '\_'], $request->string('q')->toString()).'%';
             $query->where(function ($builder) use ($term) {
                 $builder->where('title', 'like', $term)
                     ->orWhere('description', 'like', $term);
