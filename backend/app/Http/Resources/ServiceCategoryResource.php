@@ -11,11 +11,13 @@ class ServiceCategoryResource extends JsonResource
     {
         return [
             'id' => (string) $this->id,
+            'parent_id' => $this->parent_id === null ? null : (string) $this->parent_id,
             'name' => $this->name,
             'slug' => $this->slug,
             'description' => $this->description,
             'is_active' => (bool) $this->is_active,
             'sort_order' => (int) $this->sort_order,
+            'has_children' => $this->children_count > 0,
         ];
     }
 }
