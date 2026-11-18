@@ -98,42 +98,263 @@ class _HomeState extends State<HomePage> {
 }
 class ServicesPage extends StatefulWidget {
   const ServicesPage({super.key, required this.catalog, required this.requests, required this.signedIn, required this.login});
-  final ServiceCatalogRepository catalog; final CustomerRequestRepository requests; final bool signedIn; final VoidCallback login;
-  @override State<ServicesPage> createState() => _ServicesState();
+  final ServiceCatalogRepository catalog;
+  final CustomerRequestRepository requests;
+  final bool signedIn;
+  final VoidCallback login;
+
+  @override
+  State<ServicesPage> createState() => _ServicesState();
 }
+
 class _ServicesState extends State<ServicesPage> {
-  final search = TextEditingController(); late Future<List<CatalogService>> future;
-  @override void initState() { super.initState(); future = widget.catalog.getServices(); }
-  @override void dispose() { search.dispose(); super.dispose(); }
-  void load() => setState(() => future = widget.catalog.getServices(query: search.text.trim()));
-  Future<void> makeRequest(CatalogService service) async {
-    if (!widget.signedIn) { widget.login(); return; }
-    final note = await showDialog<String>(context: context, builder: (ctx) {
-      final c = TextEditingController();
-      return AlertDialog(title: Text('درخواست ' + service.title), content: TextField(controller: c, maxLines: 3, decoration: const InputDecoration(labelText: 'توضیحات اختیاری')),
-        actions: [TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('انصراف')), FilledButton(onPressed: () => Navigator.pop(ctx, c.text.trim()), child: const Text('ثبت'))]);
+  final search = TextEditingController();
+  late Future<List<CatalogService>> future;
+  late Future<List<ServiceCategory>> categoriesFuture;
+  String? selectedCategory;
+
+  @override
+  void initState() {
+    super.initState();
+    future = widget.catalog.getServices();
+    categoriesFuture = widget.catalog.getCategoryTree();
+  }
+
+  @override
+  void dispose() {
+    search.dispose();
+    super.dispose();
+  }
+
+  void load() => setState(() {
+        future = widget.catalog.getServices(
+          category: selectedCategory,
+          query: search.text.trim(),
+        );
+      });
+
+  void selectCategory(String? slug) {
+    setState(() {
+      selectedCategory = slug;
+      future = widget.catalog.getServices(
+        category: slug,
+        query: search.text.trim(),
+      );
     });
+  }
+
+  Future<void> makeRequest(CatalogService service) async {
+    if (!widget.signedIn) {
+      widget.login();
+      return;
+    }
+    final note = await showDialog<String>(
+      context: context,
+      builder: (ctx) {
+        final c = TextEditingController();
+        return AlertDialog(
+          title: Text('درخواست ' + service.title),
+          content: TextField(
+            controller: c,
+            maxLines: 3,
+            decoration: const InputDecoration(labelText: 'توضیحات اختیاری'),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text('انصراف'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(ctx, c.text.trim()),
+              child: const Text('ثبت'),
+            ),
+          ],
+        );
+      },
+    );
     if (note == null || !mounted) return;
     try {
-      final key = DateTime.now().microsecondsSinceEpoch.toString() + '-' + Random.secure().nextInt(1 << 32).toString();
-      final result = await widget.requests.create(serviceId: service.id, customerNote: note, idempotencyKey: key);
-      if (mounted) showDialog<void>(context: context, builder: (ctx) => AlertDialog(title: const Text('درخواست ثبت شد'), content: Text('کد پیگیری: ' + result.trackingCode), actions: [TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('متوجه شدم'))]));
-    } catch (e) { if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(errorText(e)))); }
+      final key = DateTime.now().microsecondsSinceEpoch.toString() +
+          '-' +
+          Random.secure().nextInt(1 << 32).toString();
+      final result = await widget.requests.create(
+        serviceId: service.id,
+        customerNote: note,
+        idempotencyKey: key,
+      );
+      if (mounted) {
+        showDialog<void>(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: const Text('درخواست ثبت شد'),
+            content: Text('کد پیگیری: ' + result.trackingCode),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: const Text('متوجه شدم'),
+              ),
+            ],
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(errorText(e))),
+        );
+      }
+    }
   }
-  @override Widget build(BuildContext context) => ListView(padding: const EdgeInsets.all(18), children: [
-    const Text('همه خدمات', style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900)),
-    TextField(controller: search, onSubmitted: (_) => load(), decoration: const InputDecoration(hintText: 'جست‌وجوی خدمات')),
-    const SizedBox(height: 12),
-    FutureBuilder<List<CatalogService>>(future: future, builder: (context, s) {
-      if (s.hasError) return ErrorPanel(error: s.error, retry: load);
-      if (!s.hasData) return const Center(child: CircularProgressIndicator());
-      return Column(children: s.data!.map((v) => Card(color: Colors.white, child: ListTile(
-        title: Text(v.title), subtitle: Text(v.description ?? v.categoryName ?? ''),
-        trailing: const Icon(Icons.chevron_left), onTap: () => makeRequest(v),
-      ))).toList());
-    }),
-  ]);
+
+  @override
+  Widget build(BuildContext context) => ListView(
+        padding: const EdgeInsets.all(18),
+        children: [
+          const Text(
+            'همه خدمات',
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900),
+          ),
+          const SizedBox(height: 8),
+          TextField(
+            controller: search,
+            onSubmitted: (_) => load(),
+            decoration: const InputDecoration(hintText: 'جست‌وجوی خدمات'),
+          ),
+          const SizedBox(height: 12),
+          FutureBuilder<List<ServiceCategory>>(
+            future: categoriesFuture,
+            builder: (context, snapshot) {
+              if (snapshot.hasError) {
+                return ErrorPanel(
+                  error: snapshot.error,
+                  retry: () => setState(
+                    () => categoriesFuture = widget.catalog.getCategoryTree(),
+                  ),
+                );
+              }
+              if (!snapshot.hasData) {
+                return const LinearProgressIndicator();
+              }
+              return Card(
+                color: Colors.white,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 6),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      const Padding(
+                        padding: EdgeInsets.fromLTRB(14, 10, 14, 4),
+                        child: Text(
+                          'دسته‌بندی خدمات',
+                          style: TextStyle(fontWeight: FontWeight.w800),
+                        ),
+                      ),
+                      ListTile(
+                        dense: true,
+                        selected: selectedCategory == null,
+                        leading: const Icon(Icons.apps),
+                        title: const Text('نمایش همه خدمات'),
+                        onTap: () => selectCategory(null),
+                      ),
+                      ...snapshot.data!.map(
+                        (category) => _CategoryBranch(
+                          category: category,
+                          selectedSlug: selectedCategory,
+                          onSelected: selectCategory,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+          const SizedBox(height: 12),
+          FutureBuilder<List<CatalogService>>(
+            future: future,
+            builder: (context, s) {
+              if (s.hasError) return ErrorPanel(error: s.error, retry: load);
+              if (!s.hasData) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              if (s.data!.isEmpty) {
+                return const Padding(
+                  padding: EdgeInsets.all(24),
+                  child: Text(
+                    'در این دسته‌بندی خدمتی ثبت نشده است.',
+                    textAlign: TextAlign.center,
+                  ),
+                );
+              }
+              return Column(
+                children: s.data!
+                    .map(
+                      (v) => Card(
+                        color: Colors.white,
+                        child: ListTile(
+                          title: Text(v.title),
+                          subtitle: Text(v.description ?? v.categoryName ?? ''),
+                          trailing: const Icon(Icons.chevron_left),
+                          onTap: () => makeRequest(v),
+                        ),
+                      ),
+                    )
+                    .toList(),
+              );
+            },
+          ),
+        ],
+      );
 }
+
+class _CategoryBranch extends StatelessWidget {
+  const _CategoryBranch({
+    required this.category,
+    required this.selectedSlug,
+    required this.onSelected,
+  });
+
+  final ServiceCategory category;
+  final String? selectedSlug;
+  final ValueChanged<String?> onSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    if (category.children.isEmpty) {
+      return ListTile(
+        dense: true,
+        contentPadding: const EdgeInsetsDirectional.only(start: 28, end: 14),
+        selected: selectedSlug == category.slug,
+        leading: const Icon(Icons.subdirectory_arrow_left, size: 18),
+        title: Text(category.name),
+        onTap: () => onSelected(category.slug),
+      );
+    }
+
+    return ExpansionTile(
+      tilePadding: const EdgeInsetsDirectional.only(start: 14, end: 14),
+      childrenPadding: const EdgeInsetsDirectional.only(start: 12),
+      initiallyExpanded: false,
+      title: Text(category.name),
+      children: [
+        ListTile(
+          dense: true,
+          selected: selectedSlug == category.slug,
+          title: const Text('نمایش خدمات این دسته'),
+          onTap: () => onSelected(category.slug),
+        ),
+        ...category.children.map(
+          (child) => _CategoryBranch(
+            category: child,
+            selectedSlug: selectedSlug,
+            onSelected: onSelected,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
 class RequestsPage extends StatefulWidget {
   const RequestsPage({super.key, required this.repository, required this.signedIn, required this.login});
   final CustomerRequestRepository repository; final bool signedIn; final VoidCallback login;
