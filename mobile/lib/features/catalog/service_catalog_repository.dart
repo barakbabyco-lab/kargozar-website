@@ -72,7 +72,7 @@ class CatalogService {
   final String? description;
   final List<String> requirements;
   final int? estimatedDays;
-  final int? basePrice;
+  final num? basePrice;
   final bool isActive;
   final int sortOrder;
   final String? categoryName;
@@ -91,7 +91,7 @@ class CatalogService {
           ? requirements.map((item) => item.toString()).toList(growable: false)
           : const [],
       estimatedDays: _nullableInt(json['estimated_days']),
-      basePrice: _nullableInt(json['base_price']),
+      basePrice: _nullableNum(json['base_price']),
       isActive: json['is_active'] as bool? ?? true,
       sortOrder: _asInt(json['sort_order']),
       categoryName: categoryMap?['name']?.toString(),
@@ -180,4 +180,9 @@ int? _nullableInt(dynamic value) {
   if (value is int) return value;
   if (value is num) return value.toInt();
   return int.tryParse(value?.toString() ?? '');
+}
+
+num? _nullableNum(dynamic value) {
+  if (value is num) return value;
+  return num.tryParse(value?.toString() ?? '');
 }
