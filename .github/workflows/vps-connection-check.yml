@@ -154,5 +154,19 @@ jobs:
               print(f"WHOIS query failed: {type(exc).__name__}: {exc}")
           PYWHOIS
 
+          echo "=== CURRENT IRNIC NAME SERVER CHECK ==="
+          if command -v dig >/dev/null 2>&1; then
+            for server in ns929.mihanwebhost.com ns930.mihanwebhost.com; do
+              echo "--- $server SOA ---"
+              dig @"$server" kargozarr.ir SOA +norecurse +time=4 +tries=1 +noall +answer +authority +comments || true
+              echo "--- $server NS ---"
+              dig @"$server" kargozarr.ir NS +norecurse +time=4 +tries=1 +noall +answer +authority +comments || true
+              echo "--- $server apex A ---"
+              dig @"$server" kargozarr.ir A +norecurse +time=4 +tries=1 +noall +answer +authority +comments || true
+              echo "--- $server www A ---"
+              dig @"$server" www.kargozarr.ir A +norecurse +time=4 +tries=1 +noall +answer +authority +comments || true
+            done
+          fi
+
           echo "=== END READ-ONLY INSPECTION ==="
           REMOTE
