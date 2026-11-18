@@ -9,7 +9,7 @@ Identity: uid=1000(deploy) gid=1000(deploy) groups=1000(deploy),33(www-data)
 Filesystem      Size  Used Avail Use% Mounted on
 /dev/vda1        58G  3.4G   54G   6% /
                total        used        free      shared  buff/cache   available
-Mem:           3.8Gi       947Mi       987Mi       3.7Mi       2.2Gi       2.9Gi
+Mem:           3.8Gi       959Mi       975Mi       3.7Mi       2.2Gi       2.9Gi
 Swap:             0B          0B          0B
 CPU cores: 2
 
@@ -43,7 +43,16 @@ Composer version 2.7.1 2024-02-09 15:26:28
 nginx: active
 mysql: active
 php8.3-fpm: active
-Nginx config test: FAIL_OR_NOT_CONFIGURED
+Nginx config test details:
+2026/11/18 07:49:46 [warn] 33851#33851: the "user" directive makes sense only if the master process runs with super-user privileges, ignored in /etc/nginx/nginx.conf:1
+nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+2026/11/18 07:49:46 [emerg] 33851#33851: open() "/run/nginx.pid" failed (13: Permission denied)
+nginx: configuration file /etc/nginx/nginx.conf test failed
+Nginx enabled sites:
+total 8
+drwxr-xr-x 2 root root 4096 Nov 17 15:34 .
+drwxr-xr-x 8 root root 4096 Nov 17 15:34 ..
+lrwxrwxrwx 1 root root   34 Nov 17 15:34 default -> /etc/nginx/sites-available/default
 Nginx virtual-host names and document roots:
 
 ## Database service
@@ -71,7 +80,67 @@ DB_USERNAME: configured
 DB_PASSWORD: configured
 Current release target: /var/www/kargozar-staging/releases/da45549850d0467a9063d849959b7a1efcb7cb05
 Laravel version: Laravel Framework 13.42.0
+Laravel API routes (read-only):
+
+  POST       api/v1/auth/logout ................. Api\V1\Auth\LogoutController
+  POST       api/v1/auth/otp/request ....... Api\V1\Auth\OtpController@request
+  POST       api/v1/auth/otp/verify ......... Api\V1\Auth\OtpController@verify
+  GET|HEAD   api/v1/me/service-requests Api\V1\ServiceRequestController@index
+  GET|HEAD   api/v1/me/service-requests/{trackingCode} Api\V1\ServiceRequestC…
+  GET|HEAD   api/v1/service-categories Api\V1\ServiceCategoryController@index
+  POST       api/v1/service-requests ... Api\V1\ServiceRequestController@store
+  GET|HEAD   api/v1/services .................. Api\V1\ServiceController@index
+  GET|HEAD   api/v1/services/{slug} ............ Api\V1\ServiceController@show
+  POST       api/v1/staff/auth/login .. Api\V1\Staff\Auth\StaffLoginController
+  POST       api/v1/staff/auth/logout ........... Api\V1\Auth\LogoutController
+  GET|HEAD   api/v1/staff/catalog/categories Api\V1\Staff\StaffCatalogControl…
+  POST       api/v1/staff/catalog/categories Api\V1\Staff\StaffCatalogControl…
+  PATCH      api/v1/staff/catalog/categories/{categoryId} Api\V1\Staff\StaffC…
+  GET|HEAD   api/v1/staff/catalog/services Api\V1\Staff\StaffCatalogControlle…
+  POST       api/v1/staff/catalog/services Api\V1\Staff\StaffCatalogControlle…
+  PATCH      api/v1/staff/catalog/services/{serviceId} Api\V1\Staff\StaffCata…
+  GET|HEAD   api/v1/staff/service-requests Api\V1\Staff\StaffServiceRequestCo…
+  GET|HEAD   api/v1/staff/service-requests/{trackingCode} Api\V1\Staff\StaffS…
+  PATCH      api/v1/staff/service-requests/{trackingCode}/assignment Api\V1\S…
+  POST       api/v1/staff/service-requests/{trackingCode}/events Api\V1\Staff…
+
+                                                           Showing [21] routes
+
+Laravel migration status (read-only):
+
+  Migration name .............................................. Batch / Status  
+  0001_01_01_000000_create_users_table ............................... [1] Ran  
+  0001_01_01_000001_create_cache_table ............................... [1] Ran  
+  0001_01_01_000002_create_jobs_table ................................ [1] Ran  
+  2026_11_16_000001_create_customers_table ........................... [1] Ran  
+  2026_11_16_000002_create_service_catalog_tables .................... [1] Ran  
+  2026_11_16_000003_create_service_requests_table .................... [1] Ran  
+  2026_11_16_000004_create_otp_and_idempotency_tables ................ [1] Ran  
+  2026_11_16_000005_create_staff_users_table ......................... [1] Ran  
+  2026_11_16_000006_create_audit_logs_table .......................... [1] Ran  
+  2026_11_16_000007_add_staff_assignment_to_service_requests ......... [1] Ran  
+  2026_11_16_052044_create_personal_access_tokens_table .............. [1] Ran  
+
+Composer platform requirements:
+Checking non-dev platform requirements for packages in the vendor dir
+composer-runtime-api 2.2.2      success                                       
+ext-ctype            *          success provided by symfony/polyfill-ctype    
+ext-dom              20031129   success                                       
+ext-fileinfo         8.3.6      success                                       
+ext-filter           8.3.6      success                                       
+ext-hash             8.3.6      success                                       
+ext-iconv            8.3.6      success                                       
+ext-json             8.3.6      success                                       
+ext-libxml           8.3.6      success                                       
+ext-mbstring         *          success provided by symfony/polyfill-mbstring 
+ext-openssl          8.3.6      success                                       
+ext-pcre             8.3.6      success                                       
+ext-session          8.3.6      success                                       
+ext-tokenizer        8.3.6      success                                       
+php                  8.3.6      success                                       
 
 ## DNS
-kargozarr.ir: www.kargozarr.ir: 
+not resolving
+not resolving
+
 Audit is read-only; no server configuration, packages, databases, or application files were changed.
