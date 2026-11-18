@@ -169,15 +169,17 @@ jobs:
             trap 'kill "$smoke_pid" 2>/dev/null || true' EXIT
             ready=no
             for attempt in $(seq 1 20); do
-              if curl -fsS --max-time 2 http://127.0.0.1:18765/up >/dev/null 2>&1; then ready=yes; break; fi
+              code="$(curl -sS --max-time 2 -o /dev/null -w '%{http_code}' http://127.0.0.1:18765/up 2>/dev/null || true)"
+              if [ "$code" != "000" ] && [ -n "$code" ]; then ready=yes; break; fi
               sleep 1
             done
             echo "Laravel local HTTP server ready: $ready"
             if [ "$ready" = yes ]; then
               for endpoint in /up /api/v1/service-categories /api/v1/services; do
-                printf '%s ' "$endpoint"
-                curl -sS --max-time 8 -o /tmp/kargozar-smoke-body -w 'HTTP %{http_code}\n' "http://127.0.0.1:18765$endpoint"
-                if [ "$endpoint" != "/up" ]; then head -c 900 /tmp/kargozar-smoke-body; echo; fi
+                code="$(curl -sS --max-time 8 -o /tmp/kargozar-smoke-body -w '%{http_code}' "http://127.0.0.1:18765$endpoint" 2>/dev/null || echo 000)"
+                printf '%s HTTP %s\n' "$endpoint" "$code"
+                if [ "$code" = 200 ] && [ "$endpoint" != "/up" ]; then head -c 900 /tmp/kargozar-smoke-body; echo; fi
+                if [ "$code" != 200 ]; then head -c 300 /tmp/kargozar-smoke-body 2>/dev/null || true; echo; fi
               done
             else
               tail -n 20 /tmp/kargozar-api-smoke.log
