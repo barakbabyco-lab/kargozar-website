@@ -7,9 +7,9 @@ Identity: uid=1000(deploy) gid=1000(deploy) groups=1000(deploy),33(www-data)
 
 ## Capacity
 Filesystem      Size  Used Avail Use% Mounted on
-/dev/vda1        58G  3.4G   54G   6% /
+/dev/vda1        58G  3.5G   54G   6% /
                total        used        free      shared  buff/cache   available
-Mem:           3.8Gi       959Mi       975Mi       3.7Mi       2.2Gi       2.9Gi
+Mem:           3.8Gi       967Mi       908Mi       3.7Mi       2.3Gi       2.9Gi
 Swap:             0B          0B          0B
 CPU cores: 2
 
@@ -43,10 +43,9 @@ Composer version 2.7.1 2024-02-09 15:26:28
 nginx: active
 mysql: active
 php8.3-fpm: active
-Nginx config test details:
-2026/11/18 07:49:46 [warn] 33851#33851: the "user" directive makes sense only if the master process runs with super-user privileges, ignored in /etc/nginx/nginx.conf:1
-nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
-2026/11/18 07:49:46 [emerg] 33851#33851: open() "/run/nginx.pid" failed (13: Permission denied)
+Nginx config test details (temporary unprivileged PID path):
+2026/11/18 07:52:02 [warn] 34678#34678: the "user" directive makes sense only if the master process runs with super-user privileges, ignored in /etc/nginx/nginx.conf:1
+2026/11/18 07:52:02 [emerg] 34678#34678: "pid" directive is duplicate in /etc/nginx/nginx.conf:3
 nginx: configuration file /etc/nginx/nginx.conf test failed
 Nginx enabled sites:
 total 8
@@ -54,6 +53,12 @@ drwxr-xr-x 2 root root 4096 Nov 17 15:34 .
 drwxr-xr-x 8 root root 4096 Nov 17 15:34 ..
 lrwxrwxrwx 1 root root   34 Nov 17 15:34 default -> /etc/nginx/sites-available/default
 Nginx virtual-host names and document roots:
+Default site config (server/root/listen directives only):
+	listen 80 default_server;
+	listen [::]:80 default_server;
+	root /var/www/html;
+	index index.html index.htm index.nginx-debian.html;
+	server_name _;
 
 ## Database service
 MySQL local ping: OK
@@ -78,7 +83,7 @@ DB_HOST: configured
 DB_DATABASE: configured
 DB_USERNAME: configured
 DB_PASSWORD: configured
-Current release target: /var/www/kargozar-staging/releases/da45549850d0467a9063d849959b7a1efcb7cb05
+Current release target: /var/www/kargozar-staging/releases/cb636fe49547c7215a2c5e58808e2748ad309ada
 Laravel version: Laravel Framework 13.42.0
 Laravel API routes (read-only):
 
@@ -138,6 +143,49 @@ ext-pcre             8.3.6      success
 ext-session          8.3.6      success                                       
 ext-tokenizer        8.3.6      success                                       
 php                  8.3.6      success                                       
+
+## Local HTTP and Laravel API smoke test
+Laravel local HTTP server ready: no
+
+  2026-11-18 07:52:04 /up ........................................ ~ 500.45ms
+  2026-11-18 07:52:06 /up .......................................... ~ 0.14ms
+  2026-11-18 07:52:07 /up .......................................... ~ 0.12ms
+  2026-11-18 07:52:08 /up .......................................... ~ 0.12ms
+  2026-11-18 07:52:09 /up .......................................... ~ 0.18ms
+  2026-11-18 07:52:10 /up .......................................... ~ 0.12ms
+  2026-11-18 07:52:11 /up .......................................... ~ 0.12ms
+  2026-11-18 07:52:12 /up .......................................... ~ 0.14ms
+  2026-11-18 07:52:13 /up .......................................... ~ 0.27ms
+  2026-11-18 07:52:14 /up .......................................... ~ 0.12ms
+  2026-11-18 07:52:15 /up .......................................... ~ 0.12ms
+  2026-11-18 07:52:16 /up .......................................... ~ 0.14ms
+  2026-11-18 07:52:17 /up .......................................... ~ 0.42ms
+  2026-11-18 07:52:18 /up .......................................... ~ 0.11ms
+  2026-11-18 07:52:19 /up .......................................... ~ 0.10ms
+  2026-11-18 07:52:20 /up .......................................... ~ 0.11ms
+  2026-11-18 07:52:21 /up ........................................ ~ 500.46ms
+  2026-11-18 07:52:22 /up .......................................... ~ 0.12ms
+  2026-11-18 07:52:23 /up .......................................... ~ 0.13ms
+
+## Nginx loopback HTTP
+/up HTTP 404
+<html>
+<head><title>404 Not Found</title></head>
+<body>
+<center><h1>404 Not Found</h1></center>
+<hr><center>nginx/1.24.0 (Ubuntu)</center>
+</body>
+</html>
+
+/api/v1/service-categories HTTP 404
+<html>
+<head><title>404 Not Found</title></head>
+<body>
+<center><h1>404 Not Found</h1></center>
+<hr><center>nginx/1.24.0 (Ubuntu)</center>
+</body>
+</html>
+
 
 ## DNS
 not resolving
