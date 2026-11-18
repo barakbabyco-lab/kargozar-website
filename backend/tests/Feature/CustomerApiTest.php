@@ -10,6 +10,7 @@ use App\Models\ServiceCategory;
 use App\Models\ServiceRequest;
 use App\Models\StaffUser;
 use App\Services\OtpDelivery;
+use Database\Seeders\ServiceCatalogSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -136,6 +137,36 @@ class CustomerApiTest extends TestCase
             ->assertOk()
             ->assertJsonMissing(['internal_note' => 'PRIVATE INTERNAL NOTE'])
             ->assertDontSee('PRIVATE INTERNAL NOTE');
+    }
+
+    public function test_service_catalog_seeder_builds_ten_roots_and_is_idempotent(): void
+    {
+        $seeder = app(ServiceCatalogSeeder::class);
+        $seeder->run();
+
+        $this->assertSame(10, ServiceCategory::query()->whereNull('parent_id')->count());
+
+        $homeBusiness = ServiceCategory::query()
+            ->where('slug', 'home-business-permits')
+            ->firstOrFail();
+        $this->assertSame(9, $homeBusiness->children()->count());
+
+        $service = Service::query()
+            ->where('slug', 'business-license')
+            ->firstOrFail();
+        $originalServiceId = $service->id;
+        $this->assertSame(
+            'trade-business-license',
+            $service->category()->value('slug'),
+        );
+
+        $seeder->run();
+
+        $this->assertSame(10, ServiceCategory::query()->whereNull('parent_id')->count());
+        $this->assertSame($originalServiceId, Service::query()
+            ->where('slug', 'business-license')
+            ->value('id'));
+        $this->assertSame(17, Service::query()->count());
     }
 
     public function test_public_catalog_returns_only_active_services(): void
