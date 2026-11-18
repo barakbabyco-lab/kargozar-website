@@ -145,6 +145,7 @@ class CustomerApiTest extends TestCase
         $seeder->run();
 
         $this->assertSame(10, ServiceCategory::query()->whereNull('parent_id')->count());
+        $this->assertSame(92, ServiceCategory::query()->count());
 
         $homeBusiness = ServiceCategory::query()
             ->where('slug', 'home-business-permits')
@@ -163,6 +164,7 @@ class CustomerApiTest extends TestCase
         $seeder->run();
 
         $this->assertSame(10, ServiceCategory::query()->whereNull('parent_id')->count());
+        $this->assertSame(92, ServiceCategory::query()->count());
         $this->assertSame($originalServiceId, Service::query()
             ->where('slug', 'business-license')
             ->value('id'));
