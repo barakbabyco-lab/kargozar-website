@@ -40,6 +40,9 @@ jobs:
       - name: Generate Android platform files
         run: flutter create --platforms=android --project-name=kargozar_mobile --org=ir.kargozar .
 
+      - name: Configure Android application identity
+        run: python3 tool/configure_android_app.py
+
       - name: Install dependencies
         run: flutter pub get
 

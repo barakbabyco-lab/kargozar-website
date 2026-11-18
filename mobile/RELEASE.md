@@ -33,3 +33,8 @@ After the secrets are added, run the workflow manually from Actions. The release
 - The first public release must use the same keystore for all future updates.
 
 No production signing credentials or keystore are stored in this repository.
+
+
+## Generated Android application identity
+
+The CI workflow applies the Persian launcher label `کارگزار` after generating the Android project and verifies that both the Gradle namespace and application ID remain `ir.kargozar.kargozar_mobile`. This keeps the store identity stable while avoiding the default technical project name on the device.

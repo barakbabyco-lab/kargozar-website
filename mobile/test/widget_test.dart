@@ -17,12 +17,32 @@ void main() {
     expect(find.text('درخواست‌ها'), findsOneWidget);
     expect(find.text('حساب من'), findsOneWidget);
 
+    // The home-page call to action must navigate to the service catalogue,
+    // rather than implying that a consultation request was already created.
+    await tester.tap(find.text('مشاهده خدمات'));
+    await tester.pumpAndSettle();
+    expect(find.text('همه خدمات'), findsOneWidget);
+
     await tester.tap(find.text('خدمات'));
     await tester.pumpAndSettle();
 
     expect(find.text('همه خدمات'), findsOneWidget);
     expect(find.text('جست‌وجوی خدمات...'), findsOneWidget);
     expect(find.text('دریافت جواز کسب'), findsOneWidget);
+  });
+
+  testWidgets('requests tab offers a working login entry point', (tester) async {
+    await tester.pumpWidget(_testApp());
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('درخواست‌ها'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('برای مشاهده درخواست‌ها وارد شو'), findsOneWidget);
+    await tester.tap(find.widgetWithText(FilledButton, 'ورود / ثبت‌نام'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('ورود به کارگزار'), findsOneWidget);
   });
 
   testWidgets('does not report a successful login when API is not configured', (tester) async {

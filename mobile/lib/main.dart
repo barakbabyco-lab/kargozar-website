@@ -266,7 +266,7 @@ class _HomePageState extends State<HomePage> {
                       horizontal: 18, vertical: 13),
                 ),
                 onPressed: widget.onBrowse,
-                child: const Text('ثبت درخواست مشاوره رایگان'),
+                child: const Text('مشاهده خدمات'),
               ),
             ],
           ),
