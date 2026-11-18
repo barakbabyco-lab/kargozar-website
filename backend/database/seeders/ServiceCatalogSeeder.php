@@ -59,6 +59,9 @@ class ServiceCatalogSeeder extends Seeder
             ]],
         ];
 
+        Service::query()->update(['is_active' => false]);
+        ServiceCategory::query()->update(['is_active' => false]);
+
         foreach ($catalog as $categoryOrder => [$name, $description, $titles]) {
             static $order = 0;
             $category = ServiceCategory::updateOrCreate(
