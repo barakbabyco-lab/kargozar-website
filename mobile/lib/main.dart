@@ -914,7 +914,7 @@ void _showService(BuildContext context, ServiceItem service) {
             if (service.basePrice != null)
               _ServiceMetaRow(
                 icon: Icons.payments_outlined,
-                label: 'قیمت پایه (نیازمند تأیید)',
+                label: 'مبلغ پایه ثبت‌شده (واحد نیازمند تأیید)',
                 value: service.basePrice!.toString(),
               ),
           ],
