@@ -51,6 +51,8 @@
 ### دسته‌بندی‌ها
 `GET /service-categories`
 
+پاسخ این مسیر یک فهرست تخت و مرتب‌شده از دسته‌های فعال است. هر گره شامل `id` و `parent_id` است؛ مقدار `parent_id: null` نشان‌دهنده دسته اصلی و مقدار غیرتهی نشان‌دهنده شناسه والد است. کلاینت با این رابطه درخت دسته‌بندی را می‌سازد. فیلد `has_children` وجود زیرشاخه را مشخص می‌کند. این مدل برای چند سطح زیرشاخه محدودیت عمق ندارد.
+
 ### فهرست خدمات
 `GET /services?category={slug}&q={term}&page={number}`
 
@@ -120,7 +122,7 @@
 - `POST /staff/service-requests/{id}/events`: ثبت تغییر وضعیت و پیام عمومی/یادداشت داخلی.
 - بررسی مدارک (`PATCH /staff/documents/{id}/review`) برای مرحله بعد است و تا راه‌اندازی فضای ذخیره‌سازی خصوصی فعال نیست.
 - `GET /staff/catalog/categories` و `GET /staff/catalog/services`: مشاهده کاتالوگ مدیریتی.
-- `POST/PATCH /staff/catalog/categories` و `POST/PATCH /staff/catalog/services`: ایجاد و ویرایش کاتالوگ؛ فقط admin و supervisor. غیرفعال‌سازی با `is_active=false` انجام می‌شود و حذف فیزیکی خدمت مجاز نیست.
+- `POST/PATCH /staff/catalog/categories` و `POST/PATCH /staff/catalog/services`: ایجاد و ویرایش کاتالوگ؛ فقط admin و supervisor. برای ایجاد یا جابه‌جایی دسته، `parent_id` اختیاری است؛ `null` دسته را در سطح اصلی قرار می‌دهد. سرور از ایجاد والد برای خود یا انتقال دسته به زیرمجموعه خودش جلوگیری می‌کند. غیرفعال‌سازی با `is_active=false` انجام می‌شود و حذف فیزیکی خدمت مجاز نیست.
 - مجوزها در سمت سرور اعمال می‌شوند: admin و supervisor مجاز به ارجاع پرونده‌اند؛ admin، supervisor و expert می‌توانند رویداد و تغییر وضعیت ثبت کنند؛ finance و support در نسخه فعلی دسترسی مشاهده دارند.
 - تغییر وضعیت باید از گردش مجاز عبور کند؛ وضعیت‌های completed، rejected و cancelled در نسخه اول نهایی هستند.
 - ورود کارکنان، مشاهده جزئیات پرونده، ارجاع و ثبت رویداد در audit log ثبت می‌شوند. متن یادداشت داخلی در metadata ممیزی کپی نمی‌شود.
