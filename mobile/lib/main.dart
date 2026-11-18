@@ -46,7 +46,7 @@ class _OtpDialogState extends State<OtpDialog>{
  final mobile=_mobile.text.trim();
  if(!RegExp(r'^09\d{9}$').hasMatch(mobile)){setState(()=>_error='شماره موبایل معتبر وارد کن.');return;}
  if(_requested&&!RegExp(r'^\d{4,8}$').hasMatch(_code.text.trim())){setState(()=>_error='کد ورود معتبر نیست.');return;}
- setState(()=>{_busy=true,_error=null});
+ setState(() { _busy = true; _error = null; });
  try{if(!_requested){await widget.session.requestOtp(mobile);if(mounted)setState(()=>_requested=true);}else{await widget.session.verifyOtp(mobile:mobile,code:_code.text.trim());if(mounted)Navigator.pop(context,true);}}
  on KargozarApiException catch(e){if(mounted)setState(()=>_error=e.message);}catch(_){if(mounted)setState(()=>_error='ارتباط با سرور برقرار نشد.');}finally{if(mounted)setState(()=>_busy=false);}
  }
@@ -336,11 +336,12 @@ class _HomePageState extends State<HomePage> {
           subtitle: 'وضعیت درخواست و مراحل انجام را ببین.',
         ),
         const SizedBox(height: 12),
-        const Text(
-          'نسخه آزمایشی — ثبت درخواست و اطلاعات در این مرحله نمایشی است.',
-          textAlign: TextAlign.center,
-          style: TextStyle(color: _muted, fontSize: 11),
-        ),
+        if (!_apiConfigured)
+          const Text(
+            'نسخه آزمایشی — فهرست خدمات این بخش نمونه است و ثبت واقعی از سرور انجام می‌شود.',
+            textAlign: TextAlign.center,
+            style: TextStyle(color: _muted, fontSize: 11),
+          ),
       ],
     );
   }
@@ -658,72 +659,6 @@ class ProfilePage extends StatelessWidget {
  const ProfileOption(icon:Icons.support_agent,title:'پشتیبانی و تماس با ما'),const ProfileOption(icon:Icons.policy_outlined,title:'قوانین و حریم خصوصی'),const ProfileOption(icon:Icons.info_outline,title:'درباره کارگزار'),
  ]);
 }
-  const RequestsPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView(
-      padding: const EdgeInsets.all(20),
-      children: const [
-        Text('درخواست‌های من', style: TextStyle(
-          color: _ink, fontSize: 25, fontWeight: FontWeight.w900)),
-        SizedBox(height: 8),
-        Text('وضعیت درخواست‌هایت را از این قسمت پیگیری می‌کنی.',
-            style: TextStyle(color: _muted, height: 1.8)),
-        SizedBox(height: 24),
-        EmptyState(
-          icon: Icons.inbox_outlined,
-          title: 'هنوز درخواستی ثبت نکرده‌ای',
-          subtitle: 'بعد از ثبت درخواست، کد پیگیری و آخرین وضعیت اینجا نمایش داده می‌شود.',
-        ),
-      ],
-    );
-  }
-}
-
-class ProfilePage extends StatelessWidget {
-  const ProfilePage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView(
-      padding: const EdgeInsets.all(20),
-      children: [
-        const Text('حساب کاربری', style: TextStyle(
-          color: _ink, fontSize: 25, fontWeight: FontWeight.w900)),
-        const SizedBox(height: 18),
-        Container(
-          padding: const EdgeInsets.all(18),
-          decoration: BoxDecoration(
-            color: Colors.white, borderRadius: BorderRadius.circular(18)),
-          child: const Row(
-            children: [
-              CircleAvatar(
-                radius: 26,
-                backgroundColor: Color(0xFFE8EEF5),
-                child: Icon(Icons.person_outline, color: _navy, size: 28),
-              ),
-              SizedBox(width: 13),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('مهمان', style: TextStyle(
-                    color: _ink, fontWeight: FontWeight.bold, fontSize: 16)),
-                  Text('برای استفاده از خدمات وارد شوید',
-                      style: TextStyle(color: _muted, fontSize: 12)),
-                ],
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 14),
-        const ProfileOption(icon: Icons.support_agent, title: 'پشتیبانی و تماس با ما'),
-        const ProfileOption(icon: Icons.policy_outlined, title: 'قوانین و حریم خصوصی'),
-        const ProfileOption(icon: Icons.info_outline, title: 'درباره کارگزار'),
-      ],
-    );
-  }
-}
 
 class SectionHeading extends StatelessWidget {
   const SectionHeading({super.key, required this.title, this.action});
@@ -791,7 +726,7 @@ class ServiceListTile extends StatelessWidget {
     subtitle: Text(service.subtitle, style: const TextStyle(
       color: _muted, fontSize: 11, height: 1.7)),
     trailing: const Icon(Icons.chevron_left_rounded, color: _muted),
-    onTap: () => _showService(context, service),
+    onTap: () => _showService(context, service, onRequest),
   );
 }
 
