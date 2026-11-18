@@ -543,7 +543,7 @@ class _ServicesPageState extends State<ServicesPage> {
           ),
           ...filtered.map((service) => Padding(
             padding: const EdgeInsets.only(bottom: 10),
-            child: ServiceListTile(service: service),
+            child: ServiceListTile(service: service, onRequest: widget.onRequest),
           )),
           if (filtered.isEmpty)
             const Padding(
@@ -841,6 +841,10 @@ void _showService(BuildContext context,ServiceItem service,Future<void> Function
  const SizedBox(height:20),SizedBox(width:double.infinity,child:FilledButton(onPressed:(){Navigator.pop(sheet);onRequest(service);},child:const Text('درخواست این خدمت'))),const SizedBox(height:8),const Text('برای ثبت درخواست واقعی، ورود و اتصال امن به سامانه لازم است.',textAlign:TextAlign.center,style:TextStyle(color:_muted,fontSize:10)),
  ]))));
 }
+
+String errorText(Object? error) => error is KargozarApiException
+    ? error.message
+    : 'دریافت اطلاعات با مشکل روبه‌رو شد. نشانی سرور و اتصال اینترنت را بررسی کنید.';
 
 void _showInfo(BuildContext context) {
   showDialog<void>(
