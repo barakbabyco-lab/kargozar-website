@@ -99,5 +99,24 @@ jobs:
           else
             echo "dig: NOT INSTALLED"
           fi
+          echo "=== PUBLIC DNS RESOLVER CHECKS ==="
+          if command -v dig >/dev/null 2>&1; then
+            for type in NS SOA A AAAA MX TXT DS DNSKEY; do
+              echo "--- Cloudflare resolver: $type ---"
+              dig @1.1.1.1 kargozarr.ir "$type" +time=3 +tries=1 +noall +answer +comments || true
+              echo "--- Google resolver: $type ---"
+              dig @8.8.8.8 kargozarr.ir "$type" +time=3 +tries=1 +noall +answer +comments || true
+            done
+            echo "=== DNS DELEGATION TRACE ==="
+            dig +trace kargozarr.ir NS +time=3 +tries=1 2>&1 | tail -n 100 || true
+          fi
+
+          echo "=== IR DOMAIN REGISTRATION LOOKUP ==="
+          if command -v whois >/dev/null 2>&1; then
+            whois kargozarr.ir 2>&1 | head -n 100 || true
+          else
+            echo "whois client not installed; no package installation performed"
+          fi
+
           echo "=== END READ-ONLY INSPECTION ==="
           REMOTE
