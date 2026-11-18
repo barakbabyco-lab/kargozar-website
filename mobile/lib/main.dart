@@ -308,6 +308,8 @@ class _ServicesPageState extends State<ServicesPage> {
   late final KargozarApiClient _api;
   late final ServiceCatalogRepository _catalog;
   late Future<List<CatalogService>> _remoteServices;
+  late Future<List<ServiceCategory>> _remoteCategories;
+  String? _selectedCategory;
   bool _apiConfigured = false;
 
   @override
@@ -317,6 +319,7 @@ class _ServicesPageState extends State<ServicesPage> {
     _catalog = ServiceCatalogRepository(_api);
     _apiConfigured = const String.fromEnvironment('API_BASE_URL').trim().isNotEmpty;
     _remoteServices = _catalog.getServices();
+    _remoteCategories = _catalog.getCategoryTree();
   }
 
   @override
@@ -326,7 +329,10 @@ class _ServicesPageState extends State<ServicesPage> {
   }
 
   void _retryRemote() {
-    setState(() => _remoteServices = _catalog.getServices(query: _query));
+    setState(() => _remoteServices = _catalog.getServices(
+      category: _selectedCategory,
+      query: _query,
+    ));
   }
 
   @override
@@ -349,6 +355,8 @@ class _ServicesPageState extends State<ServicesPage> {
           textDirection: TextDirection.rtl,
           onChanged: (value) {
             setState(() => _query = value.trim());
+          },
+          onSubmitted: (_) {
             if (_apiConfigured) _retryRemote();
           },
           decoration: const InputDecoration(
@@ -357,6 +365,62 @@ class _ServicesPageState extends State<ServicesPage> {
           ),
         ),
         const SizedBox(height: 15),
+        if (_apiConfigured) ...[
+          FutureBuilder<List<ServiceCategory>>(
+            future: _remoteCategories,
+            builder: (context, snapshot) {
+              if (snapshot.hasError) {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: TextButton.icon(
+                    onPressed: () => setState(
+                      () => _remoteCategories = _catalog.getCategoryTree(),
+                    ),
+                    icon: const Icon(Icons.refresh_rounded),
+                    label: const Text('بارگذاری دسته‌بندی‌ها دوباره تلاش شود'),
+                  ),
+                );
+              }
+              if (!snapshot.hasData) {
+                return const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 8),
+                  child: LinearProgressIndicator(),
+                );
+              }
+              return Container(
+                margin: const EdgeInsets.only(bottom: 14),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: const Color(0xFFE8EDF3)),
+                ),
+                child: Column(
+                  children: [
+                    ListTile(
+                      dense: true,
+                      selected: _selectedCategory == null,
+                      leading: const Icon(Icons.apps_rounded, color: _teal),
+                      title: const Text('همه دسته‌بندی‌ها',
+                          style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700)),
+                      onTap: () {
+                        setState(() => _selectedCategory = null);
+                        _retryRemote();
+                      },
+                    ),
+                    ...snapshot.data!.map((category) => _CatalogCategoryBranch(
+                      category: category,
+                      selectedSlug: _selectedCategory,
+                      onSelected: (slug) {
+                        setState(() => _selectedCategory = slug);
+                        _retryRemote();
+                      },
+                    )),
+                  ],
+                ),
+              );
+            },
+          ),
+        ],
         if (_apiConfigured)
           FutureBuilder<List<CatalogService>>(
             future: _remoteServices,
@@ -442,6 +506,54 @@ class _ServicesPageState extends State<ServicesPage> {
                   style: TextStyle(color: _muted)),
             ),
         ],
+      ],
+    );
+  }
+}
+
+class _CatalogCategoryBranch extends StatelessWidget {
+  const _CatalogCategoryBranch({
+    required this.category,
+    required this.selectedSlug,
+    required this.onSelected,
+  });
+
+  final ServiceCategory category;
+  final String? selectedSlug;
+  final ValueChanged<String?> onSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    final title = Text(category.name,
+        style: const TextStyle(fontSize: 12, color: _ink));
+    if (category.children.isEmpty) {
+      return ListTile(
+        dense: true,
+        contentPadding: const EdgeInsetsDirectional.only(start: 30, end: 14),
+        selected: selectedSlug == category.slug,
+        leading: const Icon(Icons.subdirectory_arrow_left_rounded,
+            size: 17, color: _teal),
+        title: title,
+        onTap: () => onSelected(category.slug),
+      );
+    }
+    return ExpansionTile(
+      tilePadding: const EdgeInsetsDirectional.only(start: 14, end: 14),
+      childrenPadding: const EdgeInsetsDirectional.only(start: 10),
+      title: title,
+      children: [
+        ListTile(
+          dense: true,
+          selected: selectedSlug == category.slug,
+          title: Text('همه خدمات ${category.name}',
+              style: const TextStyle(fontSize: 12, color: _muted)),
+          onTap: () => onSelected(category.slug),
+        ),
+        ...category.children.map((child) => _CatalogCategoryBranch(
+          category: child,
+          selectedSlug: selectedSlug,
+          onSelected: onSelected,
+        )),
       ],
     );
   }
