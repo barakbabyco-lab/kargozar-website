@@ -1,6 +1,10 @@
-name: Kargozar VPS connection check
+name: Kargozar VPS connection and DNS inspection
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/vps-connection-check.yml"
   workflow_dispatch:
 
 permissions:
@@ -26,8 +30,8 @@ jobs:
           done
           PORT="${PORT:-22}"
           mkdir -p ~/.ssh
-          printf '%s\n' "$KEY" > ~/.ssh/kargozar_key
-          printf '%s\n' "$KNOWN_HOSTS" > ~/.ssh/known_hosts
+          printf '%s\\n' "$KEY" > ~/.ssh/kargozar_key
+          printf '%s\\n' "$KNOWN_HOSTS" > ~/.ssh/known_hosts
           chmod 600 ~/.ssh/kargozar_key ~/.ssh/known_hosts
           TARGET="$HOST"
           if [ "$PORT" != 22 ]; then TARGET="[$HOST]:$PORT"; fi
@@ -46,34 +50,54 @@ jobs:
           } >> ~/.ssh/config
           chmod 600 ~/.ssh/config
 
-      - name: Connect and inspect VPS (read-only)
+      - name: Inspect VPS and BIND DNS (read-only)
+        shell: bash
         run: |
           set -euo pipefail
           ssh kargozar-vps 'bash -s' <<'REMOTE'
-          set -eu
-          echo "=== SSH CONNECTED ==="
-          echo "HOST: $(hostname)"
-          echo "OS: $(. /etc/os-release && echo "$PRETTY_NAME")"
-          echo "KERNEL: $(uname -r)"
-          echo "USER: $(id)"
-          echo "DISK:"
+          set -u
+          echo "=== SERVER ==="
+          hostname
+          . /etc/os-release && echo "$PRETTY_NAME"
           df -h /
-          echo "MEMORY:"
           free -h
-          echo "SOFTWARE:"
-          for c in php composer nginx mysql mariadb git rsync; do
-            if command -v "$c" >/dev/null 2>&1; then
-              printf '%s: ' "$c"
-              case "$c" in
-                php) php -v | head -n 1 ;;
-                composer) composer --version --no-ansi | head -n 1 ;;
-                nginx) nginx -v 2>&1 ;;
-                mysql|mariadb) "$c" --version | head -n 1 ;;
-                *) command -v "$c" ;;
-              esac
-            else
-              echo "$c: MISSING"
-            fi
-          done
-          echo "=== END CHECK ==="
+
+          echo "=== BIND SERVICE ==="
+          if command -v named >/dev/null 2>&1; then
+            named -V 2>&1 | head -n 2
+          else
+            echo "BIND named: NOT INSTALLED"
+          fi
+          systemctl is-active bind9 2>&1 || true
+          systemctl status bind9 --no-pager -l 2>&1 | head -n 18 || true
+
+          echo "=== BIND CONFIG VALIDATION ==="
+          if command -v named-checkconf >/dev/null 2>&1; then
+            named-checkconf -z 2>&1 || true
+          else
+            echo "named-checkconf: NOT INSTALLED"
+          fi
+
+          echo "=== DECLARED ZONE NAMES ==="
+          if [ -d /etc/bind ]; then
+            grep -RhoE 'zone[[:space:]]+"[^"]+"' /etc/bind --include='*.conf' 2>/dev/null | sort -u || true
+            echo "BIND FILES:"
+            find /etc/bind -maxdepth 2 -type f -printf '%p\\n' 2>/dev/null | sort | head -n 80
+          fi
+
+          echo "=== DNS LISTENERS ==="
+          ss -lntup 2>&1 | grep -E '(:53[[:space:]]|:53$)' || echo "No listener found on port 53"
+
+          echo "=== FIREWALL ==="
+          if command -v ufw >/dev/null 2>&1; then ufw status 2>&1 || true; else echo "ufw: NOT INSTALLED"; fi
+
+          echo "=== LOCAL DNS TEST: SOA ==="
+          if command -v dig >/dev/null 2>&1; then
+            dig @127.0.0.1 kargozarr.ir SOA +time=2 +tries=1 +noall +answer +comments
+            echo "=== LOCAL DNS TEST: NS ==="
+            dig @127.0.0.1 kargozarr.ir NS +time=2 +tries=1 +noall +answer +comments
+          else
+            echo "dig: NOT INSTALLED"
+          fi
+          echo "=== END READ-ONLY INSPECTION ==="
           REMOTE
