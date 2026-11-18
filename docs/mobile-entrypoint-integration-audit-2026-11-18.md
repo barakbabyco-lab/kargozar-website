@@ -47,3 +47,28 @@ The current debug APK is not a customer-ready release. The main blocker identifi
 ## Deferred work
 
 KPanel configuration and support follow-up are intentionally paused at the user's request. Do not request or change KPanel credentials or pattern settings while this work is paused.
+
+
+## Implementation follow-up — 2026-11-18
+
+The planned integration has now been implemented in the real `mobile/lib/main.dart` entrypoint.
+
+- Converted the app root to manage the customer session, restore the saved token, and handle login/logout.
+- Added an OTP dialog launched through the app's navigator context.
+- Preserved the existing approved four-tab customer interface, home layout, service catalog presentation, and category tree.
+- Connected service-detail actions from both the home cards and services list to the authenticated request flow.
+- Added idempotency-key generation and displays the tracking code only after a successful API response.
+- Connected the requests tab to the authenticated customer's request list and status events.
+- Added a refresh revision after successful request creation so the requests list reloads.
+- Kept sample/offline services visibly non-operational: they cannot be submitted as real server requests.
+- Added widget tests for preserving the approved UI/navigation and for displaying the real API-not-configured error instead of fake OTP success. Tests use an in-memory token store.
+
+### Validation status
+
+- Flutter static analysis: passed on the latest workflow run.
+- Flutter tests: passed on the latest workflow run, including the new widget tests and existing API/catalog tests.
+- Debug APK build: running in GitHub Actions at the time this note was written; do not call the build complete until the workflow confirms success.
+- Release signing: still not configured; signed APK/AAB are not yet available.
+- Production API URL, HTTPS deployment, live OTP delivery, and physical-device end-to-end checks remain release blockers.
+
+The implementation does not enable SMS OTP by itself. Keep OTP disabled on the backend until the selected SMS provider is configured and an end-to-end delivery test succeeds.
