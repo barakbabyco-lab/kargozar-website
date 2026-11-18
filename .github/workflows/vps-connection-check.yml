@@ -118,5 +118,41 @@ jobs:
             echo "whois client not installed; no package installation performed"
           fi
 
+          echo "=== DIRECT .IR AUTHORITATIVE REGISTRY DNS CHECK ==="
+          if command -v dig >/dev/null 2>&1; then
+            for server in a.nic.ir b.nic.ir c.nic.ir d.nic.ir; do
+              echo "--- $server: NS delegation ---"
+              dig @"$server" kargozarr.ir NS +norecurse +dnssec +time=3 +tries=1 +noall +answer +authority +comments || true
+              echo "--- $server: DS ---"
+              dig @"$server" kargozarr.ir DS +norecurse +dnssec +time=3 +tries=1 +noall +answer +authority +comments || true
+            done
+          fi
+
+          echo "=== IRNIC WHOIS TCP QUERY ==="
+          python3 - <<'PYWHOIS'
+          import socket
+          host = "whois.nic.ir"
+          query = "kargozarr.ir\r\n"
+          try:
+              with socket.create_connection((host, 43), timeout=8) as sock:
+                  sock.settimeout(8)
+                  sock.sendall(query.encode("ascii"))
+                  chunks = []
+                  total = 0
+                  while total < 12000:
+                      try:
+                          data = sock.recv(min(4096, 12000-total))
+                      except socket.timeout:
+                          break
+                      if not data:
+                          break
+                      chunks.append(data)
+                      total += len(data)
+                  result = b"".join(chunks).decode("utf-8", errors="replace")
+                  print(result if result.strip() else "WHOIS returned an empty response")
+          except Exception as exc:
+              print(f"WHOIS query failed: {type(exc).__name__}: {exc}")
+          PYWHOIS
+
           echo "=== END READ-ONLY INSPECTION ==="
           REMOTE
