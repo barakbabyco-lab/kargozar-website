@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'core/network/kargozar_api_client.dart';
+import 'features/catalog/service_catalog_repository.dart';
 
 void main() {
   runApp(const KargozarApp());
@@ -67,6 +69,10 @@ class ServiceItem {
   final String subtitle;
   final IconData icon;
   final String category;
+  final String? apiId;
+  final List<String> requirements;
+  final int? estimatedDays;
+  final int? basePrice;
 }
 
 const services = <ServiceItem>[
@@ -299,6 +305,29 @@ class ServicesPage extends StatefulWidget {
 
 class _ServicesPageState extends State<ServicesPage> {
   String _query = '';
+  late final KargozarApiClient _api;
+  late final ServiceCatalogRepository _catalog;
+  late Future<List<CatalogService>> _remoteServices;
+  bool _apiConfigured = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _api = KargozarApiClient();
+    _catalog = ServiceCatalogRepository(_api);
+    _apiConfigured = const String.fromEnvironment('API_BASE_URL').trim().isNotEmpty;
+    _remoteServices = _catalog.getServices();
+  }
+
+  @override
+  void dispose() {
+    _api.close();
+    super.dispose();
+  }
+
+  void _retryRemote() {
+    setState(() => _remoteServices = _catalog.getServices(query: _query));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -318,27 +347,114 @@ class _ServicesPageState extends State<ServicesPage> {
         const SizedBox(height: 18),
         TextField(
           textDirection: TextDirection.rtl,
-          onChanged: (value) => setState(() => _query = value.trim()),
+          onChanged: (value) {
+            setState(() => _query = value.trim());
+            if (_apiConfigured) _retryRemote();
+          },
           decoration: const InputDecoration(
             hintText: 'جست‌وجوی خدمات...',
             prefixIcon: Icon(Icons.search_rounded),
           ),
         ),
         const SizedBox(height: 15),
-        ...filtered.map((service) => Padding(
-          padding: const EdgeInsets.only(bottom: 10),
-          child: ServiceListTile(service: service),
-        )),
-        if (filtered.isEmpty)
-          const Padding(
-            padding: EdgeInsets.all(28),
-            child: Text('خدمتی با این عبارت پیدا نشد.',
-                textAlign: TextAlign.center,
-                style: TextStyle(color: _muted)),
+        if (_apiConfigured)
+          FutureBuilder<List<CatalogService>>(
+            future: _remoteServices,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Padding(
+                  padding: EdgeInsets.all(18),
+                  child: Center(child: CircularProgressIndicator()),
+                );
+              }
+              if (snapshot.hasError) {
+                return Container(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFFF7ED),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('دریافت فهرست زنده خدمات ممکن نشد.',
+                          style: TextStyle(color: _ink, fontSize: 12)),
+                      TextButton(
+                        onPressed: _retryRemote,
+                        child: const Text('تلاش دوباره'),
+                      ),
+                    ],
+                  ),
+                );
+              }
+              final items = snapshot.data ?? const <CatalogService>[];
+              if (items.isEmpty) {
+                return const Padding(
+                  padding: EdgeInsets.all(16),
+                  child: Text('در حال حاضر خدمتی در کاتالوگ آنلاین ثبت نشده است.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: _muted)),
+                );
+              }
+              return Column(
+                children: items.map((item) {
+                  final service = ServiceItem(
+                    title: item.title,
+                    subtitle: item.description ?? item.categoryName ?? '',
+                    category: item.categoryName ?? 'سایر خدمات',
+                    icon: _iconForCategory(item.categoryName),
+                    apiId: item.id,
+                    requirements: item.requirements,
+                    estimatedDays: item.estimatedDays,
+                    basePrice: item.basePrice,
+                  );
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 10),
+                    child: ServiceListTile(service: service),
+                  );
+                }).toList(),
+              );
+            },
+          )
+        else ...[
+          Container(
+            margin: const EdgeInsets.only(bottom: 12),
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: const Color(0xFFEFF6FF),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Text(
+              'اتصال به سرور هنوز تنظیم نشده؛ فهرست زیر صرفاً نمونه نمایشی است.',
+              style: TextStyle(color: _ink, fontSize: 11),
+            ),
           ),
+          ...filtered.map((service) => Padding(
+            padding: const EdgeInsets.only(bottom: 10),
+            child: ServiceListTile(service: service),
+          )),
+          if (filtered.isEmpty)
+            const Padding(
+              padding: EdgeInsets.all(28),
+              child: Text('خدمتی با این عبارت پیدا نشد.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: _muted)),
+            ),
+        ],
       ],
     );
   }
+}
+
+IconData _iconForCategory(String? category) {
+  final value = category ?? '';
+  if (value.contains('مجوز') || value.contains('بهداشتی')) return Icons.storefront_outlined;
+  if (value.contains('ثبت') || value.contains('برند')) return Icons.verified_outlined;
+  if (value.contains('بانک')) return Icons.account_balance_outlined;
+  if (value.contains('قرارداد') || value.contains('حقوقی')) return Icons.description_outlined;
+  if (value.contains('آنلاین') || value.contains('اینترنت')) return Icons.shopping_bag_outlined;
+  return Icons.work_outline_rounded;
 }
 
 class RequestsPage extends StatelessWidget {
