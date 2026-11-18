@@ -162,45 +162,52 @@ class ServiceCatalogSeeder extends Seeder
             ],
         ];
 
-        $categories = [];
         foreach ($tree as $position => $node) {
-            $categories = array_merge(
-                $categories,
-                $this->storeNode($node, null, $position + 1),
+            $this->storeNode($node, null, $position + 1);
+        }
+
+        // Keep the original seeded service offerings and their stable slugs.
+        // Existing rows are updated in place, never deleted or recreated.
+        $serviceDefinitions = [
+            ['جواز کسب', 'business-license', 'راهنمایی و پیگیری فرایند دریافت مجوز کسب‌وکار.', 'trade-business-license'],
+            ['کارت بازرگانی', 'commercial-card', 'بررسی شرایط و پیگیری تشکیل پرونده کارت بازرگانی.', 'commercial-card'],
+            ['کارت بهداشت', 'health-card', 'راهنمایی درباره مدارک و مراحل دریافت کارت بهداشت.', 'health-card'],
+            ['نشان استاندارد', 'standard-mark', 'راهنمایی و پیگیری درخواست نشان استاندارد.', 'standard-mark'],
+            ['سیب سلامت', 'sib-salamat', 'راهنمایی و پیگیری فرایندهای مرتبط با سیب سلامت.', 'sib-salamat'],
+            ['ثبت برند و علامت تجاری', 'trademark-registration', 'بررسی اولیه و پیگیری مراحل ثبت علامت تجاری.', 'trademark'],
+            ['ثبت طرح صنعتی', 'industrial-design-registration', 'راهنمایی درباره ثبت طرح صنعتی و مدارک موردنیاز.', 'industrial-design'],
+            ['اینماد و راه‌اندازی فروشگاه اینترنتی', 'enamad-online-store', 'راهنمایی برای اینماد، وب‌سایت و آماده‌سازی فروشگاه اینترنتی.', 'internet-business-setup'],
+            ['راه‌اندازی درگاه پرداخت', 'payment-gateway', 'پیگیری مراحل آماده‌سازی درگاه پرداخت متناسب با شرایط کسب‌وکار.', 'ecommerce-sales'],
+            ['تلفن اینترنتی', 'internet-phone', 'راهنمایی و پیگیری راه‌اندازی خط تلفن اینترنتی.', 'internet-telephony'],
+            ['پنل پیامک انبوه', 'bulk-sms-panel', 'راهنمایی برای تهیه و راه‌اندازی پنل پیامک کسب‌وکار.', 'sms-services'],
+            ['تشکیل پرونده مالیاتی', 'tax-file', 'راهنمایی و پیگیری تشکیل پرونده و دریافت کدهای مالیاتی.', 'tax-tracking-code'],
+            ['کد رهگیری اجاره‌نامه', 'lease-tracking-code', 'راهنمایی درباره ثبت قرارداد اجاره و دریافت کد رهگیری.', 'lease-tracking'],
+            ['افتتاح حساب جاری', 'current-account-opening', 'بررسی شرایط و مدارک افتتاح حساب جاری کسب‌وکار.', 'current-account'],
+            ['قرارداد استخدام', 'employment-contract', 'تهیه پیش‌نویس قرارداد استخدام متناسب با اطلاعات طرفین.', 'employment-contract'],
+            ['قرارداد پیمانکاری', 'contractor-agreement', 'تهیه پیش‌نویس قرارداد پیمانکاری بر اساس شرح کار و توافق طرفین.', 'contractor-contract'],
+            ['ساخت تیزر تبلیغاتی', 'advertising-video', 'طراحی و تولید تیزر معرفی محصول یا کسب‌وکار.', 'other-specialized-services'],
+        ];
+
+        foreach ($serviceDefinitions as $position => [$title, $slug, $description, $categorySlug]) {
+            $category = ServiceCategory::query()->where('slug', $categorySlug)->firstOrFail();
+
+            Service::updateOrCreate(
+                ['slug' => $slug],
+                [
+                    'category_id' => $category->id,
+                    'title' => $title,
+                    'description' => $description,
+                    'requirements' => [],
+                    'estimated_days' => null,
+                    'base_price' => null,
+                    'is_active' => true,
+                    'sort_order' => $position + 1,
+                ],
             );
         }
 
-        // Preserve all existing service records and their identifiers while
-        // assigning known catalog entries to their new leaf categories.
-        $serviceCategoryMap = [
-            'business-license' => 'trade-business-license',
-            'commercial-card' => 'commercial-card',
-            'health-card' => 'health-card',
-            'standard-mark' => 'standard-mark',
-            'sib-salamat' => 'sib-salamat',
-            'trademark-registration' => 'trademark',
-            'industrial-design-registration' => 'industrial-design',
-            'enamad-online-store' => 'internet-business-setup',
-            'payment-gateway' => 'ecommerce-sales',
-            'internet-phone' => 'internet-telephony',
-            'bulk-sms-panel' => 'sms-services',
-            'tax-file' => 'tax-tracking-code',
-            'lease-tracking-code' => 'lease-tracking',
-            'current-account-opening' => 'current-account',
-            'employment-contract' => 'employment-contract',
-            'contractor-agreement' => 'contractor-contract',
-            'advertising-video' => 'other-specialized-services',
-        ];
-
-        foreach ($serviceCategoryMap as $serviceSlug => $categorySlug) {
-            $category = ServiceCategory::query()->where('slug', $categorySlug)->first();
-            if ($category) {
-                Service::query()->where('slug', $serviceSlug)->update([
-                    'category_id' => $category->id,
-                ]);
-            }
-        }
     }
+
 
     /**
      * @param array<string, mixed> $node
