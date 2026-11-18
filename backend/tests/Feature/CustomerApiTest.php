@@ -1,17 +1,17 @@
 <?php
 
-namespace Tests\\Feature;
+namespace Tests\Feature;
 
-use App\\Models\\Customer;
-use App\\Models\\IdempotencyKey;
-use App\\Models\\RequestEvent;
-use App\\Models\\Service;
-use App\\Models\\ServiceCategory;
-use App\\Models\\ServiceRequest;
-use App\\Models\\StaffUser;
-use App\\Services\\OtpDelivery;
-use Illuminate\\Foundation\\Testing\\RefreshDatabase;
-use Tests\\TestCase;
+use App\Models\Customer;
+use App\Models\IdempotencyKey;
+use App\Models\RequestEvent;
+use App\Models\Service;
+use App\Models\ServiceCategory;
+use App\Models\ServiceRequest;
+use App\Models\StaffUser;
+use App\Services\OtpDelivery;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
 
 class CustomerApiTest extends TestCase
 {
@@ -113,7 +113,7 @@ class CustomerApiTest extends TestCase
         ]);
         $service = $this->makeService();
         $serviceRequest = ServiceRequest::create([
-            'public_id' => (string) \\Illuminate\\Support\\Str::uuid(),
+            'public_id' => (string) \Illuminate\Support\Str::uuid(),
             'customer_id' => $owner->id,
             'service_id' => $service->id,
             'tracking_code' => 'KG-OWNED-REQUEST-001',
@@ -281,7 +281,7 @@ class CustomerApiTest extends TestCase
         ]);
         $service = $this->makeService();
         $serviceRequest = ServiceRequest::create([
-            'public_id' => (string) \\Illuminate\\Support\\Str::uuid(),
+            'public_id' => (string) \Illuminate\Support\Str::uuid(),
             'customer_id' => $customer->id,
             'service_id' => $service->id,
             'tracking_code' => 'KG-STAFF-REQUEST-001',
