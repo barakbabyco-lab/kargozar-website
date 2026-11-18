@@ -108,12 +108,12 @@ jobs:
               printf '%s: ' "$svc"; systemctl is-active "$svc" 2>/dev/null || true
             fi
           done
-          printf 'Nginx config test: '
-          if command -v nginx >/dev/null 2>&1 && nginx -t >/dev/null 2>&1; then echo OK; else echo FAIL_OR_NOT_CONFIGURED; fi
-          if command -v nginx >/dev/null 2>&1; then
-            echo 'Nginx virtual-host names and document roots:'
-            nginx -T 2>/dev/null | awk '/^[[:space:]]*server_name[[:space:]]|^[[:space:]]*root[[:space:]]/ {print}' | head -n 30
-          fi
+          echo 'Nginx config test details:'
+          if command -v nginx >/dev/null 2>&1; then nginx -t 2>&1 | head -n 15; else echo 'nginx binary missing'; fi
+          echo 'Nginx enabled sites:'
+          ls -la /etc/nginx/sites-enabled 2>&1 | head -n 20
+          echo 'Nginx virtual-host names and document roots:'
+          nginx -T 2>&1 | awk '/^[[:space:]]*server_name[[:space:]]|^[[:space:]]*root[[:space:]]/ {print}' | head -n 30
           section "Database service"
           if command -v mysqladmin >/dev/null 2>&1 && mysqladmin ping --connect-timeout=3 2>/dev/null; then echo 'MySQL local ping: OK'; else echo 'MySQL local ping: unavailable'; fi
           section "Permissions"
@@ -146,13 +146,23 @@ jobs:
               if [ -f "$DEPLOY_PATH/current/artisan" ]; then
                 printf 'Laravel version: '
                 (cd "$DEPLOY_PATH/current" && php artisan --version 2>/dev/null) || echo 'could not determine'
+                echo 'Laravel API routes (read-only):'
+                (cd "$DEPLOY_PATH/current" && php artisan route:list --path=api --except-vendor --no-ansi 2>&1 | head -n 45) || true
+                echo 'Laravel migration status (read-only):'
+                (cd "$DEPLOY_PATH/current" && php artisan migrate:status --no-interaction --no-ansi 2>&1 | head -n 80) || true
+                if [ -f "$DEPLOY_PATH/current/vendor/autoload.php" ]; then
+                  echo 'Composer platform requirements:'
+                  (cd "$DEPLOY_PATH/current" && composer check-platform-reqs --no-dev --no-interaction 2>&1 | tail -n 25) || true
+                else
+                  echo 'Composer vendor directory: missing'
+                fi
               fi
             fi
           fi
           section "DNS"
           for domain in kargozarr.ir www.kargozarr.ir; do
-            printf '%s: ' "$domain"
-            getent ahostsv4 "$domain" | awk 'NR==1 {print $1}' || echo 'not resolving'
+            resolved="$(getent ahostsv4 "$domain" | awk 'NR==1 {print $1}')"
+            [ -n "$resolved" ] && echo "$resolved" || echo 'not resolving'
           done
           echo
           echo 'Audit is read-only; no server configuration, packages, databases, or application files were changed.'
