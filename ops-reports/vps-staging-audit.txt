@@ -9,7 +9,7 @@ Identity: uid=1000(deploy) gid=1000(deploy) groups=1000(deploy),33(www-data)
 Filesystem      Size  Used Avail Use% Mounted on
 /dev/vda1        58G  3.5G   54G   6% /
                total        used        free      shared  buff/cache   available
-Mem:           3.8Gi       936Mi       940Mi       3.7Mi       2.3Gi       2.9Gi
+Mem:           3.8Gi       968Mi       907Mi       3.7Mi       2.3Gi       2.9Gi
 Swap:             0B          0B          0B
 CPU cores: 2
 
@@ -44,8 +44,8 @@ nginx: active
 mysql: active
 php8.3-fpm: active
 Nginx config test details (temporary unprivileged PID path):
-2026/11/18 07:52:57 [warn] 34930#34930: the "user" directive makes sense only if the master process runs with super-user privileges, ignored in /etc/nginx/nginx.conf:1
-2026/11/18 07:52:57 [emerg] 34930#34930: "pid" directive is duplicate in /etc/nginx/nginx.conf:3
+2026/11/18 07:53:42 [warn] 35165#35165: the "user" directive makes sense only if the master process runs with super-user privileges, ignored in /etc/nginx/nginx.conf:1
+2026/11/18 07:53:42 [emerg] 35165#35165: "pid" directive is duplicate in /etc/nginx/nginx.conf:3
 nginx: configuration file /etc/nginx/nginx.conf test failed
 Nginx enabled sites:
 total 8
@@ -180,7 +180,10 @@ Laravel local HTTP server ready: yes
 
 
 ## DNS
-not resolving
-not resolving
+kargozarr.ir system resolver: not resolving
+kargozarr.ir Google DNS A: public lookup unavailable
+www.kargozarr.ir system resolver: not resolving
+www.kargozarr.ir Google DNS A: public lookup unavailable
+kargozarr.ir Google DNS NS: public lookup unavailable
 
 Audit is read-only; no server configuration, packages, databases, or application files were changed.
