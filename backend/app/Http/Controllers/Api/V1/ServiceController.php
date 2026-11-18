@@ -1,25 +1,28 @@
 <?php
 
-namespace App\Http\Controllers\Api\V1;
+namespace App\\Http\\Controllers\\Api\\V1;
 
-use App\Http\Controllers\Controller;
-use App\Http\Resources\ServiceResource;
-use App\Models\Service;
-use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use App\\Http\\Controllers\\Controller;
+use App\\Http\\Resources\\ServiceResource;
+use App\\Models\\Service;
+use App\\Models\\ServiceCategory;
+use Illuminate\\Http\\Request;
+use Illuminate\\Http\\Resources\\Json\\AnonymousResourceCollection;
 
 class ServiceController extends Controller
 {
     public function index(Request $request): AnonymousResourceCollection
     {
+        $activeCategoryIds = ServiceCategory::activeHierarchyIds();
+
         $query = Service::query()
             ->with('category')
-            ->where('is_active', true);
+            ->where('is_active', true)
+            ->whereIn('category_id', $activeCategoryIds);
 
         if ($request->filled('category')) {
             $query->whereHas('category', fn ($category) => $category
-                ->where('slug', $request->string('category')->toString())
-                ->where('is_active', true));
+                ->where('slug', $request->string('category')->toString()));
         }
 
         if ($request->filled('q')) {
@@ -41,7 +44,7 @@ class ServiceController extends Controller
             ->with('category')
             ->where('slug', $slug)
             ->where('is_active', true)
-            ->whereHas('category', fn ($category) => $category->where('is_active', true))
+            ->whereIn('category_id', ServiceCategory::activeHierarchyIds())
             ->firstOrFail();
 
         return new ServiceResource($service);
