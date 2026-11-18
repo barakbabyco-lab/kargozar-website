@@ -9,11 +9,11 @@ void main() {
   runApp(const KargozarApp());
 }
 
-const _navy = Color(0xFF142B4A);
-const _teal = Color(0xFF168C83);
+const _navy = Color(0xFF49334F); // برند مکمل: بادمجانی تیره
+const _teal = Color(0xFFC62828); // رنگ اصلی برند: قرمز
 const _ink = Color(0xFF1E293B);
 const _muted = Color(0xFF64748B);
-const _canvas = Color(0xFFF5F7FA);
+const _canvas = Color(0xFFFFFFFF);
 
 class KargozarApp extends StatefulWidget {
  const KargozarApp({super.key,this.apiClient}); final KargozarApiClient? apiClient;
@@ -31,7 +31,7 @@ class _KargozarAppState extends State<KargozarApp>{
  @override Widget build(BuildContext context)=>MaterialApp(
  navigatorKey:_navigatorKey,
  debugShowCheckedModeBanner:false,title:'کارگزار',
- theme:ThemeData(useMaterial3:true,scaffoldBackgroundColor:_canvas,colorScheme:ColorScheme.fromSeed(seedColor:_navy,primary:_navy,secondary:_teal,surface:Colors.white),fontFamily:'Roboto',
+ theme:ThemeData(useMaterial3:true,scaffoldBackgroundColor:_canvas,colorScheme:ColorScheme.fromSeed(seedColor:_teal,primary:_teal,secondary:_navy,surface:Colors.white),fontFamily:'Roboto',
  appBarTheme:const AppBarTheme(backgroundColor:_canvas,foregroundColor:_ink,centerTitle:false,elevation:0),
  inputDecorationTheme:InputDecorationTheme(filled:true,fillColor:Colors.white,border:OutlineInputBorder(borderRadius:BorderRadius.circular(14),borderSide:const BorderSide(color:Color(0xFFE2E8F0))),enabledBorder:OutlineInputBorder(borderRadius:BorderRadius.circular(14),borderSide:const BorderSide(color:Color(0xFFE2E8F0))))),
  home:Directionality(textDirection:TextDirection.rtl,child:_loading?const Scaffold(body:Center(child:CircularProgressIndicator())):MainShell(requests:_requests,signedIn:_signedIn,onLogin:_login,onLogout:_logout)),
@@ -536,7 +536,7 @@ class _ServicesPageState extends State<ServicesPage> {
             margin: const EdgeInsets.only(bottom: 12),
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: const Color(0xFFEFF6FF),
+              color: const Color(0xFFFFF1F1),
               borderRadius: BorderRadius.circular(12),
             ),
             child: const Text(
@@ -721,7 +721,7 @@ class ServiceListTile extends StatelessWidget {
     tileColor: Colors.white,
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
     leading: CircleAvatar(
-      backgroundColor: const Color(0xFFEAF4F3),
+      backgroundColor: const Color(0xFFFCE8E8),
       child: Icon(service.icon, color: _teal),
     ),
     title: Text(service.title, style: const TextStyle(
@@ -746,7 +746,7 @@ class StepTile extends StatelessWidget {
     child: Row(
       children: [
         CircleAvatar(
-          backgroundColor: const Color(0xFFE5F2F0),
+          backgroundColor: const Color(0xFFFCE8E8),
           foregroundColor: _teal,
           child: Text(number, style: const TextStyle(fontWeight: FontWeight.w900)),
         ),
