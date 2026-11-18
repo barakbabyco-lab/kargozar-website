@@ -198,9 +198,14 @@ jobs:
           done
           section "DNS"
           for domain in kargozarr.ir www.kargozarr.ir; do
+            printf '%s system resolver: ' "$domain"
             resolved="$(getent ahostsv4 "$domain" | awk 'NR==1 {print $1}')"
             [ -n "$resolved" ] && echo "$resolved" || echo 'not resolving'
+            printf '%s Google DNS A: ' "$domain"
+            curl -fsS --max-time 5 "https://dns.google/resolve?name=$domain&type=A" 2>/dev/null | python3 -c 'import json,sys; d=json.load(sys.stdin); print(", ".join(x["data"] for x in d.get("Answer",[]) if x.get("type")==1) or "no A answer, DNS status "+str(d.get("Status")))' 2>/dev/null || echo 'public lookup unavailable'
           done
+          printf 'kargozarr.ir Google DNS NS: '
+          curl -fsS --max-time 5 'https://dns.google/resolve?name=kargozarr.ir&type=NS' 2>/dev/null | python3 -c 'import json,sys; d=json.load(sys.stdin); print(", ".join(x["data"] for x in d.get("Answer",[]) if x.get("type")==2) or "no NS answer, DNS status "+str(d.get("Status")))' 2>/dev/null || echo 'public lookup unavailable'
           echo
           echo 'Audit is read-only; no server configuration, packages, databases, or application files were changed.'
           REMOTE
