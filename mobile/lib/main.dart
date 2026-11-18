@@ -1,6 +1,9 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'core/network/kargozar_api_client.dart';
+import 'features/auth/customer_session.dart';
 import 'features/catalog/service_catalog_repository.dart';
+import 'features/requests/customer_request_repository.dart';
 
 void main() {
   runApp(const KargozarApp());
@@ -12,49 +15,50 @@ const _ink = Color(0xFF1E293B);
 const _muted = Color(0xFF64748B);
 const _canvas = Color(0xFFF5F7FA);
 
-class KargozarApp extends StatelessWidget {
-  const KargozarApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'کارگزار',
-      theme: ThemeData(
-        useMaterial3: true,
-        scaffoldBackgroundColor: _canvas,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: _navy,
-          primary: _navy,
-          secondary: _teal,
-          surface: Colors.white,
-        ),
-        fontFamily: 'Roboto',
-        appBarTheme: const AppBarTheme(
-          backgroundColor: _canvas,
-          foregroundColor: _ink,
-          centerTitle: false,
-          elevation: 0,
-        ),
-        inputDecorationTheme: InputDecorationTheme(
-          filled: true,
-          fillColor: Colors.white,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(14),
-            borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(14),
-            borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
-          ),
-        ),
-      ),
-      home: const Directionality(
-        textDirection: TextDirection.rtl,
-        child: MainShell(),
-      ),
-    );
-  }
+class KargozarApp extends StatefulWidget {
+ const KargozarApp({super.key,this.apiClient}); final KargozarApiClient? apiClient;
+ @override State<KargozarApp> createState()=>_KargozarAppState();
+}
+class _KargozarAppState extends State<KargozarApp>{
+ late final KargozarApiClient _api; late final CustomerSession _session; late final CustomerRequestRepository _requests;
+ bool _loading=true,_signedIn=false;
+ @override void initState(){super.initState();_api=widget.apiClient??KargozarApiClient();_session=CustomerSession(_api);_requests=CustomerRequestRepository(_api);_restore();}
+ Future<void> _restore()async{try{final ok=await _session.restore();if(mounted)setState(()=>_signedIn=ok);}catch(_){}finally{if(mounted)setState(()=>_loading=false);}}
+ Future<void> _login()async{final ok=await showDialog<bool>(context:context,barrierDismissible:false,builder:(_)=>OtpDialog(session:_session));if(ok==true&&mounted)setState(()=>_signedIn=true);}
+ Future<void> _logout()async{try{await _session.signOut();}catch(_){}if(mounted)setState(()=>_signedIn=false);}
+ @override void dispose(){_api.close();super.dispose();}
+ @override Widget build(BuildContext context)=>MaterialApp(
+ debugShowCheckedModeBanner:false,title:'کارگزار',
+ theme:ThemeData(useMaterial3:true,scaffoldBackgroundColor:_canvas,colorScheme:ColorScheme.fromSeed(seedColor:_navy,primary:_navy,secondary:_teal,surface:Colors.white),fontFamily:'Roboto',
+ appBarTheme:const AppBarTheme(backgroundColor:_canvas,foregroundColor:_ink,centerTitle:false,elevation:0),
+ inputDecorationTheme:InputDecorationTheme(filled:true,fillColor:Colors.white,border:OutlineInputBorder(borderRadius:BorderRadius.circular(14),borderSide:const BorderSide(color:Color(0xFFE2E8F0))),enabledBorder:OutlineInputBorder(borderRadius:BorderRadius.circular(14),borderSide:const BorderSide(color:Color(0xFFE2E8F0))))),
+ home:Directionality(textDirection:TextDirection.rtl,child:_loading?const Scaffold(body:Center(child:CircularProgressIndicator())):MainShell(requests:_requests,signedIn:_signedIn,onLogin:_login,onLogout:_logout)),
+ );
+}
+class OtpDialog extends StatefulWidget{
+ const OtpDialog({super.key,required this.session});final CustomerSession session;
+ @override State<OtpDialog> createState()=>_OtpDialogState();
+}
+class _OtpDialogState extends State<OtpDialog>{
+ final _mobile=TextEditingController(),_code=TextEditingController();bool _requested=false,_busy=false;String? _error;
+ @override void dispose(){_mobile.dispose();_code.dispose();super.dispose();}
+ Future<void> _submit()async{
+ final mobile=_mobile.text.trim();
+ if(!RegExp(r'^09\d{9}$').hasMatch(mobile)){setState(()=>_error='شماره موبایل معتبر وارد کن.');return;}
+ if(_requested&&!RegExp(r'^\d{4,8}$').hasMatch(_code.text.trim())){setState(()=>_error='کد ورود معتبر نیست.');return;}
+ setState(()=>{_busy=true,_error=null});
+ try{if(!_requested){await widget.session.requestOtp(mobile);if(mounted)setState(()=>_requested=true);}else{await widget.session.verifyOtp(mobile:mobile,code:_code.text.trim());if(mounted)Navigator.pop(context,true);}}
+ on KargozarApiException catch(e){if(mounted)setState(()=>_error=e.message);}catch(_){if(mounted)setState(()=>_error='ارتباط با سرور برقرار نشد.');}finally{if(mounted)setState(()=>_busy=false);}
+ }
+ @override Widget build(BuildContext context)=>AlertDialog(title:const Text('ورود به کارگزار'),content:Column(mainAxisSize:MainAxisSize.min,children:[
+ const Text('برای ثبت و پیگیری درخواست‌ها، شماره موبایل خود را تأیید کن.'),
+ TextField(controller:_mobile,enabled:!_requested,keyboardType:TextInputType.phone,decoration:const InputDecoration(labelText:'شماره موبایل')),
+ if(_requested)TextField(controller:_code,keyboardType:TextInputType.number,decoration:const InputDecoration(labelText:'کد یک‌بارمصرف')),
+ if(_error!=null)Text(_error!,style:const TextStyle(color:Colors.red)),
+ ]),actions:[
+ TextButton(onPressed:_busy?null:()=>Navigator.pop(context,false),child:const Text('انصراف')),
+ FilledButton(onPressed:_busy?null:_submit,child:_busy?const SizedBox(width:18,height:18,child:CircularProgressIndicator(strokeWidth:2)):Text(_requested?'تأیید و ورود':'دریافت کد')),
+ ]);
 }
 
 class ServiceItem {
@@ -130,59 +134,41 @@ const services = <ServiceItem>[
   ),
 ];
 
-class MainShell extends StatefulWidget {
-  const MainShell({super.key});
-
-  @override
-  State<MainShell> createState() => _MainShellState();
+class MainShell extends StatefulWidget{
+ const MainShell({super.key,required this.requests,required this.signedIn,required this.onLogin,required this.onLogout});
+ final CustomerRequestRepository requests;final bool signedIn;final VoidCallback onLogin,onLogout;
+ @override State<MainShell> createState()=>_MainShellState();
 }
-
-class _MainShellState extends State<MainShell> {
-  int _index = 0;
-
-  final _pages = const [
-    HomePage(),
-    ServicesPage(),
-    RequestsPage(),
-    ProfilePage(),
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(child: _pages[_index]),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: _index,
-        onDestinationSelected: (value) => setState(() => _index = value),
-        destinations: const [
-          NavigationDestination(
-            icon: Icon(Icons.home_outlined),
-            selectedIcon: Icon(Icons.home_rounded),
-            label: 'خانه',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.grid_view_outlined),
-            selectedIcon: Icon(Icons.grid_view_rounded),
-            label: 'خدمات',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.receipt_long_outlined),
-            selectedIcon: Icon(Icons.receipt_long_rounded),
-            label: 'درخواست‌ها',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.person_outline_rounded),
-            selectedIcon: Icon(Icons.person_rounded),
-            label: 'حساب من',
-          ),
-        ],
-      ),
-    );
-  }
+class _MainShellState extends State<MainShell>{
+ int _index=0,_revision=0;
+ Future<void> _request(ServiceItem service)async{
+ if(!widget.signedIn){widget.onLogin();return;}
+ final id=service.apiId;
+ if(id==null||id.isEmpty){ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content:Text('برای ثبت واقعی این خدمت، ابتدا باید کاتالوگ آنلاین سرور در دسترس باشد.')));return;}
+ final note=await showDialog<String>(context:context,builder:(ctx){final c=TextEditingController();return AlertDialog(title:Text('درخواست ${service.title}'),content:TextField(controller:c,minLines:2,maxLines:4,decoration:const InputDecoration(labelText:'توضیحات درخواست (اختیاری)')),actions:[TextButton(onPressed:()=>Navigator.pop(ctx),child:const Text('انصراف')),FilledButton(onPressed:()=>Navigator.pop(ctx,c.text.trim()),child:const Text('ادامه و ثبت درخواست'))]);});
+ if(note==null||!mounted)return;
+ final key='${DateTime.now().microsecondsSinceEpoch}-${Random.secure().nextInt(1<<32)}';
+ try{final result=await widget.requests.create(serviceId:id,customerNote:note,idempotencyKey:key);if(!mounted)return;setState(()=>_revision++);await showDialog<void>(context:context,builder:(ctx)=>AlertDialog(title:const Text('درخواست ثبت شد'),content:Text('کد پیگیری: ${result.trackingCode}'),actions:[TextButton(onPressed:()=>Navigator.pop(ctx),child:const Text('متوجه شدم'))]));}
+ catch(e){if(mounted)ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:Text(errorText(e))));}
+ }
+ @override Widget build(BuildContext context)=>Scaffold(
+ body:SafeArea(child:IndexedStack(index:_index,children:[
+ HomePage(onRequest:_request),ServicesPage(onRequest:_request),
+ RequestsPage(repository:widget.requests,signedIn:widget.signedIn,onLogin:widget.onLogin,refreshRevision:_revision),
+ ProfilePage(signedIn:widget.signedIn,onLogin:widget.onLogin,onLogout:widget.onLogout),
+ ])),
+ bottomNavigationBar:NavigationBar(selectedIndex:_index,onDestinationSelected:(v)=>setState(()=>_index=v),destinations:const[
+ NavigationDestination(icon:Icon(Icons.home_outlined),selectedIcon:Icon(Icons.home_rounded),label:'خانه'),
+ NavigationDestination(icon:Icon(Icons.grid_view_outlined),selectedIcon:Icon(Icons.grid_view_rounded),label:'خدمات'),
+ NavigationDestination(icon:Icon(Icons.receipt_long_outlined),selectedIcon:Icon(Icons.receipt_long_rounded),label:'درخواست‌ها'),
+ NavigationDestination(icon:Icon(Icons.person_outline_rounded),selectedIcon:Icon(Icons.person_rounded),label:'حساب من'),
+ ]),
+ );
 }
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  const HomePage({super.key, required this.onRequest});
+  final Future<void> Function(ServiceItem service) onRequest;
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -327,7 +313,7 @@ class _HomePageState extends State<HomePage> {
                 childAspectRatio: 1.28,
               ),
               itemBuilder: (context, index) =>
-                  ServiceCard(service: items[index]),
+                  ServiceCard(service: items[index], onRequest: widget.onRequest),
             );
           },
         ),
@@ -361,7 +347,8 @@ class _HomePageState extends State<HomePage> {
 }
 
 class ServicesPage extends StatefulWidget {
-  const ServicesPage({super.key});
+  const ServicesPage({super.key, required this.onRequest});
+  final Future<void> Function(ServiceItem service) onRequest;
 
   @override
   State<ServicesPage> createState() => _ServicesPageState();
@@ -534,7 +521,7 @@ class _ServicesPageState extends State<ServicesPage> {
                   final service = _serviceItemFromCatalog(item);
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 10),
-                    child: ServiceListTile(service: service),
+                    child: ServiceListTile(service: service, onRequest: widget.onRequest),
                   );
                 }).toList(),
               );
@@ -639,7 +626,38 @@ IconData _iconForCategory(String? category) {
   return Icons.work_outline_rounded;
 }
 
-class RequestsPage extends StatelessWidget {
+class RequestsPage extends StatefulWidget {
+ const RequestsPage({super.key,required this.repository,required this.signedIn,required this.onLogin,required this.refreshRevision});
+ final CustomerRequestRepository repository;final bool signedIn;final VoidCallback onLogin;final int refreshRevision;
+ @override State<RequestsPage> createState()=>_RequestsPageState();
+}
+class _RequestsPageState extends State<RequestsPage>{
+ late Future<List<CustomerServiceRequest>> _future;
+ @override void initState(){super.initState();_future=widget.signedIn?widget.repository.getMine():Future.value(const <CustomerServiceRequest>[]);}
+ @override void didUpdateWidget(covariant RequestsPage old){super.didUpdateWidget(old);if(widget.signedIn&&(!old.signedIn||old.refreshRevision!=widget.refreshRevision)){_future=widget.repository.getMine();}else if(!widget.signedIn&&old.signedIn){_future=Future.value(const <CustomerServiceRequest>[]);}}
+ void _reload()=>setState(()=>_future=widget.repository.getMine());
+ @override Widget build(BuildContext context)=>ListView(padding:const EdgeInsets.all(20),children:[
+ const Text('درخواست‌های من',style:TextStyle(color:_ink,fontSize:25,fontWeight:FontWeight.w900)),const SizedBox(height:8),const Text('وضعیت درخواست‌هایت را از این قسمت پیگیری می‌کنی.',style:TextStyle(color:_muted,height:1.8)),const SizedBox(height:24),
+ if(!widget.signedIn)const EmptyState(icon:Icons.lock_outline,title:'برای مشاهده درخواست‌ها وارد شو',subtitle:'پس از ورود، درخواست‌های ثبت‌شده و آخرین وضعیت آن‌ها نمایش داده می‌شود.')
+ else FutureBuilder<List<CustomerServiceRequest>>(future:_future,builder:(context,snap){
+ if(snap.hasError)return Column(children:[EmptyState(icon:Icons.cloud_off_outlined,title:'دریافت درخواست‌ها ممکن نشد',subtitle:errorText(snap.error)),TextButton(onPressed:_reload,child:const Text('تلاش دوباره'))]);
+ if(!snap.hasData)return const Padding(padding:EdgeInsets.all(24),child:Center(child:CircularProgressIndicator()));
+ if(snap.data!.isEmpty)return const EmptyState(icon:Icons.inbox_outlined,title:'هنوز درخواستی ثبت نکرده‌ای',subtitle:'بعد از ثبت درخواست، کد پیگیری و آخرین وضعیت اینجا نمایش داده می‌شود.');
+ return Column(children:snap.data!.map((r)=>Card(color:Colors.white,child:ListTile(title:Text(r.serviceTitle??r.trackingCode,style:const TextStyle(fontWeight:FontWeight.w800)),subtitle:Text('کد پیگیری: ${r.trackingCode}\nوضعیت: ${requestStatusLabel(r.status)}'),isThreeLine:true,trailing:const Icon(Icons.chevron_left_rounded),onTap:()=>_showRequestDetails(context,r)))).toList());
+ }),
+ ]);
+}
+void _showRequestDetails(BuildContext context,CustomerServiceRequest request){showModalBottomSheet<void>(context:context,isScrollControlled:true,backgroundColor:Colors.white,shape:const RoundedRectangleBorder(borderRadius:BorderRadius.vertical(top:Radius.circular(24))),builder:(ctx)=>SafeArea(child:Padding(padding:const EdgeInsets.all(20),child:ListView(shrinkWrap:true,children:[Text('پیگیری ${request.trackingCode}',style:const TextStyle(fontSize:19,fontWeight:FontWeight.w900)),const SizedBox(height:10),Text('وضعیت فعلی: ${requestStatusLabel(request.status)}'),if(request.customerNote?.isNotEmpty==true)Text('توضیحات: ${request.customerNote}'),const SizedBox(height:18),const Text('آخرین رویدادها',style:TextStyle(fontWeight:FontWeight.w800)),if(request.events.isEmpty)const Text('هنوز رویدادی برای این درخواست ثبت نشده است.'),...request.events.map((e)=>ListTile(contentPadding:EdgeInsets.zero,leading:const Icon(Icons.timeline_rounded,color:_teal),title:Text(e.publicMessage??requestStatusLabel(e.status)),subtitle:Text(requestStatusLabel(e.status))))]))));}
+String requestStatusLabel(String status)=>switch(status){'submitted'=>'ثبت‌شده','reviewing'=>'در حال بررسی','awaiting_customer'=>'نیازمند اقدام شما','in_progress'=>'در حال انجام','completed'=>'تکمیل‌شده','rejected'=>'ردشده','cancelled'=>'لغوشده',_=>status};
+class ProfilePage extends StatelessWidget {
+ const ProfilePage({super.key,required this.signedIn,required this.onLogin,required this.onLogout});final bool signedIn;final VoidCallback onLogin,onLogout;
+ @override Widget build(BuildContext context)=>ListView(padding:const EdgeInsets.all(20),children:[
+ const Text('حساب کاربری',style:TextStyle(color:_ink,fontSize:25,fontWeight:FontWeight.w900)),const SizedBox(height:18),
+ Container(padding:const EdgeInsets.all(18),decoration:BoxDecoration(color:Colors.white,borderRadius:BorderRadius.circular(18)),child:Row(children:[const CircleAvatar(radius:26,backgroundColor:Color(0xFFE8EEF5),child:Icon(Icons.person_outline,color:_navy,size:28)),const SizedBox(width:13),Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text(signedIn?'حساب شما فعال است':'مهمان',style:const TextStyle(color:_ink,fontWeight:FontWeight.bold,fontSize:16)),Text(signedIn?'به حساب کاربری خود وارد شده‌اید':'برای استفاده از خدمات وارد شوید',style:const TextStyle(color:_muted,fontSize:12))])])),const SizedBox(height:14),
+ ListTile(leading:Icon(signedIn?Icons.logout:Icons.login,color:_navy),title:Text(signedIn?'خروج از حساب':'ورود / ثبت‌نام'),trailing:const Icon(Icons.chevron_left_rounded,color:_muted),onTap:signedIn?onLogout:onLogin),
+ const ProfileOption(icon:Icons.support_agent,title:'پشتیبانی و تماس با ما'),const ProfileOption(icon:Icons.policy_outlined,title:'قوانین و حریم خصوصی'),const ProfileOption(icon:Icons.info_outline,title:'درباره کارگزار'),
+ ]);
+}
   const RequestsPage({super.key});
 
   @override
@@ -726,13 +744,14 @@ class SectionHeading extends StatelessWidget {
 }
 
 class ServiceCard extends StatelessWidget {
-  const ServiceCard({super.key, required this.service});
+  const ServiceCard({super.key, required this.service, required this.onRequest});
   final ServiceItem service;
+  final Future<void> Function(ServiceItem service) onRequest;
 
   @override
   Widget build(BuildContext context) => InkWell(
     borderRadius: BorderRadius.circular(18),
-    onTap: () => _showService(context, service),
+    onTap: () => _showService(context, service, onRequest),
     child: Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
@@ -755,8 +774,9 @@ class ServiceCard extends StatelessWidget {
 }
 
 class ServiceListTile extends StatelessWidget {
-  const ServiceListTile({super.key, required this.service});
+  const ServiceListTile({super.key, required this.service, required this.onRequest});
   final ServiceItem service;
+  final Future<void> Function(ServiceItem service) onRequest;
 
   @override
   Widget build(BuildContext context) => ListTile(
@@ -877,200 +897,14 @@ class _ServiceMetaRow extends StatelessWidget {
   );
 }
 
-void _showService(BuildContext context, ServiceItem service) {
-  final pageContext = context;
-  showModalBottomSheet<void>(
-    context: context,
-    isScrollControlled: true,
-    backgroundColor: Colors.white,
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
-    builder: (context) => Padding(
-      padding: const EdgeInsets.fromLTRB(22, 24, 22, 32),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Center(child: Container(
-            width: 42, height: 4,
-            decoration: BoxDecoration(color: const Color(0xFFCBD5E1),
-              borderRadius: BorderRadius.circular(5)))),
-          const SizedBox(height: 22),
-          Icon(service.icon, color: _teal, size: 34),
-          const SizedBox(height: 14),
-          Text(service.title, style: const TextStyle(
-            color: _ink, fontWeight: FontWeight.w900, fontSize: 20)),
-          const SizedBox(height: 8),
-          Text(service.subtitle, style: const TextStyle(
-            color: _muted, height: 1.8)),
-          if (service.estimatedDays != null || service.basePrice != null) ...[
-            const SizedBox(height: 14),
-            if (service.estimatedDays != null)
-              _ServiceMetaRow(
-                icon: Icons.schedule_outlined,
-                label: 'زمان تخمینی انجام',
-                value: '${service.estimatedDays} روز کاری',
-              ),
-            if (service.basePrice != null)
-              _ServiceMetaRow(
-                icon: Icons.payments_outlined,
-                label: 'مبلغ پایه ثبت‌شده (واحد نیازمند تأیید)',
-                value: service.basePrice!.toString(),
-              ),
-          ],
-          if (service.requirements.isNotEmpty) ...[
-            const SizedBox(height: 16),
-            const Text('مدارک و اطلاعات موردنیاز',
-                style: TextStyle(color: _ink, fontWeight: FontWeight.w800)),
-            const SizedBox(height: 6),
-            ...service.requirements.map((item) => Padding(
-              padding: const EdgeInsets.only(bottom: 5),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text('•  ', style: TextStyle(color: _teal)),
-                  Expanded(child: Text(item,
-                      style: const TextStyle(color: _muted, height: 1.6))),
-                ],
-              ),
-            )),
-          ],
-          const SizedBox(height: 20),
-          SizedBox(
-            width: double.infinity,
-            child: FilledButton(
-              onPressed: () {
-                Navigator.pop(context);
-                _showRequestForm(pageContext, service);
-              },
-              child: const Text('درخواست این خدمت'),
-            ),
-          ),
-          const SizedBox(height: 8),
-          const Text(
-            'این فرم صرفاً پیش‌نمایش است و اطلاعات را به سرور ارسال نمی‌کند.',
-            textAlign: TextAlign.center,
-            style: TextStyle(color: _muted, fontSize: 10)),
-        ],
-      ),
-    ),
-  );
-}
-
-
-void _showRequestForm(BuildContext context, ServiceItem service) {
-  showModalBottomSheet<void>(
-    context: context,
-    isScrollControlled: true,
-    backgroundColor: Colors.white,
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
-    builder: (sheetContext) => _RequestForm(
-      service: service, hostContext: context),
-  );
-}
-
-class _RequestForm extends StatefulWidget {
-  const _RequestForm({required this.service, required this.hostContext});
-  final ServiceItem service;
-  final BuildContext hostContext;
-
-  @override
-  State<_RequestForm> createState() => _RequestFormState();
-}
-
-class _RequestFormState extends State<_RequestForm> {
-  final _formKey = GlobalKey<FormState>();
-  final _name = TextEditingController();
-  final _mobile = TextEditingController();
-  final _details = TextEditingController();
-
-  @override
-  void dispose() {
-    _name.dispose();
-    _mobile.dispose();
-    _details.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.fromLTRB(
-        22, 24, 22, MediaQuery.of(context).viewInsets.bottom + 24),
-      child: SingleChildScrollView(
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('درخواست ${widget.service.title}',
-                style: const TextStyle(
-                  color: _ink, fontWeight: FontWeight.w900, fontSize: 19)),
-              const SizedBox(height: 8),
-              const Text(
-                'برای آشنایی با روند ثبت درخواست، فرم نمونه را تکمیل کن.',
-                style: TextStyle(color: _muted, height: 1.8, fontSize: 12)),
-              const SizedBox(height: 18),
-              TextFormField(
-                controller: _name,
-                decoration: const InputDecoration(labelText: 'نام و نام خانوادگی'),
-                validator: (v) => (v == null || v.trim().isEmpty)
-                    ? 'نام را وارد کن' : null,
-              ),
-              const SizedBox(height: 12),
-              TextFormField(
-                controller: _mobile,
-                keyboardType: TextInputType.phone,
-                decoration: const InputDecoration(labelText: 'شماره موبایل'),
-                validator: (v) => (v == null || !RegExp(r'^09\d{9}$').hasMatch(v.trim()))
-                    ? 'شماره موبایل معتبر وارد کن' : null,
-              ),
-              const SizedBox(height: 12),
-              TextFormField(
-                controller: _details,
-                minLines: 2,
-                maxLines: 4,
-                decoration: const InputDecoration(
-                  labelText: 'توضیحات درخواست (اختیاری)'),
-              ),
-              const SizedBox(height: 18),
-              SizedBox(
-                width: double.infinity,
-                child: FilledButton(
-                  onPressed: () {
-                    if (!_formKey.currentState!.validate()) return;
-                    Navigator.pop(context);
-                    showDialog<void>(
-                      context: widget.hostContext,
-                      builder: (dialogContext) => AlertDialog(
-                        title: const Text('پیش‌نمایش تکمیل فرم'),
-                        content: const Text(
-                          'فرم آزمایشی تکمیل شد؛ اما هنوز به سرور متصل نیست و هیچ اطلاعاتی ذخیره یا ارسال نشده است. در نسخه عملیاتی، این مرحله به ثبت درخواست و صدور کد پیگیری متصل می‌شود.'),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.pop(dialogContext),
-                            child: const Text('متوجه شدم'),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                  child: const Text('بررسی فرم آزمایشی'),
-                ),
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                'اطلاعات واقعی یا مدارک هویتی وارد نکن؛ این فرم هنوز آزمایشی است.',
-                textAlign: TextAlign.center,
-                style: TextStyle(color: _muted, fontSize: 10)),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
+void _showService(BuildContext context,ServiceItem service,Future<void> Function(ServiceItem service) onRequest){
+ showModalBottomSheet<void>(context:context,isScrollControlled:true,backgroundColor:Colors.white,shape:const RoundedRectangleBorder(borderRadius:BorderRadius.vertical(top:Radius.circular(24))),builder:(sheet)=>Padding(padding:const EdgeInsets.fromLTRB(22,24,22,32),child:SingleChildScrollView(child:Column(mainAxisSize:MainAxisSize.min,crossAxisAlignment:CrossAxisAlignment.start,children:[
+ Center(child:Container(width:42,height:4,decoration:BoxDecoration(color:const Color(0xFFCBD5E1),borderRadius:BorderRadius.circular(5)))),const SizedBox(height:22),Icon(service.icon,color:_teal,size:34),const SizedBox(height:14),
+ Text(service.title,style:const TextStyle(color:_ink,fontWeight:FontWeight.w900,fontSize:20)),const SizedBox(height:8),Text(service.subtitle,style:const TextStyle(color:_muted,height:1.8)),
+ if(service.estimatedDays!=null||service.basePrice!=null)...[const SizedBox(height:14),if(service.estimatedDays!=null)_ServiceMetaRow(icon:Icons.schedule_outlined,label:'زمان تخمینی انجام',value:'${service.estimatedDays} روز کاری'),if(service.basePrice!=null)_ServiceMetaRow(icon:Icons.payments_outlined,label:'مبلغ پایه ثبت‌شده (واحد نیازمند تأیید)',value:service.basePrice!.toString())],
+ if(service.requirements.isNotEmpty)...[const SizedBox(height:16),const Text('مدارک و اطلاعات موردنیاز',style:TextStyle(color:_ink,fontWeight:FontWeight.w800)),const SizedBox(height:6),...service.requirements.map((item)=>Padding(padding:const EdgeInsets.only(bottom:5),child:Row(crossAxisAlignment:CrossAxisAlignment.start,children:[const Text('•  ',style:TextStyle(color:_teal)),Expanded(child:Text(item,style:const TextStyle(color:_muted,height:1.6)))])))],
+ const SizedBox(height:20),SizedBox(width:double.infinity,child:FilledButton(onPressed:(){Navigator.pop(sheet);onRequest(service);},child:const Text('درخواست این خدمت'))),const SizedBox(height:8),const Text('برای ثبت درخواست واقعی، ورود و اتصال امن به سامانه لازم است.',textAlign:TextAlign.center,style:TextStyle(color:_muted,fontSize:10)),
+ ]))));
 }
 
 void _showInfo(BuildContext context) {
