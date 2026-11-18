@@ -1,9 +1,7 @@
 name: Deploy Kargozar staging from approved feature branch
 
 on:
-  push:
-    branches:
-      - ops/staging-deploy
+  workflow_dispatch:
 
 permissions:
   contents: read
