@@ -87,7 +87,7 @@ The next implementation must be incremental and reviewable inside the existing `
 - Live service detail sheets can show the catalog's requirements, estimated working days, and indicative base price. The price is explicitly labelled as requiring confirmation; no checkout or payment is implied.
 - When no API URL is configured, the screen clearly labels the local catalog as demo data. If the live catalog fails, it shows an error and retry action instead of silently presenting demo data as live.
 - OTP, authenticated request submission, and request-history screens are not yet connected to the preserved UI. They remain next implementation tasks after the public catalog passes CI.
-- CI is currently being rerun after these changes. Do not treat the current code as verified until the newest Android workflow completes successfully.
+- Flutter analysis and the API-client/widget test stage passed on the current integration line; the Android debug APK build is still running and must complete before calling the mobile build verified.
 
 ## External prerequisites
 
