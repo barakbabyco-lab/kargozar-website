@@ -188,5 +188,8 @@ jobs:
             dig @194.5.205.233 example.com A +time=3 +tries=1 +noall +answer +comments || true
           fi
 
+          echo "=== ROOT SSH ACCESS CHECK (READ-ONLY) ==="
+          ssh -o User=root -o BatchMode=yes -o ConnectTimeout=8 kargozar-vps 'id; printf "root SSH access confirmed\\n"' 2>&1 || echo "Root SSH login is not available with the configured deployment key"
+
           echo "=== END READ-ONLY INSPECTION ==="
           REMOTE
