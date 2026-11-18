@@ -19,13 +19,19 @@ class StaffCatalogController extends Controller
     public function categories()
     {
         return ServiceCategoryResource::collection(
-            ServiceCategory::query()->orderBy('sort_order')->orderBy('name')->get(),
+            ServiceCategory::query()
+                ->withCount('children')
+                ->orderBy('parent_id')
+                ->orderBy('sort_order')
+                ->orderBy('name')
+                ->get(),
         );
     }
 
     public function storeCategory(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
+            'parent_id' => ['nullable', 'integer', 'exists:service_categories,id'],
             'name' => ['required', 'string', 'max:120'],
             'slug' => ['required', 'string', 'max:140', 'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/', 'unique:service_categories,slug'],
             'description' => ['nullable', 'string', 'max:2000'],
@@ -39,13 +45,16 @@ class StaffCatalogController extends Controller
 
         $category = DB::transaction(function () use ($request, $validator) {
             $category = ServiceCategory::create($validator->validated());
-            $this->audit($request, 'catalog.category_created', $category, ['slug' => $category->slug]);
+            $this->audit($request, 'catalog.category_created', $category, [
+                'slug' => $category->slug,
+                'parent_id' => $category->parent_id,
+            ]);
 
             return $category;
         });
 
         return response()->json([
-            'data' => (new ServiceCategoryResource($category))->resolve(),
+            'data' => (new ServiceCategoryResource($category->loadCount('children')))->resolve(),
         ], 201);
     }
 
@@ -53,6 +62,7 @@ class StaffCatalogController extends Controller
     {
         $category = ServiceCategory::findOrFail($categoryId);
         $validator = Validator::make($request->all(), [
+            'parent_id' => ['sometimes', 'nullable', 'integer', 'exists:service_categories,id'],
             'name' => ['sometimes', 'required', 'string', 'max:120'],
             'slug' => ['sometimes', 'required', 'string', 'max:140', 'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/', 'unique:service_categories,slug,'.$category->id],
             'description' => ['sometimes', 'nullable', 'string', 'max:2000'],
@@ -60,17 +70,54 @@ class StaffCatalogController extends Controller
             'is_active' => ['sometimes', 'boolean'],
         ]);
 
+        $validator->after(function ($validator) use ($request, $category): void {
+            if (! $request->exists('parent_id') || $request->input('parent_id') === null) {
+                return;
+            }
+
+            $parentId = (int) $request->input('parent_id');
+            if ($parentId === (int) $category->id) {
+                $validator->errors()->add('parent_id', 'A category cannot be its own parent.');
+
+                return;
+            }
+
+            $visited = [];
+            $ancestor = ServiceCategory::query()->find($parentId);
+            while ($ancestor !== null) {
+                if ((int) $ancestor->id === (int) $category->id) {
+                    $validator->errors()->add('parent_id', 'A category cannot be moved below one of its descendants.');
+
+                    return;
+                }
+
+                if (isset($visited[$ancestor->id])) {
+                    $validator->errors()->add('parent_id', 'The selected parent belongs to an invalid category hierarchy.');
+
+                    return;
+                }
+
+                $visited[$ancestor->id] = true;
+                $ancestor = $ancestor->parent_id === null
+                    ? null
+                    : ServiceCategory::query()->find($ancestor->parent_id);
+            }
+        });
+
         if ($validator->fails()) {
             return $this->validationError($validator->errors()->toArray());
         }
 
         DB::transaction(function () use ($request, $category, $validator): void {
             $category->update($validator->validated());
-            $this->audit($request, 'catalog.category_updated', $category, ['fields' => array_keys($validator->validated())]);
+            $this->audit($request, 'catalog.category_updated', $category, [
+                'fields' => array_keys($validator->validated()),
+                'parent_id' => $category->parent_id,
+            ]);
         });
 
         return response()->json([
-            'data' => (new ServiceCategoryResource($category->refresh()))->resolve(),
+            'data' => (new ServiceCategoryResource($category->refresh()->loadCount('children')))->resolve(),
         ]);
     }
 
