@@ -1,0 +1,132 @@
+name: Deploy Kargozar staging from approved feature branch
+
+on:
+  push:
+    branches:
+      - ops/staging-deploy
+
+permissions:
+  contents: read
+
+concurrency:
+  group: kargozar-staging-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout staging source
+        uses: actions/checkout@v4
+
+      - name: Validate staging settings and prepare SSH
+        shell: bash
+        env:
+          HOST: ${{ secrets.DEPLOY_HOST }}
+          PORT: ${{ secrets.DEPLOY_PORT }}
+          SSH_USER: ${{ secrets.DEPLOY_USER }}
+          KEY: ${{ secrets.VPS_SSH_KEY }}
+          KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+        run: |
+          set -euo pipefail
+          for v in HOST SSH_USER KEY KNOWN_HOSTS DEPLOY_PATH; do
+            test -n "${!v:-}" || { echo "::error::Missing required secret: $v"; exit 1; }
+          done
+          if ! [[ "$DEPLOY_PATH" =~ ^/[A-Za-z0-9._/-]+$ ]] || [[ "$DEPLOY_PATH" == "/" ]] || [[ "$DEPLOY_PATH" == *"/../"* ]] || [[ "$DEPLOY_PATH" == */.. ]]; then
+            echo "::error::DEPLOY_PATH is not a safe absolute path"
+            exit 1
+          fi
+          PORT="${PORT:-22}"
+          if ! [[ "$PORT" =~ ^[0-9]{1,5}$ ]] || (( PORT < 1 || PORT > 65535 )); then
+            echo "::error::Invalid SSH port"
+            exit 1
+          fi
+          mkdir -p ~/.ssh
+          printf '%s\n' "$KEY" > ~/.ssh/kargozar_key
+          printf '%s\n' "$KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/kargozar_key ~/.ssh/known_hosts
+          target="$HOST"
+          if [[ "$PORT" != "22" ]]; then target="[$HOST]:$PORT"; fi
+          ssh-keygen -F "$target" -f ~/.ssh/known_hosts >/dev/null
+          cat > ~/.ssh/config <<EOF
+          Host kargozar-vps
+            HostName $HOST
+            Port $PORT
+            User $SSH_USER
+            IdentityFile ~/.ssh/kargozar_key
+            IdentitiesOnly yes
+            StrictHostKeyChecking yes
+            UserKnownHostsFile ~/.ssh/known_hosts
+            BatchMode yes
+            ConnectTimeout 15
+          EOF
+          chmod 600 ~/.ssh/config
+          echo "DEPLOY_PATH=$DEPLOY_PATH" >> "$GITHUB_ENV"
+
+      - name: Verify staging target
+        shell: bash
+        run: |
+          set -euo pipefail
+          ssh kargozar-vps "set -eu; test -d '$DEPLOY_PATH/shared'; test -f '$DEPLOY_PATH/shared/.env'; grep -Fxq 'APP_ENV=staging' '$DEPLOY_PATH/shared/.env'; test -d '$DEPLOY_PATH/shared/storage'; test -d '$DEPLOY_PATH/releases'"
+
+      - name: Upload backend release
+        shell: bash
+        env:
+          RELEASE_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          ssh kargozar-vps "mkdir -p '$DEPLOY_PATH/releases/$RELEASE_SHA'"
+          rsync -az --delete --no-owner --no-group \
+            --exclude='.env' \
+            --exclude='storage/' \
+            --exclude='vendor/' \
+            --exclude='bootstrap/cache/' \
+            --exclude='database/*.sqlite' \
+            -e "ssh" \
+            backend/ "kargozar-vps:$DEPLOY_PATH/releases/$RELEASE_SHA/"
+
+      - name: Install, verify schema, seed catalog and activate release
+        shell: bash
+        env:
+          RELEASE_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          ssh kargozar-vps "bash -s -- '$DEPLOY_PATH' '$RELEASE_SHA'" <<'REMOTE'
+          set -euo pipefail
+          deploy_root="$1"
+          release_sha="$2"
+          release="$deploy_root/releases/$release_sha"
+
+          test -f "$deploy_root/shared/.env"
+          grep -Fxq 'APP_ENV=staging' "$deploy_root/shared/.env"
+          ln -sfn "$deploy_root/shared/.env" "$release/.env"
+          mkdir -p "$deploy_root/shared/storage" "$release/bootstrap/cache"
+          rm -rf "$release/storage"
+          ln -s "$deploy_root/shared/storage" "$release/storage"
+          chmod -R ug+rwX "$deploy_root/shared/storage" "$release/bootstrap/cache"
+
+          cd "$release"
+          composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
+
+          migration_status="$(php artisan migrate:status --no-interaction --no-ansi)"
+          printf '%s\n' "$migration_status"
+          if printf '%s\n' "$migration_status" | grep -q 'Pending'; then
+            echo "Pending migrations detected; refusing to alter the staging database automatically."
+            exit 1
+          fi
+
+          php artisan db:seed --class='Database\Seeders\ServiceCatalogSeeder' --force --no-interaction
+
+          echo "Verifying active catalog counts:"
+          php artisan tinker --execute='echo "ACTIVE_CATEGORIES=".App\Models\ServiceCategory::where("is_active", true)->count().PHP_EOL; echo "ACTIVE_SERVICES=".App\Models\Service::where("is_active", true)->count().PHP_EOL;'
+          echo "Verifying API routes:"
+          php artisan route:list --path=api --except-vendor --no-ansi
+
+          previous_target="$(readlink "$deploy_root/current" || true)"
+          ln -sfn "$release" "$deploy_root/current.next"
+          mv -Tf "$deploy_root/current.next" "$deploy_root/current"
+          printf '%s\n' "$previous_target" > "$deploy_root/shared/.previous-release"
+          printf 'Activated staging release %s\n' "$release_sha"
+          REMOTE
