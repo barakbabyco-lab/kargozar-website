@@ -21,8 +21,29 @@ class ServiceController extends Controller
             ->whereIn('category_id', $activeCategoryIds);
 
         if ($request->filled('category')) {
-            $query->whereHas('category', fn ($category) => $category
-                ->where('slug', $request->string('category')->toString()));
+            $selectedCategory = ServiceCategory::query()
+                ->where('slug', $request->string('category')->toString())
+                ->whereIn('id', $activeCategoryIds)
+                ->firstOrFail();
+
+            // Selecting a parent category includes services assigned to any
+            // active descendant, not only services assigned to the parent.
+            $categoryIds = [(int) $selectedCategory->id];
+            $frontier = $categoryIds;
+
+            while ($frontier !== []) {
+                $children = ServiceCategory::query()
+                    ->whereIn('parent_id', $frontier)
+                    ->whereIn('id', $activeCategoryIds)
+                    ->pluck('id')
+                    ->map(fn ($id): int => (int) $id)
+                    ->all();
+
+                $frontier = array_values(array_diff($children, $categoryIds));
+                $categoryIds = array_merge($categoryIds, $frontier);
+            }
+
+            $query->whereIn('category_id', $categoryIds);
         }
 
         if ($request->filled('q')) {
