@@ -668,6 +668,33 @@ class ProfileOption extends StatelessWidget {
   );
 }
 
+class _ServiceMetaRow extends StatelessWidget {
+  const _ServiceMetaRow({
+    required this.icon,
+    required this.label,
+    required this.value,
+  });
+
+  final IconData icon;
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.only(bottom: 7),
+    child: Row(
+      children: [
+        Icon(icon, size: 17, color: _teal),
+        const SizedBox(width: 8),
+        Expanded(child: Text(label,
+            style: const TextStyle(color: _muted, fontSize: 12))),
+        Text(value, style: const TextStyle(
+            color: _ink, fontSize: 12, fontWeight: FontWeight.w700)),
+      ],
+    ),
+  );
+}
+
 void _showService(BuildContext context, ServiceItem service) {
   final pageContext = context;
   showModalBottomSheet<void>(
@@ -694,6 +721,38 @@ void _showService(BuildContext context, ServiceItem service) {
           const SizedBox(height: 8),
           Text(service.subtitle, style: const TextStyle(
             color: _muted, height: 1.8)),
+          if (service.estimatedDays != null || service.basePrice != null) ...[
+            const SizedBox(height: 14),
+            if (service.estimatedDays != null)
+              _ServiceMetaRow(
+                icon: Icons.schedule_outlined,
+                label: 'زمان تخمینی انجام',
+                value: '${service.estimatedDays} روز کاری',
+              ),
+            if (service.basePrice != null)
+              _ServiceMetaRow(
+                icon: Icons.payments_outlined,
+                label: 'قیمت پایه (نیازمند تأیید)',
+                value: service.basePrice!.toString(),
+              ),
+          ],
+          if (service.requirements.isNotEmpty) ...[
+            const SizedBox(height: 16),
+            const Text('مدارک و اطلاعات موردنیاز',
+                style: TextStyle(color: _ink, fontWeight: FontWeight.w800)),
+            const SizedBox(height: 6),
+            ...service.requirements.map((item) => Padding(
+              padding: const EdgeInsets.only(bottom: 5),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text('•  ', style: TextStyle(color: _teal)),
+                  Expanded(child: Text(item,
+                      style: const TextStyle(color: _muted, height: 1.6))),
+                ],
+              ),
+            )),
+          ],
           const SizedBox(height: 20),
           SizedBox(
             width: double.infinity,
