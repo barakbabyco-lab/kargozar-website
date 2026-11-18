@@ -168,5 +168,25 @@ jobs:
             done
           fi
 
+          echo "=== VPS PRIVILEGE AND FIREWALL CAPABILITY ==="
+          sudo -n -l 2>&1 | head -n 40 || true
+          sudo -n ufw status verbose 2>&1 || true
+          sudo -n nft list ruleset 2>&1 | head -n 100 || true
+          sudo -n iptables -S 2>&1 | head -n 80 || true
+
+          echo "=== BIND ACTIVE CONFIGURATION (NON-SECRET FILES ONLY) ==="
+          for file in /etc/bind/named.conf.options /etc/bind/named.conf.local; do
+            if [ -r "$file" ]; then
+              echo "--- $file ---"
+              sed -n '1,220p' "$file"
+            fi
+          done
+
+          echo "=== VPS PUBLIC DNS PORT REACHABILITY SELF-CHECK ==="
+          if command -v dig >/dev/null 2>&1; then
+            dig @194.5.205.233 kargozarr.ir NS +norecurse +time=3 +tries=1 +noall +answer +comments || true
+            dig @194.5.205.233 example.com A +time=3 +tries=1 +noall +answer +comments || true
+          fi
+
           echo "=== END READ-ONLY INSPECTION ==="
           REMOTE
