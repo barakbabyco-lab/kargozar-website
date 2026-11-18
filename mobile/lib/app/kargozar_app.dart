@@ -102,16 +102,23 @@ class ServicesPage extends StatefulWidget {
   @override State<ServicesPage> createState() => _ServicesState();
 }
 class _ServicesState extends State<ServicesPage> {
-  final search = TextEditingController(); late Future<List<CatalogService>> future;
-  @override void initState() { super.initState(); future = widget.catalog.getServices(); }
+  final search = TextEditingController();
+  late Future<List<ServiceCategory>> categories;
+  Future<List<CatalogService>>? services;
+  ServiceCategory? selected;
+  @override void initState() { super.initState(); categories = widget.catalog.getCategories(); }
   @override void dispose() { search.dispose(); super.dispose(); }
-  void load() => setState(() => future = widget.catalog.getServices(query: search.text.trim()));
+  void openCategory(ServiceCategory category) {
+    setState(() { selected = category; search.clear(); services = widget.catalog.getServices(category: category.slug); });
+  }
+  void backToCategories() => setState(() { selected = null; services = null; search.clear(); });
+  void searchServices() => setState(() { services = widget.catalog.getServices(category: selected?.slug, query: search.text.trim()); });
   Future<void> makeRequest(CatalogService service) async {
     if (!widget.signedIn) { widget.login(); return; }
     final note = await showDialog<String>(context: context, builder: (ctx) {
       final c = TextEditingController();
       return AlertDialog(title: Text('درخواست ' + service.title), content: TextField(controller: c, maxLines: 3, decoration: const InputDecoration(labelText: 'توضیحات اختیاری')),
-        actions: [TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('انصراف')), FilledButton(onPressed: () => Navigator.pop(ctx, c.text.trim()), child: const Text('ثبت'))]);
+        actions: [TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('انصراف')), FilledButton(onPressed: () => Navigator.pop(ctx, c.text.trim()), child: const Text('ثبت درخواست'))]);
     });
     if (note == null || !mounted) return;
     try {
@@ -121,17 +128,42 @@ class _ServicesState extends State<ServicesPage> {
     } catch (e) { if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(errorText(e)))); }
   }
   @override Widget build(BuildContext context) => ListView(padding: const EdgeInsets.all(18), children: [
-    const Text('همه خدمات', style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900)),
-    TextField(controller: search, onSubmitted: (_) => load(), decoration: const InputDecoration(hintText: 'جست‌وجوی خدمات')),
-    const SizedBox(height: 12),
-    FutureBuilder<List<CatalogService>>(future: future, builder: (context, s) {
-      if (s.hasError) return ErrorPanel(error: s.error, retry: load);
-      if (!s.hasData) return const Center(child: CircularProgressIndicator());
-      return Column(children: s.data!.map((v) => Card(color: Colors.white, child: ListTile(
-        title: Text(v.title), subtitle: Text(v.description ?? v.categoryName ?? ''),
-        trailing: const Icon(Icons.chevron_left), onTap: () => makeRequest(v),
-      ))).toList());
-    }),
+    Row(children: [
+      if (selected != null) IconButton(onPressed: backToCategories, icon: const Icon(Icons.arrow_forward)),
+      Expanded(child: Text(selected?.name ?? 'دسته‌بندی خدمات', style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w900))),
+      IconButton(tooltip: 'بارگذاری مجدد', onPressed: () => setState(() { if (selected == null) { categories = widget.catalog.getCategories(); } else { services = widget.catalog.getServices(category: selected!.slug, query: search.text.trim()); } }), icon: const Icon(Icons.refresh)),
+    ]),
+    if (selected == null) ...[
+      const Text('فهرست دسته‌ها مستقیماً از سرور دریافت می‌شود.', style: TextStyle(color: muted)),
+      const SizedBox(height: 12),
+      FutureBuilder<List<ServiceCategory>>(future: categories, builder: (context, state) {
+        if (state.hasError) return ErrorPanel(error: state.error, retry: () => setState(() => categories = widget.catalog.getCategories()));
+        if (!state.hasData) return const Center(child: Padding(padding: EdgeInsets.all(28), child: CircularProgressIndicator()));
+        if (state.data!.isEmpty) return const EmptyPanel(title: 'هنوز دسته خدمتی در سامانه ثبت نشده است');
+        return Column(children: state.data!.map((category) => Card(color: Colors.white, child: ListTile(
+          leading: const Icon(Icons.folder_open_outlined, color: teal),
+          title: Text(category.name, style: const TextStyle(fontWeight: FontWeight.w700)),
+          subtitle: category.description == null ? null : Text(category.description!),
+          trailing: const Icon(Icons.chevron_left),
+          onTap: () => openCategory(category),
+        ))).toList());
+      }),
+    ] else ...[
+      if (selected!.description != null) Padding(padding: const EdgeInsets.only(bottom: 12), child: Text(selected!.description!, style: const TextStyle(color: muted, height: 1.7))),
+      TextField(controller: search, onSubmitted: (_) => searchServices(), decoration: InputDecoration(hintText: 'جست‌وجو در این دسته', suffixIcon: IconButton(onPressed: searchServices, icon: const Icon(Icons.search)))),
+      const SizedBox(height: 12),
+      FutureBuilder<List<CatalogService>>(future: services, builder: (context, state) {
+        if (state.hasError) return ErrorPanel(error: state.error, retry: searchServices);
+        if (!state.hasData) return const Center(child: Padding(padding: EdgeInsets.all(28), child: CircularProgressIndicator()));
+        if (state.data!.isEmpty) return const EmptyPanel(title: 'برای این دسته هنوز خدمتی ثبت نشده است');
+        return Column(children: state.data!.map((service) => Card(color: Colors.white, child: ListTile(
+          title: Text(service.title, style: const TextStyle(fontWeight: FontWeight.w700)),
+          subtitle: Text(service.description ?? 'برای مشاهده جزئیات و ثبت درخواست انتخاب کنید'),
+          trailing: const Icon(Icons.chevron_left),
+          onTap: () => makeRequest(service),
+        ))).toList());
+      }),
+    ],
   ]);
 }
 class RequestsPage extends StatefulWidget {
