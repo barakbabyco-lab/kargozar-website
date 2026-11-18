@@ -76,7 +76,7 @@ class ServiceItem {
   final String? apiId;
   final List<String> requirements;
   final int? estimatedDays;
-  final int? basePrice;
+  final num? basePrice;
 }
 
 const services = <ServiceItem>[
