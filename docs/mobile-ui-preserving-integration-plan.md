@@ -82,7 +82,7 @@ The next implementation must be incremental and reviewable inside the existing `
 ## Implementation progress (2026-11-18)
 
 - Restored the approved UI as the production entry point and added a widget test for its home screen, four navigation destinations, and service list.
-- The existing Services screen now reads the public service catalog over HTTPS when `API_BASE_URL` is configured. The existing page structure and list-tile presentation are retained.
+- The existing Home and Services screens now read the public service catalog over HTTPS when `API_BASE_URL` is configured. The home screen retains its original four-card grid; the services screen retains its search/list presentation.
 - The live Services screen loads the category hierarchy and supports selecting nested categories; category selection and submitted search terms are sent to the catalog API.
 - Live service detail sheets can show the catalog's requirements, estimated working days, and indicative base price. The price is explicitly labelled as requiring confirmation; no checkout or payment is implied.
 - When no API URL is configured, the screen clearly labels the local catalog as demo data. If the live catalog fails, it shows an error and retry action instead of silently presenting demo data as live.
