@@ -15,7 +15,30 @@ void main() {
           return http.Response.bytes(
             utf8.encode(jsonEncode({
               'data': [
-                {'id': 4, 'name': 'مجوزها', 'slug': 'licenses', 'is_active': true}
+                {
+                  'id': 4,
+                  'parent_id': null,
+                  'name': 'مجوزها',
+                  'slug': 'licenses',
+                  'has_children': true,
+                  'is_active': true
+                },
+                {
+                  'id': 5,
+                  'parent_id': 4,
+                  'name': 'مشاغل خانگی',
+                  'slug': 'home-businesses',
+                  'has_children': true,
+                  'is_active': true
+                },
+                {
+                  'id': 6,
+                  'parent_id': 5,
+                  'name': 'تولیدی و صنعتی',
+                  'slug': 'home-production',
+                  'has_children': false,
+                  'is_active': true
+                }
               ]
             })),
             200,
@@ -45,9 +68,17 @@ void main() {
 
     final repository = ServiceCatalogRepository(api);
     final categories = await repository.getCategories();
+    final tree = await repository.getCategoryTree();
     final services = await repository.getServices();
 
-    expect(categories.single.slug, 'licenses');
+    expect(categories.singleWhere((item) => item.slug == 'licenses').hasChildren,
+        isTrue);
+    expect(tree.single.slug, 'licenses');
+    expect(tree.single.children.single.slug, 'home-businesses');
+    expect(
+      tree.single.children.single.children.single.slug,
+      'home-production',
+    );
     expect(services.single.id, '12');
     expect(services.single.estimatedDays, 7);
     expect(services.single.requirements, ['کارت ملی']);
