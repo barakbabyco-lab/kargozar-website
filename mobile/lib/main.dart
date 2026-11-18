@@ -181,8 +181,35 @@ class _MainShellState extends State<MainShell> {
   }
 }
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  late final KargozarApiClient _api;
+  late final ServiceCatalogRepository _catalog;
+  late Future<List<CatalogService>> _popularServices;
+  bool _apiConfigured = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _api = KargozarApiClient();
+    _catalog = ServiceCatalogRepository(_api);
+    _apiConfigured = const String.fromEnvironment('API_BASE_URL').trim().isNotEmpty;
+    _popularServices = _apiConfigured
+        ? _catalog.getServices()
+        : Future.value(const <CatalogService>[]);
+  }
+
+  @override
+  void dispose() {
+    _api.close();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -258,18 +285,51 @@ class HomePage extends StatelessWidget {
         const SizedBox(height: 25),
         const SectionHeading(title: 'خدمات پرکاربرد', action: 'مشاهده همه'),
         const SizedBox(height: 13),
-        GridView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: services.take(4).length,
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            crossAxisSpacing: 12,
-            mainAxisSpacing: 12,
-            childAspectRatio: 1.28,
-          ),
-          itemBuilder: (context, index) =>
-              ServiceCard(service: services[index]),
+        FutureBuilder<List<CatalogService>>(
+          future: _popularServices,
+          builder: (context, snapshot) {
+            final remote = snapshot.data ?? const <CatalogService>[];
+            final items = _apiConfigured && snapshot.hasData
+                ? remote.take(4).map(_serviceItemFromCatalog).toList()
+                : services.take(4).toList();
+            if (_apiConfigured && snapshot.connectionState == ConnectionState.waiting) {
+              return const Padding(
+                padding: EdgeInsets.all(20),
+                child: Center(child: CircularProgressIndicator()),
+              );
+            }
+            if (_apiConfigured && snapshot.hasError) {
+              return Column(
+                children: [
+                  const Text('دریافت خدمات پرکاربرد ممکن نشد.',
+                      style: TextStyle(color: _muted, fontSize: 12)),
+                  TextButton(
+                    onPressed: () => setState(
+                      () => _popularServices = _catalog.getServices(),
+                    ),
+                    child: const Text('تلاش دوباره'),
+                  ),
+                ],
+              );
+            }
+            if (_apiConfigured && items.isEmpty) {
+              return const Text('هنوز خدمتی برای نمایش ثبت نشده است.',
+                  style: TextStyle(color: _muted, fontSize: 12));
+            }
+            return GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: items.length,
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 12,
+                mainAxisSpacing: 12,
+                childAspectRatio: 1.28,
+              ),
+              itemBuilder: (context, index) =>
+                  ServiceCard(service: items[index]),
+            );
+          },
         ),
         const SizedBox(height: 25),
         const SectionHeading(title: 'چطور کار می‌کند؟'),
@@ -471,16 +531,7 @@ class _ServicesPageState extends State<ServicesPage> {
               }
               return Column(
                 children: items.map((item) {
-                  final service = ServiceItem(
-                    title: item.title,
-                    subtitle: item.description ?? item.categoryName ?? '',
-                    category: item.categoryName ?? 'سایر خدمات',
-                    icon: _iconForCategory(item.categoryName),
-                    apiId: item.id,
-                    requirements: item.requirements,
-                    estimatedDays: item.estimatedDays,
-                    basePrice: item.basePrice,
-                  );
+                  final service = _serviceItemFromCatalog(item);
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 10),
                     child: ServiceListTile(service: service),
@@ -518,6 +569,17 @@ class _ServicesPageState extends State<ServicesPage> {
     );
   }
 }
+
+ServiceItem _serviceItemFromCatalog(CatalogService item) => ServiceItem(
+  title: item.title,
+  subtitle: item.description ?? item.categoryName ?? '',
+  category: item.categoryName ?? 'سایر خدمات',
+  icon: _iconForCategory(item.categoryName),
+  apiId: item.id,
+  requirements: item.requirements,
+  estimatedDays: item.estimatedDays,
+  basePrice: item.basePrice,
+);
 
 class _CatalogCategoryBranch extends StatelessWidget {
   const _CatalogCategoryBranch({
