@@ -7,16 +7,26 @@ import 'package:kargozar_mobile/features/requests/customer_request_repository.da
 
 const navy = Color(0xFF142B4A), teal = Color(0xFF168C83), muted = Color(0xFF64748B);
 class KargozarApp extends StatefulWidget {
-  const KargozarApp({super.key});
+  const KargozarApp({super.key, this.apiClient});
+  final KargozarApiClient? apiClient;
   @override State<KargozarApp> createState() => _AppState();
 }
 class _AppState extends State<KargozarApp> {
-  late final api = KargozarApiClient();
-  late final session = CustomerSession(api);
+  late final KargozarApiClient api;
+  late final CustomerSession session;
   late final catalog = ServiceCatalogRepository(api);
   late final requests = CustomerRequestRepository(api);
   bool loading = true, signedIn = false;
-  @override void initState() { super.initState(); session.restore().then((v) { if (mounted) setState(() { signedIn = v; loading = false; }); }).catchError((_) { if (mounted) setState(() => loading = false); }); }
+  @override void initState() {
+    super.initState();
+    api = widget.apiClient ?? KargozarApiClient();
+    session = CustomerSession(api);
+    session.restore().then((v) {
+      if (mounted) setState(() { signedIn = v; loading = false; });
+    }).catchError((_) {
+      if (mounted) setState(() => loading = false);
+    });
+  }
   @override void dispose() { api.close(); super.dispose(); }
   Future<void> login() async { final ok = await showDialog<bool>(context: context, barrierDismissible: false, builder: (_) => OtpDialog(session: session)); if (ok == true && mounted) setState(() => signedIn = true); }
   Future<void> logout() async { try { await session.signOut(); } catch (_) {} if (mounted) setState(() => signedIn = false); }
