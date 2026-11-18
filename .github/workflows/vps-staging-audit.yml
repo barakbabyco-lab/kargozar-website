@@ -108,12 +108,14 @@ jobs:
               printf '%s: ' "$svc"; systemctl is-active "$svc" 2>/dev/null || true
             fi
           done
-          echo 'Nginx config test details:'
-          if command -v nginx >/dev/null 2>&1; then nginx -t 2>&1 | head -n 15; else echo 'nginx binary missing'; fi
+          echo 'Nginx config test details (temporary unprivileged PID path):'
+          if command -v nginx >/dev/null 2>&1; then nginx -t -g 'pid /tmp/nginx-audit.pid;' 2>&1 | head -n 15; else echo 'nginx binary missing'; fi
           echo 'Nginx enabled sites:'
           ls -la /etc/nginx/sites-enabled 2>&1 | head -n 20
           echo 'Nginx virtual-host names and document roots:'
-          nginx -T 2>&1 | awk '/^[[:space:]]*server_name[[:space:]]|^[[:space:]]*root[[:space:]]/ {print}' | head -n 30
+          nginx -T -g 'pid /tmp/nginx-audit.pid;' 2>&1 | awk '/^[[:space:]]*server_name[[:space:]]|^[[:space:]]*root[[:space:]]/ {print}' | head -n 30
+          echo 'Default site config (server/root/listen directives only):'
+          if [ -r /etc/nginx/sites-available/default ]; then grep -E '^[[:space:]]*(listen|server_name|root|index)[[:space:]]' /etc/nginx/sites-available/default | head -n 20; fi
           section "Database service"
           if command -v mysqladmin >/dev/null 2>&1 && mysqladmin ping --connect-timeout=3 2>/dev/null; then echo 'MySQL local ping: OK'; else echo 'MySQL local ping: unavailable'; fi
           section "Permissions"
@@ -159,6 +161,39 @@ jobs:
               fi
             fi
           fi
+          section "Local HTTP and Laravel API smoke test"
+          if [ -L "$DEPLOY_PATH/current" ] && [ -f "$DEPLOY_PATH/current/artisan" ]; then
+            cd "$DEPLOY_PATH/current"
+            php artisan serve --host=127.0.0.1 --port=18765 >/tmp/kargozar-api-smoke.log 2>&1 &
+            smoke_pid=$!
+            trap 'kill "$smoke_pid" 2>/dev/null || true' EXIT
+            ready=no
+            for attempt in $(seq 1 20); do
+              if curl -fsS --max-time 2 http://127.0.0.1:18765/up >/dev/null 2>&1; then ready=yes; break; fi
+              sleep 1
+            done
+            echo "Laravel local HTTP server ready: $ready"
+            if [ "$ready" = yes ]; then
+              for endpoint in /up /api/v1/service-categories /api/v1/services; do
+                printf '%s ' "$endpoint"
+                curl -sS --max-time 8 -o /tmp/kargozar-smoke-body -w 'HTTP %{http_code}\n' "http://127.0.0.1:18765$endpoint"
+                if [ "$endpoint" != "/up" ]; then head -c 900 /tmp/kargozar-smoke-body; echo; fi
+              done
+            else
+              tail -n 20 /tmp/kargozar-api-smoke.log
+            fi
+            kill "$smoke_pid" 2>/dev/null || true
+            trap - EXIT
+          else
+            echo 'Current Laravel release not found'
+          fi
+          section "Nginx loopback HTTP"
+          for endpoint in /up /api/v1/service-categories; do
+            printf '%s ' "$endpoint"
+            curl -sS --max-time 5 -H 'Host: kargozarr.ir' -o /tmp/kargozar-nginx-body -w 'HTTP %{http_code}\n' "http://127.0.0.1$endpoint" || true
+            head -c 300 /tmp/kargozar-nginx-body 2>/dev/null || true
+            echo
+          done
           section "DNS"
           for domain in kargozarr.ir www.kargozarr.ir; do
             resolved="$(getent ahostsv4 "$domain" | awk 'NR==1 {print $1}')"
