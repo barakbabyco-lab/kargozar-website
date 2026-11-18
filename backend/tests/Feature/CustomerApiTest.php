@@ -1,17 +1,17 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\\Feature;
 
-use App\Models\Customer;
-use App\Models\IdempotencyKey;
-use App\Models\RequestEvent;
-use App\Models\Service;
-use App\Models\ServiceCategory;
-use App\Models\ServiceRequest;
-use App\Models\StaffUser;
-use App\Services\OtpDelivery;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
+use App\\Models\\Customer;
+use App\\Models\\IdempotencyKey;
+use App\\Models\\RequestEvent;
+use App\\Models\\Service;
+use App\\Models\\ServiceCategory;
+use App\\Models\\ServiceRequest;
+use App\\Models\\StaffUser;
+use App\\Services\\OtpDelivery;
+use Illuminate\\Foundation\\Testing\\RefreshDatabase;
+use Tests\\TestCase;
 
 class CustomerApiTest extends TestCase
 {
@@ -113,7 +113,7 @@ class CustomerApiTest extends TestCase
         ]);
         $service = $this->makeService();
         $serviceRequest = ServiceRequest::create([
-            'public_id' => (string) \Illuminate\Support\Str::uuid(),
+            'public_id' => (string) \\Illuminate\\Support\\Str::uuid(),
             'customer_id' => $owner->id,
             'service_id' => $service->id,
             'tracking_code' => 'KG-OWNED-REQUEST-001',
@@ -198,6 +198,48 @@ class CustomerApiTest extends TestCase
         $this->assertTrue($childNode['has_children']);
     }
 
+    public function test_public_catalog_hides_entire_branch_when_any_ancestor_is_inactive(): void
+    {
+        $root = ServiceCategory::create([
+            'name' => 'مجوزهای کسب‌وکار',
+            'slug' => 'inactive-root',
+            'is_active' => false,
+        ]);
+        $child = ServiceCategory::create([
+            'parent_id' => $root->id,
+            'name' => 'مشاغل خانگی',
+            'slug' => 'inactive-child',
+            'is_active' => true,
+        ]);
+        $leaf = ServiceCategory::create([
+            'parent_id' => $child->id,
+            'name' => 'تولیدی و صنعتی',
+            'slug' => 'inactive-leaf',
+            'is_active' => true,
+        ]);
+        $service = Service::create([
+            'category_id' => $leaf->id,
+            'title' => 'مجوز تولیدی خانگی',
+            'slug' => 'hidden-by-inactive-ancestor',
+            'description' => 'این خدمت نباید در کاتالوگ عمومی دیده شود.',
+            'requirements' => [],
+            'is_active' => true,
+        ]);
+
+        $this->getJson('/api/v1/service-categories')
+            ->assertOk()
+            ->assertJsonMissing(['slug' => 'inactive-root'])
+            ->assertJsonMissing(['slug' => 'inactive-child'])
+            ->assertJsonMissing(['slug' => 'inactive-leaf']);
+
+        $this->getJson('/api/v1/services')
+            ->assertOk()
+            ->assertJsonMissing(['slug' => $service->slug]);
+
+        $this->getJson('/api/v1/services/'.$service->slug)
+            ->assertNotFound();
+    }
+
     public function test_api_authentication_and_not_found_errors_follow_the_contract(): void
     {
         $this->getJson('/api/v1/me/service-requests')
@@ -239,7 +281,7 @@ class CustomerApiTest extends TestCase
         ]);
         $service = $this->makeService();
         $serviceRequest = ServiceRequest::create([
-            'public_id' => (string) \Illuminate\Support\Str::uuid(),
+            'public_id' => (string) \\Illuminate\\Support\\Str::uuid(),
             'customer_id' => $customer->id,
             'service_id' => $service->id,
             'tracking_code' => 'KG-STAFF-REQUEST-001',
