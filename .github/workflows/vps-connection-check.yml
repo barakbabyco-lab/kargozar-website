@@ -49,6 +49,8 @@ jobs:
             echo "  ConnectTimeout 15"
           } >> ~/.ssh/config
           chmod 600 ~/.ssh/config
+          echo "=== ROOT SSH ACCESS TEST FROM RUNNER ==="
+          ssh -o User=root -o BatchMode=yes -o ConnectTimeout=8 kargozar-vps 'id' 2>&1 || echo "Root SSH login is not available with the configured deployment key"
 
       - name: Inspect VPS and BIND DNS (read-only)
         shell: bash
