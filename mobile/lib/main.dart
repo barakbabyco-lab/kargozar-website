@@ -63,6 +63,10 @@ class ServiceItem {
     required this.subtitle,
     required this.icon,
     required this.category,
+    this.apiId,
+    this.requirements = const [],
+    this.estimatedDays,
+    this.basePrice,
   });
 
   final String title;
