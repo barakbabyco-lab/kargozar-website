@@ -166,6 +166,38 @@ class CustomerApiTest extends TestCase
             ->assertJsonMissing(['slug' => 'inactive-service']);
     }
 
+    public function test_public_categories_include_parent_ids_for_multilevel_navigation(): void
+    {
+        $root = ServiceCategory::create([
+            'name' => 'مجوزهای کسب‌وکار',
+            'slug' => 'business-permits',
+            'is_active' => true,
+        ]);
+        $child = ServiceCategory::create([
+            'parent_id' => $root->id,
+            'name' => 'مشاغل خانگی',
+            'slug' => 'home-businesses',
+            'is_active' => true,
+        ]);
+        ServiceCategory::create([
+            'parent_id' => $child->id,
+            'name' => 'تولیدی و صنعتی',
+            'slug' => 'home-production',
+            'is_active' => true,
+        ]);
+
+        $response = $this->getJson('/api/v1/service-categories')->assertOk();
+
+        $this->assertSame((string) $root->id, $response->json('data.0.id'));
+        $this->assertNull($response->json('data.0.parent_id'));
+        $this->assertTrue($response->json('data.0.has_children'));
+
+        $childNode = collect($response->json('data'))->firstWhere('slug', 'home-businesses');
+        $this->assertNotNull($childNode);
+        $this->assertSame((string) $root->id, $childNode['parent_id']);
+        $this->assertTrue($childNode['has_children']);
+    }
+
     public function test_api_authentication_and_not_found_errors_follow_the_contract(): void
     {
         $this->getJson('/api/v1/me/service-requests')
@@ -325,9 +357,27 @@ class CustomerApiTest extends TestCase
             ->assertCreated()
             ->json('data');
 
+        $childCategory = $this->withToken($supervisorToken)
+            ->postJson('/api/v1/staff/catalog/categories', [
+                'parent_id' => (int) $category['id'],
+                'name' => 'زیرشاخه آزمایشی',
+                'slug' => 'test-services-child',
+                'is_active' => true,
+            ])
+            ->assertCreated()
+            ->assertJsonPath('data.parent_id', (string) $category['id'])
+            ->json('data');
+
+        $this->withToken($supervisorToken)
+            ->patchJson('/api/v1/staff/catalog/categories/'.$category['id'], [
+                'parent_id' => (int) $childCategory['id'],
+            ])
+            ->assertUnprocessable()
+            ->assertJsonPath('error.code', 'VALIDATION_ERROR');
+
         $service = $this->withToken($supervisorToken)
             ->postJson('/api/v1/staff/catalog/services', [
-                'category_id' => (int) $category['id'],
+                'category_id' => (int) $childCategory['id'],
                 'title' => 'خدمت آزمایشی',
                 'slug' => 'test-service-item',
                 'description' => 'توضیحات آزمایشی خدمت',
