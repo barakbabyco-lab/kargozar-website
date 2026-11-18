@@ -9,7 +9,9 @@ The alternate implementation in `mobile/lib/app/kargozar_app.dart` is a technica
 ## Verified repository state
 
 - Flutter entry point: `mobile/lib/main.dart`.
-- Current entry point still uses the local `services` constant and explicitly labels service/request forms as demonstrations.
+- The approved customer UI and its four-tab navigation are restored in `main.dart`; the replacement UI in `app/kargozar_app.dart` is not the production entry point.
+- The local `services` constant is still used by the existing Home and Services screens; service/request forms are still demonstrations until the incremental API integration is completed.
+- Widget tests now assert the approved home presentation, four navigation tabs, and service-list screen.
 - API infrastructure already exists:
   - `mobile/lib/core/network/kargozar_api_client.dart`
   - `mobile/lib/core/network/access_token_store.dart`
@@ -73,7 +75,9 @@ The alternate implementation in `mobile/lib/app/kargozar_app.dart` is a technica
 
 ## Current decision
 
-No production UI or application source has been modified as part of this audit. The next implementation should be a minimal, reviewable integration into the existing `main.dart` UI, not a replacement with `kargozar_app.dart`.
+The alternate API-backed UI was briefly made the Flutter entry point during an integration attempt. That conflicted with the approved UI-preservation decision, so the original approved `main.dart` was restored from commit `cb053771ed80d2865cdde88487a6faf7eca82a64`. The widget test was also returned to the preserved UI and expanded to cover its main screen, four-tab navigation, and services list.
+
+The next implementation must be incremental and reviewable inside the existing `main.dart` widget tree. Do not replace the existing page layouts, visual hierarchy, labels, spacing, colors, cards, or dialogs with the alternate `kargozar_app.dart` screens. Keep API infrastructure in its separate feature modules and introduce adapters behind the approved widgets.
 
 ## External prerequisites
 
