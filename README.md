@@ -26,6 +26,7 @@ Kargozar is a nationwide, primarily remote administrative-services platform. Thi
 - API contract: `docs/api-contract.md`
 - OpenAPI: `docs/openapi.yaml`
 - Database implementation plan: `docs/database-implementation-plan.md`
+- Approved multi-level service catalog: `docs/service-catalog-structure.md`
 
 ## CI
 
