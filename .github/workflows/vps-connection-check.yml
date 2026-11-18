@@ -30,8 +30,8 @@ jobs:
           done
           PORT="${PORT:-22}"
           mkdir -p ~/.ssh
-          printf '%s\\n' "$KEY" > ~/.ssh/kargozar_key
-          printf '%s\\n' "$KNOWN_HOSTS" > ~/.ssh/known_hosts
+          printf '%s\n' "$KEY" > ~/.ssh/kargozar_key
+          printf '%s\n' "$KNOWN_HOSTS" > ~/.ssh/known_hosts
           chmod 600 ~/.ssh/kargozar_key ~/.ssh/known_hosts
           TARGET="$HOST"
           if [ "$PORT" != 22 ]; then TARGET="[$HOST]:$PORT"; fi
@@ -82,7 +82,7 @@ jobs:
           if [ -d /etc/bind ]; then
             grep -RhoE 'zone[[:space:]]+"[^"]+"' /etc/bind --include='*.conf' 2>/dev/null | sort -u || true
             echo "BIND FILES:"
-            find /etc/bind -maxdepth 2 -type f -printf '%p\\n' 2>/dev/null | sort | head -n 80
+            find /etc/bind -maxdepth 2 -type f -printf '%p\n' 2>/dev/null | sort | head -n 80
           fi
 
           echo "=== DNS LISTENERS ==="
