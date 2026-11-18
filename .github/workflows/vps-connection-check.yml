@@ -193,5 +193,25 @@ jobs:
           echo "=== ROOT SSH ACCESS CHECK (READ-ONLY) ==="
           ssh -o User=root -o BatchMode=yes -o ConnectTimeout=8 kargozar-vps 'id; printf "root SSH access confirmed\\n"' 2>&1 || echo "Root SSH login is not available with the configured deployment key"
 
+          echo "=== CURRENT DNS RECORD INVENTORY FROM MIHANWEBHOST ==="
+          if command -v dig >/dev/null 2>&1; then
+            for type in MX TXT CAA AAAA; do
+              echo "--- kargozarr.ir $type ---"
+              dig @ns929.mihanwebhost.com kargozarr.ir "$type" +norecurse +time=4 +tries=1 +noall +answer +authority +comments || true
+            done
+            for name in _dmarc mail smtp imap pop webmail autodiscover ftp; do
+              echo "--- $name.kargozarr.ir A ---"
+              dig @ns929.mihanwebhost.com "$name.kargozarr.ir" A +norecurse +time=3 +tries=1 +noall +answer +authority +comments || true
+            done
+            echo "=== ZONE TRANSFER PERMISSION CHECK ==="
+            dig @ns929.mihanwebhost.com kargozarr.ir AXFR +time=5 +tries=1 2>&1 | head -n 80 || true
+          fi
+
+          echo "=== OLD WEB HOST HTTP RESPONSE CHECK ==="
+          if command -v curl >/dev/null 2>&1; then
+            curl -sSI --connect-timeout 5 --max-time 10 -H 'Host: kargozarr.ir' http://89.32.248.121/ 2>&1 | head -n 25 || true
+            curl -skSI --connect-timeout 5 --max-time 10 --resolve kargozarr.ir:443:89.32.248.121 https://kargozarr.ir/ 2>&1 | head -n 25 || true
+          fi
+
           echo "=== END READ-ONLY INSPECTION ==="
           REMOTE
