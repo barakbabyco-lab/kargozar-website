@@ -9,7 +9,7 @@ Identity: uid=1000(deploy) gid=1000(deploy) groups=1000(deploy),33(www-data)
 Filesystem      Size  Used Avail Use% Mounted on
 /dev/vda1        58G  3.5G   54G   6% /
                total        used        free      shared  buff/cache   available
-Mem:           3.8Gi       967Mi       908Mi       3.7Mi       2.3Gi       2.9Gi
+Mem:           3.8Gi       936Mi       940Mi       3.7Mi       2.3Gi       2.9Gi
 Swap:             0B          0B          0B
 CPU cores: 2
 
@@ -44,8 +44,8 @@ nginx: active
 mysql: active
 php8.3-fpm: active
 Nginx config test details (temporary unprivileged PID path):
-2026/11/18 07:52:02 [warn] 34678#34678: the "user" directive makes sense only if the master process runs with super-user privileges, ignored in /etc/nginx/nginx.conf:1
-2026/11/18 07:52:02 [emerg] 34678#34678: "pid" directive is duplicate in /etc/nginx/nginx.conf:3
+2026/11/18 07:52:57 [warn] 34930#34930: the "user" directive makes sense only if the master process runs with super-user privileges, ignored in /etc/nginx/nginx.conf:1
+2026/11/18 07:52:57 [emerg] 34930#34930: "pid" directive is duplicate in /etc/nginx/nginx.conf:3
 nginx: configuration file /etc/nginx/nginx.conf test failed
 Nginx enabled sites:
 total 8
@@ -145,27 +145,19 @@ ext-tokenizer        8.3.6      success
 php                  8.3.6      success                                       
 
 ## Local HTTP and Laravel API smoke test
-Laravel local HTTP server ready: no
-
-  2026-11-18 07:52:04 /up ........................................ ~ 500.45ms
-  2026-11-18 07:52:06 /up .......................................... ~ 0.14ms
-  2026-11-18 07:52:07 /up .......................................... ~ 0.12ms
-  2026-11-18 07:52:08 /up .......................................... ~ 0.12ms
-  2026-11-18 07:52:09 /up .......................................... ~ 0.18ms
-  2026-11-18 07:52:10 /up .......................................... ~ 0.12ms
-  2026-11-18 07:52:11 /up .......................................... ~ 0.12ms
-  2026-11-18 07:52:12 /up .......................................... ~ 0.14ms
-  2026-11-18 07:52:13 /up .......................................... ~ 0.27ms
-  2026-11-18 07:52:14 /up .......................................... ~ 0.12ms
-  2026-11-18 07:52:15 /up .......................................... ~ 0.12ms
-  2026-11-18 07:52:16 /up .......................................... ~ 0.14ms
-  2026-11-18 07:52:17 /up .......................................... ~ 0.42ms
-  2026-11-18 07:52:18 /up .......................................... ~ 0.11ms
-  2026-11-18 07:52:19 /up .......................................... ~ 0.10ms
-  2026-11-18 07:52:20 /up .......................................... ~ 0.11ms
-  2026-11-18 07:52:21 /up ........................................ ~ 500.46ms
-  2026-11-18 07:52:22 /up .......................................... ~ 0.12ms
-  2026-11-18 07:52:23 /up .......................................... ~ 0.13ms
+Laravel local HTTP server ready: yes
+/up HTTP 500
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="robots" content="noindex,nofollow,noarchive" />
+    <title>An Error Occurred: Internal Server Error</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 12
+/api/v1/service-categories HTTP 200
+{"data":[{"id":"1","name":"\u0645\u062c\u0648\u0632\u0647\u0627\u06cc \u06a9\u0633\u0628\u200c\u0648\u06a9\u0627\u0631","slug":"business-permits","description":"\u0645\u0633\u06cc\u0631 \u062f\u0631\u06cc\u0627\u0641\u062a \u0645\u062c\u0648\u0632\u0647\u0627\u06cc \u0645\u0648\u0631\u062f\u0646\u06cc\u0627\u0632 \u0628\u0631\u0627\u06cc \u0634\u0631\u0648\u0639\u060c \u0641\u0639\u0627\u0644\u06cc\u062a \u06cc\u0627 \u062a\u0648\u0633\u0639\u0647 \u06a9\u0633\u0628\u200c\u0648\u06a9\u0627\u0631.","is_active":true,"sort_order":1},{"id":"2","name":"\u062b\u0628\u062a \u0634\u0631\u06a9\u062a","slug":"company-registration","description":"\u062b\u0628\u062a\u060c \u062a\u063a\u06cc\u06cc\u0631\u0627\u062a \u0648 \u0627\u0645\u0648\u0631 \u062b\u0628\u062a\u06cc \u0634\u0631\u06a9\u062a\u200c\u0647\u0627 \u0648 \u0645\u0624\u0633\u0633\u0627\u062a.","is_active":true,"sort_order":2},{"id":"3"
+/api/v1/services HTTP 200
+{"data":[{"id":"29","title":"\u0627\u0641\u062a\u062a\u0627\u062d \u062d\u0633\u0627\u0628 \u062c\u0627\u0631\u06cc \u0648 \u062f\u0631\u06cc\u0627\u0641\u062a \u062f\u0633\u062a\u0647\u200c\u0686\u06a9","slug":"banking-services-fba8654744","description":"\u0628\u0631\u0627\u06cc \u0628\u0631\u0631\u0633\u06cc \u0634\u0631\u0627\u06cc\u0637\u060c \u0645\u062f\u0627\u0631\u06a9 \u0644\u0627\u0632\u0645 \u0648 \u0628\u0631\u0622\u0648\u0631\u062f \u0647\u0632\u06cc\u0646\u0647 \u0627\u06cc\u0646 \u062e\u062f\u0645\u062a\u060c \u062f\u0631\u062e\u0648\u0627\u0633\u062a \u062e\u0648\u062f \u0631\u0627 \u062b\u0628\u062a \u06a9\u0646\u06cc\u062f.","requirements":[],"estimated_days":null,"base_price":null,"is_active":true,"sort_order":1,"category":{"name":"\u062e\u062f\u0645\u0627\u062a \u0628\u0627\u0646\u06a9\u06cc","slug":"banking-services"}},{"id":"33","title":"\u062a\u0646\u0638\u06cc\u06
 
 ## Nginx loopback HTTP
 /up HTTP 404
