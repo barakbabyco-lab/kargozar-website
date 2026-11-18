@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:kargozar_mobile/core/network/access_token_store.dart';
+import 'package:kargozar_mobile/core/network/kargozar_api_client.dart';
 import 'package:kargozar_mobile/main.dart';
 
 void main() {
   testWidgets('preserves the approved Kargozar customer UI and navigation', (tester) async {
-    await tester.pumpWidget(const KargozarApp());
+    await tester.pumpWidget(_testApp());
     await tester.pumpAndSettle();
 
     expect(find.text('کارگزار'), findsOneWidget);
@@ -24,7 +26,7 @@ void main() {
   });
 
   testWidgets('does not report a successful login when API is not configured', (tester) async {
-    await tester.pumpWidget(const KargozarApp());
+    await tester.pumpWidget(_testApp());
     await tester.pumpAndSettle();
 
     await tester.tap(find.text('حساب من'));
@@ -39,4 +41,25 @@ void main() {
     expect(find.text('نشانی سرور هنوز تنظیم نشده است.'), findsOneWidget);
     expect(find.text('حساب شما فعال است'), findsNothing);
   });
+}
+
+Widget _testApp() => KargozarApp(
+  apiClient: KargozarApiClient(tokenStore: _MemoryTokenStore()),
+);
+
+class _MemoryTokenStore implements AccessTokenStore {
+  String? _token;
+
+  @override
+  Future<String?> read() async => _token;
+
+  @override
+  Future<void> write(String token) async {
+    _token = token;
+  }
+
+  @override
+  Future<void> clear() async {
+    _token = null;
+  }
 }
