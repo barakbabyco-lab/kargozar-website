@@ -1,0 +1,14 @@
+kargozarr.ir A:
+  DNS status: 3
+  Answers: none
+  Matches VPS IPv4: no
+
+www.kargozarr.ir A:
+  DNS status: 3
+  Answers: none
+  Matches VPS IPv4: no
+
+kargozarr.ir NS:
+  DNS status: 3
+  Answers: none
+
