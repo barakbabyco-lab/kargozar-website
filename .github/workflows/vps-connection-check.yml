@@ -213,5 +213,11 @@ jobs:
             curl -skSI --connect-timeout 5 --max-time 10 --resolve kargozarr.ir:443:89.32.248.121 https://kargozarr.ir/ 2>&1 | head -n 25 || true
           fi
 
+          echo "=== DEPLOYMENT ACCOUNT IDENTITY ==="
+          whoami
+          id
+          groups
+          getent group sudo 2>&1 || true
+
           echo "=== END READ-ONLY INSPECTION ==="
           REMOTE
