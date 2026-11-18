@@ -1,0 +1,169 @@
+name: VPS staging audit
+
+on:
+  push:
+    branches:
+      - ops/vps-staging-audit
+    paths-ignore:
+      - "ops-reports/**"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: kargozar-vps-staging-audit
+  cancel-in-progress: false
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout audit branch
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - name: Prepare SSH
+        shell: bash
+        env:
+          HOST: ${{ secrets.DEPLOY_HOST }}
+          PORT: ${{ secrets.DEPLOY_PORT }}
+          SSH_USER: ${{ secrets.DEPLOY_USER }}
+          KEY: ${{ secrets.VPS_SSH_KEY }}
+          KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+        run: |
+          set -euo pipefail
+          for v in HOST SSH_USER KEY KNOWN_HOSTS; do
+            test -n "${!v:-}" || { echo "::error::Missing required SSH secret: $v"; exit 1; }
+          done
+          PORT="${PORT:-22}"
+          if ! [[ "$PORT" =~ ^[0-9]{1,5}$ ]] || (( PORT < 1 || PORT > 65535 )); then
+            echo "::error::Invalid SSH port"
+            exit 1
+          fi
+          if [[ -n "${DEPLOY_PATH:-}" ]] && { [[ ! "$DEPLOY_PATH" =~ ^/[A-Za-z0-9._/-]+$ ]] || [[ "$DEPLOY_PATH" == "/" ]] || [[ "$DEPLOY_PATH" == *"/../"* ]] || [[ "$DEPLOY_PATH" == */.. ]]; }; then
+            echo "::error::DEPLOY_PATH is not a safe absolute path"
+            exit 1
+          fi
+          mkdir -p ~/.ssh
+          printf '%s\n' "$KEY" > ~/.ssh/kargozar_key
+          printf '%s\n' "$KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/kargozar_key ~/.ssh/known_hosts
+          target="$HOST"
+          if [[ "$PORT" != "22" ]]; then target="[$HOST]:$PORT"; fi
+          ssh-keygen -F "$target" -f ~/.ssh/known_hosts >/dev/null
+          cat > ~/.ssh/config <<EOF
+          Host kargozar-vps
+            HostName $HOST
+            Port $PORT
+            User $SSH_USER
+            IdentityFile ~/.ssh/kargozar_key
+            IdentitiesOnly yes
+            StrictHostKeyChecking yes
+            UserKnownHostsFile ~/.ssh/known_hosts
+            BatchMode yes
+            ConnectTimeout 15
+          EOF
+          chmod 600 ~/.ssh/config
+          {
+            echo "DEPLOY_PATH_SET=$([[ -n "${DEPLOY_PATH:-}" ]] && echo yes || echo no)"
+            echo "DEPLOY_PATH=$DEPLOY_PATH"
+          } >> "$GITHUB_ENV"
+
+      - name: Read-only VPS and Laravel staging audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p ops-reports
+          ssh kargozar-vps 'bash -s' -- "$DEPLOY_PATH" > ops-reports/vps-staging-audit.txt <<'REMOTE'
+          set +e
+          DEPLOY_PATH="$1"
+          section() { printf '\n## %s\n' "$1"; }
+          section "Server"
+          printf 'Hostname: '; hostname
+          printf 'OS: '; . /etc/os-release; echo "$PRETTY_NAME"
+          printf 'Kernel: '; uname -r
+          printf 'Identity: '; id
+          section "Capacity"
+          df -h /
+          free -h
+          printf 'CPU cores: '; getconf _NPROCESSORS_ONLN
+          section "Runtime"
+          for c in php composer nginx mysql mysqladmin git rsync; do
+            if command -v "$c" >/dev/null 2>&1; then printf '%s: installed\n' "$c"; else printf '%s: MISSING\n' "$c"; fi
+          done
+          if command -v php >/dev/null 2>&1; then
+            php -v | head -n 1
+            printf 'Required PHP extensions (yes/no):\n'
+            for ext in bcmath ctype curl fileinfo json mbstring openssl pdo pdo_mysql tokenizer xml gd intl zip; do
+              php -m | grep -ixq "$ext" && echo "$ext: yes" || echo "$ext: no"
+            done
+          fi
+          if command -v composer >/dev/null 2>&1; then composer --version --no-ansi | head -n 1; fi
+          section "Services"
+          for svc in nginx mysql php8.3-fpm php8.2-fpm php8.1-fpm; do
+            if systemctl list-unit-files "${svc}.service" --no-legend 2>/dev/null | grep -q .; then
+              printf '%s: ' "$svc"; systemctl is-active "$svc" 2>/dev/null || true
+            fi
+          done
+          printf 'Nginx config test: '
+          if command -v nginx >/dev/null 2>&1 && nginx -t >/dev/null 2>&1; then echo OK; else echo FAIL_OR_NOT_CONFIGURED; fi
+          if command -v nginx >/dev/null 2>&1; then
+            echo 'Nginx virtual-host names and document roots:'
+            nginx -T 2>/dev/null | awk '/^[[:space:]]*server_name[[:space:]]|^[[:space:]]*root[[:space:]]/ {print}' | head -n 30
+          fi
+          section "Database service"
+          if command -v mysqladmin >/dev/null 2>&1 && mysqladmin ping --connect-timeout=3 2>/dev/null; then echo 'MySQL local ping: OK'; else echo 'MySQL local ping: unavailable'; fi
+          section "Permissions"
+          if command -v sudo >/dev/null 2>&1 && sudo -n true 2>/dev/null; then echo 'Passwordless sudo: yes'; else echo 'Passwordless sudo: no'; fi
+          if id -nG | tr ' ' '\n' | grep -qx www-data; then echo 'User belongs to www-data: yes'; else echo 'User belongs to www-data: no'; fi
+          section "Staging target"
+          if [ -z "$DEPLOY_PATH" ]; then
+            echo 'DEPLOY_PATH secret: not configured'
+          elif [ ! -e "$DEPLOY_PATH" ]; then
+            echo 'Configured staging path: does not exist yet'
+          else
+            echo 'Configured staging path: exists'
+            for item in shared shared/.env shared/storage releases current; do
+              [ -e "$DEPLOY_PATH/$item" ] && echo "$item: exists" || echo "$item: missing"
+            done
+            if [ -f "$DEPLOY_PATH/shared/.env" ]; then
+              echo 'Environment file: present (values are not disclosed)'
+              for key in APP_ENV APP_URL DB_CONNECTION; do
+                value="$(grep -m1 "^$key=" "$DEPLOY_PATH/shared/.env" | cut -d= -f2- | tr -d '"' )"
+                [ -n "$value" ] && printf '%s=%s\n' "$key" "$value" || printf '%s: not set\n' "$key"
+              done
+              for key in APP_KEY DB_HOST DB_DATABASE DB_USERNAME DB_PASSWORD; do
+                if grep -q "^$key=." "$DEPLOY_PATH/shared/.env"; then echo "$key: configured"; else echo "$key: not configured"; fi
+              done
+            else
+              echo 'Environment file: missing'
+            fi
+            if [ -L "$DEPLOY_PATH/current" ]; then
+              printf 'Current release target: '; readlink "$DEPLOY_PATH/current"
+              if [ -f "$DEPLOY_PATH/current/artisan" ]; then
+                printf 'Laravel version: '
+                (cd "$DEPLOY_PATH/current" && php artisan --version 2>/dev/null) || echo 'could not determine'
+              fi
+            fi
+          fi
+          section "DNS"
+          for domain in kargozarr.ir www.kargozarr.ir; do
+            printf '%s: ' "$domain"
+            getent ahostsv4 "$domain" | awk 'NR==1 {print $1}' || echo 'not resolving'
+          done
+          echo
+          echo 'Audit is read-only; no server configuration, packages, databases, or application files were changed.'
+          REMOTE
+
+      - name: Publish sanitized audit report to branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add ops-reports/vps-staging-audit.txt
+          git commit -m "Add read-only VPS staging audit report" || exit 0
+          git push origin HEAD:ops/vps-staging-audit
