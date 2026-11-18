@@ -1,0 +1,59 @@
+name: Public DNS check for Kargozar
+
+on:
+  push:
+    branches:
+      - ops/public-dns-check
+    paths-ignore:
+      - "ops-reports/**"
+
+permissions:
+  contents: write
+
+jobs:
+  dns:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Query public DNS
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p ops-reports
+          python3 - <<'PY' > ops-reports/public-dns-check.txt
+          import json
+          import urllib.request
+
+          expected = "194.5.205.233"
+          for name, qtype in [
+              ("kargozarr.ir", "A"),
+              ("www.kargozarr.ir", "A"),
+              ("kargozarr.ir", "NS"),
+          ]:
+              url = f"https://dns.google/resolve?name={name}&type={qtype}"
+              print(f"{name} {qtype}:")
+              try:
+                  req = urllib.request.Request(url, headers={"accept": "application/dns-json"})
+                  with urllib.request.urlopen(req, timeout=10) as response:
+                      data = json.load(response)
+                  answers = [item.get("data", "") for item in data.get("Answer", [])]
+                  print(f"  DNS status: {data.get('Status')}")
+                  print(f"  Answers: {', '.join(answers) if answers else 'none'}")
+                  if qtype == "A":
+                      print(f"  Matches VPS IPv4: {'yes' if expected in answers else 'no'}")
+              except Exception as exc:
+                  print(f"  Lookup failed: {type(exc).__name__}: {exc}")
+              print()
+          PY
+          cat ops-reports/public-dns-check.txt
+      - name: Commit DNS report
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add ops-reports/public-dns-check.txt
+          git commit -m "Add public DNS lookup report"
+          git push origin HEAD:ops/public-dns-check
