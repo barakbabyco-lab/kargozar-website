@@ -54,7 +54,7 @@ void main() {
                 'slug': 'business-license',
                 'requirements': ['کارت ملی'],
                 'estimated_days': '7',
-                'base_price': 1200000,
+                'base_price': 1200000.75,
                 'category': {'name': 'مجوزها', 'slug': 'licenses'}
               }
             ],
@@ -82,6 +82,7 @@ void main() {
     expect(services.single.id, '12');
     expect(services.single.estimatedDays, 7);
     expect(services.single.requirements, ['کارت ملی']);
+    expect(services.single.basePrice, 1200000.75);
     expect(services.single.categoryName, 'مجوزها');
     api.close();
   });
