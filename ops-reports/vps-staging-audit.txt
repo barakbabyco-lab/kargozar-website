@@ -1,0 +1,77 @@
+
+## Server
+Hostname: srv5052761122
+OS: Ubuntu 24.04.5 LTS
+Kernel: 6.8.0-149-generic
+Identity: uid=1000(deploy) gid=1000(deploy) groups=1000(deploy),33(www-data)
+
+## Capacity
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/vda1        58G  3.4G   54G   6% /
+               total        used        free      shared  buff/cache   available
+Mem:           3.8Gi       947Mi       987Mi       3.7Mi       2.2Gi       2.9Gi
+Swap:             0B          0B          0B
+CPU cores: 2
+
+## Runtime
+php: installed
+composer: installed
+nginx: installed
+mysql: installed
+mysqladmin: installed
+git: installed
+rsync: installed
+PHP 8.3.6 (cli) (built: Oct 19 2026 15:16:58) (NTS)
+Required PHP extensions (yes/no):
+bcmath: yes
+ctype: yes
+curl: yes
+fileinfo: yes
+json: yes
+mbstring: yes
+openssl: yes
+pdo: yes
+pdo_mysql: yes
+tokenizer: yes
+xml: yes
+gd: yes
+intl: yes
+zip: yes
+Composer version 2.7.1 2024-02-09 15:26:28
+
+## Services
+nginx: active
+mysql: active
+php8.3-fpm: active
+Nginx config test: FAIL_OR_NOT_CONFIGURED
+Nginx virtual-host names and document roots:
+
+## Database service
+MySQL local ping: OK
+
+## Permissions
+Passwordless sudo: no
+User belongs to www-data: yes
+
+## Staging target
+Configured staging path: exists
+shared: exists
+shared/.env: exists
+shared/storage: exists
+releases: exists
+current: exists
+Environment file: present (values are not disclosed)
+APP_ENV=staging
+APP_URL=http://localhost
+DB_CONNECTION=mysql
+APP_KEY: configured
+DB_HOST: configured
+DB_DATABASE: configured
+DB_USERNAME: configured
+DB_PASSWORD: configured
+Current release target: /var/www/kargozar-staging/releases/da45549850d0467a9063d849959b7a1efcb7cb05
+Laravel version: Laravel Framework 13.42.0
+
+## DNS
+kargozarr.ir: www.kargozarr.ir: 
+Audit is read-only; no server configuration, packages, databases, or application files were changed.
