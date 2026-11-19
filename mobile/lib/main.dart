@@ -454,57 +454,6 @@ ServiceItem _serviceItemFromCatalog(CatalogService item) => ServiceItem(
   basePrice: item.basePrice,
 );
 
-class _CatalogCategoryBranch extends StatelessWidget {
-  const _CatalogCategoryBranch({
-    required this.category,
-    required this.selectedSlug,
-    required this.onSelected,
-  });
-
-  final ServiceCategory category;
-  final String? selectedSlug;
-  final ValueChanged<String?> onSelected;
-
-  @override
-  Widget build(BuildContext context) {
-    final title = Text(category.name,
-        style: const TextStyle(fontSize: 12, color: _ink));
-    if (category.children.isEmpty) {
-      return ListTile(
-        dense: true,
-        contentPadding: const EdgeInsetsDirectional.only(start: 30, end: 14),
-        selected: selectedSlug == category.slug,
-        leading: const Icon(Icons.subdirectory_arrow_left_rounded,
-            size: 17, color: _teal),
-        title: title,
-        onTap: () => onSelected(category.slug),
-      );
-    }
-    return ExpansionTile(
-      tilePadding: const EdgeInsetsDirectional.only(start: 14, end: 14),
-      childrenPadding: const EdgeInsetsDirectional.only(start: 10),
-      leading: serviceCategoryImages.containsKey(category.slug)
-          ? SizedBox(width: 44, height: 44, child: AppContentImage(fileName: serviceCategoryImages[category.slug]!, fallbackIcon: Icons.category_outlined))
-          : null,
-      title: title,
-      children: [
-        ListTile(
-          dense: true,
-          selected: selectedSlug == category.slug,
-          title: Text('همه خدمات ${category.name}',
-              style: const TextStyle(fontSize: 12, color: _muted)),
-          onTap: () => onSelected(category.slug),
-        ),
-        ...category.children.map((child) => _CatalogCategoryBranch(
-          category: child,
-          selectedSlug: selectedSlug,
-          onSelected: onSelected,
-        )),
-      ],
-    );
-  }
-}
-
 IconData _iconForCategory(String? category) {
   final value = category ?? '';
   if (value.contains('مجوز') || value.contains('بهداشتی')) return Icons.storefront_outlined;
