@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'support_actions_panel.dart';
 
 const kargozarAssetsBaseUrl = String.fromEnvironment(
   'KARGOZAR_ASSETS_BASE_URL',
@@ -271,6 +272,7 @@ class SupportContentPage extends StatelessWidget {
             style: TextStyle(color: Color(0xFF64748B), height: 1.9),
           ),
           const SizedBox(height: 14),
+          SupportActionsPanel(),
           Card(
             color: Colors.white,
             child: ListTile(
