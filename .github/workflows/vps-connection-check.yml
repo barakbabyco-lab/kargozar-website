@@ -1,4 +1,5 @@
 name: Kargozar VPS connection and DNS inspection
+# Read-only deployment access and DNS verification
 
 on:
   push:
