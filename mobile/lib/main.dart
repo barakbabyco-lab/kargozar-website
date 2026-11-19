@@ -466,11 +466,14 @@ class _ServicesPageState extends State<ServicesPage> {
       item.subtitle.contains(_query)).toList();
 
     return ListView(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.zero,
       children: [
-
         AppBannerStrip(onNavigate: widget.onNavigate, onConsultation: widget.onConsultation),
         const SizedBox(height: 20),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Column(
+            children: [
         const SectionHeading(title: 'دسته‌بندی خدمات'),
         const SizedBox(height: 12),
         if (!_apiConfigured)
@@ -640,6 +643,9 @@ class _ServicesPageState extends State<ServicesPage> {
                   style: TextStyle(color: _muted)),
             ),
         ],
+            ],
+          ),
+        ),
       ],
     );
   }
