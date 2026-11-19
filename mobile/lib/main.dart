@@ -37,7 +37,7 @@ class _KargozarAppState extends State<KargozarApp>{
  theme:ThemeData(useMaterial3:true,scaffoldBackgroundColor:_canvas,colorScheme:ColorScheme.fromSeed(seedColor:_teal,primary:_teal,secondary:_navy,surface:Colors.white),fontFamily:'Roboto',
  appBarTheme:const AppBarTheme(backgroundColor:_canvas,foregroundColor:_ink,centerTitle:false,elevation:0),
  inputDecorationTheme:InputDecorationTheme(filled:true,fillColor:Colors.white,border:OutlineInputBorder(borderRadius:BorderRadius.circular(14),borderSide:const BorderSide(color:Color(0xFFE2E8F0))),enabledBorder:OutlineInputBorder(borderRadius:BorderRadius.circular(14),borderSide:const BorderSide(color:Color(0xFFE2E8F0))))),
- home:Directionality(textDirection:TextDirection.rtl,child:_loading?const Scaffold(body:Center(child:CircularProgressIndicator())):MainShell(requests:_requests,signedIn:_signedIn,onLogin:_login,onLogout:_logout)),
+ home:Directionality(textDirection:TextDirection.rtl,child:_loading?const Scaffold(body:Center(child:CircularProgressIndicator())):MainShell(api:_api,requests:_requests,signedIn:_signedIn,onLogin:_login,onLogout:_logout)),
  );
 }
 class OtpDialog extends StatefulWidget{
@@ -140,7 +140,8 @@ const services = <ServiceItem>[
 ];
 
 class MainShell extends StatefulWidget {
-  const MainShell({super.key, required this.requests, required this.signedIn, required this.onLogin, required this.onLogout});
+  const MainShell({super.key, required this.api, required this.requests, required this.signedIn, required this.onLogin, required this.onLogout});
+  final KargozarApiClient api;
   final CustomerRequestRepository requests;
   final bool signedIn;
   final Future<bool> Function() onLogin;
@@ -232,7 +233,7 @@ class _MainShellState extends State<MainShell> {
           SupportContentPage(onConsultation: _showConsultation, onNavigate: _goToTab),
         ],
       ),
-      const Positioned(right: 14, bottom: 8, child: SupportChatLauncher()),
+      Positioned(right: 14, bottom: 8, child: SupportChatLauncher(api: widget.api, signedIn: widget.signedIn, onLogin: widget.onLogin)),
     ])),
     bottomNavigationBar: NavigationBar(
       height: 44,
@@ -593,29 +594,26 @@ class _ProfileAction extends StatelessWidget {
 }
 
 class SupportChatLauncher extends StatefulWidget {
- const SupportChatLauncher({super.key});
+ const SupportChatLauncher({super.key,required this.api,required this.signedIn,required this.onLogin});
+ final KargozarApiClient api; final bool signedIn; final Future<bool> Function() onLogin;
  @override State<SupportChatLauncher> createState()=>_SupportChatLauncherState();
 }
 class _SupportChatLauncherState extends State<SupportChatLauncher> {
- Timer? _inviteTimer; Timer? _dismissTimer; bool _showInvite=false; bool _opened=false;
+ Timer? _inviteTimer; Timer? _dismissTimer; bool _showInvite=false; bool _opened=false; bool _busy=false;
  @override void initState(){super.initState();_inviteTimer=Timer(const Duration(seconds:25),(){
    if(!mounted||_opened)return;setState(()=>_showInvite=true);
    _dismissTimer=Timer(const Duration(seconds:9),(){if(mounted)setState(()=>_showInvite=false);});
  });}
  @override void dispose(){_inviteTimer?.cancel();_dismissTimer?.cancel();super.dispose();}
- void _openChat(){_opened=true;setState(()=>_showInvite=false);
-   showModalBottomSheet<void>(context:context,isScrollControlled:true,backgroundColor:Colors.white,
+ Future<void> _openChat() async {
+   if(_busy)return;
+   _opened=true;setState(()=>_showInvite=false);
+   var authenticated=widget.signedIn;
+   if(!authenticated)authenticated=await widget.onLogin();
+   if(!mounted||!authenticated)return;
+   await showModalBottomSheet<void>(context:context,isScrollControlled:true,backgroundColor:Colors.white,
      shape:const RoundedRectangleBorder(borderRadius:BorderRadius.vertical(top:Radius.circular(20))),
-     builder:(ctx)=>SafeArea(child:Padding(padding:EdgeInsets.fromLTRB(18,18,18,MediaQuery.viewInsetsOf(ctx).bottom+18),
-       child:Column(mainAxisSize:MainAxisSize.min,crossAxisAlignment:CrossAxisAlignment.start,children:[
-         const Row(children:[Icon(Icons.support_agent,color:_teal),SizedBox(width:8),Text('پشتیبانی آنلاین کارگزار',style:TextStyle(fontWeight:FontWeight.w800,fontSize:16))]),
-         const SizedBox(height:12),
-         const Text('ارتباط آنلاین با کارشناسان در حال اتصال به پنل پشتیبانی کارگزار است.',style:TextStyle(color:_muted,height:1.8)),
-         const SizedBox(height:12),
-         SizedBox(width:double.infinity,child:FilledButton(onPressed:()=>Navigator.pop(ctx),child:const Text('متوجه شدم'))),
-       ]),
-     )),
-   );
+     builder:(ctx)=>SupportChatSheet(api:widget.api));
  }
  @override Widget build(BuildContext context)=>Column(mainAxisSize:MainAxisSize.min,crossAxisAlignment:CrossAxisAlignment.end,children:[
    if(_showInvite)Container(constraints:const BoxConstraints(maxWidth:210),margin:const EdgeInsets.only(bottom:7),padding:const EdgeInsets.symmetric(horizontal:11,vertical:8),
@@ -624,6 +622,85 @@ class _SupportChatLauncherState extends State<SupportChatLauncher> {
    Material(color:_teal,shape:const CircleBorder(),elevation:4,child:InkWell(onTap:_openChat,customBorder:const CircleBorder(),child:const SizedBox(width:44,height:44,child:Icon(Icons.chat_bubble_outline_rounded,color:Colors.white,size:21)))),
  ]);
 }
+
+class SupportChatSheet extends StatefulWidget {
+ const SupportChatSheet({super.key,required this.api});
+ final KargozarApiClient api;
+ @override State<SupportChatSheet> createState()=>_SupportChatSheetState();
+}
+class _SupportChatSheetState extends State<SupportChatSheet> {
+ final _controller=TextEditingController();
+ final _scroll=ScrollController();
+ Timer? _pollTimer;
+ List<Map<String,dynamic>> _messages=[];
+ int? _conversationId;
+ bool _busy=false;
+ String? _error;
+ @override void initState(){super.initState();}
+ @override void dispose(){_pollTimer?.cancel();_controller.dispose();_scroll.dispose();super.dispose();}
+ Future<void> _send() async {
+   final body=_controller.text.trim();if(body.isEmpty||_busy)return;
+   setState(()=>_busy=true);_controller.clear();
+   try{
+     final response=_conversationId==null
+       ? await widget.api.startSupportConversation(body)
+       : await widget.api.sendSupportMessage(_conversationId!,body);
+     final data=response['data'];
+     if(_conversationId==null&&data is Map<String,dynamic>){
+       _conversationId=(data['id'] as num?)?.toInt();
+       final initial=data['messages'];
+       if(initial is List){_messages=initial.whereType<Map>().map((e)=>Map<String,dynamic>.from(e)).toList();}
+       _startPolling();
+     }else if(data is Map<String,dynamic>){_messages.add(Map<String,dynamic>.from(data));}
+     if(mounted)setState(()=>_error=null);
+     _scrollToEnd();
+   }catch(error){if(mounted){_controller.text=body;setState(()=>_error:errorText(error));}}
+   finally{if(mounted)setState(()=>_busy=false);}
+ }
+ void _startPolling(){
+   _pollTimer?.cancel();
+   _pollTimer=Timer.periodic(const Duration(seconds:5),(_)=>_refresh());
+ }
+ Future<void> _refresh() async {
+   final id=_conversationId;if(id==null||!mounted)return;
+   try{
+     final response=await widget.api.getSupportMessages(id);
+     final data=response['data'];
+     if(data is List&&mounted){
+       final next=data.whereType<Map>().map((e)=>Map<String,dynamic>.from(e)).toList();
+       if(next.length!=_messages.length||next.isNotEmpty&&_messages.isNotEmpty&&next.last['id']!=_messages.last['id']){
+         setState(()=>_messages=next);_scrollToEnd();
+       }
+     }
+   }catch(_){}
+ }
+ void _scrollToEnd(){WidgetsBinding.instance.addPostFrameCallback((_){if(_scroll.hasClients)_scroll.animateTo(_scroll.position.maxScrollExtent,duration:const Duration(milliseconds:180),curve:Curves.easeOut);});}
+ @override Widget build(BuildContext context)=>SizedBox(
+   height:MediaQuery.sizeOf(context).height*.68,
+   child:Padding(padding:EdgeInsets.fromLTRB(16,16,16,MediaQuery.viewInsetsOf(context).bottom+12),
+     child:Column(children:[
+       const Row(children:[Icon(Icons.support_agent,color:_teal),SizedBox(width:8),Text('پشتیبانی آنلاین کارگزار',style:TextStyle(fontSize:16,fontWeight:FontWeight.w800)),Spacer(),Text('گفت‌وگو',style:TextStyle(fontSize:11,color:_muted))]),
+       const Divider(height:22),
+       Expanded(child:_messages.isEmpty?const Center(child:Text('پیام خود را بنویسید تا گفت‌وگو با کارشناس آغاز شود.',textAlign:TextAlign.center,style:TextStyle(color:_muted,height:1.8))):ListView.builder(controller:_scroll,itemCount:_messages.length,itemBuilder:(context,index){
+         final message=_messages[index];final mine=message['sender_type']=='customer';
+         return Align(alignment:mine?Alignment.centerRight:Alignment.centerLeft,child:Container(
+           constraints:BoxConstraints(maxWidth:MediaQuery.sizeOf(context).width*.76),
+           margin:const EdgeInsets.only(bottom:8),padding:const EdgeInsets.symmetric(horizontal:12,vertical:9),
+           decoration:BoxDecoration(color:mine?const Color(0xFFFCE8E8):const Color(0xFFF1F5F9),borderRadius:BorderRadius.circular(13)),
+           child:Text(message['body']?.toString()??'',style:const TextStyle(fontSize:12,height:1.6)),
+         ));
+       })),
+       if(_error!=null)Padding(padding:const EdgeInsets.only(bottom:8),child:Text(_error!,style:const TextStyle(color:Colors.red,fontSize:11))),
+       Row(children:[
+         Expanded(child:TextField(controller:_controller,minLines:1,maxLines:3,textInputAction:TextInputAction.send,onSubmitted:(_)=>_send(),decoration:const InputDecoration(hintText:'پیام شما...',contentPadding:EdgeInsets.symmetric(horizontal:12,vertical:10)))),
+         const SizedBox(width:8),
+         IconButton.filled(onPressed:_busy?null:_send,icon:_busy?const SizedBox(width:18,height:18,child:CircularProgressIndicator(strokeWidth:2)):const Icon(Icons.send_rounded),style:IconButton.styleFrom(backgroundColor:_teal,foregroundColor:Colors.white)),
+       ]),
+     ]),
+   ),
+ );
+}
+
 
 class SectionHeading extends StatelessWidget {
   const SectionHeading({super.key, required this.title, this.action});
