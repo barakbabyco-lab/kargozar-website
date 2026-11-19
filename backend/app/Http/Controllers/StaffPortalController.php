@@ -85,6 +85,26 @@ class StaffPortalController extends Controller
         ]);
     }
 
+    public function messages(int $conversationId)
+    {
+        $conversation = SupportConversation::query()->findOrFail($conversationId);
+        $messages = $conversation->messages()->orderBy('id')->get();
+
+        $conversation->messages()
+            ->where('sender_type', 'customer')
+            ->whereNull('read_at')
+            ->update(['read_at' => now()]);
+
+        return response()->json([
+            'data' => $messages->map(fn ($message) => [
+                'id' => $message->id,
+                'sender_type' => $message->sender_type,
+                'body' => $message->body,
+                'created_at' => $message->created_at,
+            ]),
+        ]);
+    }
+
     public function reply(Request $request, int $conversationId)
     {
         $data = $request->validate([
