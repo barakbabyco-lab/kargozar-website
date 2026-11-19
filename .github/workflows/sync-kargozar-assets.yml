@@ -65,7 +65,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/kargozar-png"
-          ssh -F ~/.ssh/config kargozar-vps "cd /var/www/html/kargozar-assets/final && tar -czf - -- *.png" \
+          ssh kargozar-vps "cd /var/www/html/kargozar-assets/final && tar -czf - -- *.png" \
             | tar -xzf - -C "$RUNNER_TEMP/kargozar-png"
           count="$(find "$RUNNER_TEMP/kargozar-png" -maxdepth 1 -type f -name '*.png' | wc -l)"
           test "$count" -eq 24 || { echo "::error::Expected 24 PNG images; found $count"; exit 1; }
