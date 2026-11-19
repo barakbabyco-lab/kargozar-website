@@ -205,6 +205,103 @@ class _MainShellState extends State<MainShell> {
       ),
     )));
   }
+  Future<void> _openCategory(ServiceCategory category) async {
+    if (category.children.isNotEmpty) {
+      await showModalBottomSheet<void>(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.white,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
+        ),
+        builder: (sheetContext) => SafeArea(
+          child: SizedBox(
+            height: MediaQuery.sizeOf(sheetContext).height * .68,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 18, 16, 12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(category.name, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w900, color: _ink)),
+                  const SizedBox(height: 10),
+                  Expanded(
+                    child: ListView.separated(
+                      itemCount: category.children.length,
+                      separatorBuilder: (_, __) => const Divider(height: 1),
+                      itemBuilder: (_, index) {
+                        final child = category.children[index];
+                        return ListTile(
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 6),
+                          title: Text(child.name, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+                          trailing: const Icon(Icons.chevron_left_rounded, color: _muted),
+                          onTap: () {
+                            Navigator.pop(sheetContext);
+                            _openCategory(child);
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+      return;
+    }
+
+    try {
+      final items = await ServiceCatalogRepository(widget.api).getServices(category: category.slug);
+      if (!mounted) return;
+      await showModalBottomSheet<void>(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.white,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
+        ),
+        builder: (sheetContext) => SafeArea(
+          child: SizedBox(
+            height: MediaQuery.sizeOf(sheetContext).height * .72,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 18, 16, 12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(category.name, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w900, color: _ink)),
+                  const SizedBox(height: 12),
+                  Expanded(
+                    child: items.isEmpty
+                        ? const EmptyState(
+                            icon: Icons.inbox_outlined,
+                            title: 'خدمتی در این بخش ثبت نشده است',
+                            subtitle: 'خدمات این دسته پس از تکمیل کاتالوگ نمایش داده می‌شوند.',
+                          )
+                        : ListView.separated(
+                            itemCount: items.length,
+                            separatorBuilder: (_, __) => const SizedBox(height: 8),
+                            itemBuilder: (_, index) => ServiceListTile(
+                              service: _serviceItemFromCatalog(items[index]),
+                              onRequest: _request,
+                            ),
+                          ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    } catch (error) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(errorText(error))),
+        );
+      }
+    }
+  }
+
   void _showConsultation() {
     showDialog<void>(context: context, builder: (ctx) => AlertDialog(
       title: const Text('مشاوره رایگان کارگزار'),
@@ -228,7 +325,7 @@ class _MainShellState extends State<MainShell> {
         onPageChanged: (value) => setState(() => _index = value),
         children: [
           ProfilePage(signedIn: widget.signedIn, onLogin: widget.onLogin, onLogout: widget.onLogout, onShowRequests: _showRequests, onNavigate: _goToTab),
-          ServicesPage(onRequest: _request, onNavigate: (tab) { if (tab == 4) { _goToTab(2); _openCompanion(0); } else { _goToTab(tab); } }, onConsultation: _showConsultation),
+          ServicesPage(onRequest: _request, onOpenCategory: _openCategory, onNavigate: (tab) { if (tab == 4) { _goToTab(2); _openCompanion(0); } else { _goToTab(tab); } }, onConsultation: _showConsultation),
           CompanionContentPage(onOpen: _openCompanion, onNavigate: (tab) { if (tab == 4) { _goToTab(2); _openCompanion(0); } else { _goToTab(tab); } }, onConsultation: _showConsultation),
           SupportContentPage(onConsultation: _showConsultation, onNavigate: _goToTab),
         ],
@@ -438,8 +535,9 @@ class _HomePageState extends State<HomePage> {
 }
 
 class ServicesPage extends StatefulWidget {
-  const ServicesPage({super.key, required this.onRequest, required this.onNavigate, required this.onConsultation});
+  const ServicesPage({super.key, required this.onRequest, required this.onOpenCategory, required this.onNavigate, required this.onConsultation});
   final Future<void> Function(ServiceItem service) onRequest;
+  final ValueChanged<ServiceCategory> onOpenCategory;
   final ValueChanged<int> onNavigate;
   final VoidCallback onConsultation;
 
@@ -477,7 +575,7 @@ class _ServicesPageState extends State<ServicesPage> {
                 borderRadius: BorderRadius.circular(15),
                 clipBehavior: Clip.antiAlias,
                 child: InkWell(
-                  onTap: () {},
+                  onTap: () => widget.onOpenCategory(category),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
