@@ -558,17 +558,17 @@ class _ServicesPageState extends State<ServicesPage> {
           onNavigate: widget.onNavigate,
           onConsultation: widget.onConsultation,
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: 12),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
+          padding: const EdgeInsets.symmetric(horizontal: 12),
           child: GridView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             itemCount: serviceTaxonomy.length,
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
-              crossAxisSpacing: 11,
-              mainAxisSpacing: 11,
+              crossAxisSpacing: 8,
+              mainAxisSpacing: 8,
               childAspectRatio: 1.15,
             ),
             itemBuilder: (context, index) {
@@ -675,7 +675,7 @@ class ProfilePage extends StatelessWidget {
      const SizedBox(height:7),
      _ProfileAction(icon:signedIn?Icons.logout_rounded:Icons.login_rounded,title:signedIn?'خروج از حساب':'ورود / ثبت‌نام',onTap:signedIn?onLogout:onLogin),
      const SizedBox(height:7),
-     _ProfileAction(icon:Icons.verified_user_outlined,title:'احراز هویت',onTap:()=>_showInfo(context)),
+     _ProfileAction(icon:Icons.verified_user_outlined,title:'احراز هویت',onTap:()=>showDialog<void>(context:context,builder:(ctx)=>AlertDialog(title:const Text('احراز هویت'),content:const Text('در این بخش، دریافت و ارسال مدارک و احراز هویت تصویری به‌تدریج فعال می‌شود.'),actions:[TextButton(onPressed:()=>Navigator.pop(ctx),child:const Text('متوجه شدم'))]))),
    ])),
  ]);
 }
@@ -700,7 +700,7 @@ class SupportChatLauncher extends StatefulWidget {
  @override State<SupportChatLauncher> createState()=>_SupportChatLauncherState();
 }
 class _SupportChatLauncherState extends State<SupportChatLauncher> {
- Timer? _inviteTimer; Timer? _dismissTimer; bool _showInvite=false; bool _opened=false; bool _busy=false;
+ Timer? _inviteTimer; Timer? _dismissTimer; bool _showInvite=false; bool _opened=false;
  @override void initState(){super.initState();_inviteTimer=Timer(const Duration(seconds:25),(){
    if(!mounted||_opened)return;setState(()=>_showInvite=true);
    _dismissTimer=Timer(const Duration(seconds:9),(){if(mounted)setState(()=>_showInvite=false);});
