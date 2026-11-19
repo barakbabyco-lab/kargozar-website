@@ -387,5 +387,77 @@ jobs:
               dig +trace "$domain" NS +time=3 +tries=1 2>&1 | tail -n 35 || true
             done
           fi
+          echo "=== BARAKMOD VARIABLE PRODUCT VARIATION CHECK (NO ORDER) ==="
+          if command -v curl >/dev/null 2>&1 && command -v python3 >/dev/null 2>&1; then
+            test_dir="$(mktemp -d)"
+            cookie_jar="$test_dir/cookies.txt"
+            touch "$cookie_jar"
+            product_url="https://barakmod.ir/product/%d8%b4%d9%88%d8%b1%d8%aa-%da%a9%d9%84%d9%88%db%8c%d9%86-%d9%85%d8%b1%d8%af%d8%a7%d9%86%d9%87/"
+            curl -k -sS -L --max-redirs 10 --connect-timeout 8 --max-time 35 \
+              -A "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/130 Safari/537.36" \
+              -c "$cookie_jar" -b "$cookie_jar" -o "$test_dir/product.html" "$product_url" || true
+            python3 - "$test_dir/product.html" "$test_dir/add_url" <<'PY'
+          import html, json, re, sys
+          from html.parser import HTMLParser
+          from urllib.parse import urlencode
+
+          class ProductParser(HTMLParser):
+              def __init__(self):
+                  super().__init__()
+                  self.variation_data = None
+                  self.attribute_names = set()
+              def handle_starttag(self, tag, attrs):
+                  values = dict(attrs)
+                  if tag == "form" and "variations_form" in values.get("class", ""):
+                      self.variation_data = values.get("data-product_variations")
+                  if tag == "select" and values.get("name", "").startswith("attribute_"):
+                      self.attribute_names.add(values["name"])
+
+          source = open(sys.argv[1], encoding="utf-8", errors="replace").read()
+          parser = ProductParser()
+          parser.feed(source)
+          print("variation_selects=" + ",".join(sorted(parser.attribute_names)))
+          raw = html.unescape(parser.variation_data or "")
+          try:
+              variations = json.loads(raw)
+          except Exception:
+              variations = []
+          if not isinstance(variations, list):
+              variations = []
+          choice = next((v for v in variations if isinstance(v, dict) and v.get("is_in_stock") and v.get("is_purchasable")), None)
+          if not choice:
+              print("available_variation=not_found")
+              open(sys.argv[2], "w").close()
+          else:
+              attributes = choice.get("attributes") or {}
+              query = {"add-to-cart": "266", "variation_id": str(choice.get("variation_id")), "quantity": "1"}
+              query.update({str(k): str(v) for k, v in attributes.items() if v})
+              url = "https://barakmod.ir/?" + urlencode(query)
+              open(sys.argv[2], "w").write(url)
+              print("available_variation=" + str(choice.get("variation_id")))
+              print("selected_attribute_count=" + str(len(attributes)))
+          PY
+            if [ -s "$test_dir/add_url" ]; then
+              add_url="$(cat "$test_dir/add_url")"
+              curl -k -sS -L --max-redirs 10 --connect-timeout 8 --max-time 35 \
+                -A "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/130 Safari/537.36" \
+                -c "$cookie_jar" -b "$cookie_jar" -o "$test_dir/add.html" \
+                -w 'variation_add_http=%{http_code} final_url=%{url_effective}\\n' "$add_url" || true
+              curl -k -sS -L --max-redirs 10 --connect-timeout 8 --max-time 35 \
+                -A "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/130 Safari/537.36" \
+                -c "$cookie_jar" -b "$cookie_jar" -o "$test_dir/cart.html" \
+                -w 'variation_cart_http=%{http_code} final_url=%{url_effective}\\n' \
+                'https://barakmod.ir/cart/' || true
+              echo "variation_cart_has_product=$(grep -Eqi 'product-266|شورت مردانه کلوین' "$test_dir/cart.html" && echo yes || echo no)"
+              curl -k -sS -L --max-redirs 10 --connect-timeout 8 --max-time 35 \
+                -A "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/130 Safari/537.36" \
+                -c "$cookie_jar" -b "$cookie_jar" -o "$test_dir/checkout.html" \
+                -w 'variation_checkout_http=%{http_code} final_url=%{url_effective}\\n' \
+                'https://barakmod.ir/checkout/' || true
+              echo "variation_checkout_form=$(grep -qi 'woocommerce-checkout' "$test_dir/checkout.html" && echo present || echo missing)"
+              grep -Eo 'payment_method_[A-Za-z0-9_]+' "$test_dir/checkout.html" | sort -u | head -n 20 || true
+            fi
+            rm -rf "$test_dir"
+          fi
           echo "=== END READ-ONLY INSPECTION ==="
           REMOTE
