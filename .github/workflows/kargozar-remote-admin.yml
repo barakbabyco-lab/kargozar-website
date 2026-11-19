@@ -1,5 +1,6 @@
 name: Kargozar remote admin
 # Default push task is read-only health inspection
+# Verify latest support portal deployment and polling endpoint
 
 on:
   push:
