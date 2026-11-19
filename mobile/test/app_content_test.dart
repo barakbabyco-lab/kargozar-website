@@ -27,6 +27,16 @@ void main() {
       }
     });
 
+
+    test('rejects path-like or unsafe filenames', () {
+      for (final value in ['../secret.png', 'nested/image.png', '']) {
+        expect(
+          resolveAppContentImageUri(value, baseUrl: 'https://assets.example.ir/images'),
+          isNull,
+        );
+      }
+    });
+
     test('resolves a file beneath the configured HTTPS directory', () {
       expect(
         resolveAppContentImageUri(
