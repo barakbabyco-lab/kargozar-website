@@ -92,7 +92,7 @@ jobs:
           set -euo pipefail
           case "$TASK" in
             health)
-              REMOTE_COMMAND='cd "$1/current" && php artisan about --only=environment'
+              REMOTE_COMMAND='cd "$1/current" && php artisan about --only=environment && printf "\\n=== MIGRATION STATUS ===\\n" && php artisan migrate:status && printf "\\n=== SUPPORT API ROUTES ===\\n" && php artisan route:list --path=api/v1 && printf "\\n=== STAFF PORTAL ROUTES ===\\n" && php artisan route:list --path=staff/portal'
               ;;
             system)
               REMOTE_COMMAND='printf "HOST: "; hostname; printf "\\nUPTIME: "; uptime; printf "\\nMEMORY:\\n"; free -h; printf "\\nDISK:\\n"; df -h "$1"; printf "\\nSERVICES:\\n"; for svc in nginx mysql php8.3-fpm; do state="$(systemctl is-active "$svc" 2>/dev/null || true)"; printf "%-12s %s\\n" "$svc" "${state:-unknown}"; done; printf "\\nCURRENT RELEASE: "; readlink "$1/current"'
