@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\V1\Auth\OtpController;
 use App\Http\Controllers\Api\V1\ServiceCategoryController;
 use App\Http\Controllers\Api\V1\ServiceController;
 use App\Http\Controllers\Api\V1\ServiceRequestController;
+use App\Http\Controllers\Api\V1\SupportChatController;
 use App\Http\Controllers\Api\V1\Staff\Auth\StaffLoginController;
 use App\Http\Controllers\Api\V1\Staff\StaffCatalogController;
 use App\Http\Controllers\Api\V1\Staff\StaffServiceRequestController;
