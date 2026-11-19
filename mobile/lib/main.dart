@@ -707,7 +707,6 @@ class _SupportChatLauncherState extends State<SupportChatLauncher> {
  });}
  @override void dispose(){_inviteTimer?.cancel();_dismissTimer?.cancel();super.dispose();}
  Future<void> _openChat() async {
-   if(_busy)return;
    _opened=true;setState(()=>_showInvite=false);
    var authenticated=widget.signedIn;
    if(!authenticated)authenticated=await widget.onLogin();
