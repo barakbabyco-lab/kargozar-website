@@ -1,4 +1,5 @@
 name: Sync Kargozar mobile image assets
+# One-time asset packaging run
 
 on:
   push:
