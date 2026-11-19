@@ -26,7 +26,7 @@ void main() {
     expect(find.text('استودیو طراحی'), findsOneWidget);
     expect(find.text('راهکارهای کسب‌وکار'), findsNothing);
 
-    await tester.tap(find.text('تماس و پشتیبانی'));
+    await tester.tap(find.text('تماس و پشتیبانی').last);
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 500));
     expect(find.text('ارسال پیام به پشتیبانی و ثبت تیکت'), findsOneWidget);
