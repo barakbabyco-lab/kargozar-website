@@ -4,6 +4,8 @@ import 'core/network/kargozar_api_client.dart';
 import 'features/auth/customer_session.dart';
 import 'features/catalog/service_catalog_repository.dart';
 import 'features/requests/customer_request_repository.dart';
+import 'features/catalog/service_taxonomy.dart';
+import 'features/content/app_content.dart';
 
 void main() {
   runApp(const KargozarApp());
@@ -136,36 +138,96 @@ const services = <ServiceItem>[
   ),
 ];
 
-class MainShell extends StatefulWidget{
- const MainShell({super.key,required this.requests,required this.signedIn,required this.onLogin,required this.onLogout});
- final CustomerRequestRepository requests;final bool signedIn;final Future<bool> Function() onLogin;final VoidCallback onLogout;
- @override State<MainShell> createState()=>_MainShellState();
+class MainShell extends StatefulWidget {
+  const MainShell({super.key, required this.requests, required this.signedIn, required this.onLogin, required this.onLogout});
+  final CustomerRequestRepository requests;
+  final bool signedIn;
+  final Future<bool> Function() onLogin;
+  final VoidCallback onLogout;
+  @override State<MainShell> createState() => _MainShellState();
 }
-class _MainShellState extends State<MainShell>{
- int _index=0,_revision=0;
- Future<void> _request(ServiceItem service)async{
- final id=service.apiId;
- if(id==null||id.isEmpty){ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content:Text('برای ثبت واقعی این خدمت، ابتدا باید کاتالوگ آنلاین سرور در دسترس باشد.')));return;}
- if(!widget.signedIn){final authenticated=await widget.onLogin();if(!authenticated||!mounted)return;}
- final note=await showDialog<String>(context:context,builder:(ctx){final c=TextEditingController();return AlertDialog(title:Text('درخواست ${service.title}'),content:TextField(controller:c,minLines:2,maxLines:4,decoration:const InputDecoration(labelText:'توضیحات درخواست (اختیاری)')),actions:[TextButton(onPressed:()=>Navigator.pop(ctx),child:const Text('انصراف')),FilledButton(onPressed:()=>Navigator.pop(ctx,c.text.trim()),child:const Text('ادامه و ثبت درخواست'))]);});
- if(note==null||!mounted)return;
- final key='${DateTime.now().microsecondsSinceEpoch}-${Random.secure().nextInt(1<<32)}';
- try{final result=await widget.requests.create(serviceId:id,customerNote:note,idempotencyKey:key);if(!mounted)return;setState(()=>_revision++);await showDialog<void>(context:context,builder:(ctx)=>AlertDialog(title:const Text('درخواست ثبت شد'),content:Text('کد پیگیری: ${result.trackingCode}'),actions:[TextButton(onPressed:()=>Navigator.pop(ctx),child:const Text('متوجه شدم'))]));}
- catch(e){if(mounted)ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:Text(errorText(e))));}
- }
- @override Widget build(BuildContext context)=>Scaffold(
- body:SafeArea(child:IndexedStack(index:_index,children:[
- HomePage(onRequest:_request,onBrowse:()=>setState(()=>_index=1)),ServicesPage(onRequest:_request),
- RequestsPage(repository:widget.requests,signedIn:widget.signedIn,onLogin:widget.onLogin,refreshRevision:_revision),
- ProfilePage(signedIn:widget.signedIn,onLogin:widget.onLogin,onLogout:widget.onLogout),
- ])),
- bottomNavigationBar:NavigationBar(selectedIndex:_index,onDestinationSelected:(v)=>setState(()=>_index=v),destinations:const[
- NavigationDestination(icon:Icon(Icons.home_outlined),selectedIcon:Icon(Icons.home_rounded),label:'خانه'),
- NavigationDestination(icon:Icon(Icons.grid_view_outlined),selectedIcon:Icon(Icons.grid_view_rounded),label:'خدمات'),
- NavigationDestination(icon:Icon(Icons.receipt_long_outlined),selectedIcon:Icon(Icons.receipt_long_rounded),label:'درخواست‌ها'),
- NavigationDestination(icon:Icon(Icons.person_outline_rounded),selectedIcon:Icon(Icons.person_rounded),label:'حساب من'),
- ]),
- );
+class _MainShellState extends State<MainShell> {
+  int _index = 1, _revision = 0;
+  Future<void> _request(ServiceItem service) async {
+    final id = service.apiId;
+    if (id == null || id.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('ثبت آنلاین این خدمت پس از اتصال کاتالوگ سرور فعال می‌شود.')));
+      return;
+    }
+    if (!widget.signedIn) {
+      final ok = await widget.onLogin();
+      if (!ok || !mounted) return;
+    }
+    final note = await showDialog<String>(context: context, builder: (ctx) {
+      final controller = TextEditingController();
+      return AlertDialog(
+        title: Text('درخواست ${service.title}'),
+        content: TextField(controller: controller, minLines: 2, maxLines: 4, decoration: const InputDecoration(labelText: 'توضیحات درخواست (اختیاری)')),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('انصراف')),
+          FilledButton(onPressed: () => Navigator.pop(ctx, controller.text.trim()), child: const Text('ادامه و ثبت درخواست')),
+        ],
+      );
+    });
+    if (note == null || !mounted) return;
+    final key = '${DateTime.now().microsecondsSinceEpoch}-${Random.secure().nextInt(1 << 32)}';
+    try {
+      final result = await widget.requests.create(serviceId: id, customerNote: note, idempotencyKey: key);
+      if (!mounted) return;
+      setState(() => _revision++);
+      await showDialog<void>(context: context, builder: (ctx) => AlertDialog(
+        title: const Text('درخواست ثبت شد'),
+        content: Text('کد پیگیری: ${result.trackingCode}'),
+        actions: [TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('متوجه شدم'))],
+      ));
+    } catch (error) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(errorText(error))));
+    }
+  }
+  Future<void> _showRequests() async {
+    final authenticated = widget.signedIn || await widget.onLogin();
+    if (!authenticated || !mounted) return;
+    Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => Directionality(
+      textDirection: TextDirection.rtl,
+      child: Scaffold(
+        appBar: AppBar(title: const Text('درخواست‌های من')),
+        body: RequestsPage(repository: widget.requests, signedIn: true, onLogin: widget.onLogin, refreshRevision: _revision),
+      ),
+    )));
+  }
+  void _showConsultation() {
+    showDialog<void>(context: context, builder: (ctx) => AlertDialog(
+      title: const Text('مشاوره رایگان کارگزار'),
+      content: const Text('فرم ثبت درخواست مشاوره باید به سرویس ارتباط با کارشناسان متصل شود. تا زمان اتصال، این بخش درخواست ساختگی ثبت نمی‌کند.'),
+      actions: [TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('متوجه شدم'))],
+    ));
+  }
+  void _openCompanion(int index) {
+    final item = companionModules[index];
+    showDialog<void>(context: context, builder: (ctx) => AlertDialog(
+      title: Text(item.title),
+      content: Text('${item.subtitle}\n\nصفحه عملیاتی این ماژول در مرحله تکمیل و اتصال به سامانه است.'),
+      actions: [TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('بستن'))],
+    ));
+  }
+  @override Widget build(BuildContext context) => Scaffold(
+    body: SafeArea(child: IndexedStack(index: _index, children: [
+      ProfilePage(signedIn: widget.signedIn, onLogin: widget.onLogin, onLogout: widget.onLogout, onShowRequests: _showRequests),
+      ServicesPage(onRequest: _request, onNavigate: (tab) { if (tab == 4) { setState(() => _index = 2); _openCompanion(0); } else { setState(() => _index = tab); } }, onConsultation: _showConsultation),
+      CompanionContentPage(onOpen: _openCompanion),
+      SupportContentPage(onConsultation: _showConsultation),
+    ])),
+    bottomNavigationBar: NavigationBar(
+      selectedIndex: _index,
+      onDestinationSelected: (value) => setState(() => _index = value),
+      destinations: const [
+        NavigationDestination(icon: Icon(Icons.person_outline_rounded), selectedIcon: Icon(Icons.person_rounded), label: 'حساب کاربری من'),
+        NavigationDestination(icon: Icon(Icons.grid_view_outlined), selectedIcon: Icon(Icons.grid_view_rounded), label: 'خدمات'),
+        NavigationDestination(icon: Icon(Icons.business_center_outlined), selectedIcon: Icon(Icons.business_center_rounded), label: 'همراه کسب‌وکار'),
+        NavigationDestination(icon: Icon(Icons.support_agent_outlined), selectedIcon: Icon(Icons.support_agent_rounded), label: 'تماس و پشتیبانی'),
+      ],
+    ),
+  );
 }
 
 class HomePage extends StatefulWidget {
@@ -351,8 +413,10 @@ class _HomePageState extends State<HomePage> {
 }
 
 class ServicesPage extends StatefulWidget {
-  const ServicesPage({super.key, required this.onRequest});
+  const ServicesPage({super.key, required this.onRequest, required this.onNavigate, required this.onConsultation});
   final Future<void> Function(ServiceItem service) onRequest;
+  final ValueChanged<int> onNavigate;
+  final VoidCallback onConsultation;
 
   @override
   State<ServicesPage> createState() => _ServicesPageState();
@@ -404,11 +468,38 @@ class _ServicesPageState extends State<ServicesPage> {
     return ListView(
       padding: const EdgeInsets.all(20),
       children: [
+        const Text('کارگزار', style: TextStyle(color: _navy, fontSize: 21, fontWeight: FontWeight.w900)),
+        const SizedBox(height: 4),
         const Text('همه خدمات', style: TextStyle(
           color: _ink, fontSize: 25, fontWeight: FontWeight.w900)),
         const SizedBox(height: 7),
         const Text('خدمت موردنظرت را جست‌وجو و انتخاب کن.',
             style: TextStyle(color: _muted)),
+        const SizedBox(height: 18),
+        AppBannerStrip(onNavigate: widget.onNavigate, onConsultation: widget.onConsultation),
+        const SizedBox(height: 20),
+        const SectionHeading(title: 'دسته‌بندی خدمات'),
+        const SizedBox(height: 12),
+        if (!_apiConfigured)
+          GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: serviceTaxonomy.length,
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, crossAxisSpacing: 11, mainAxisSpacing: 11, childAspectRatio: 1.15),
+            itemBuilder: (context, index) {
+              final category = serviceTaxonomy[index];
+              return Material(
+                color: Colors.white, borderRadius: BorderRadius.circular(15), clipBehavior: Clip.antiAlias,
+                child: InkWell(
+                  onTap: () => setState(() => _selectedCategory = category.slug),
+                  child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                    Expanded(child: AppContentImage(fileName: serviceCategoryImages[category.slug] ?? 'missing.png', fallbackIcon: Icons.category_outlined, borderRadius: 0)),
+                    Padding(padding: const EdgeInsets.all(9), child: Text(category.name, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: _ink))),
+                  ]),
+                ),
+              );
+            },
+          ),
         const SizedBox(height: 18),
         TextField(
           textDirection: TextDirection.rtl,
@@ -601,6 +692,9 @@ class _CatalogCategoryBranch extends StatelessWidget {
     return ExpansionTile(
       tilePadding: const EdgeInsetsDirectional.only(start: 14, end: 14),
       childrenPadding: const EdgeInsetsDirectional.only(start: 10),
+      leading: serviceCategoryImages.containsKey(category.slug)
+          ? SizedBox(width: 44, height: 44, child: AppContentImage(fileName: serviceCategoryImages[category.slug]!, fallbackIcon: Icons.category_outlined))
+          : null,
       title: title,
       children: [
         ListTile(
@@ -654,10 +748,11 @@ class _RequestsPageState extends State<RequestsPage>{
 void _showRequestDetails(BuildContext context,CustomerServiceRequest request){showModalBottomSheet<void>(context:context,isScrollControlled:true,backgroundColor:Colors.white,shape:const RoundedRectangleBorder(borderRadius:BorderRadius.vertical(top:Radius.circular(24))),builder:(ctx)=>SafeArea(child:Padding(padding:const EdgeInsets.all(20),child:ListView(shrinkWrap:true,children:[Text('پیگیری ${request.trackingCode}',style:const TextStyle(fontSize:19,fontWeight:FontWeight.w900)),const SizedBox(height:10),Text('وضعیت فعلی: ${requestStatusLabel(request.status)}'),if(request.customerNote?.isNotEmpty==true)Text('توضیحات: ${request.customerNote}'),const SizedBox(height:18),const Text('آخرین رویدادها',style:TextStyle(fontWeight:FontWeight.w800)),if(request.events.isEmpty)const Text('هنوز رویدادی برای این درخواست ثبت نشده است.'),...request.events.map((e)=>ListTile(contentPadding:EdgeInsets.zero,leading:const Icon(Icons.timeline_rounded,color:_teal),title:Text(e.publicMessage??requestStatusLabel(e.status)),subtitle:Text(requestStatusLabel(e.status))))]))));}
 String requestStatusLabel(String status)=>switch(status){'submitted'=>'ثبت‌شده','reviewing'=>'در حال بررسی','awaiting_customer'=>'نیازمند اقدام شما','in_progress'=>'در حال انجام','completed'=>'تکمیل‌شده','rejected'=>'ردشده','cancelled'=>'لغوشده',_=>status};
 class ProfilePage extends StatelessWidget {
- const ProfilePage({super.key,required this.signedIn,required this.onLogin,required this.onLogout});final bool signedIn;final VoidCallback onLogin,onLogout;
+ const ProfilePage({super.key,required this.signedIn,required this.onLogin,required this.onLogout,required this.onShowRequests});final bool signedIn;final VoidCallback onLogin,onLogout,onShowRequests;
  @override Widget build(BuildContext context)=>ListView(padding:const EdgeInsets.all(20),children:[
  const Text('حساب کاربری',style:TextStyle(color:_ink,fontSize:25,fontWeight:FontWeight.w900)),const SizedBox(height:18),
  Container(padding:const EdgeInsets.all(18),decoration:BoxDecoration(color:Colors.white,borderRadius:BorderRadius.circular(18)),child:Row(children:[const CircleAvatar(radius:26,backgroundColor:Color(0xFFE8EEF5),child:Icon(Icons.person_outline,color:_navy,size:28)),const SizedBox(width:13),Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text(signedIn?'حساب شما فعال است':'مهمان',style:const TextStyle(color:_ink,fontWeight:FontWeight.bold,fontSize:16)),Text(signedIn?'به حساب کاربری خود وارد شده‌اید':'برای استفاده از خدمات وارد شوید',style:const TextStyle(color:_muted,fontSize:12))])])),const SizedBox(height:14),
+ ListTile(leading:const Icon(Icons.receipt_long_outlined,color:_navy),title:const Text('درخواست‌های من'),trailing:const Icon(Icons.chevron_left_rounded,color:_muted),onTap:onShowRequests),
  ListTile(leading:Icon(signedIn?Icons.logout:Icons.login,color:_navy),title:Text(signedIn?'خروج از حساب':'ورود / ثبت‌نام'),trailing:const Icon(Icons.chevron_left_rounded,color:_muted),onTap:signedIn?onLogout:onLogin),
  const ProfileOption(icon:Icons.support_agent,title:'پشتیبانی و تماس با ما'),const ProfileOption(icon:Icons.policy_outlined,title:'قوانین و حریم خصوصی'),const ProfileOption(icon:Icons.info_outline,title:'درباره کارگزار'),
  ]);

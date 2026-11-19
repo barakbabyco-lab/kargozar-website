@@ -88,3 +88,8 @@ Do not expose this API publicly until:
 5. Rate limits, monitoring, logging retention and backup recovery are verified.
 
 Never commit `.env`, API keys, SMS credentials, production data, or staff passwords. Customer documents, payments and e-signatures are not enabled in this MVP.
+
+
+## پیامک ورود یک‌بارمصرف
+
+راهنمای تنظیم امن IPPanel و آزمایش انتهابه‌انتها در [SMS_SETUP.md](SMS_SETUP.md) قرار دارد. مقادیر واقعی API فقط باید در محیط امن سرور نگهداری شوند.
