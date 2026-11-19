@@ -216,17 +216,17 @@ class CompanionContentPage extends StatelessWidget {
             onNavigate: onNavigate,
             onConsultation: onConsultation,
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 12),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
+            padding: const EdgeInsets.symmetric(horizontal: 12),
             child: GridView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               itemCount: companionModules.length,
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
-                crossAxisSpacing: 11,
-                mainAxisSpacing: 11,
+                crossAxisSpacing: 8,
+                mainAxisSpacing: 8,
                 childAspectRatio: 1.15,
               ),
               itemBuilder: (context, index) {
