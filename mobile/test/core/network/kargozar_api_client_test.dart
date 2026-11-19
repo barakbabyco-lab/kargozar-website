@@ -155,6 +155,34 @@ void main() {
       client.close();
     });
 
+    test('uses authenticated endpoints for support chat messages', () async {
+      final requests = <http.Request>[];
+      final client = KargozarApiClient(
+        baseUrl: 'https://api.example.test/api/v1',
+        accessToken: 'chat-token',
+        httpClient: MockClient((request) async {
+          requests.add(request);
+          return http.Response(
+            jsonEncode({'data': {'id': 41, 'sender_type': 'customer', 'body': 'سلام'}}),
+            201,
+            headers: {'content-type': 'application/json; charset=utf-8'},
+          );
+        }),
+      );
+
+      await client.startSupportConversation('سلام');
+      await client.sendSupportMessage(41, 'پیام دوم');
+      await client.getSupportMessages(41);
+
+      expect(requests[0].method, 'POST');
+      expect(requests[0].url.path, '/api/v1/support-conversations');
+      expect(requests[0].headers['Authorization'], 'Bearer chat-token');
+      expect(jsonDecode(requests[0].body)['body'], 'سلام');
+      expect(requests[1].url.path, '/api/v1/me/support-conversations/41/messages');
+      expect(requests[2].method, 'GET');
+      client.close();
+    });
+
     test('restores a saved token and clears it after logout', () async {
       final tokenStore = FakeAccessTokenStore()..value = 'saved-token';
       late http.Request logoutRequest;
