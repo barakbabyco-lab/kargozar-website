@@ -69,24 +69,18 @@ jobs:
       - name: Configure private release signing
         id: signing
         env:
-          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
-          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
-          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          ANDROID_SIGNING_BUNDLE_BASE64: ${{ secrets.ANDROID_SIGNING_BUNDLE_BASE64 }}
         shell: bash
         run: |
-          if [[ -z "$ANDROID_KEYSTORE_BASE64" || -z "$ANDROID_KEYSTORE_PASSWORD" || -z "$ANDROID_KEY_ALIAS" || -z "$ANDROID_KEY_PASSWORD" ]]; then
-            echo "Release signing secrets are not configured; skipping signed release build."
+          if [[ -z "$ANDROID_SIGNING_BUNDLE_BASE64" ]]; then
+            echo "Release signing secret is not configured; skipping signed release build."
             echo "release_ready=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
-          printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 --decode > android/app/upload-keystore.jks
-          cat > android/key.properties <<EOF
-          storePassword=$ANDROID_KEYSTORE_PASSWORD
-          keyPassword=$ANDROID_KEY_PASSWORD
-          keyAlias=$ANDROID_KEY_ALIAS
-          storeFile=upload-keystore.jks
-          EOF
+          printf '%s' "$ANDROID_SIGNING_BUNDLE_BASE64" | base64 --decode > /tmp/kargozar-signing-bundle.zip
+          unzip -o /tmp/kargozar-signing-bundle.zip -d .
+          test -s android/app/upload-keystore.jks
+          test -s android/key.properties
           python3 tool/configure_android_signing.py
           echo "release_ready=true" >> "$GITHUB_OUTPUT"
 
