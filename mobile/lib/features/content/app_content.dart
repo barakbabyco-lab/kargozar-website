@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 
 const kargozarAssetsBaseUrl = String.fromEnvironment(
@@ -94,8 +95,13 @@ class AppContentImage extends StatelessWidget {
       );
 }
 
-class AppBannerStrip extends StatelessWidget {
-  const AppBannerStrip({super.key, required this.onNavigate, required this.onConsultation});
+class AppBannerStrip extends StatefulWidget {
+  const AppBannerStrip({
+    super.key,
+    required this.onNavigate,
+    required this.onConsultation,
+  });
+
   final ValueChanged<int> onNavigate;
   final VoidCallback onConsultation;
 
@@ -108,24 +114,55 @@ class AppBannerStrip extends StatelessWidget {
   ];
 
   @override
+  State<AppBannerStrip> createState() => _AppBannerStripState();
+}
+
+class _AppBannerStripState extends State<AppBannerStrip> {
+  late final PageController _pageController;
+  Timer? _autoSlideTimer;
+  int _currentPage = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController();
+    _autoSlideTimer = Timer.periodic(const Duration(seconds: 5), (_) {
+      if (!_pageController.hasClients) return;
+      final nextPage = (_currentPage + 1) % AppBannerStrip.banners.length;
+      _pageController.animateToPage(
+        nextPage,
+        duration: const Duration(milliseconds: 650),
+        curve: Curves.easeInOut,
+      );
+    });
+  }
+
+  @override
+  void dispose() {
+    _autoSlideTimer?.cancel();
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) => SizedBox(
         height: 142,
-        child: ListView.separated(
-          scrollDirection: Axis.horizontal,
-          itemCount: banners.length,
-          separatorBuilder: (_, __) => const SizedBox(width: 12),
+        width: double.infinity,
+        child: PageView.builder(
+          controller: _pageController,
+          itemCount: AppBannerStrip.banners.length,
+          onPageChanged: (index) => setState(() => _currentPage = index),
           itemBuilder: (context, index) {
-            final item = banners[index];
+            final item = AppBannerStrip.banners[index];
             return SizedBox(
               width: MediaQuery.sizeOf(context).width,
               child: Material(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
                 clipBehavior: Clip.antiAlias,
                 child: InkWell(
                   onTap: item.$3 == -1
-                      ? onConsultation
-                      : () => onNavigate(item.$3),
+                      ? widget.onConsultation
+                      : () => widget.onNavigate(item.$3),
                   child: Stack(
                     fit: StackFit.expand,
                     children: [
@@ -134,14 +171,22 @@ class AppBannerStrip extends StatelessWidget {
                         alignment: Alignment.bottomRight,
                         child: Container(
                           margin: const EdgeInsets.all(10),
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 7,
+                          ),
                           decoration: BoxDecoration(
                             color: const Color(0xE649334F),
                             borderRadius: BorderRadius.circular(10),
                           ),
-                          child: Text(item.$2, style: const TextStyle(
-                            color: Colors.white, fontWeight: FontWeight.w800, fontSize: 12,
-                          )),
+                          child: Text(
+                            item.$2,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w800,
+                              fontSize: 12,
+                            ),
+                          ),
                         ),
                       ),
                     ],
@@ -155,61 +200,88 @@ class AppBannerStrip extends StatelessWidget {
 }
 
 class CompanionContentPage extends StatelessWidget {
-  const CompanionContentPage({super.key, required this.onOpen});
+  const CompanionContentPage({
+    super.key,
+    required this.onOpen,
+    required this.onNavigate,
+    required this.onConsultation,
+  });
+
   final ValueChanged<int> onOpen;
+  final ValueChanged<int> onNavigate;
+  final VoidCallback onConsultation;
 
   @override
   Widget build(BuildContext context) => ListView(
-        padding: const EdgeInsets.all(20),
+        padding: EdgeInsets.zero,
         children: [
-          const Text('همراه کسب‌وکار', style: TextStyle(
-            color: Color(0xFF1E293B), fontSize: 25, fontWeight: FontWeight.w900,
-          )),
-          const SizedBox(height: 7),
-          const Text('ابزارها و راهکارهایی برای اداره و توسعه کسب‌وکار شما.',
-            style: TextStyle(color: Color(0xFF64748B), height: 1.7)),
-          const SizedBox(height: 18),
-          GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: companionModules.length,
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              crossAxisSpacing: 12,
-              mainAxisSpacing: 12,
-              childAspectRatio: .94,
-            ),
-            itemBuilder: (context, index) {
-              final item = companionModules[index];
-              return Material(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(17),
-                clipBehavior: Clip.antiAlias,
-                child: InkWell(
-                  onTap: () => onOpen(index),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Expanded(child: AppContentImage(
-                        fileName: item.image, borderRadius: 0, fallbackIcon: item.icon,
-                      )),
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(11, 10, 11, 2),
-                        child: Text(item.title, maxLines: 1, overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 12,
-                            color: Color(0xFF1E293B))),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(11, 2, 11, 10),
-                        child: Text(item.subtitle, maxLines: 2, overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(fontSize: 10, height: 1.5,
-                            color: Color(0xFF64748B))),
-                      ),
-                    ],
+          AppBannerStrip(
+            onNavigate: onNavigate,
+            onConsultation: onConsultation,
+          ),
+          const SizedBox(height: 20),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: companionModules.length,
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 12,
+                mainAxisSpacing: 12,
+                childAspectRatio: .94,
+              ),
+              itemBuilder: (context, index) {
+                final item = companionModules[index];
+                return Material(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(17),
+                  clipBehavior: Clip.antiAlias,
+                  child: InkWell(
+                    onTap: () => onOpen(index),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Expanded(
+                          child: AppContentImage(
+                            fileName: item.image,
+                            borderRadius: 0,
+                            fallbackIcon: item.icon,
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(11, 10, 11, 2),
+                          child: Text(
+                            item.title,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w800,
+                              fontSize: 12,
+                              color: Color(0xFF1E293B),
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(11, 2, 11, 10),
+                          child: Text(
+                            item.subtitle,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontSize: 10,
+                              height: 1.5,
+                              color: Color(0xFF64748B),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              );
-            },
+                );
+              },
+            ),
           ),
         ],
       );
