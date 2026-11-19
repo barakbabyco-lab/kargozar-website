@@ -341,5 +341,35 @@ jobs:
               curl -skS -o /dev/null -w '%{http_code} %{content_type}\\n' --connect-timeout 5 --max-time 10 --resolve barakmod.ir:443:89.32.248.121 "https://barakmod.ir$path" || true
             done
           fi
+          echo "=== BARAKMOD TEMPORARY CART AND CHECKOUT DIAGNOSTIC (NO ORDER SUBMITTED) ==="
+          if command -v curl >/dev/null 2>&1; then
+            test_dir="$(mktemp -d)"
+            cookie_jar="$test_dir/cookies.txt"
+            touch "$cookie_jar"
+            user_agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/130 Safari/537.36"
+            echo "--- Add one in-stock product to an isolated temporary cart (product 266) ---"
+            curl -k -sS -L --max-redirs 10 --connect-timeout 8 --max-time 35 \
+              -A "$user_agent" -c "$cookie_jar" -b "$cookie_jar" \
+              -o "$test_dir/add.html" -w 'add_to_cart_http=%{http_code} final_url=%{url_effective}\\n' \
+              'https://barakmod.ir/?add-to-cart=266' || true
+            echo "--- Cart page ---"
+            curl -k -sS -L --max-redirs 10 --connect-timeout 8 --max-time 35 \
+              -A "$user_agent" -c "$cookie_jar" -b "$cookie_jar" \
+              -o "$test_dir/cart.html" -w 'cart_http=%{http_code} final_url=%{url_effective}\\n' \
+              'https://barakmod.ir/cart/' || true
+            echo "cart_has_product=$(grep -Eqi 'product-266|شورت مردانه کلوین' "$test_dir/cart.html" && echo yes || echo no)"
+            echo "--- Checkout page ---"
+            curl -k -sS -L --max-redirs 10 --connect-timeout 8 --max-time 35 \
+              -A "$user_agent" -c "$cookie_jar" -b "$cookie_jar" \
+              -o "$test_dir/checkout.html" -w 'checkout_http=%{http_code} final_url=%{url_effective}\\n' \
+              'https://barakmod.ir/checkout/' || true
+            echo "checkout_form=$(grep -qi 'woocommerce-checkout' "$test_dir/checkout.html" && echo present || echo missing)"
+            echo "place_order_button=$(grep -qi 'place_order' "$test_dir/checkout.html" && echo present || echo missing)"
+            echo "payment_gateway_ids:"
+            grep -Eo 'payment_method_[A-Za-z0-9_]+' "$test_dir/checkout.html" | sort -u | head -n 20 || true
+            echo "checkout_redirect_notice:"
+            grep -Eo 'woocommerce-error[^>]*>[^<]+' "$test_dir/checkout.html" | head -n 5 || true
+            rm -rf "$test_dir"
+          fi
           echo "=== END READ-ONLY INSPECTION ==="
           REMOTE
