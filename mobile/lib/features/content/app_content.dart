@@ -8,16 +8,16 @@ const kargozarAssetsBaseUrl = String.fromEnvironment(
 );
 
 const serviceCategoryImages = <String, String>{
-  'business-licenses': 'service-01-business-permits.png',
-  'trademark-intellectual-property': 'service-02-brand-registration.png',
-  'company-registration': 'service-03-company-registration.png',
-  'supplementary-certificates': 'service-04-certifications.png',
-  'banking-services': 'service-05-banking.png',
-  'legal-contract-services': 'service-06-legal-services.png',
-  'internet-commerce-services': 'service-07-digital-services.png',
-  'real-estate-contracts': 'service-08-real-estate.png',
-  'business-development': 'service-09-business-development.png',
-  'specialized-services': 'service-10-specialized-services.png',
+  'business-licenses': 'service-01-business-permits.webp',
+  'trademark-intellectual-property': 'service-02-brand-registration.webp',
+  'company-registration': 'service-03-company-registration.webp',
+  'supplementary-certificates': 'service-04-certifications.webp',
+  'banking-services': 'service-05-banking.webp',
+  'legal-contract-services': 'service-06-legal-services.webp',
+  'internet-commerce-services': 'service-07-digital-services.webp',
+  'real-estate-contracts': 'service-08-real-estate.webp',
+  'business-development': 'service-09-business-development.webp',
+  'specialized-services': 'service-10-specialized-services.webp',
 };
 
 class CompanionModule {
@@ -29,15 +29,15 @@ class CompanionModule {
 }
 
 const companionModules = <CompanionModule>[
-  CompanionModule('پکیج‌های کارگزار', 'راهکارهای آماده و مقرون‌به‌صرفه برای شروع و توسعه کسب‌وکار', 'companion-01-packages.png', Icons.inventory_2_outlined),
-  CompanionModule('استودیو طراحی', 'طراحی هویت بصری، محصولات و محتوای تخصصی', 'companion-02-design-studio.png', Icons.design_services_outlined),
-  CompanionModule('حسابداری و مالی', 'مدیریت امور مالی و گزارش‌های کسب‌وکار', 'companion-03-accounting.png', Icons.calculate_outlined),
-  CompanionModule('فاکتور و مدیریت فروش', 'صدور فاکتور و کنترل فرایند فروش', 'companion-04-sales-management.png', Icons.point_of_sale_outlined),
-  CompanionModule('پرسنل و منابع انسانی', 'مدیریت کارکنان، حضور و غیاب و حقوق', 'companion-05-human-resources.png', Icons.groups_outlined),
-  CompanionModule('قراردادها و اسناد', 'سامان‌دهی قراردادها و اسناد کسب‌وکار', 'companion-06-contracts.png', Icons.description_outlined),
-  CompanionModule('تبلیغات و بازاریابی', 'ابزارهای معرفی و توسعه بازار', 'companion-07-marketing.png', Icons.campaign_outlined),
-  CompanionModule('انبار و مدیریت موجودی', 'کنترل کالا، موجودی و گردش انبار', 'companion-08-inventory.png', Icons.warehouse_outlined),
-  CompanionModule('خدمات و امکانات تکمیلی', 'امکانات کاربردی برای مدیریت بهتر کسب‌وکار', 'companion-09-extra-services.png', Icons.extension_outlined),
+  CompanionModule('پکیج‌های کارگزار', 'راهکارهای آماده و مقرون‌به‌صرفه برای شروع و توسعه کسب‌وکار', 'companion-01-packages.webp', Icons.inventory_2_outlined),
+  CompanionModule('استودیو طراحی', 'طراحی هویت بصری، محصولات و محتوای تخصصی', 'companion-02-design-studio.webp', Icons.design_services_outlined),
+  CompanionModule('حسابداری و مالی', 'مدیریت امور مالی و گزارش‌های کسب‌وکار', 'companion-03-accounting.webp', Icons.calculate_outlined),
+  CompanionModule('فاکتور و مدیریت فروش', 'صدور فاکتور و کنترل فرایند فروش', 'companion-04-sales-management.webp', Icons.point_of_sale_outlined),
+  CompanionModule('پرسنل و منابع انسانی', 'مدیریت کارکنان، حضور و غیاب و حقوق', 'companion-05-human-resources.webp', Icons.groups_outlined),
+  CompanionModule('قراردادها و اسناد', 'سامان‌دهی قراردادها و اسناد کسب‌وکار', 'companion-06-contracts.webp', Icons.description_outlined),
+  CompanionModule('تبلیغات و بازاریابی', 'ابزارهای معرفی و توسعه بازار', 'companion-07-marketing.webp', Icons.campaign_outlined),
+  CompanionModule('انبار و مدیریت موجودی', 'کنترل کالا، موجودی و گردش انبار', 'companion-08-inventory.webp', Icons.warehouse_outlined),
+  CompanionModule('خدمات و امکانات تکمیلی', 'امکانات کاربردی برای مدیریت بهتر کسب‌وکار', 'companion-09-extra-services.webp', Icons.extension_outlined),
 ];
 
 class AppContentImage extends StatelessWidget {
@@ -67,24 +67,20 @@ class AppContentImage extends StatelessWidget {
       child: SizedBox(
         height: height,
         width: width,
-        child: url == null || !url.hasScheme || url.host.isEmpty
-            ? _fallback()
-            : Image.network(
+        child: Image.asset(
+          'assets/kargozar/$fileName',
+          fit: fit,
+          errorBuilder: (context, error, stackTrace) {
+            if (url != null && url.hasScheme && url.host.isNotEmpty) {
+              return Image.network(
                 url.toString(),
                 fit: fit,
                 errorBuilder: (_, __, ___) => _fallback(),
-                loadingBuilder: (context, child, progress) => progress == null
-                    ? child
-                    : Container(
-                        color: const Color(0xFFF3F0F4),
-                        alignment: Alignment.center,
-                        child: const SizedBox(
-                          width: 22,
-                          height: 22,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        ),
-                      ),
-              ),
+              );
+            }
+            return _fallback();
+          },
+        ),
       ),
     );
   }
@@ -107,11 +103,11 @@ class AppBannerStrip extends StatefulWidget {
   final VoidCallback onConsultation;
 
   static const banners = <(String, String, int)>[
-    ('banner-01-support.png', 'تماس و پشتیبانی', 3),
-    ('banner-02-business-solutions.png', 'راهکارهای کسب‌وکار', 2),
-    ('banner-03-packages.png', 'پکیج‌های کارگزار', 4),
-    ('banner-04-free-consultation.png', 'مشاوره رایگان', -1),
-    ('banner-05-services.png', 'مشاهده خدمات', 1),
+    ('banner-01-support.webp', 'تماس و پشتیبانی', 3),
+    ('banner-02-business-solutions.webp', 'راهکارهای کسب‌وکار', 2),
+    ('banner-03-packages.webp', 'پکیج‌های کارگزار', 4),
+    ('banner-04-free-consultation.webp', 'مشاوره رایگان', -1),
+    ('banner-05-services.webp', 'مشاهده خدمات', 1),
   ];
 
   @override
