@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'core/network/kargozar_api_client.dart';
 import 'features/auth/customer_session.dart';
 import 'features/catalog/service_catalog_repository.dart';
