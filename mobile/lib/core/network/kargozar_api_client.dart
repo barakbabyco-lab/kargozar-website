@@ -227,6 +227,26 @@ class KargozarApiClient {
         },
       );
 
+  Future<Map<String, dynamic>> startSupportConversation(String body) => _send(
+        'POST',
+        'support-conversations',
+        authenticated: true,
+        body: {'body': body},
+      );
+
+  Future<Map<String, dynamic>> getSupportMessages(int conversationId) => _send(
+        'GET',
+        'me/support-conversations/$conversationId/messages',
+        authenticated: true,
+      );
+
+  Future<Map<String, dynamic>> sendSupportMessage(int conversationId, String body) => _send(
+        'POST',
+        'me/support-conversations/$conversationId/messages',
+        authenticated: true,
+        body: {'body': body},
+      );
+
   Future<Map<String, dynamic>> getMyRequests({int page = 1}) => _send(
         'GET',
         'me/service-requests',
