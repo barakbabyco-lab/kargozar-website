@@ -12,7 +12,7 @@ void main() {
     expect(find.byType(PageView), findsWidgets);
     expect(find.byType(NavigationBar), findsOneWidget);
 
-    final shellPager = find.byType(PageView).first;
+    final shellPager = find.byKey(const ValueKey('main-tabs'));
     await tester.drag(shellPager, const Offset(-620, 0));
     await tester.pump(const Duration(milliseconds: 500));
     await tester.pump();
@@ -48,7 +48,7 @@ void main() {
     await tester.pump(const Duration(milliseconds: 500));
     await tester.pump();
 
-    await tester.drag(find.byType(PageView).first, const Offset(620, 0));
+    await tester.drag(find.byKey(const ValueKey('main-tabs')), const Offset(620, 0));
     await tester.pump(const Duration(milliseconds: 500));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 500));
@@ -69,7 +69,7 @@ void main() {
     await tester.tap(find.text('حساب کاربری من'));
     await tester.pump(const Duration(milliseconds: 500));
     await tester.pump();
-    await tester.drag(find.byType(PageView).first, const Offset(620, 0));
+    await tester.drag(find.byKey(const ValueKey('main-tabs')), const Offset(620, 0));
     await tester.pump(const Duration(milliseconds: 500));
     await tester.pump();
     await tester.ensureVisible(find.text('ورود / ثبت‌نام'));
