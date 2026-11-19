@@ -9,15 +9,6 @@ const serviceTaxonomy = <ServiceCategory>[
     ServiceCategory(id: '1-3', name: 'جواز کسب‌وکار دستگاهی', slug: 'institutional-business-license'),
     ServiceCategory(id: '1-4', name: 'کارت بازرگانی', slug: 'commercial-card'),
   ]),
-  ServiceCategory(id: '2', name: 'ثبت شرکت', slug: 'company-registration', hasChildren: true, children: [
-    ServiceCategory(id: '2-1', name: 'ثبت و تأسیس شرکت', slug: 'company-incorporation'),
-    ServiceCategory(id: '2-2', name: 'ثبت مؤسسات غیرتجاری', slug: 'non-commercial-institutions'),
-    ServiceCategory(id: '2-3', name: 'تغییرات شرکت‌ها و مؤسسات', slug: 'company-changes'),
-    ServiceCategory(id: '2-4', name: 'انحلال و تصفیه شرکت', slug: 'company-dissolution'),
-    ServiceCategory(id: '2-5', name: 'ثبت شعبه و نمایندگی', slug: 'branch-registration'),
-    ServiceCategory(id: '2-6', name: 'دریافت دفاتر قانونی و پلمپ دفاتر', slug: 'legal-books'),
-    ServiceCategory(id: '2-7', name: 'سایر امور ثبتی شرکت‌ها', slug: 'other-company-registration'),
-  ]),
   ServiceCategory(id: '3', name: 'ثبت برند و مالکیت فکری', slug: 'trademark-intellectual-property', hasChildren: true, children: [
     ServiceCategory(id: '3-1', name: 'ثبت علامت تجاری (برند)', slug: 'trademark-registration'),
     ServiceCategory(id: '3-2', name: 'تمدید و تجدید ثبت برند', slug: 'trademark-renewal'),
@@ -28,6 +19,15 @@ const serviceTaxonomy = <ServiceCategory>[
     ServiceCategory(id: '3-7', name: 'جست‌وجو و استعلام مالکیت فکری', slug: 'ip-search'),
     ServiceCategory(id: '3-8', name: 'خدمات حقوقی و پیگیری مالکیت فکری', slug: 'ip-legal-followup'),
     ServiceCategory(id: '3-9', name: 'سایر خدمات مالکیت فکری', slug: 'other-ip-services'),
+  ]),
+  ServiceCategory(id: '2', name: 'ثبت شرکت', slug: 'company-registration', hasChildren: true, children: [
+    ServiceCategory(id: '2-1', name: 'ثبت و تأسیس شرکت', slug: 'company-incorporation'),
+    ServiceCategory(id: '2-2', name: 'ثبت مؤسسات غیرتجاری', slug: 'non-commercial-institutions'),
+    ServiceCategory(id: '2-3', name: 'تغییرات شرکت‌ها و مؤسسات', slug: 'company-changes'),
+    ServiceCategory(id: '2-4', name: 'انحلال و تصفیه شرکت', slug: 'company-dissolution'),
+    ServiceCategory(id: '2-5', name: 'ثبت شعبه و نمایندگی', slug: 'branch-registration'),
+    ServiceCategory(id: '2-6', name: 'دریافت دفاتر قانونی و پلمپ دفاتر', slug: 'legal-books'),
+    ServiceCategory(id: '2-7', name: 'سایر امور ثبتی شرکت‌ها', slug: 'other-company-registration'),
   ]),
   ServiceCategory(id: '4', name: 'مدارک و تأییدیه‌های مکمل', slug: 'supplementary-certificates', hasChildren: true, children: [
     ServiceCategory(id: '4-1', name: 'مجوزها و گواهی‌های بهداشتی', slug: 'health-certificates'),
