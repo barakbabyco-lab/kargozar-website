@@ -33,7 +33,7 @@
 <button class="btn" type="submit">{{ $selected->status==='open'?'بستن گفت‌وگو':'بازگشایی' }}</button>
 </form>
 </div>
-<div class="messages" id="messages">
+<div class="messages" id="messages" data-last-id="{{ $messages->last()?->id ?? 0 }}">
 @forelse($messages as $message)
 <div class="msg {{ $message->sender_type==='customer'?'customer':'staff' }}">{{ $message->body }}</div>
 @empty<div class="empty">هنوز پیامی ثبت نشده است.</div>@endforelse
@@ -48,5 +48,33 @@
 @endif
 </section>
 </main>
-<script>const box=document.getElementById('messages');if(box)box.scrollTop=box.scrollHeight;</script>
+<script>
+const box=document.getElementById('messages');
+if(box){
+  box.scrollTop=box.scrollHeight;
+  const conversationId=@json($selected?->id);
+  let messageCount=box.querySelectorAll('.msg').length;
+  async function refreshMessages(){
+    try{
+      const response=await fetch('/staff/portal/conversations/'+conversationId+'/messages',{headers:{Accept:'application/json'}});
+      if(!response.ok)return;
+      const payload=await response.json();
+      const messages=payload.data||[];
+      if(messages.length<=messageCount)return;
+      const nearBottom=box.scrollTop+box.clientHeight>=box.scrollHeight-24;
+      box.replaceChildren();
+      for(const message of messages){
+        const item=document.createElement('div');
+        item.className='msg '+(message.sender_type==='customer'?'customer':'staff');
+        item.textContent=message.body||'';
+        box.appendChild(item);
+      }
+      messageCount=messages.length;
+      box.dataset.lastId=messages.length?messages[messages.length-1].id:box.dataset.lastId;
+      if(nearBottom)box.scrollTop=box.scrollHeight;
+    }catch(_){}
+  }
+  window.setInterval(refreshMessages,5000);
+}
+</script>
 </body></html>
