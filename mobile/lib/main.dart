@@ -470,192 +470,68 @@ class _ServicesPageState extends State<ServicesPage> {
 
   @override
   Widget build(BuildContext context) {
-    final filtered = services.where((item) =>
-      item.title.contains(_query) ||
-      item.category.contains(_query) ||
-      item.subtitle.contains(_query)).toList();
-
     return ListView(
       padding: EdgeInsets.zero,
       children: [
-        AppBannerStrip(onNavigate: widget.onNavigate, onConsultation: widget.onConsultation),
+        AppBannerStrip(
+          onNavigate: widget.onNavigate,
+          onConsultation: widget.onConsultation,
+        ),
         const SizedBox(height: 20),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Column(
-            children: [
-        const SectionHeading(title: 'دسته‌بندی خدمات'),
-        const SizedBox(height: 12),
-        if (!_apiConfigured)
-          GridView.builder(
+          child: GridView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             itemCount: serviceTaxonomy.length,
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, crossAxisSpacing: 11, mainAxisSpacing: 11, childAspectRatio: 1.15),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              crossAxisSpacing: 11,
+              mainAxisSpacing: 11,
+              childAspectRatio: 1.15,
+            ),
             itemBuilder: (context, index) {
               final category = serviceTaxonomy[index];
               return Material(
-                color: Colors.white, borderRadius: BorderRadius.circular(15), clipBehavior: Clip.antiAlias,
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(15),
+                clipBehavior: Clip.antiAlias,
                 child: InkWell(
-                  onTap: () => setState(() => _selectedCategory = category.slug),
-                  child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-                    Expanded(child: AppContentImage(fileName: serviceCategoryImages[category.slug] ?? 'missing.png', fallbackIcon: Icons.category_outlined, borderRadius: 0)),
-                    Padding(padding: const EdgeInsets.all(9), child: Text(category.name, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: _ink))),
-                  ]),
-                ),
-              );
-            },
-          ),
-        const SizedBox(height: 18),
-        TextField(
-          textDirection: TextDirection.rtl,
-          onChanged: (value) {
-            setState(() => _query = value.trim());
-          },
-          onSubmitted: (_) {
-            if (_apiConfigured) _retryRemote();
-          },
-          decoration: const InputDecoration(
-            hintText: 'جست‌وجوی خدمات...',
-            prefixIcon: Icon(Icons.search_rounded),
-          ),
-        ),
-        const SizedBox(height: 15),
-        if (_apiConfigured) ...[
-          FutureBuilder<List<ServiceCategory>>(
-            future: _remoteCategories,
-            builder: (context, snapshot) {
-              if (snapshot.hasError) {
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 12),
-                  child: TextButton.icon(
-                    onPressed: () => setState(
-                      () => _remoteCategories = _catalog.getCategoryTree(),
-                    ),
-                    icon: const Icon(Icons.refresh_rounded),
-                    label: const Text('بارگذاری دسته‌بندی‌ها دوباره تلاش شود'),
-                  ),
-                );
-              }
-              if (!snapshot.hasData) {
-                return const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 8),
-                  child: LinearProgressIndicator(),
-                );
-              }
-              return Container(
-                margin: const EdgeInsets.only(bottom: 14),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: const Color(0xFFE8EDF3)),
-                ),
-                child: Column(
-                  children: [
-                    ListTile(
-                      dense: true,
-                      selected: _selectedCategory == null,
-                      leading: const Icon(Icons.apps_rounded, color: _teal),
-                      title: const Text('همه دسته‌بندی‌ها',
-                          style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700)),
-                      onTap: () {
-                        setState(() => _selectedCategory = null);
-                        _retryRemote();
-                      },
-                    ),
-                    ...snapshot.data!.map((category) => _CatalogCategoryBranch(
-                      category: category,
-                      selectedSlug: _selectedCategory,
-                      onSelected: (slug) {
-                        setState(() => _selectedCategory = slug);
-                        _retryRemote();
-                      },
-                    )),
-                  ],
-                ),
-              );
-            },
-          ),
-        ],
-        if (_apiConfigured)
-          FutureBuilder<List<CatalogService>>(
-            future: _remoteServices,
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Padding(
-                  padding: EdgeInsets.all(18),
-                  child: Center(child: CircularProgressIndicator()),
-                );
-              }
-              if (snapshot.hasError) {
-                return Container(
-                  margin: const EdgeInsets.only(bottom: 12),
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFFFF7ED),
-                    borderRadius: BorderRadius.circular(12),
+                  onTap: () => setState(
+                    () => _selectedCategory = category.slug,
                   ),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      const Text('دریافت فهرست زنده خدمات ممکن نشد.',
-                          style: TextStyle(color: _ink, fontSize: 12)),
-                      TextButton(
-                        onPressed: _retryRemote,
-                        child: const Text('تلاش دوباره'),
+                      Expanded(
+                        child: AppContentImage(
+                          fileName: serviceCategoryImages[category.slug] ??
+                              'missing.png',
+                          fallbackIcon: Icons.category_outlined,
+                          borderRadius: 0,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(9),
+                        child: Text(
+                          category.name,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w800,
+                            color: _ink,
+                          ),
+                        ),
                       ),
                     ],
                   ),
-                );
-              }
-              final items = snapshot.data ?? const <CatalogService>[];
-              if (items.isEmpty) {
-                return const Padding(
-                  padding: EdgeInsets.all(16),
-                  child: Text('در حال حاضر خدمتی در کاتالوگ آنلاین ثبت نشده است.',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(color: _muted)),
-                );
-              }
-              return Column(
-                children: items.map((item) {
-                  final service = _serviceItemFromCatalog(item);
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 10),
-                    child: ServiceListTile(service: service, onRequest: widget.onRequest),
-                  );
-                }).toList(),
+                ),
               );
             },
-          )
-        else ...[
-          Container(
-            margin: const EdgeInsets.only(bottom: 12),
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: const Color(0xFFFFF1F1),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: const Text(
-              'اتصال به سرور هنوز تنظیم نشده؛ فهرست زیر صرفاً نمونه نمایشی است.',
-              style: TextStyle(color: _ink, fontSize: 11),
-            ),
-          ),
-          ...filtered.map((service) => Padding(
-            padding: const EdgeInsets.only(bottom: 10),
-            child: ServiceListTile(service: service, onRequest: widget.onRequest),
-          )),
-          if (filtered.isEmpty)
-            const Padding(
-              padding: EdgeInsets.all(28),
-              child: Text('خدمتی با این عبارت پیدا نشد.',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(color: _muted)),
-            ),
-        ],
-            ],
           ),
         ),
+        const SizedBox(height: 20),
       ],
     );
   }
