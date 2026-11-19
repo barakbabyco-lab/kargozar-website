@@ -50,7 +50,10 @@ void main() {
     await tester.tap(find.text('ورود / ثبت‌نام'));
     await tester.pumpAndSettle();
 
-    await tester.enterText(find.byType(TextField).first, '09120000000');
+    await tester.enterText(
+      find.byWidgetPredicate((widget) => widget is TextField && widget.decoration?.labelText == 'شماره موبایل'),
+      '09120000000',
+    );
     await tester.tap(find.text('دریافت کد'));
     await tester.pumpAndSettle();
 
