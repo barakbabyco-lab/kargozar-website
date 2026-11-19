@@ -228,15 +228,15 @@ class CompanionContentPage extends StatelessWidget {
               itemCount: companionModules.length,
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
-                crossAxisSpacing: 12,
-                mainAxisSpacing: 12,
-                childAspectRatio: .94,
+                crossAxisSpacing: 11,
+                mainAxisSpacing: 11,
+                childAspectRatio: 1.15,
               ),
               itemBuilder: (context, index) {
                 final item = companionModules[index];
                 return Material(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(17),
+                  borderRadius: BorderRadius.circular(15),
                   clipBehavior: Clip.antiAlias,
                   child: InkWell(
                     onTap: () => onOpen(index),
@@ -251,28 +251,15 @@ class CompanionContentPage extends StatelessWidget {
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.fromLTRB(11, 10, 11, 2),
+                          padding: const EdgeInsets.all(9),
                           child: Text(
                             item.title,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w800,
-                              fontSize: 12,
-                              color: Color(0xFF1E293B),
-                            ),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(11, 2, 11, 10),
-                          child: Text(
-                            item.subtitle,
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
-                              fontSize: 10,
-                              height: 1.5,
-                              color: Color(0xFF64748B),
+                              fontSize: 11,
+                              fontWeight: FontWeight.w800,
+                              color: Color(0xFF1E293B),
                             ),
                           ),
                         ),
