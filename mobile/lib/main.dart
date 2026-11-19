@@ -441,12 +441,8 @@ class ServicesPage extends StatefulWidget {
 }
 
 class _ServicesPageState extends State<ServicesPage> {
-  String _query = '';
   late final KargozarApiClient _api;
   late final ServiceCatalogRepository _catalog;
-  late Future<List<CatalogService>> _remoteServices;
-  late Future<List<ServiceCategory>> _remoteCategories;
-  String? _selectedCategory;
   bool _apiConfigured = false;
 
   @override
@@ -455,25 +451,12 @@ class _ServicesPageState extends State<ServicesPage> {
     _api = KargozarApiClient();
     _catalog = ServiceCatalogRepository(_api);
     _apiConfigured = const String.fromEnvironment('API_BASE_URL').trim().isNotEmpty;
-    _remoteServices = _apiConfigured
-        ? _catalog.getServices()
-        : Future.value(const <CatalogService>[]);
-    _remoteCategories = _apiConfigured
-        ? _catalog.getCategoryTree()
-        : Future.value(const <ServiceCategory>[]);
   }
 
   @override
   void dispose() {
     _api.close();
     super.dispose();
-  }
-
-  void _retryRemote() {
-    setState(() => _remoteServices = _catalog.getServices(
-      category: _selectedCategory,
-      query: _query,
-    ));
   }
 
   @override
@@ -505,9 +488,7 @@ class _ServicesPageState extends State<ServicesPage> {
                 borderRadius: BorderRadius.circular(15),
                 clipBehavior: Clip.antiAlias,
                 child: InkWell(
-                  onTap: () => setState(
-                    () => _selectedCategory = category.slug,
-                  ),
+                  onTap: () {},
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
@@ -555,57 +536,6 @@ ServiceItem _serviceItemFromCatalog(CatalogService item) => ServiceItem(
   estimatedDays: item.estimatedDays,
   basePrice: item.basePrice,
 );
-
-class _CatalogCategoryBranch extends StatelessWidget {
-  const _CatalogCategoryBranch({
-    required this.category,
-    required this.selectedSlug,
-    required this.onSelected,
-  });
-
-  final ServiceCategory category;
-  final String? selectedSlug;
-  final ValueChanged<String?> onSelected;
-
-  @override
-  Widget build(BuildContext context) {
-    final title = Text(category.name,
-        style: const TextStyle(fontSize: 12, color: _ink));
-    if (category.children.isEmpty) {
-      return ListTile(
-        dense: true,
-        contentPadding: const EdgeInsetsDirectional.only(start: 30, end: 14),
-        selected: selectedSlug == category.slug,
-        leading: const Icon(Icons.subdirectory_arrow_left_rounded,
-            size: 17, color: _teal),
-        title: title,
-        onTap: () => onSelected(category.slug),
-      );
-    }
-    return ExpansionTile(
-      tilePadding: const EdgeInsetsDirectional.only(start: 14, end: 14),
-      childrenPadding: const EdgeInsetsDirectional.only(start: 10),
-      leading: serviceCategoryImages.containsKey(category.slug)
-          ? SizedBox(width: 44, height: 44, child: AppContentImage(fileName: serviceCategoryImages[category.slug]!, fallbackIcon: Icons.category_outlined))
-          : null,
-      title: title,
-      children: [
-        ListTile(
-          dense: true,
-          selected: selectedSlug == category.slug,
-          title: Text('همه خدمات ${category.name}',
-              style: const TextStyle(fontSize: 12, color: _muted)),
-          onTap: () => onSelected(category.slug),
-        ),
-        ...category.children.map((child) => _CatalogCategoryBranch(
-          category: child,
-          selectedSlug: selectedSlug,
-          onSelected: onSelected,
-        )),
-      ],
-    );
-  }
-}
 
 IconData _iconForCategory(String? category) {
   final value = category ?? '';
