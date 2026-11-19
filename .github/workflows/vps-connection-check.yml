@@ -371,5 +371,21 @@ jobs:
             grep -Eo 'woocommerce-error[^>]*>[^<]+' "$test_dir/checkout.html" | head -n 5 || true
             rm -rf "$test_dir"
           fi
+          echo "=== PUBLIC DNS AND EMAIL RECORD INVENTORY ==="
+          if command -v dig >/dev/null 2>&1; then
+            for domain in barakmod.ir kargozarr.ir; do
+              echo "--- $domain public delegation and records ---"
+              for type in NS A AAAA MX TXT SOA; do
+                echo "$domain $type"
+                dig @1.1.1.1 "$domain" "$type" +time=3 +tries=1 +noall +answer +comments || true
+              done
+              for label in _dmarc default._domainkey selector1._domainkey mail._domainkey; do
+                echo "$label.$domain TXT"
+                dig @1.1.1.1 "$label.$domain" TXT +time=3 +tries=1 +noall +answer +comments || true
+              done
+              echo "$domain delegation trace"
+              dig +trace "$domain" NS +time=3 +tries=1 2>&1 | tail -n 35 || true
+            done
+          fi
           echo "=== END READ-ONLY INSPECTION ==="
           REMOTE
