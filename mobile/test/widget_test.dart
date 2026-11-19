@@ -15,7 +15,7 @@ void main() {
     expect(find.text('همراه کسب‌وکار'), findsOneWidget);
     expect(find.text('تماس و پشتیبانی'), findsNWidgets(2));
 
-    await tester.tap(find.text('تماس و پشتیبانی').last);
+    await tester.tap(find.descendant(of: find.byType(NavigationBar), matching: find.text('تماس و پشتیبانی')));
     await tester.pump(const Duration(milliseconds: 500));
     await tester.pump();
     expect(find.text('تماس تلفنی'), findsOneWidget);
@@ -23,7 +23,7 @@ void main() {
     expect(find.text('ثبت و پیگیری تیکت'), findsOneWidget);
     expect(find.text('دستیار هوشمند کارگزار'), findsOneWidget);
 
-    await tester.tap(find.text('حساب کاربری من').last);
+    await tester.tap(find.descendant(of: find.byType(NavigationBar), matching: find.text('حساب کاربری من')));
     await tester.pump(const Duration(milliseconds: 500));
     await tester.pump();
     expect(find.text('درخواست‌های من'), findsOneWidget);
@@ -36,7 +36,7 @@ void main() {
     await tester.pump(const Duration(milliseconds: 500));
     await tester.pump();
 
-    await tester.tap(find.text('حساب کاربری من'));
+    await tester.tap(find.descendant(of: find.byType(NavigationBar), matching: find.text('حساب کاربری من')));
     await tester.pump(const Duration(milliseconds: 500));
     await tester.pump();
     await tester.tap(find.text('درخواست‌های من'));
