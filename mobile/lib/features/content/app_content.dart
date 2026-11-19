@@ -102,7 +102,7 @@ class AppBannerStrip extends StatelessWidget {
   static const banners = <(String, String, int)>[
     ('banner-01-support.png', 'تماس و پشتیبانی', 3),
     ('banner-02-business-solutions.png', 'راهکارهای کسب‌وکار', 2),
-    ('banner-03-packages.png', 'پکیج‌های کارگزار', 2),
+    ('banner-03-packages.png', 'پکیج‌های کارگزار', 4),
     ('banner-04-free-consultation.png', 'مشاوره رایگان', -1),
     ('banner-05-services.png', 'مشاهده خدمات', 1),
   ];
