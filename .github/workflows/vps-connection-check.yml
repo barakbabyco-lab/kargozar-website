@@ -268,5 +268,27 @@ jobs:
             echo "--- barakmod.ir public A ---"
             dig @1.1.1.1 barakmod.ir A +time=3 +tries=1 +noall +answer +comments || true
           fi
+          echo "=== KARGOZAR IMAGE ASSET DIRECTORY ==="
+          if [ -d /var/www/html/kargozar-assets/final ]; then
+            du -sh /var/www/html/kargozar-assets/final 2>/dev/null || true
+            find /var/www/html/kargozar-assets/final -maxdepth 1 -type f -printf '%f %s bytes\\n' 2>/dev/null | sort | head -n 80
+          else
+            echo "Expected image asset directory is not present on this server"
+          fi
+          echo "=== NGINX VIRTUAL HOST INVENTORY ==="
+          if [ -d /etc/nginx/sites-enabled ]; then
+            for file in /etc/nginx/sites-enabled/*; do
+              [ -f "$file" ] || continue
+              echo "--- $(basename "$file") ---"
+              grep -E '^[[:space:]]*(listen|server_name|root|proxy_pass)[[:space:]]' "$file" 2>/dev/null | head -n 30 || true
+            done
+          fi
+          echo "=== PUBLIC BARAKMOD WOOCOMMERCE PAGE STATUS ==="
+          if command -v curl >/dev/null 2>&1; then
+            for path in / /shop/ /cart/ /checkout/; do
+              printf '%s ' "$path"
+              curl -skS -o /dev/null -w '%{http_code} %{content_type}\\n' --connect-timeout 5 --max-time 10 --resolve barakmod.ir:443:89.32.248.121 "https://barakmod.ir$path" || true
+            done
+          fi
           echo "=== END READ-ONLY INSPECTION ==="
           REMOTE
