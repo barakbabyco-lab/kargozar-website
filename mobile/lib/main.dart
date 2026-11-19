@@ -654,7 +654,7 @@ class _SupportChatSheetState extends State<SupportChatSheet> {
      }else if(data is Map<String,dynamic>){_messages.add(Map<String,dynamic>.from(data));}
      if(mounted)setState(()=>_error=null);
      _scrollToEnd();
-   }catch(error){if(mounted){_controller.text=body;setState(()=>_error:errorText(error));}}
+   }catch(error){if(mounted){_controller.text=body;setState(()=>_error=errorText(error));}}
    finally{if(mounted)setState(()=>_busy=false);}
  }
  void _startPolling(){
