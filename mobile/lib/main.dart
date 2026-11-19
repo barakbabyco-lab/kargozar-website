@@ -184,7 +184,11 @@ class _MainShellState extends State<MainShell> {
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(errorText(error))));
     }
   }
-  void _showRequests() {
+  Future<void> _showRequests() async {
+    if (!widget.signedIn) {
+      final authenticated = await widget.onLogin();
+      if (!authenticated || !mounted) return;
+    }
     Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
