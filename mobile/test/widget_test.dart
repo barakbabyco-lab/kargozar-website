@@ -26,6 +26,9 @@ void main() {
     await tester.tap(find.text('تماس و پشتیبانی').last);
     await tester.pumpAndSettle();
     expect(find.text('پشتیبانی کارگزار'), findsOneWidget);
+    expect(find.text('وب‌سایت و مقالات کارگزار'), findsOneWidget);
+    expect(find.text('گفت‌وگوی آنلاین'), findsOneWidget);
+    expect(find.text('دستیار هوشمند'), findsOneWidget);
   });
 
   testWidgets('request history requires customer authentication', (tester) async {
