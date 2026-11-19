@@ -81,7 +81,6 @@ class SupportContentPage extends StatelessWidget {
     AppBannerStrip(onNavigate:onNavigate,onConsultation:onConsultation),
     const Padding(padding:EdgeInsets.fromLTRB(16,8,16,8),child:Text('پشتیبانی',style:TextStyle(fontSize:14,fontWeight:FontWeight.w800,color:Color(0xFF4B0082)))),
     const SupportActionsPanel(),
-    Padding(padding:const EdgeInsets.symmetric(horizontal:16),child:Card(color:Colors.white,child:ListTile(leading:const Icon(Icons.article_outlined,color:Color(0xFFE30613)),title:const Text('وبلاگ و مقالات کارگزار'),trailing:const Icon(Icons.chevron_left),onTap:()=>onNavigate(5)))),
     Padding(padding:const EdgeInsets.symmetric(horizontal:16),child:Card(color:Colors.white,child:ListTile(leading:const Icon(Icons.lightbulb_outline,color:Color(0xFF4B0082)),title:const Text('درخواست مشاوره رایگان'),onTap:onConsultation))),
   ]);
 }
