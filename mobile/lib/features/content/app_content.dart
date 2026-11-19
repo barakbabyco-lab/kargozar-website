@@ -117,7 +117,7 @@ class AppBannerStrip extends StatelessWidget {
           itemBuilder: (context, index) {
             final item = banners[index];
             return SizedBox(
-              width: MediaQuery.sizeOf(context).width * .78,
+              width: MediaQuery.sizeOf(context).width,
               child: Material(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(16),
