@@ -347,17 +347,17 @@ jobs:
             cookie_jar="$test_dir/cookies.txt"
             touch "$cookie_jar"
             user_agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/130 Safari/537.36"
-            echo "--- Add one in-stock product to an isolated temporary cart (product 266) ---"
+            echo "--- Add one in-stock product to an isolated temporary cart (simple product 200) ---"
             curl -k -sS -L --max-redirs 10 --connect-timeout 8 --max-time 35 \
               -A "$user_agent" -c "$cookie_jar" -b "$cookie_jar" \
               -o "$test_dir/add.html" -w 'add_to_cart_http=%{http_code} final_url=%{url_effective}\\n' \
-              'https://barakmod.ir/?add-to-cart=266' || true
+              'https://barakmod.ir/?add-to-cart=200' || true
             echo "--- Cart page ---"
             curl -k -sS -L --max-redirs 10 --connect-timeout 8 --max-time 35 \
               -A "$user_agent" -c "$cookie_jar" -b "$cookie_jar" \
               -o "$test_dir/cart.html" -w 'cart_http=%{http_code} final_url=%{url_effective}\\n' \
               'https://barakmod.ir/cart/' || true
-            echo "cart_has_product=$(grep -Eqi 'product-266|شورت مردانه کلوین' "$test_dir/cart.html" && echo yes || echo no)"
+            echo "cart_has_product=$(grep -Eqi 'product-200|شومیز زنانه آریا' "$test_dir/cart.html" && echo yes || echo no)"
             echo "--- Checkout page ---"
             curl -k -sS -L --max-redirs 10 --connect-timeout 8 --max-time 35 \
               -A "$user_agent" -c "$cookie_jar" -b "$cookie_jar" \
