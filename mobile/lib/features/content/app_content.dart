@@ -61,7 +61,59 @@ class _AppBannerStripState extends State<AppBannerStrip> {
   late final PageController _controller; Timer? _timer; int _page=0;
   @override void initState(){super.initState();_controller=PageController(viewportFraction:1);_timer=Timer.periodic(const Duration(seconds:4),(_){if(!mounted)return;_page=(_page+1)%AppBannerStrip.banners.length;_controller.animateToPage(_page,duration:const Duration(milliseconds:450),curve:Curves.easeInOut);});}
   @override void dispose(){_timer?.cancel();_controller.dispose();super.dispose();}
-  @override Widget build(BuildContext context)=>SizedBox(height:112,width:double.infinity,child:PageView.builder(controller:_controller,itemCount:AppBannerStrip.banners.length,onPageChanged:(v)=>_page=v,itemBuilder:(context,index){final item=AppBannerStrip.banners[index];return Padding(padding:const EdgeInsets.symmetric(horizontal:16),child:Material(color:Colors.white,borderRadius:BorderRadius.circular(16),clipBehavior:Clip.antiAlias,child:InkWell(onTap:item.$3==-1?widget.onConsultation:()=>widget.onNavigate(item.$3),child:Stack(fit:StackFit.expand,children:[AppContentImage(fileName:item.$1,borderRadius:0),Align(alignment:Alignment.bottomRight,child:Container(margin:const EdgeInsets.all(9),padding:const EdgeInsets.symmetric(horizontal:12,vertical:6),decoration:BoxDecoration(color:const Color(0xE64B0082),borderRadius:BorderRadius.circular(9)),child:Text(item.$2,style:const TextStyle(color:Colors.white,fontWeight:FontWeight.w800,fontSize:12))))])));} ));
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 112,
+      width: double.infinity,
+      child: PageView.builder(
+        controller: _controller,
+        itemCount: AppBannerStrip.banners.length,
+        onPageChanged: (value) => _page = value,
+        itemBuilder: (context, index) {
+          final item = AppBannerStrip.banners[index];
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Material(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              clipBehavior: Clip.antiAlias,
+              child: InkWell(
+                onTap: item.$3 == -1
+                    ? widget.onConsultation
+                    : () => widget.onNavigate(item.$3),
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    AppContentImage(fileName: item.$1, borderRadius: 0),
+                    Align(
+                      alignment: Alignment.bottomRight,
+                      child: Container(
+                        margin: const EdgeInsets.all(9),
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: const Color(0xE64B0082),
+                          borderRadius: BorderRadius.circular(9),
+                        ),
+                        child: Text(
+                          item.$2,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w800,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
 }
 
 class CompanionContentPage extends StatelessWidget {
