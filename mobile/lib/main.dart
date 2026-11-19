@@ -322,6 +322,7 @@ class _MainShellState extends State<MainShell> {
   @override Widget build(BuildContext context) => Scaffold(
     body: SafeArea(child: Stack(children: [
       PageView(
+        key: const ValueKey('main-tabs'),
         controller: _pageController,
         physics: const PageScrollPhysics(),
         onPageChanged: (value) => setState(() => _index = value),
