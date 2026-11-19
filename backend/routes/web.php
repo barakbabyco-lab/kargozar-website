@@ -16,6 +16,7 @@ Route::middleware(['auth:staff', 'staff.role:admin,supervisor,expert,support'])
     ->group(function (): void {
         Route::get('/', [StaffPortalController::class, 'index'])->name('index');
         Route::get('/conversations/{conversationId}', [StaffPortalController::class, 'show'])->name('show');
+        Route::get('/conversations/{conversationId}/messages', [StaffPortalController::class, 'messages'])->name('messages');
         Route::post('/conversations/{conversationId}/reply', [StaffPortalController::class, 'reply'])->name('reply');
         Route::patch('/conversations/{conversationId}/status', [StaffPortalController::class, 'updateStatus'])->name('status');
         Route::post('/logout', [StaffPortalController::class, 'logout'])->name('logout');
