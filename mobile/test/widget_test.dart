@@ -5,27 +5,27 @@ import 'package:kargozar_mobile/core/network/kargozar_api_client.dart';
 import 'package:kargozar_mobile/main.dart';
 
 void main() {
-  testWidgets('shows the approved four-tab Kargozar structure', (tester) async {
+  testWidgets('shows the four main pages and updated support actions', (tester) async {
     await tester.pumpWidget(_testApp());
     await tester.pumpAndSettle();
 
-    expect(find.text('کارگزار'), findsOneWidget);
-    expect(find.text('همه خدمات'), findsOneWidget);
-    expect(find.text('دسته‌بندی خدمات'), findsOneWidget);
-    expect(find.text('مجوزهای کسب‌وکار'), findsOneWidget);
     expect(find.text('حساب کاربری من'), findsOneWidget);
     expect(find.text('خدمات'), findsOneWidget);
     expect(find.text('همراه کسب‌وکار'), findsOneWidget);
-    expect(find.text('تماس و پشتیبانی'), findsNWidgets(2));
+    expect(find.text('تماس و پشتیبانی'), findsOneWidget);
 
-    await tester.tap(find.text('همراه کسب‌وکار'));
+    await tester.tap(find.text('تماس و پشتیبانی'));
     await tester.pumpAndSettle();
-    expect(find.text('پکیج‌های کارگزار'), findsOneWidget);
-    expect(find.text('استودیو طراحی'), findsOneWidget);
+    expect(find.text('تماس تلفنی'), findsOneWidget);
+    expect(find.text('ارتباط از طریق ایمیل'), findsOneWidget);
+    expect(find.text('ثبت و پیگیری تیکت'), findsOneWidget);
+    expect(find.text('دستیار هوشمند کارگزار'), findsOneWidget);
 
-    await tester.tap(find.text('تماس و پشتیبانی').last);
+    await tester.tap(find.text('حساب کاربری من'));
     await tester.pumpAndSettle();
-    expect(find.text('پشتیبانی کارگزار'), findsOneWidget);
+    expect(find.text('درخواست‌های من'), findsOneWidget);
+    expect(find.text('احراز هویت'), findsOneWidget);
+    expect(find.text('پشتیبانی و تماس با ما'), findsNothing);
   });
 
   testWidgets('request history requires customer authentication', (tester) async {
