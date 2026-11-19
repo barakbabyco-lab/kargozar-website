@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'core/network/kargozar_api_client.dart';
 import 'features/auth/customer_session.dart';
 import 'features/catalog/service_catalog_repository.dart';
@@ -148,6 +150,14 @@ class MainShell extends StatefulWidget {
 }
 class _MainShellState extends State<MainShell> {
   int _index = 1, _revision = 0;
+  late final PageController _pageController = PageController(initialPage: _index);
+  void _goToTab(int index) {
+    if (index >= 0 && index < 4) {
+      _pageController.animateToPage(index, duration: const Duration(milliseconds: 260), curve: Curves.easeOutCubic);
+    }
+  }
+  @override
+  void dispose() { _pageController.dispose(); super.dispose(); }
   Future<void> _request(ServiceItem service) async {
     final id = service.apiId;
     if (id == null || id.isEmpty) {
@@ -211,33 +221,30 @@ class _MainShellState extends State<MainShell> {
     ));
   }
   @override Widget build(BuildContext context) => Scaffold(
-    body: SafeArea(child: IndexedStack(index: _index, children: [
-      ProfilePage(signedIn: widget.signedIn, onLogin: widget.onLogin, onLogout: widget.onLogout, onShowRequests: _showRequests),
-      ServicesPage(onRequest: _request, onNavigate: (tab) { if (tab == 4) { setState(() => _index = 2); _openCompanion(0); } else { setState(() => _index = tab); } }, onConsultation: _showConsultation),
-      CompanionContentPage(
-        onOpen: _openCompanion,
-        onNavigate: (tab) {
-          if (tab == 4) {
-            setState(() => _index = 2);
-            _openCompanion(0);
-          } else {
-            setState(() => _index = tab);
-          }
-        },
-        onConsultation: _showConsultation,
+    body: SafeArea(child: Stack(children: [
+      PageView(
+        controller: _pageController,
+        physics: const PageScrollPhysics(),
+        onPageChanged: (value) => setState(() => _index = value),
+        children: [
+          ProfilePage(signedIn: widget.signedIn, onLogin: widget.onLogin, onLogout: widget.onLogout, onShowRequests: _showRequests, onNavigate: _goToTab),
+          ServicesPage(onRequest: _request, onNavigate: (tab) { if (tab == 4) { _goToTab(2); _openCompanion(0); } else { _goToTab(tab); } }, onConsultation: _showConsultation),
+          CompanionContentPage(onOpen: _openCompanion, onNavigate: (tab) { if (tab == 4) { _goToTab(2); _openCompanion(0); } else { _goToTab(tab); } }, onConsultation: _showConsultation),
+          SupportContentPage(onConsultation: _showConsultation, onNavigate: _goToTab),
+        ],
       ),
-      SupportContentPage(onConsultation: _showConsultation),
+      const Positioned(right: 14, bottom: 8, child: SupportChatLauncher()),
     ])),
     bottomNavigationBar: NavigationBar(
-      height: 40,
+      height: 34,
       backgroundColor: _teal,
       indicatorColor: Colors.transparent,
       labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
       labelTextStyle: const WidgetStatePropertyAll(
-        TextStyle(color: Colors.white, fontSize: 8, fontWeight: FontWeight.w600),
+        TextStyle(color: Colors.white, fontSize: 7, fontWeight: FontWeight.w600),
       ),
       selectedIndex: _index,
-      onDestinationSelected: (value) => setState(() => _index = value),
+      onDestinationSelected: _goToTab,
       destinations: const [
         NavigationDestination(icon: Icon(Icons.person_outline_rounded, color: Colors.white, size: 16), selectedIcon: Icon(Icons.person_rounded, color: Colors.white, size: 16), label: 'حساب کاربری من'),
         NavigationDestination(icon: Icon(Icons.grid_view_outlined, color: Colors.white, size: 16), selectedIcon: Icon(Icons.grid_view_rounded, color: Colors.white, size: 16), label: 'خدمات'),
@@ -553,13 +560,69 @@ class _RequestsPageState extends State<RequestsPage>{
 void _showRequestDetails(BuildContext context,CustomerServiceRequest request){showModalBottomSheet<void>(context:context,isScrollControlled:true,backgroundColor:Colors.white,shape:const RoundedRectangleBorder(borderRadius:BorderRadius.vertical(top:Radius.circular(24))),builder:(ctx)=>SafeArea(child:Padding(padding:const EdgeInsets.all(20),child:ListView(shrinkWrap:true,children:[Text('پیگیری ${request.trackingCode}',style:const TextStyle(fontSize:19,fontWeight:FontWeight.w900)),const SizedBox(height:10),Text('وضعیت فعلی: ${requestStatusLabel(request.status)}'),if(request.customerNote?.isNotEmpty==true)Text('توضیحات: ${request.customerNote}'),const SizedBox(height:18),const Text('آخرین رویدادها',style:TextStyle(fontWeight:FontWeight.w800)),if(request.events.isEmpty)const Text('هنوز رویدادی برای این درخواست ثبت نشده است.'),...request.events.map((e)=>ListTile(contentPadding:EdgeInsets.zero,leading:const Icon(Icons.timeline_rounded,color:_teal),title:Text(e.publicMessage??requestStatusLabel(e.status)),subtitle:Text(requestStatusLabel(e.status))))]))));}
 String requestStatusLabel(String status)=>switch(status){'submitted'=>'ثبت‌شده','reviewing'=>'در حال بررسی','awaiting_customer'=>'نیازمند اقدام شما','in_progress'=>'در حال انجام','completed'=>'تکمیل‌شده','rejected'=>'ردشده','cancelled'=>'لغوشده',_=>status};
 class ProfilePage extends StatelessWidget {
- const ProfilePage({super.key,required this.signedIn,required this.onLogin,required this.onLogout,required this.onShowRequests});final bool signedIn;final VoidCallback onLogin,onLogout,onShowRequests;
- @override Widget build(BuildContext context)=>ListView(padding:const EdgeInsets.all(20),children:[
- const Text('حساب کاربری',style:TextStyle(color:_ink,fontSize:25,fontWeight:FontWeight.w900)),const SizedBox(height:18),
- Container(padding:const EdgeInsets.all(18),decoration:BoxDecoration(color:Colors.white,borderRadius:BorderRadius.circular(18)),child:Row(children:[const CircleAvatar(radius:26,backgroundColor:Color(0xFFE8EEF5),child:Icon(Icons.person_outline,color:_navy,size:28)),const SizedBox(width:13),Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text(signedIn?'حساب شما فعال است':'مهمان',style:const TextStyle(color:_ink,fontWeight:FontWeight.bold,fontSize:16)),Text(signedIn?'به حساب کاربری خود وارد شده‌اید':'برای استفاده از خدمات وارد شوید',style:const TextStyle(color:_muted,fontSize:12))])])),const SizedBox(height:14),
- ListTile(leading:const Icon(Icons.receipt_long_outlined,color:_navy),title:const Text('درخواست‌های من'),trailing:const Icon(Icons.chevron_left_rounded,color:_muted),onTap:onShowRequests),
- ListTile(leading:Icon(signedIn?Icons.logout:Icons.login,color:_navy),title:Text(signedIn?'خروج از حساب':'ورود / ثبت‌نام'),trailing:const Icon(Icons.chevron_left_rounded,color:_muted),onTap:signedIn?onLogout:onLogin),
- const ProfileOption(icon:Icons.support_agent,title:'پشتیبانی و تماس با ما'),const ProfileOption(icon:Icons.policy_outlined,title:'قوانین و حریم خصوصی'),const ProfileOption(icon:Icons.info_outline,title:'درباره کارگزار'),
+ const ProfilePage({super.key,required this.signedIn,required this.onLogin,required this.onLogout,required this.onShowRequests,required this.onNavigate});
+ final bool signedIn;
+ final VoidCallback onLogin,onLogout,onShowRequests;
+ final ValueChanged<int> onNavigate;
+
+ @override
+ Widget build(BuildContext context)=>ListView(padding:EdgeInsets.zero,children:[
+   AppBannerStrip(onNavigate:onNavigate,onConsultation:()=>onNavigate(3)),
+   const SizedBox(height:12),
+   Padding(padding:const EdgeInsets.symmetric(horizontal:12),child:Column(children:[
+     _ProfileAction(icon:Icons.receipt_long_outlined,title:'درخواست‌های من',onTap:onShowRequests),
+     const SizedBox(height:7),
+     _ProfileAction(icon:signedIn?Icons.logout_rounded:Icons.login_rounded,title:signedIn?'خروج از حساب':'ورود / ثبت‌نام',onTap:signedIn?onLogout:onLogin),
+     const SizedBox(height:7),
+     _ProfileAction(icon:Icons.verified_user_outlined,title:'احراز هویت',onTap:()=>_showInfo(context)),
+   ])),
+ ]);
+}
+
+class _ProfileAction extends StatelessWidget {
+ const _ProfileAction({required this.icon,required this.title,required this.onTap});
+ final IconData icon; final String title; final VoidCallback onTap;
+ @override Widget build(BuildContext context)=>Material(
+   color:Colors.white,borderRadius:BorderRadius.circular(12),
+   child:InkWell(onTap:onTap,borderRadius:BorderRadius.circular(12),
+     child:Container(height:54,padding:const EdgeInsets.symmetric(horizontal:14),
+       decoration:BoxDecoration(borderRadius:BorderRadius.circular(12),border:Border.all(color:const Color(0xFFF0B9B9))),
+       child:Row(children:[Icon(icon,color:_teal,size:22),const SizedBox(width:12),Expanded(child:Text(title,style:const TextStyle(color:_ink,fontSize:13,fontWeight:FontWeight.w700))),const Icon(Icons.chevron_left_rounded,color:_muted,size:20)]),
+     ),
+   ),
+ );
+}
+
+class SupportChatLauncher extends StatefulWidget {
+ const SupportChatLauncher({super.key});
+ @override State<SupportChatLauncher> createState()=>_SupportChatLauncherState();
+}
+class _SupportChatLauncherState extends State<SupportChatLauncher> {
+ Timer? _inviteTimer; Timer? _dismissTimer; bool _showInvite=false; bool _opened=false;
+ @override void initState(){super.initState();_inviteTimer=Timer(const Duration(seconds:25),(){
+   if(!mounted||_opened)return;setState(()=>_showInvite=true);
+   _dismissTimer=Timer(const Duration(seconds:9),(){if(mounted)setState(()=>_showInvite=false);});
+ });}
+ @override void dispose(){_inviteTimer?.cancel();_dismissTimer?.cancel();super.dispose();}
+ void _openChat(){_opened=true;setState(()=>_showInvite=false);
+   showModalBottomSheet<void>(context:context,isScrollControlled:true,backgroundColor:Colors.white,
+     shape:const RoundedRectangleBorder(borderRadius:BorderRadius.vertical(top:Radius.circular(20))),
+     builder:(ctx)=>SafeArea(child:Padding(padding:EdgeInsets.fromLTRB(18,18,18,MediaQuery.viewInsetsOf(ctx).bottom+18),
+       child:Column(mainAxisSize:MainAxisSize.min,crossAxisAlignment:CrossAxisAlignment.start,children:[
+         const Row(children:[Icon(Icons.support_agent,color:_teal),SizedBox(width:8),Text('پشتیبانی آنلاین کارگزار',style:TextStyle(fontWeight:FontWeight.w800,fontSize:16))]),
+         const SizedBox(height:12),
+         const Text('ارتباط آنلاین با کارشناسان در حال اتصال به پنل پشتیبانی کارگزار است.',style:TextStyle(color:_muted,height:1.8)),
+         const SizedBox(height:12),
+         SizedBox(width:double.infinity,child:FilledButton(onPressed:()=>Navigator.pop(ctx),child:const Text('متوجه شدم'))),
+       ]),
+     )),
+   );
+ }
+ @override Widget build(BuildContext context)=>Column(mainAxisSize:MainAxisSize.min,crossAxisAlignment:CrossAxisAlignment.end,children:[
+   if(_showInvite)Container(constraints:const BoxConstraints(maxWidth:210),margin:const EdgeInsets.only(bottom:7),padding:const EdgeInsets.symmetric(horizontal:11,vertical:8),
+     decoration:BoxDecoration(color:Colors.white,borderRadius:BorderRadius.circular(13),border:Border.all(color:const Color(0xFFE7B4B4)),boxShadow:const [BoxShadow(color:Color(0x22000000),blurRadius:9,offset:Offset(0,3))]),
+     child:const Text('سؤالی دارید؟ برای راهنمایی در کنار شما هستیم.',style:TextStyle(color:_ink,fontSize:11,height:1.5))),
+   Material(color:_teal,shape:const CircleBorder(),elevation:4,child:InkWell(onTap:_openChat,customBorder:const CircleBorder(),child:const SizedBox(width:44,height:44,child:Icon(Icons.chat_bubble_outline_rounded,color:Colors.white,size:21)))),
  ]);
 }
 
