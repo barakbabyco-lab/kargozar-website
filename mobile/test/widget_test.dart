@@ -23,7 +23,7 @@ void main() {
     expect(find.text('پکیج‌های کارگزار'), findsOneWidget);
     expect(find.text('استودیو طراحی'), findsOneWidget);
 
-    await tester.tap(find.text('تماس و پشتیبانی'));
+    await tester.tap(find.text('تماس و پشتیبانی').last);
     await tester.pumpAndSettle();
     expect(find.text('پشتیبانی کارگزار'), findsOneWidget);
   });
