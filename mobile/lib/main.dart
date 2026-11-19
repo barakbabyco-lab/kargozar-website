@@ -218,6 +218,16 @@ class _MainShellState extends State<MainShell> {
       SupportContentPage(onConsultation: _showConsultation),
     ])),
     bottomNavigationBar: NavigationBar(
+      height: 40,
+      backgroundColor: _teal,
+      indicatorColor: Colors.transparent,
+      labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+      labelTextStyle: const WidgetStatePropertyAll(
+        TextStyle(color: Colors.white, fontSize: 8, fontWeight: FontWeight.w600),
+      ),
+      iconTheme: const WidgetStatePropertyAll(
+        IconThemeData(color: Colors.white, size: 16),
+      ),
       selectedIndex: _index,
       onDestinationSelected: (value) => setState(() => _index = value),
       destinations: const [
