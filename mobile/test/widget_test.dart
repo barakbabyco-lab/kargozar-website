@@ -31,6 +31,12 @@ void main() {
     await tester.drag(shellPager, const Offset(620, 0));
     await tester.pump(const Duration(milliseconds: 500));
     await tester.pump();
+    await tester.drag(shellPager, const Offset(620, 0));
+    await tester.pump(const Duration(milliseconds: 500));
+    await tester.pump();
+    await tester.drag(shellPager, const Offset(620, 0));
+    await tester.pump(const Duration(milliseconds: 500));
+    await tester.pump();
 
     expect(find.text('درخواست‌های من'), findsOneWidget);
     expect(find.text('احراز هویت'), findsOneWidget);
