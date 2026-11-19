@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-const _supportPhone = String.fromEnvironment('KARGOZAR_SUPPORT_PHONE');
-const _supportEmail = String.fromEnvironment('KARGOZAR_SUPPORT_EMAIL');
+const _supportPhone = String.fromEnvironment(
+  'KARGOZAR_SUPPORT_PHONE',
+  defaultValue: '09360952800',
+);
+const _supportEmail = String.fromEnvironment(
+  'KARGOZAR_SUPPORT_EMAIL',
+  defaultValue: 'info@kargozarr.ir',
+);
 const _websiteUri = 'https://kargozarr.ir/';
 
 class SupportActionsPanel extends StatelessWidget {
