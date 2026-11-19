@@ -397,7 +397,8 @@ class _HomePageState extends State<HomePage> {
               ),
               itemBuilder: (context, index) =>
                   ServiceCard(service: items[index], onRequest: widget.onRequest),
-            );          },
+            );
+          },
         ),
         const SizedBox(height: 25),
         const SectionHeading(title: 'چطور کار می‌کند؟'),
