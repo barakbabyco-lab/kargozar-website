@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 const kargozarAssetsBaseUrl = String.fromEnvironment(
   'KARGOZAR_ASSETS_BASE_URL',
@@ -275,52 +276,37 @@ class CompanionContentPage extends StatelessWidget {
 }
 
 class SupportContentPage extends StatelessWidget {
-  const SupportContentPage({super.key, required this.onConsultation});
-  final VoidCallback onConsultation;
-
-  @override
-  Widget build(BuildContext context) => ListView(
-        padding: const EdgeInsets.all(20),
-        children: [
-          const Text('تماس و پشتیبانی', style: TextStyle(
-            color: Color(0xFF1E293B), fontSize: 25, fontWeight: FontWeight.w900,
-          )),
-          const SizedBox(height: 16),
-          const AppContentImage(
-            fileName: 'banner-01-support.png',
-            height: 170,
-            width: double.infinity,
-            borderRadius: 18,
-            fallbackIcon: Icons.support_agent_outlined,
-          ),
-          const SizedBox(height: 16),
-          const Text('پشتیبانی کارگزار', style: TextStyle(
-            fontSize: 17, fontWeight: FontWeight.w800, color: Color(0xFF49334F),
-          )),
-          const SizedBox(height: 8),
-          const Text(
-            'برای پیگیری درخواست‌ها، دریافت راهنمایی و طرح پرسش درباره خدمات، از مسیر پشتیبانی اقدام کنید.',
-            style: TextStyle(color: Color(0xFF64748B), height: 1.9),
-          ),
-          const SizedBox(height: 14),
-          Card(
-            color: Colors.white,
-            child: ListTile(
-              leading: const Icon(Icons.chat_bubble_outline, color: Color(0xFFC62828)),
-              title: const Text('درخواست مشاوره رایگان'),
-              subtitle: const Text('ثبت درخواست برای ارتباط با کارشناس'),
-              trailing: const Icon(Icons.chevron_left),
-              onTap: onConsultation,
-            ),
-          ),
-          const Card(
-            color: Colors.white,
-            child: ListTile(
-              leading: Icon(Icons.lock_outline, color: Color(0xFF49334F)),
-              title: Text('خدمات غیرحضوری و سراسری'),
-              subtitle: Text('دریافت و پیگیری خدمات بدون مراجعه حضوری'),
-            ),
-          ),
-        ],
-      );
+ const SupportContentPage({super.key,required this.onConsultation,required this.onNavigate});
+ final VoidCallback onConsultation; final ValueChanged<int> onNavigate;
+ Future<void> _launch(Uri uri,BuildContext context) async {
+   final ok=await launchUrl(uri,mode:LaunchMode.externalApplication);
+   if(!ok&&context.mounted)ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content:Text('امکان باز کردن برنامه موردنظر وجود ندارد.')));
+ }
+ @override Widget build(BuildContext context)=>ListView(padding:EdgeInsets.zero,children:[
+   AppBannerStrip(onNavigate:onNavigate,onConsultation:onConsultation),
+   const SizedBox(height:12),
+   Padding(padding:const EdgeInsets.symmetric(horizontal:12),child:Column(children:[
+     _SupportAction(icon:Icons.phone_in_talk_outlined,title:'تماس تلفنی',subtitle:'تماس مستقیم با کارشناسان کارگزار',onTap:()=>_launch(Uri(scheme:'tel',path:'09360952800'),context)),
+     const SizedBox(height:7),
+     _SupportAction(icon:Icons.email_outlined,title:'ارتباط از طریق ایمیل',subtitle:'ارسال پیام به info@kargozarr.ir',onTap:()=>_launch(Uri(scheme:'mailto',path:'info@kargozarr.ir',queryParameters:{'subject':'ارتباط با پشتیبانی کارگزار'}),context)),
+     const SizedBox(height:7),
+     const _SupportAction(icon:Icons.confirmation_number_outlined,title:'ثبت و پیگیری تیکت',subtitle:'به‌زودی فعال می‌شود'),
+     const SizedBox(height:7),
+     const _SupportAction(icon:Icons.smart_toy_outlined,title:'دستیار هوشمند کارگزار',subtitle:'به‌زودی فعال می‌شود'),
+   ])),
+ ]);
+}
+class _SupportAction extends StatelessWidget {
+ const _SupportAction({required this.icon,required this.title,required this.subtitle,this.onTap});
+ final IconData icon; final String title; final String subtitle; final VoidCallback? onTap;
+ @override Widget build(BuildContext context)=>Material(color:Colors.white,borderRadius:BorderRadius.circular(12),
+   child:InkWell(onTap:onTap,borderRadius:BorderRadius.circular(12),child:Container(height:58,padding:const EdgeInsets.symmetric(horizontal:13),
+     decoration:BoxDecoration(borderRadius:BorderRadius.circular(12),border:Border.all(color:const Color(0xFFF0B9B9))),
+     child:Row(children:[Icon(icon,color:const Color(0xFFC62828),size:22),const SizedBox(width:12),
+       Expanded(child:Column(mainAxisAlignment:MainAxisAlignment.center,crossAxisAlignment:CrossAxisAlignment.start,children:[
+         Text(title,style:const TextStyle(color:Color(0xFF1E293B),fontSize:12,fontWeight:FontWeight.w800)),
+         Text(subtitle,style:const TextStyle(color:Color(0xFF64748B),fontSize:10)),
+       ])),const Icon(Icons.chevron_left_rounded,color:Color(0xFF64748B),size:20)]),
+   )),
+ );
 }
