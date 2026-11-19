@@ -1,0 +1,120 @@
+name: Sync Kargozar mobile image assets
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/sync-kargozar-assets.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: kargozar-mobile-assets
+  cancel-in-progress: false
+
+jobs:
+  sync-assets:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Prepare verified SSH connection
+        shell: bash
+        env:
+          HOST: ${{ secrets.DEPLOY_HOST }}
+          PORT: ${{ secrets.DEPLOY_PORT }}
+          USER: ${{ secrets.DEPLOY_USER }}
+          KEY: ${{ secrets.VPS_SSH_KEY }}
+          KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+        run: |
+          set -euo pipefail
+          for v in HOST USER KEY KNOWN_HOSTS; do
+            test -n "${!v:-}" || { echo "::error::Missing SSH secret: $v"; exit 1; }
+          done
+          PORT="${PORT:-22}"
+          install -d -m 700 ~/.ssh
+          printf '%s\\n' "$KEY" > ~/.ssh/kargozar_key
+          printf '%s\\n' "$KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/kargozar_key ~/.ssh/known_hosts
+          TARGET="$HOST"
+          if [ "$PORT" != 22 ]; then TARGET="[$HOST]:$PORT"; fi
+          ssh-keygen -F "$TARGET" -f ~/.ssh/known_hosts >/dev/null
+          {
+            echo "Host kargozar-vps"
+            echo "  HostName $HOST"
+            echo "  Port $PORT"
+            echo "  User $USER"
+            echo "  IdentityFile ~/.ssh/kargozar_key"
+            echo "  IdentitiesOnly yes"
+            echo "  StrictHostKeyChecking yes"
+            echo "  UserKnownHostsFile ~/.ssh/known_hosts"
+            echo "  BatchMode yes"
+            echo "  ConnectTimeout 15"
+          } >> ~/.ssh/config
+          chmod 600 ~/.ssh/config
+
+      - name: Download public image files from the VPS
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/kargozar-png"
+          ssh -F ~/.ssh/config kargozar-vps "cd /var/www/html/kargozar-assets/final && tar -czf - -- *.png" \
+            | tar -xzf - -C "$RUNNER_TEMP/kargozar-png"
+          count="$(find "$RUNNER_TEMP/kargozar-png" -maxdepth 1 -type f -name '*.png' | wc -l)"
+          test "$count" -eq 24 || { echo "::error::Expected 24 PNG images; found $count"; exit 1; }
+          echo "Downloaded $count public image assets."
+
+      - name: Optimize images as WebP
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m pip install --quiet Pillow
+          mkdir -p mobile/assets/kargozar
+          python3 - "$RUNNER_TEMP/kargozar-png" mobile/assets/kargozar <<'PY'
+          import sys
+          from pathlib import Path
+          from PIL import Image, ImageOps
+
+          source = Path(sys.argv[1])
+          target = Path(sys.argv[2])
+          files = sorted(source.glob("*.png"))
+          for path in files:
+              with Image.open(path) as original:
+                  image = ImageOps.exif_transpose(original)
+                  limit = 1600 if path.name.startswith("banner-") else 1000
+                  image.thumbnail((limit, limit), Image.Resampling.LANCZOS)
+                  if image.mode not in ("RGB", "RGBA"):
+                      image = image.convert("RGB")
+                  output = target / (path.stem + ".webp")
+                  image.save(output, "WEBP", quality=82, method=6)
+          print(f"Optimized {len(files)} images.")
+          print(f"Total WebP size: {sum(p.stat().st_size for p in target.glob('*.webp')):,} bytes")
+          PY
+
+      - name: Commit optimized mobile assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add mobile/assets/kargozar/*.webp
+          if git diff --cached --quiet; then
+            echo "No asset changes detected."
+          else
+            git commit -m "Add optimized Kargozar mobile image assets"
+            git push origin HEAD:main
+          fi
+
+      - name: Upload optimized asset artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: kargozar-mobile-webp-assets
+          path: mobile/assets/kargozar/*.webp
+          if-no-files-found: error
+          retention-days: 14
