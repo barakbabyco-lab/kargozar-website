@@ -152,7 +152,9 @@ class _MainShellState extends State<MainShell> {
   int _index = 1, _revision = 0;
   late final PageController _pageController = PageController(initialPage: _index);
   void _goToTab(int index) {
-    if (index >= 0 && index < 4) {
+    if (index < 0 || index >= 4) return;
+    if (_index != index) setState(() => _index = index);
+    if (_pageController.hasClients && _pageController.page?.round() != index) {
       _pageController.animateToPage(index, duration: const Duration(milliseconds: 260), curve: Curves.easeOutCubic);
     }
   }
