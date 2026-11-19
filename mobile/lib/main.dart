@@ -185,15 +185,13 @@ class _MainShellState extends State<MainShell> {
     }
   }
   Future<void> _showRequests() async {
-    if (!widget.signedIn) {
-      final authenticated = await widget.onLogin();
-      if (!authenticated || !mounted) return;
-    }
+    final authenticated = widget.signedIn || await widget.onLogin();
+    if (!authenticated || !mounted) return;
     Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
         appBar: AppBar(title: const Text('درخواست‌های من')),
-        body: RequestsPage(repository: widget.requests, signedIn: widget.signedIn, onLogin: widget.onLogin, refreshRevision: _revision),
+        body: RequestsPage(repository: widget.requests, signedIn: true, onLogin: widget.onLogin, refreshRevision: _revision),
       ),
     )));
   }
@@ -215,7 +213,7 @@ class _MainShellState extends State<MainShell> {
   @override Widget build(BuildContext context) => Scaffold(
     body: SafeArea(child: IndexedStack(index: _index, children: [
       ProfilePage(signedIn: widget.signedIn, onLogin: widget.onLogin, onLogout: widget.onLogout, onShowRequests: _showRequests),
-      ServicesPage(onRequest: _request, onNavigate: (tab) => setState(() => _index = tab), onConsultation: _showConsultation),
+      ServicesPage(onRequest: _request, onNavigate: (tab) { if (tab == 4) { setState(() => _index = 2); _openCompanion(0); } else { setState(() => _index = tab); } }, onConsultation: _showConsultation),
       CompanionContentPage(onOpen: _openCompanion),
       SupportContentPage(onConsultation: _showConsultation),
     ])),
