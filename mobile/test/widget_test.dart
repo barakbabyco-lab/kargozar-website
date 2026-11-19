@@ -5,27 +5,33 @@ import 'package:kargozar_mobile/core/network/kargozar_api_client.dart';
 import 'package:kargozar_mobile/main.dart';
 
 void main() {
-  testWidgets('shows the four main pages and updated support actions', (tester) async {
+  testWidgets('swiping between main pages reveals support and profile actions', (tester) async {
     await tester.pumpWidget(_testApp());
     await tester.pump(const Duration(milliseconds: 500));
-    await tester.pump();
 
-    expect(find.text('حساب کاربری من'), findsOneWidget);
-    expect(find.text('خدمات'), findsOneWidget);
-    expect(find.text('همراه کسب‌وکار'), findsOneWidget);
-    expect(find.text('تماس و پشتیبانی'), findsNWidgets(2));
+    expect(find.byType(PageView), findsWidgets);
+    expect(find.byType(NavigationBar), findsOneWidget);
 
-    await tester.tap(find.descendant(of: find.byType(NavigationBar), matching: find.text('تماس و پشتیبانی')));
+    final shellPager = find.byType(PageView).first;
+    await tester.drag(shellPager, const Offset(-620, 0));
     await tester.pump(const Duration(milliseconds: 500));
     await tester.pump();
+    await tester.drag(shellPager, const Offset(-620, 0));
+    await tester.pump(const Duration(milliseconds: 500));
+    await tester.pump();
+
     expect(find.text('تماس تلفنی'), findsOneWidget);
     expect(find.text('ارتباط از طریق ایمیل'), findsOneWidget);
     expect(find.text('ثبت و پیگیری تیکت'), findsOneWidget);
     expect(find.text('دستیار هوشمند کارگزار'), findsOneWidget);
 
-    await tester.tap(find.descendant(of: find.byType(NavigationBar), matching: find.text('حساب کاربری من')));
+    await tester.drag(shellPager, const Offset(620, 0));
     await tester.pump(const Duration(milliseconds: 500));
     await tester.pump();
+    await tester.drag(shellPager, const Offset(620, 0));
+    await tester.pump(const Duration(milliseconds: 500));
+    await tester.pump();
+
     expect(find.text('درخواست‌های من'), findsOneWidget);
     expect(find.text('احراز هویت'), findsOneWidget);
     expect(find.text('پشتیبانی و تماس با ما'), findsNothing);
@@ -36,7 +42,9 @@ void main() {
     await tester.pump(const Duration(milliseconds: 500));
     await tester.pump();
 
-    await tester.tap(find.descendant(of: find.byType(NavigationBar), matching: find.text('حساب کاربری من')));
+    await tester.drag(find.byType(PageView).first, const Offset(620, 0));
+    await tester.pump(const Duration(milliseconds: 500));
+    await tester.pump();
     await tester.pump(const Duration(milliseconds: 500));
     await tester.pump();
     await tester.tap(find.text('درخواست‌های من'));
@@ -53,6 +61,9 @@ void main() {
     await tester.pump();
 
     await tester.tap(find.text('حساب کاربری من'));
+    await tester.pump(const Duration(milliseconds: 500));
+    await tester.pump();
+    await tester.drag(find.byType(PageView).first, const Offset(620, 0));
     await tester.pump(const Duration(milliseconds: 500));
     await tester.pump();
     await tester.ensureVisible(find.text('ورود / ثبت‌نام'));
