@@ -6,8 +6,8 @@ import 'package:kargozar_mobile/main.dart';
 
 void main() {
   testWidgets('renders the approved four-tab structure and compact navigation', (tester) async {
-    await tester.view.setPhysicalSize(const Size(430, 900));
-    await tester.view.setDevicePixelRatio(1);
+    tester.view.physicalSize = const Size(430, 900);
+    tester.view.devicePixelRatio = 1;
     await tester.pumpWidget(_testApp());
     await tester.pumpAndSettle();
 
@@ -32,8 +32,8 @@ void main() {
     expect(find.text('وبلاگ و مقالات کارگزار'), findsOneWidget);
     expect(find.text('پشتیبانی کارگزار'), findsNothing);
 
-    await tester.view.resetPhysicalSize();
-    await tester.view.resetDevicePixelRatio();
+    tester.view.resetPhysicalSize();
+    tester.view.resetDevicePixelRatio();
   });
 
   testWidgets('request history requires customer authentication', (tester) async {
