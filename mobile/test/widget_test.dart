@@ -16,7 +16,7 @@ void main() {
     expect(find.text('حساب کاربری من'), findsOneWidget);
     expect(find.text('خدمات'), findsOneWidget);
     expect(find.text('همراه کسب‌وکار'), findsOneWidget);
-    expect(find.text('تماس و پشتیبانی'), findsOneWidget);
+    expect(find.text('تماس و پشتیبانی'), findsNWidgets(2));
 
     await tester.tap(find.text('همراه کسب‌وکار'));
     await tester.pumpAndSettle();
