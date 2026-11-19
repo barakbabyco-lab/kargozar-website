@@ -37,6 +37,10 @@ Route::prefix('v1')->group(function (): void {
             Route::patch('catalog/services/{serviceId}', [StaffCatalogController::class, 'updateService'])
                 ->middleware('staff.manager:admin,supervisor');
             Route::get('service-requests', [StaffServiceRequestController::class, 'index']);
+            Route::get('support-conversations', [SupportChatController::class, 'staffIndex']);
+            Route::get('support-conversations/{conversationId}/messages', [SupportChatController::class, 'staffMessages']);
+            Route::post('support-conversations/{conversationId}/messages', [SupportChatController::class, 'staffSend'])->middleware('staff.editor:admin,supervisor,expert,support');
+            Route::patch('support-conversations/{conversationId}/status', [SupportChatController::class, 'staffUpdateStatus'])->middleware('staff.editor:admin,supervisor,support');
             Route::get('service-requests/{trackingCode}', [StaffServiceRequestController::class, 'show']);
             Route::post('service-requests/{trackingCode}/events', [StaffServiceRequestController::class, 'recordEvent'])
                 ->middleware('staff.editor:admin,supervisor,expert');
@@ -47,6 +51,10 @@ Route::prefix('v1')->group(function (): void {
     Route::middleware('auth:sanctum')->group(function (): void {
         Route::post('auth/logout', LogoutController::class);
         Route::post('service-requests', [ServiceRequestController::class, 'store']);
+        Route::get('me/support-conversations', [SupportChatController::class, 'customerIndex']);
+        Route::post('support-conversations', [SupportChatController::class, 'customerStart']);
+        Route::get('me/support-conversations/{conversationId}/messages', [SupportChatController::class, 'customerMessages']);
+        Route::post('me/support-conversations/{conversationId}/messages', [SupportChatController::class, 'customerSend']);
         Route::get('me/service-requests', [ServiceRequestController::class, 'index']);
         Route::get('me/service-requests/{trackingCode}', [ServiceRequestController::class, 'show']);
     });
