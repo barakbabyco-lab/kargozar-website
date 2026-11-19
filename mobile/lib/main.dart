@@ -214,7 +214,18 @@ class _MainShellState extends State<MainShell> {
     body: SafeArea(child: IndexedStack(index: _index, children: [
       ProfilePage(signedIn: widget.signedIn, onLogin: widget.onLogin, onLogout: widget.onLogout, onShowRequests: _showRequests),
       ServicesPage(onRequest: _request, onNavigate: (tab) { if (tab == 4) { setState(() => _index = 2); _openCompanion(0); } else { setState(() => _index = tab); } }, onConsultation: _showConsultation),
-      CompanionContentPage(onOpen: _openCompanion),
+      CompanionContentPage(
+        onOpen: _openCompanion,
+        onNavigate: (tab) {
+          if (tab == 4) {
+            setState(() => _index = 2);
+            _openCompanion(0);
+          } else {
+            setState(() => _index = tab);
+          }
+        },
+        onConsultation: _showConsultation,
+      ),
       SupportContentPage(onConsultation: _showConsultation),
     ])),
     bottomNavigationBar: NavigationBar(
@@ -225,16 +236,13 @@ class _MainShellState extends State<MainShell> {
       labelTextStyle: const WidgetStatePropertyAll(
         TextStyle(color: Colors.white, fontSize: 8, fontWeight: FontWeight.w600),
       ),
-      iconTheme: const WidgetStatePropertyAll(
-        IconThemeData(color: Colors.white, size: 16),
-      ),
       selectedIndex: _index,
       onDestinationSelected: (value) => setState(() => _index = value),
       destinations: const [
-        NavigationDestination(icon: Icon(Icons.person_outline_rounded), selectedIcon: Icon(Icons.person_rounded), label: 'حساب کاربری من'),
-        NavigationDestination(icon: Icon(Icons.grid_view_outlined), selectedIcon: Icon(Icons.grid_view_rounded), label: 'خدمات'),
-        NavigationDestination(icon: Icon(Icons.business_center_outlined), selectedIcon: Icon(Icons.business_center_rounded), label: 'همراه کسب‌وکار'),
-        NavigationDestination(icon: Icon(Icons.support_agent_outlined), selectedIcon: Icon(Icons.support_agent_rounded), label: 'تماس و پشتیبانی'),
+        NavigationDestination(icon: Icon(Icons.person_outline_rounded, color: Colors.white, size: 16), selectedIcon: Icon(Icons.person_rounded, color: Colors.white, size: 16), label: 'حساب کاربری من'),
+        NavigationDestination(icon: Icon(Icons.grid_view_outlined, color: Colors.white, size: 16), selectedIcon: Icon(Icons.grid_view_rounded, color: Colors.white, size: 16), label: 'خدمات'),
+        NavigationDestination(icon: Icon(Icons.business_center_outlined, color: Colors.white, size: 16), selectedIcon: Icon(Icons.business_center_rounded, color: Colors.white, size: 16), label: 'همراه کسب‌وکار'),
+        NavigationDestination(icon: Icon(Icons.support_agent_outlined, color: Colors.white, size: 16), selectedIcon: Icon(Icons.support_agent_rounded, color: Colors.white, size: 16), label: 'تماس و پشتیبانی'),
       ],
     ),
   );
