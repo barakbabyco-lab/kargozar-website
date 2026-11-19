@@ -9,13 +9,18 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   check-vps:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
       - name: Prepare SSH
         shell: bash
         env:
@@ -52,6 +57,52 @@ jobs:
           chmod 600 ~/.ssh/config
           echo "=== ROOT SSH ACCESS TEST FROM RUNNER ==="
           ssh -o User=root -o BatchMode=yes -o ConnectTimeout=8 kargozar-vps 'id' 2>&1 || echo "Root SSH login is not available with the configured deployment key"
+
+
+      - name: Export and optimize Kargozar mobile images
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/kargozar-png" mobile/assets/kargozar
+          ssh kargozar-vps "cd /var/www/html/kargozar-assets/final && tar -czf - -- *.png" \
+            | tar -xzf - -C "$RUNNER_TEMP/kargozar-png"
+          count="$(find "$RUNNER_TEMP/kargozar-png" -maxdepth 1 -type f -name '*.png' | wc -l)"
+          test "$count" -eq 24 || { echo "::error::Expected 24 PNG images; found $count"; exit 1; }
+          python3 -m pip install --quiet Pillow
+          python3 - "$RUNNER_TEMP/kargozar-png" mobile/assets/kargozar <<'PY'
+          import sys
+          from pathlib import Path
+          from PIL import Image, ImageOps
+
+          source, target = Path(sys.argv[1]), Path(sys.argv[2])
+          for path in sorted(source.glob("*.png")):
+              with Image.open(path) as original:
+                  image = ImageOps.exif_transpose(original)
+                  limit = 1600 if path.name.startswith("banner-") else 1000
+                  image.thumbnail((limit, limit), Image.Resampling.LANCZOS)
+                  if image.mode not in ("RGB", "RGBA"):
+                      image = image.convert("RGB")
+                  image.save(target / (path.stem + ".webp"), "WEBP", quality=82, method=6)
+          outputs = list(target.glob("*.webp"))
+          print(f"Optimized {len(outputs)} images; total {sum(p.stat().st_size for p in outputs):,} bytes.")
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add mobile/assets/kargozar/*.webp
+          if git diff --cached --quiet; then
+            echo "No image changes to commit."
+          else
+            git commit -m "Add optimized Kargozar mobile image assets"
+            git push origin HEAD:main
+          fi
+
+      - name: Upload optimized Kargozar image artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: kargozar-mobile-webp-assets
+          path: mobile/assets/kargozar/*.webp
+          if-no-files-found: error
+          retention-days: 14
 
       - name: Inspect VPS and BIND DNS (read-only)
         shell: bash
