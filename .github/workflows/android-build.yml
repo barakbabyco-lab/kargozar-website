@@ -56,7 +56,12 @@ jobs:
         env:
           KARGOZAR_API_BASE_URL: ${{ vars.KARGOZAR_API_BASE_URL }}
           KARGOZAR_ASSETS_BASE_URL: ${{ vars.KARGOZAR_ASSETS_BASE_URL }}
-        run: flutter build apk --debug --dart-define=API_BASE_URL="$KARGOZAR_API_BASE_URL" --dart-define=KARGOZAR_ASSETS_BASE_URL="$KARGOZAR_ASSETS_BASE_URL"
+          KARGOZAR_SUPPORT_PHONE: ${{ vars.KARGOZAR_SUPPORT_PHONE }}
+          KARGOZAR_SUPPORT_EMAIL: ${{ vars.KARGOZAR_SUPPORT_EMAIL }}
+        run: |
+          SUPPORT_PHONE="${KARGOZAR_SUPPORT_PHONE:-09360952800}"
+          SUPPORT_EMAIL="${KARGOZAR_SUPPORT_EMAIL:-info@kargozarr.ir}"
+          flutter build apk --debug --dart-define=API_BASE_URL="$KARGOZAR_API_BASE_URL" --dart-define=KARGOZAR_ASSETS_BASE_URL="$KARGOZAR_ASSETS_BASE_URL" --dart-define=KARGOZAR_SUPPORT_PHONE="$SUPPORT_PHONE" --dart-define=KARGOZAR_SUPPORT_EMAIL="$SUPPORT_EMAIL"
 
       - name: Upload debug APK artifact
         uses: actions/upload-artifact@v4
@@ -95,9 +100,13 @@ jobs:
         env:
           KARGOZAR_API_BASE_URL: ${{ vars.KARGOZAR_API_BASE_URL }}
           KARGOZAR_ASSETS_BASE_URL: ${{ vars.KARGOZAR_ASSETS_BASE_URL }}
+          KARGOZAR_SUPPORT_PHONE: ${{ vars.KARGOZAR_SUPPORT_PHONE }}
+          KARGOZAR_SUPPORT_EMAIL: ${{ vars.KARGOZAR_SUPPORT_EMAIL }}
         run: |
-          flutter build apk --release --dart-define=API_BASE_URL="$KARGOZAR_API_BASE_URL" --dart-define=KARGOZAR_ASSETS_BASE_URL="$KARGOZAR_ASSETS_BASE_URL"
-          flutter build appbundle --release --dart-define=API_BASE_URL="$KARGOZAR_API_BASE_URL" --dart-define=KARGOZAR_ASSETS_BASE_URL="$KARGOZAR_ASSETS_BASE_URL"
+          SUPPORT_PHONE="${KARGOZAR_SUPPORT_PHONE:-09360952800}"
+          SUPPORT_EMAIL="${KARGOZAR_SUPPORT_EMAIL:-info@kargozarr.ir}"
+          flutter build apk --release --dart-define=API_BASE_URL="$KARGOZAR_API_BASE_URL" --dart-define=KARGOZAR_ASSETS_BASE_URL="$KARGOZAR_ASSETS_BASE_URL" --dart-define=KARGOZAR_SUPPORT_PHONE="$SUPPORT_PHONE" --dart-define=KARGOZAR_SUPPORT_EMAIL="$SUPPORT_EMAIL"
+          flutter build appbundle --release --dart-define=API_BASE_URL="$KARGOZAR_API_BASE_URL" --dart-define=KARGOZAR_ASSETS_BASE_URL="$KARGOZAR_ASSETS_BASE_URL" --dart-define=KARGOZAR_SUPPORT_PHONE="$SUPPORT_PHONE" --dart-define=KARGOZAR_SUPPORT_EMAIL="$SUPPORT_EMAIL"
 
       - name: Upload signed release artifacts
         if: steps.signing.outputs.release_ready == 'true'

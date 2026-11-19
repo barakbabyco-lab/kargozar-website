@@ -11,8 +11,8 @@ void main() {
   runApp(const KargozarApp());
 }
 
-const _navy = Color(0xFF49334F); // برند مکمل: بادمجانی تیره
-const _teal = Color(0xFFC62828); // رنگ اصلی برند: قرمز
+const _navy = Color(0xFF4B0082); // بنفش بادمجانی
+const _teal = Color(0xFFE30613); // قرمز سازمانی
 const _ink = Color(0xFF1E293B);
 const _muted = Color(0xFF64748B);
 const _canvas = Color(0xFFFFFFFF);
@@ -33,7 +33,7 @@ class _KargozarAppState extends State<KargozarApp>{
  @override Widget build(BuildContext context)=>MaterialApp(
  navigatorKey:_navigatorKey,
  debugShowCheckedModeBanner:false,title:'کارگزار',
- theme:ThemeData(useMaterial3:true,scaffoldBackgroundColor:_canvas,colorScheme:ColorScheme.fromSeed(seedColor:_teal,primary:_teal,secondary:_navy,surface:Colors.white),fontFamily:'Roboto',
+ theme:ThemeData(useMaterial3:true,scaffoldBackgroundColor:const Color(0xFFF7F5F7),colorScheme:ColorScheme.fromSeed(seedColor:_teal,primary:_teal,secondary:_navy,surface:Colors.white),fontFamily:'Roboto',
  appBarTheme:const AppBarTheme(backgroundColor:_canvas,foregroundColor:_ink,centerTitle:false,elevation:0),
  inputDecorationTheme:InputDecorationTheme(filled:true,fillColor:Colors.white,border:OutlineInputBorder(borderRadius:BorderRadius.circular(14),borderSide:const BorderSide(color:Color(0xFFE2E8F0))),enabledBorder:OutlineInputBorder(borderRadius:BorderRadius.circular(14),borderSide:const BorderSide(color:Color(0xFFE2E8F0))))),
  home:Directionality(textDirection:TextDirection.rtl,child:_loading?const Scaffold(body:Center(child:CircularProgressIndicator())):MainShell(requests:_requests,signedIn:_signedIn,onLogin:_login,onLogout:_logout)),
@@ -214,20 +214,25 @@ class _MainShellState extends State<MainShell> {
     body: SafeArea(child: IndexedStack(index: _index, children: [
       ProfilePage(signedIn: widget.signedIn, onLogin: widget.onLogin, onLogout: widget.onLogout, onShowRequests: _showRequests),
       ServicesPage(onRequest: _request, onNavigate: (tab) { if (tab == 4) { setState(() => _index = 2); _openCompanion(0); } else { setState(() => _index = tab); } }, onConsultation: _showConsultation),
-      CompanionContentPage(onOpen: _openCompanion),
-      SupportContentPage(onConsultation: _showConsultation),
+      CompanionContentPage(onOpen: _openCompanion, onNavigate: (tab) => setState(() => _index = tab.clamp(0, 3).toInt()), onConsultation: _showConsultation),
+      SupportContentPage(onConsultation: _showConsultation, onNavigate: (tab) => setState(() => _index = tab.clamp(0, 3))),
     ])),
-    bottomNavigationBar: NavigationBar(
-      selectedIndex: _index,
-      onDestinationSelected: (value) => setState(() => _index = value),
-      destinations: const [
-        NavigationDestination(icon: Icon(Icons.person_outline_rounded), selectedIcon: Icon(Icons.person_rounded), label: 'حساب کاربری من'),
-        NavigationDestination(icon: Icon(Icons.grid_view_outlined), selectedIcon: Icon(Icons.grid_view_rounded), label: 'خدمات'),
-        NavigationDestination(icon: Icon(Icons.business_center_outlined), selectedIcon: Icon(Icons.business_center_rounded), label: 'همراه کسب‌وکار'),
-        NavigationDestination(icon: Icon(Icons.support_agent_outlined), selectedIcon: Icon(Icons.support_agent_rounded), label: 'تماس و پشتیبانی'),
-      ],
-    ),
+    bottomNavigationBar: SafeArea(top: false, child: Container(
+      height: 54, decoration: const BoxDecoration(color: Color(0xFFE30613), boxShadow: [BoxShadow(color: Color(0x22000000),blurRadius:8,offset:Offset(0,-2))]),
+      child: Row(children: [
+        _BottomTab(icon: Icons.person_outline_rounded, activeIcon: Icons.person_rounded, label: 'حساب کاربری', selected: _index == 0, onTap: () => setState(() => _index = 0)),
+        _BottomTab(icon: Icons.grid_view_outlined, activeIcon: Icons.grid_view_rounded, label: 'خدمات', selected: _index == 1, onTap: () => setState(() => _index = 1)),
+        _BottomTab(icon: Icons.business_center_outlined, activeIcon: Icons.business_center_rounded, label: 'همراه کسب‌وکار', selected: _index == 2, onTap: () => setState(() => _index = 2)),
+        _BottomTab(icon: Icons.support_agent_outlined, activeIcon: Icons.support_agent_rounded, label: 'تماس و پشتیبانی', selected: _index == 3, onTap: () => setState(() => _index = 3)),
+      ]),
+    )),
   );
+}
+
+class _BottomTab extends StatelessWidget {
+  const _BottomTab({required this.icon,required this.activeIcon,required this.label,required this.selected,required this.onTap});
+  final IconData icon,activeIcon; final String label; final bool selected; final VoidCallback onTap;
+  @override Widget build(BuildContext context)=>Expanded(child:InkWell(onTap:onTap,child:Container(height:54,alignment:Alignment.center,decoration:BoxDecoration(border:Border(top:BorderSide(color:selected?Colors.white:Colors.transparent,width:2.5))),child:Column(mainAxisAlignment:MainAxisAlignment.center,children:[Icon(selected?activeIcon:icon,color:Colors.white,size:20),const SizedBox(height:2),Text(label,maxLines:1,overflow:TextOverflow.ellipsis,style:TextStyle(color:Colors.white,fontSize:9,fontWeight:selected?FontWeight.w800:FontWeight.w500))]))));
 }
 
 class HomePage extends StatefulWidget {
@@ -413,243 +418,29 @@ class _HomePageState extends State<HomePage> {
 }
 
 class ServicesPage extends StatefulWidget {
-  const ServicesPage({super.key, required this.onRequest, required this.onNavigate, required this.onConsultation});
-  final Future<void> Function(ServiceItem service) onRequest;
-  final ValueChanged<int> onNavigate;
-  final VoidCallback onConsultation;
-
-  @override
-  State<ServicesPage> createState() => _ServicesPageState();
+  const ServicesPage({super.key,required this.onRequest,required this.onNavigate,required this.onConsultation});
+  final Future<void> Function(ServiceItem service) onRequest; final ValueChanged<int> onNavigate; final VoidCallback onConsultation;
+  @override State<ServicesPage> createState()=>_ServicesPageState();
 }
-
-class _ServicesPageState extends State<ServicesPage> {
-  String _query = '';
-  late final KargozarApiClient _api;
-  late final ServiceCatalogRepository _catalog;
-  late Future<List<CatalogService>> _remoteServices;
-  late Future<List<ServiceCategory>> _remoteCategories;
-  String? _selectedCategory;
-  bool _apiConfigured = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _api = KargozarApiClient();
-    _catalog = ServiceCatalogRepository(_api);
-    _apiConfigured = const String.fromEnvironment('API_BASE_URL').trim().isNotEmpty;
-    _remoteServices = _apiConfigured
-        ? _catalog.getServices()
-        : Future.value(const <CatalogService>[]);
-    _remoteCategories = _apiConfigured
-        ? _catalog.getCategoryTree()
-        : Future.value(const <ServiceCategory>[]);
-  }
-
-  @override
-  void dispose() {
-    _api.close();
-    super.dispose();
-  }
-
-  void _retryRemote() {
-    setState(() => _remoteServices = _catalog.getServices(
-      category: _selectedCategory,
-      query: _query,
-    ));
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final filtered = services.where((item) =>
-      item.title.contains(_query) ||
-      item.category.contains(_query) ||
-      item.subtitle.contains(_query)).toList();
-
-    return ListView(
-      padding: const EdgeInsets.all(20),
-      children: [
-        const Text('کارگزار', style: TextStyle(color: _navy, fontSize: 21, fontWeight: FontWeight.w900)),
-        const SizedBox(height: 4),
-        const Text('همه خدمات', style: TextStyle(
-          color: _ink, fontSize: 25, fontWeight: FontWeight.w900)),
-        const SizedBox(height: 7),
-        const Text('خدمت موردنظرت را جست‌وجو و انتخاب کن.',
-            style: TextStyle(color: _muted)),
-        const SizedBox(height: 18),
-        AppBannerStrip(onNavigate: widget.onNavigate, onConsultation: widget.onConsultation),
-        const SizedBox(height: 20),
-        const SectionHeading(title: 'دسته‌بندی خدمات'),
-        const SizedBox(height: 12),
-        if (!_apiConfigured)
-          GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: serviceTaxonomy.length,
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, crossAxisSpacing: 11, mainAxisSpacing: 11, childAspectRatio: 1.15),
-            itemBuilder: (context, index) {
-              final category = serviceTaxonomy[index];
-              return Material(
-                color: Colors.white, borderRadius: BorderRadius.circular(15), clipBehavior: Clip.antiAlias,
-                child: InkWell(
-                  onTap: () => setState(() => _selectedCategory = category.slug),
-                  child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-                    Expanded(child: AppContentImage(fileName: serviceCategoryImages[category.slug] ?? 'missing.png', fallbackIcon: Icons.category_outlined, borderRadius: 0)),
-                    Padding(padding: const EdgeInsets.all(9), child: Text(category.name, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: _ink))),
-                  ]),
-                ),
-              );
-            },
-          ),
-        const SizedBox(height: 18),
-        TextField(
-          textDirection: TextDirection.rtl,
-          onChanged: (value) {
-            setState(() => _query = value.trim());
-          },
-          onSubmitted: (_) {
-            if (_apiConfigured) _retryRemote();
-          },
-          decoration: const InputDecoration(
-            hintText: 'جست‌وجوی خدمات...',
-            prefixIcon: Icon(Icons.search_rounded),
-          ),
-        ),
-        const SizedBox(height: 15),
-        if (_apiConfigured) ...[
-          FutureBuilder<List<ServiceCategory>>(
-            future: _remoteCategories,
-            builder: (context, snapshot) {
-              if (snapshot.hasError) {
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 12),
-                  child: TextButton.icon(
-                    onPressed: () => setState(
-                      () => _remoteCategories = _catalog.getCategoryTree(),
-                    ),
-                    icon: const Icon(Icons.refresh_rounded),
-                    label: const Text('بارگذاری دسته‌بندی‌ها دوباره تلاش شود'),
-                  ),
-                );
-              }
-              if (!snapshot.hasData) {
-                return const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 8),
-                  child: LinearProgressIndicator(),
-                );
-              }
-              return Container(
-                margin: const EdgeInsets.only(bottom: 14),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: const Color(0xFFE8EDF3)),
-                ),
-                child: Column(
-                  children: [
-                    ListTile(
-                      dense: true,
-                      selected: _selectedCategory == null,
-                      leading: const Icon(Icons.apps_rounded, color: _teal),
-                      title: const Text('همه دسته‌بندی‌ها',
-                          style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700)),
-                      onTap: () {
-                        setState(() => _selectedCategory = null);
-                        _retryRemote();
-                      },
-                    ),
-                    ...snapshot.data!.map((category) => _CatalogCategoryBranch(
-                      category: category,
-                      selectedSlug: _selectedCategory,
-                      onSelected: (slug) {
-                        setState(() => _selectedCategory = slug);
-                        _retryRemote();
-                      },
-                    )),
-                  ],
-                ),
-              );
-            },
-          ),
-        ],
-        if (_apiConfigured)
-          FutureBuilder<List<CatalogService>>(
-            future: _remoteServices,
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Padding(
-                  padding: EdgeInsets.all(18),
-                  child: Center(child: CircularProgressIndicator()),
-                );
-              }
-              if (snapshot.hasError) {
-                return Container(
-                  margin: const EdgeInsets.only(bottom: 12),
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFFFF7ED),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text('دریافت فهرست زنده خدمات ممکن نشد.',
-                          style: TextStyle(color: _ink, fontSize: 12)),
-                      TextButton(
-                        onPressed: _retryRemote,
-                        child: const Text('تلاش دوباره'),
-                      ),
-                    ],
-                  ),
-                );
-              }
-              final items = snapshot.data ?? const <CatalogService>[];
-              if (items.isEmpty) {
-                return const Padding(
-                  padding: EdgeInsets.all(16),
-                  child: Text('در حال حاضر خدمتی در کاتالوگ آنلاین ثبت نشده است.',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(color: _muted)),
-                );
-              }
-              return Column(
-                children: items.map((item) {
-                  final service = _serviceItemFromCatalog(item);
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 10),
-                    child: ServiceListTile(service: service, onRequest: widget.onRequest),
-                  );
-                }).toList(),
-              );
-            },
-          )
-        else ...[
-          Container(
-            margin: const EdgeInsets.only(bottom: 12),
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: const Color(0xFFFFF1F1),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: const Text(
-              'اتصال به سرور هنوز تنظیم نشده؛ فهرست زیر صرفاً نمونه نمایشی است.',
-              style: TextStyle(color: _ink, fontSize: 11),
-            ),
-          ),
-          ...filtered.map((service) => Padding(
-            padding: const EdgeInsets.only(bottom: 10),
-            child: ServiceListTile(service: service, onRequest: widget.onRequest),
-          )),
-          if (filtered.isEmpty)
-            const Padding(
-              padding: EdgeInsets.all(28),
-              child: Text('خدمتی با این عبارت پیدا نشد.',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(color: _muted)),
-            ),
-        ],
-      ],
-    );
-  }
+class _ServicesPageState extends State<ServicesPage>{
+ late final KargozarApiClient _api; late final ServiceCatalogRepository _catalog;
+ late Future<List<CatalogService>> _remoteServices; late Future<List<ServiceCategory>> _remoteCategories;
+ String _query=''; String? _selectedCategory; bool _apiConfigured=false;
+ @override void initState(){super.initState();_api=KargozarApiClient();_catalog=ServiceCatalogRepository(_api);_apiConfigured=const String.fromEnvironment('API_BASE_URL').trim().isNotEmpty;_remoteServices=_apiConfigured?_catalog.getServices():Future.value(const <CatalogService>[]);_remoteCategories=_apiConfigured?_catalog.getCategoryTree():Future.value(const <ServiceCategory>[]);}
+ @override void dispose(){_api.close();super.dispose();}
+ void _retryRemote()=>setState(()=>_remoteServices=_catalog.getServices(category:_selectedCategory,query:_query));
+ @override Widget build(BuildContext context){
+  final filtered=services.where((item)=>item.title.contains(_query)||item.category.contains(_query)||item.subtitle.contains(_query)).toList();
+  return ListView(padding:const EdgeInsets.only(top:8,bottom:14),children:[
+   AppBannerStrip(onNavigate:widget.onNavigate,onConsultation:widget.onConsultation),
+   const Padding(padding:EdgeInsets.fromLTRB(16,8,16,7),child:Text('دسته‌بندی خدمات',style:TextStyle(fontSize:14,fontWeight:FontWeight.w800,color:_navy))),
+   Padding(padding:const EdgeInsets.symmetric(horizontal:14),child:GridView.builder(shrinkWrap:true,physics:const NeverScrollableScrollPhysics(),itemCount:serviceTaxonomy.length,gridDelegate:const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount:2,crossAxisSpacing:9,mainAxisSpacing:8,childAspectRatio:2.8),itemBuilder:(context,index){final category=serviceTaxonomy[index];final image=serviceCategoryImages[category.slug]??'';return Material(color:Colors.white,borderRadius:BorderRadius.circular(12),clipBehavior:Clip.antiAlias,child:InkWell(onTap:(){setState(()=>_selectedCategory=category.slug);if(_apiConfigured)_retryRemote();},child:Row(children:[SizedBox(width:64,height:64,child:image.isEmpty?const Icon(Icons.category_outlined,color:_teal):AppContentImage(fileName:image,borderRadius:0)),Expanded(child:Padding(padding:const EdgeInsets.symmetric(horizontal:7),child:Text(category.name,maxLines:2,overflow:TextOverflow.ellipsis,style:const TextStyle(fontSize:10.5,fontWeight:FontWeight.w800,color:_ink))))])));})),
+   Padding(padding:const EdgeInsets.fromLTRB(16,12,16,8),child:TextField(textDirection:TextDirection.rtl,onChanged:(v)=>setState(()=>_query=v.trim()),onSubmitted:(_){if(_apiConfigured)_retryRemote();},decoration:const InputDecoration(isDense:true,hintText:'جست‌وجوی خدمات...',prefixIcon:Icon(Icons.search_rounded)))),
+   if(_apiConfigured)FutureBuilder<List<ServiceCategory>>(future:_remoteCategories,builder:(context,snapshot){if(!snapshot.hasData)return const SizedBox.shrink();return Padding(padding:const EdgeInsets.symmetric(horizontal:16),child:Wrap(spacing:6,runSpacing:6,children:[for(final c in snapshot.data!)if(c.children.isEmpty)ChoiceChip(label:Text(c.name,style:const TextStyle(fontSize:10)),selected:_selectedCategory==c.slug,onSelected:(_){setState(()=>_selectedCategory=c.slug);_retryRemote();})]));}),
+   if(_apiConfigured)FutureBuilder<List<CatalogService>>(future:_remoteServices,builder:(context,snapshot){if(snapshot.connectionState==ConnectionState.waiting)return const Center(child:CircularProgressIndicator());if(snapshot.hasError)return TextButton(onPressed:_retryRemote,child:const Text('بارگذاری خدمات ناموفق بود؛ تلاش دوباره'));final items=snapshot.data??const <CatalogService>[];return Column(children:items.map((item)=>Padding(padding:const EdgeInsets.symmetric(horizontal:16,vertical:4),child:ServiceListTile(service:_serviceItemFromCatalog(item),onRequest:widget.onRequest))).toList());})
+   else ...filtered.map((item)=>Padding(padding:const EdgeInsets.symmetric(horizontal:16,vertical:4),child:ServiceListTile(service:item,onRequest:widget.onRequest))),
+  ]);
+ }
 }
 
 ServiceItem _serviceItemFromCatalog(CatalogService item) => ServiceItem(
@@ -662,57 +453,6 @@ ServiceItem _serviceItemFromCatalog(CatalogService item) => ServiceItem(
   estimatedDays: item.estimatedDays,
   basePrice: item.basePrice,
 );
-
-class _CatalogCategoryBranch extends StatelessWidget {
-  const _CatalogCategoryBranch({
-    required this.category,
-    required this.selectedSlug,
-    required this.onSelected,
-  });
-
-  final ServiceCategory category;
-  final String? selectedSlug;
-  final ValueChanged<String?> onSelected;
-
-  @override
-  Widget build(BuildContext context) {
-    final title = Text(category.name,
-        style: const TextStyle(fontSize: 12, color: _ink));
-    if (category.children.isEmpty) {
-      return ListTile(
-        dense: true,
-        contentPadding: const EdgeInsetsDirectional.only(start: 30, end: 14),
-        selected: selectedSlug == category.slug,
-        leading: const Icon(Icons.subdirectory_arrow_left_rounded,
-            size: 17, color: _teal),
-        title: title,
-        onTap: () => onSelected(category.slug),
-      );
-    }
-    return ExpansionTile(
-      tilePadding: const EdgeInsetsDirectional.only(start: 14, end: 14),
-      childrenPadding: const EdgeInsetsDirectional.only(start: 10),
-      leading: serviceCategoryImages.containsKey(category.slug)
-          ? SizedBox(width: 44, height: 44, child: AppContentImage(fileName: serviceCategoryImages[category.slug]!, fallbackIcon: Icons.category_outlined))
-          : null,
-      title: title,
-      children: [
-        ListTile(
-          dense: true,
-          selected: selectedSlug == category.slug,
-          title: Text('همه خدمات ${category.name}',
-              style: const TextStyle(fontSize: 12, color: _muted)),
-          onTap: () => onSelected(category.slug),
-        ),
-        ...category.children.map((child) => _CatalogCategoryBranch(
-          category: child,
-          selectedSlug: selectedSlug,
-          onSelected: onSelected,
-        )),
-      ],
-    );
-  }
-}
 
 IconData _iconForCategory(String? category) {
   final value = category ?? '';
@@ -748,13 +488,16 @@ class _RequestsPageState extends State<RequestsPage>{
 void _showRequestDetails(BuildContext context,CustomerServiceRequest request){showModalBottomSheet<void>(context:context,isScrollControlled:true,backgroundColor:Colors.white,shape:const RoundedRectangleBorder(borderRadius:BorderRadius.vertical(top:Radius.circular(24))),builder:(ctx)=>SafeArea(child:Padding(padding:const EdgeInsets.all(20),child:ListView(shrinkWrap:true,children:[Text('پیگیری ${request.trackingCode}',style:const TextStyle(fontSize:19,fontWeight:FontWeight.w900)),const SizedBox(height:10),Text('وضعیت فعلی: ${requestStatusLabel(request.status)}'),if(request.customerNote?.isNotEmpty==true)Text('توضیحات: ${request.customerNote}'),const SizedBox(height:18),const Text('آخرین رویدادها',style:TextStyle(fontWeight:FontWeight.w800)),if(request.events.isEmpty)const Text('هنوز رویدادی برای این درخواست ثبت نشده است.'),...request.events.map((e)=>ListTile(contentPadding:EdgeInsets.zero,leading:const Icon(Icons.timeline_rounded,color:_teal),title:Text(e.publicMessage??requestStatusLabel(e.status)),subtitle:Text(requestStatusLabel(e.status))))]))));}
 String requestStatusLabel(String status)=>switch(status){'submitted'=>'ثبت‌شده','reviewing'=>'در حال بررسی','awaiting_customer'=>'نیازمند اقدام شما','in_progress'=>'در حال انجام','completed'=>'تکمیل‌شده','rejected'=>'ردشده','cancelled'=>'لغوشده',_=>status};
 class ProfilePage extends StatelessWidget {
- const ProfilePage({super.key,required this.signedIn,required this.onLogin,required this.onLogout,required this.onShowRequests});final bool signedIn;final VoidCallback onLogin,onLogout,onShowRequests;
- @override Widget build(BuildContext context)=>ListView(padding:const EdgeInsets.all(20),children:[
- const Text('حساب کاربری',style:TextStyle(color:_ink,fontSize:25,fontWeight:FontWeight.w900)),const SizedBox(height:18),
- Container(padding:const EdgeInsets.all(18),decoration:BoxDecoration(color:Colors.white,borderRadius:BorderRadius.circular(18)),child:Row(children:[const CircleAvatar(radius:26,backgroundColor:Color(0xFFE8EEF5),child:Icon(Icons.person_outline,color:_navy,size:28)),const SizedBox(width:13),Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text(signedIn?'حساب شما فعال است':'مهمان',style:const TextStyle(color:_ink,fontWeight:FontWeight.bold,fontSize:16)),Text(signedIn?'به حساب کاربری خود وارد شده‌اید':'برای استفاده از خدمات وارد شوید',style:const TextStyle(color:_muted,fontSize:12))])])),const SizedBox(height:14),
- ListTile(leading:const Icon(Icons.receipt_long_outlined,color:_navy),title:const Text('درخواست‌های من'),trailing:const Icon(Icons.chevron_left_rounded,color:_muted),onTap:onShowRequests),
- ListTile(leading:Icon(signedIn?Icons.logout:Icons.login,color:_navy),title:Text(signedIn?'خروج از حساب':'ورود / ثبت‌نام'),trailing:const Icon(Icons.chevron_left_rounded,color:_muted),onTap:signedIn?onLogout:onLogin),
- const ProfileOption(icon:Icons.support_agent,title:'پشتیبانی و تماس با ما'),const ProfileOption(icon:Icons.policy_outlined,title:'قوانین و حریم خصوصی'),const ProfileOption(icon:Icons.info_outline,title:'درباره کارگزار'),
+ const ProfilePage({super.key,required this.signedIn,required this.onLogin,required this.onLogout,required this.onShowRequests});
+ final bool signedIn; final VoidCallback onLogin,onLogout,onShowRequests;
+ @override Widget build(BuildContext context)=>ListView(padding:const EdgeInsets.only(top:8,bottom:12),children:[
+  AppBannerStrip(onNavigate:(_){},onConsultation:(){showDialog<void>(context:context,builder:(c)=>const AlertDialog(title:Text('مشاوره رایگان'),content:Text('برای دریافت مشاوره از بخش تماس و پشتیبانی اقدام کنید.')));}),
+  Padding(padding:const EdgeInsets.fromLTRB(16,10,16,8),child:Container(padding:const EdgeInsets.all(14),decoration:BoxDecoration(color:Colors.white,borderRadius:BorderRadius.circular(14)),child:Row(children:[const CircleAvatar(backgroundColor:Color(0xFFFCE8E8),child:Icon(Icons.person_outline,color:_teal)),const SizedBox(width:12),Expanded(child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text(signedIn?'حساب شما فعال است':'حساب کاربری من',style:const TextStyle(fontWeight:FontWeight.w800,color:_ink)),Text(signedIn?'وضعیت ورود: فعال':'برای ثبت و پیگیری درخواست‌ها وارد شوید',style:const TextStyle(fontSize:11,color:_muted))]))]))),
+  Padding(padding:const EdgeInsets.symmetric(horizontal:16),child:Card(color:Colors.white,child:Column(children:[
+   ListTile(leading:const Icon(Icons.receipt_long_outlined,color:_teal),title:const Text('درخواست‌های من'),trailing:const Icon(Icons.chevron_left),onTap:onShowRequests),
+   const Divider(height:1,indent:16,endIndent:16),
+   ListTile(leading:Icon(signedIn?Icons.logout:Icons.login,color:_navy),title:Text(signedIn?'خروج از حساب':'ورود / ثبت‌نام'),trailing:const Icon(Icons.chevron_left),onTap:signedIn?onLogout:onLogin),
+  ]))),
  ]);
 }
 
