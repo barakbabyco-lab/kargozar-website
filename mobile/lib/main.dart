@@ -235,7 +235,7 @@ class _MainShellState extends State<MainShell> {
       const Positioned(right: 14, bottom: 8, child: SupportChatLauncher()),
     ])),
     bottomNavigationBar: NavigationBar(
-      height: 34,
+      height: 44,
       backgroundColor: _teal,
       indicatorColor: Colors.transparent,
       labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
