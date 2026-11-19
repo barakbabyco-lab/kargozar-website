@@ -55,10 +55,13 @@ jobs:
 
       - name: Inspect VPS and BIND DNS (read-only)
         shell: bash
+        env:
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
         run: |
           set -euo pipefail
-          ssh kargozar-vps 'bash -s' <<'REMOTE'
+          ssh kargozar-vps 'bash -s' "$DEPLOY_PATH" <<'REMOTE'
           set -u
+          deploy_path="${1:-}"
           echo "=== SERVER ==="
           hostname
           . /etc/os-release && echo "$PRETTY_NAME"
@@ -220,5 +223,50 @@ jobs:
           groups
           getent group sudo 2>&1 || true
 
+          echo "=== APPLICATION PATH AND RUNTIME CHECK ==="
+          if [ -n "$deploy_path" ]; then
+            for target in "$deploy_path" "$deploy_path/current" "$deploy_path/shared" "$deploy_path/releases"; do
+              if [ -e "$target" ]; then
+                stat -c 'PRESENT %F %U:%G %a' "$target" 2>/dev/null || true
+              else
+                echo "MISSING configured deployment target"
+              fi
+            done
+            if [ -L "$deploy_path/current" ]; then
+              readlink "$deploy_path/current"
+              current="$(readlink -f "$deploy_path/current")"
+              for file in artisan vendor/autoload.php public/index.php; do
+                [ -f "$current/$file" ] && echo "PRESENT $file" || echo "MISSING $file"
+              done
+              [ -f "$deploy_path/shared/.env" ] && echo "PRESENT shared environment file (contents withheld)" || echo "MISSING shared environment file"
+            fi
+          else
+            echo "DEPLOY_PATH is not configured"
+          fi
+          echo "=== KNOWN CPANEL APPLICATION ROOT ==="
+          for target in /home/onnusrbl/apps/kargozar-api-new /home/onnusrbl/apps/kargozar-api-new/public; do
+            [ -d "$target" ] && stat -c 'PRESENT %F %U:%G %a' "$target" || echo "MISSING known application path"
+          done
+          echo "=== PHP AND COMPOSER RUNTIME ==="
+          php -v 2>&1 | head -n 2 || true
+          composer --version 2>&1 | head -n 1 || true
+          echo "=== WEB LISTENERS ==="
+          ss -lntup 2>&1 | grep -E '(:80[[:space:]]|:443[[:space:]]|:8080[[:space:]]|:8443[[:space:]])' || true
+          echo "=== LOCAL VHOST CHECKS ==="
+          for host in kargozarr.ir barakmod.ir; do
+            echo "--- $host on localhost HTTP ---"
+            curl -sSI --connect-timeout 3 --max-time 5 -H "Host: $host" http://127.0.0.1/ 2>&1 | head -n 8 || true
+          done
+          echo "=== BIND KARGOZARR ZONE FILE ==="
+          if [ -r /etc/bind/db.kargozarr.ir ]; then sed -n '1,180p' /etc/bind/db.kargozarr.ir; else echo "Zone file is not readable by deployment user"; fi
+          echo "=== BARAKMOD DNS RECORDS ON MIHANWEBHOST ==="
+          if command -v dig >/dev/null 2>&1; then
+            for type in NS A AAAA MX TXT; do
+              echo "--- barakmod.ir $type ---"
+              dig @ns553.mihanwebhost.com barakmod.ir "$type" +norecurse +time=3 +tries=1 +noall +answer +authority +comments || true
+            done
+            echo "--- barakmod.ir public A ---"
+            dig @1.1.1.1 barakmod.ir A +time=3 +tries=1 +noall +answer +comments || true
+          fi
           echo "=== END READ-ONLY INSPECTION ==="
           REMOTE
