@@ -20,6 +20,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withCommands([CreateStaffUser::class, CleanupExpiredRecords::class])
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->redirectGuestsTo(fn (Request $request) => route('staff.portal.login'));
         $middleware->alias([
             'staff.role' => EnsureStaffRole::class,
             'staff.manager' => EnsureStaffRole::class,
