@@ -12,16 +12,16 @@ void main() {
     expect(find.text('حساب کاربری من'), findsOneWidget);
     expect(find.text('خدمات'), findsOneWidget);
     expect(find.text('همراه کسب‌وکار'), findsOneWidget);
-    expect(find.text('تماس و پشتیبانی'), findsOneWidget);
+    expect(find.text('تماس و پشتیبانی'), findsNWidgets(2));
 
-    await tester.tap(find.text('تماس و پشتیبانی'));
+    await tester.tap(find.text('تماس و پشتیبانی').last);
     await tester.pumpAndSettle();
     expect(find.text('تماس تلفنی'), findsOneWidget);
     expect(find.text('ارتباط از طریق ایمیل'), findsOneWidget);
     expect(find.text('ثبت و پیگیری تیکت'), findsOneWidget);
     expect(find.text('دستیار هوشمند کارگزار'), findsOneWidget);
 
-    await tester.tap(find.text('حساب کاربری من'));
+    await tester.tap(find.text('حساب کاربری من').last);
     await tester.pumpAndSettle();
     expect(find.text('درخواست‌های من'), findsOneWidget);
     expect(find.text('احراز هویت'), findsOneWidget);
@@ -47,6 +47,7 @@ void main() {
 
     await tester.tap(find.text('حساب کاربری من'));
     await tester.pumpAndSettle();
+    await tester.ensureVisible(find.text('ورود / ثبت‌نام'));
     await tester.tap(find.text('ورود / ثبت‌نام'));
     await tester.pumpAndSettle();
 
