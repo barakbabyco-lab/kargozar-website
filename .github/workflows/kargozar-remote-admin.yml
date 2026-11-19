@@ -1,6 +1,11 @@
 name: Kargozar remote admin
+# Default push task is read-only health inspection
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/kargozar-remote-admin.yml"
   workflow_dispatch:
     inputs:
       task:
@@ -82,7 +87,7 @@ jobs:
         env:
           SSH_CONFIG: ${{ steps.ssh.outputs.ssh_config }}
           DEPLOY_PATH: ${{ steps.ssh.outputs.deploy_path }}
-          TASK: ${{ inputs.task }}
+          TASK: ${{ inputs.task || 'health' }}
         run: |
           set -euo pipefail
           case "$TASK" in
