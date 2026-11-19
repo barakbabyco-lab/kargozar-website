@@ -93,6 +93,23 @@ jobs:
           flutter build apk --release --dart-define=API_BASE_URL="$KARGOZAR_API_BASE_URL" --dart-define=KARGOZAR_ASSETS_BASE_URL="$KARGOZAR_ASSETS_BASE_URL"
           flutter build appbundle --release --dart-define=API_BASE_URL="$KARGOZAR_API_BASE_URL" --dart-define=KARGOZAR_ASSETS_BASE_URL="$KARGOZAR_ASSETS_BASE_URL"
 
+      - name: Verify signed APK and package identity
+        if: steps.signing.outputs.release_ready == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK="build/app/outputs/flutter-apk/app-release.apk"
+          AAB="build/app/outputs/bundle/release/app-release.aab"
+          APKSIGNER="$(find "$ANDROID_HOME/build-tools" -type f -name apksigner | sort -V | tail -n 1)"
+          AAPT="$(find "$ANDROID_HOME/build-tools" -type f -name aapt | sort -V | tail -n 1)"
+          test -s "$APK"
+          test -s "$AAB"
+          test -x "$APKSIGNER"
+          test -x "$AAPT"
+          "$APKSIGNER" verify --verbose --print-certs "$APK"
+          "$AAPT" dump badging "$APK" | grep -E "^(package:|sdkVersion:|targetSdkVersion:)"
+          jarsigner -verify "$AAB" >/dev/null
+
       - name: Upload signed release artifacts
         if: steps.signing.outputs.release_ready == 'true'
         uses: actions/upload-artifact@v4
