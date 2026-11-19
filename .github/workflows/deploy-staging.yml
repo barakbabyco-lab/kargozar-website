@@ -1,6 +1,11 @@
 name: Deploy Kargozar staging
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - "backend/**"
+      - ".github/workflows/deploy-staging.yml"
   workflow_dispatch:
     inputs:
       run_migrations:
@@ -135,7 +140,7 @@ jobs:
           SSH_CONFIG: ${{ steps.ssh.outputs.ssh_config }}
           DEPLOY_PATH: ${{ steps.ssh.outputs.deploy_path }}
           RELEASE_SHA: ${{ github.sha }}
-          RUN_MIGRATIONS: ${{ inputs.run_migrations }}
+          RUN_MIGRATIONS: ${{ github.event_name == 'push' && 'true' || inputs.run_migrations }}
         run: |
           set -euo pipefail
           ssh -F "$SSH_CONFIG" kargozar-staging "bash -s -- '$DEPLOY_PATH' '$RELEASE_SHA' '$RUN_MIGRATIONS'" <<'REMOTE'
