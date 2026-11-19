@@ -468,14 +468,7 @@ class _ServicesPageState extends State<ServicesPage> {
     return ListView(
       padding: const EdgeInsets.all(20),
       children: [
-        const Text('کارگزار', style: TextStyle(color: _navy, fontSize: 21, fontWeight: FontWeight.w900)),
-        const SizedBox(height: 4),
-        const Text('همه خدمات', style: TextStyle(
-          color: _ink, fontSize: 25, fontWeight: FontWeight.w900)),
-        const SizedBox(height: 7),
-        const Text('خدمت موردنظرت را جست‌وجو و انتخاب کن.',
-            style: TextStyle(color: _muted)),
-        const SizedBox(height: 18),
+
         AppBannerStrip(onNavigate: widget.onNavigate, onConsultation: widget.onConsultation),
         const SizedBox(height: 20),
         const SectionHeading(title: 'دسته‌بندی خدمات'),
