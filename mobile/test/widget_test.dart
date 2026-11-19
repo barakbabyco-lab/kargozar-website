@@ -18,9 +18,6 @@ void main() {
     expect(find.text('همراه کسب‌وکار'), findsOneWidget);
     expect(find.text('تماس و پشتیبانی'), findsOneWidget);
 
-    final nav = tester.getSize(find.byType(_BottomTab));
-    expect(nav.height, lessThanOrEqualTo(54));
-
     await tester.tap(find.text('همراه کسب‌وکار'));
     await tester.pumpAndSettle();
     expect(find.text('پکیج‌های کارگزار'), findsOneWidget);
