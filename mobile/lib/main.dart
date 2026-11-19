@@ -397,8 +397,7 @@ class _HomePageState extends State<HomePage> {
               ),
               itemBuilder: (context, index) =>
                   ServiceCard(service: items[index], onRequest: widget.onRequest),
-            );
-          },
+            );          },
         ),
         const SizedBox(height: 25),
         const SectionHeading(title: 'چطور کار می‌کند؟'),
@@ -441,24 +440,6 @@ class ServicesPage extends StatefulWidget {
 }
 
 class _ServicesPageState extends State<ServicesPage> {
-  late final KargozarApiClient _api;
-  late final ServiceCatalogRepository _catalog;
-  bool _apiConfigured = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _api = KargozarApiClient();
-    _catalog = ServiceCatalogRepository(_api);
-    _apiConfigured = const String.fromEnvironment('API_BASE_URL').trim().isNotEmpty;
-  }
-
-  @override
-  void dispose() {
-    _api.close();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
     return ListView(
