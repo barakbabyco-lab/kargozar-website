@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\AuditLog;
 use App\Models\SupportConversation;
 use App\Models\SupportMessage;
+use App\Services\Support\SupportAssistant;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -153,6 +154,9 @@ class SupportChatController extends Controller
             return $conversation->load('messages');
         });
 
+        $this->appendAssistantReply($conversation, $validator->validated()['body']);
+        $conversation->load('messages');
+
         return response()->json(['data' => [
             'id' => $conversation->id,
             'status' => $conversation->status,
@@ -205,7 +209,20 @@ class SupportChatController extends Controller
             return $message;
         });
 
+        $this->appendAssistantReply($conversation, $validator->validated()['body']);
+
         return response()->json(['data' => $this->messagePayload($message)], 201);
+    }
+
+    private function appendAssistantReply(SupportConversation $conversation, string $customerMessage): void
+    {
+        $answer = app(SupportAssistant::class)->reply($customerMessage);
+        $reply = $conversation->messages()->create([
+            'sender_type' => 'assistant',
+            'sender_id' => null,
+            'body' => $answer,
+        ]);
+        $conversation->update(['last_message_at' => $reply->created_at]);
     }
 
     private function findGuestConversation(Request $request, int $conversationId): ?SupportConversation
