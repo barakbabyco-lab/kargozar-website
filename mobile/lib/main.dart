@@ -163,7 +163,7 @@ class _MainShellState extends State<MainShell> {
   @override
   void dispose() { _pageController.dispose(); super.dispose(); }
   Future<void> _request(ServiceItem service) async {
-    final uri = Uri(scheme: 'tel', path: '$phone');
+    final uri = Uri(scheme: 'tel', path: '09365952800');
     final opened = await launchUrl(uri);
     if (!opened && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -260,7 +260,7 @@ class _MainShellState extends State<MainShell> {
                   width: double.infinity,
                   child: FilledButton.icon(
                     onPressed: () async {
-                      final opened = await launchUrl(Uri(scheme: 'tel', path: '$phone'));
+                      final opened = await launchUrl(Uri(scheme: 'tel', path: '09365952800'));
                       if (!opened && sheetContext.mounted) {
                         ScaffoldMessenger.of(sheetContext).showSnackBar(const SnackBar(content: Text('امکان باز کردن شماره‌گیر وجود ندارد.')));
                       }
@@ -280,7 +280,7 @@ class _MainShellState extends State<MainShell> {
   }
 
   void _showConsultation() {
-    launchUrl(Uri(scheme: 'tel', path: '$phone'));
+    launchUrl(Uri(scheme: 'tel', path: '09365952800'));
   }
   void _openCompanion(int index) {
     final item = companionModules[index];
@@ -314,7 +314,7 @@ class _MainShellState extends State<MainShell> {
               SizedBox(
                 width: double.infinity,
                 child: FilledButton.icon(
-                  onPressed: () => launchUrl(Uri(scheme: 'tel', path: '$phone')),
+                  onPressed: () => launchUrl(Uri(scheme: 'tel', path: '09365952800')),
                   icon: const Icon(Icons.call_outlined),
                   label: const Text('تماس با کارگزار'),
                 ),
@@ -691,7 +691,7 @@ class ProfilePage extends StatelessWidget {
          const SizedBox(height:7),
          _ProfileAction(icon:Icons.support_agent_outlined,title:'تماس و پشتیبانی',onTap:()=>onNavigate(3)),
          const SizedBox(height:7),
-         _ProfileAction(icon:Icons.call_outlined,title:'تماس مستقیم با کارگزار',onTap:()=>launchUrl(Uri(scheme:'tel',path:'$phone'))),
+         _ProfileAction(icon:Icons.call_outlined,title:'تماس مستقیم با کارگزار',onTap:()=>launchUrl(Uri(scheme:'tel',path:'09365952800'))),
        ],
      ),
    ),
@@ -721,7 +721,7 @@ class SupportChatLauncher extends StatelessWidget {
    shape:const CircleBorder(),
    elevation:4,
    child:InkWell(
-     onTap:()=>launchUrl(Uri(scheme:'tel',path:'$phone')),
+     onTap:()=>launchUrl(Uri(scheme:'tel',path:'09365952800')),
      customBorder:const CircleBorder(),
      child:const SizedBox(width:44,height:44,child:Icon(Icons.call_rounded,color:Colors.white,size:21)),
    ),
