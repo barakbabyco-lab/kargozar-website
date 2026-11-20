@@ -34,6 +34,18 @@ class KnowledgeRetrievalService
         }
 
         $localUsable = is_array($knowledge) && ($knowledge['usable'] ?? false) === true;
+        $sharedKnowledge = null;
+        $sharedKnowledgeReview = 'shared_knowledge_not_configured';
+        $sharedFilename = config('knowledge_sources.retrieval.shared_knowledge_file');
+        if (is_string($sharedFilename) && $sharedFilename !== '') {
+            $sharedResult = $this->documents->find($sharedFilename);
+            if (is_array($sharedResult) && ($sharedResult['usable'] ?? false) === true) {
+                $sharedKnowledge = $sharedResult['document'];
+                $sharedKnowledgeReview = null;
+            } else {
+                $sharedKnowledgeReview = $sharedResult['reason'] ?? 'shared_knowledge_document_missing';
+            }
+        }
         $needsLive = in_array($route['mode'], ['live', 'hybrid'], true);
         $liveSourceKey = $route['mode'] === 'hybrid'
             ? ($route['live_verification_source'] ?? null)
@@ -55,6 +67,8 @@ class KnowledgeRetrievalService
             'route' => $route,
             'knowledge' => $localUsable ? $knowledge['document'] : null,
             'knowledge_review' => $localUsable ? null : ($knowledge['reason'] ?? 'knowledge_document_missing'),
+            'shared_knowledge' => $sharedKnowledge,
+            'shared_knowledge_review' => $sharedKnowledgeReview,
             'live_lookup' => $needsLive ? [
                 'source' => $liveSourceKey,
                 'ready' => $liveReady,
