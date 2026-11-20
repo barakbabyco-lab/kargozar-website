@@ -1,0 +1,115 @@
+name: Diagnose search connectivity on staging VPS
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  diagnose:
+    name: Read-only VPS and upstream diagnostics
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Prepare verified SSH connection
+        shell: bash
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_PORT: ${{ secrets.DEPLOY_PORT }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          DEPLOY_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+          DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+        run: |
+          set -euo pipefail
+          for name in DEPLOY_HOST DEPLOY_USER DEPLOY_SSH_KEY DEPLOY_KNOWN_HOSTS; do
+            if [[ -z "${!name:-}" ]]; then
+              echo "::error::Missing GitHub Actions secret: $name"
+              exit 1
+            fi
+          done
+          if ! [[ "$DEPLOY_HOST" =~ ^[A-Za-z0-9][A-Za-z0-9.-]*$ ]]; then
+            echo "::error::DEPLOY_HOST must be an IP address or DNS hostname."
+            exit 1
+          fi
+          if ! [[ "$DEPLOY_USER" =~ ^[a-z_][a-z0-9_-]*[$]?$ ]]; then
+            echo "::error::DEPLOY_USER is not a valid restricted Unix username."
+            exit 1
+          fi
+          DEPLOY_PORT="${DEPLOY_PORT:-22}"
+          if ! [[ "$DEPLOY_PORT" =~ ^[0-9]{1,5}$ ]] || (( DEPLOY_PORT < 1 || DEPLOY_PORT > 65535 )); then
+            echo "::error::DEPLOY_PORT must be a valid TCP port."
+            exit 1
+          fi
+          install -d -m 700 "$RUNNER_TEMP/kargozar-ssh"
+          printf '%s\\n' "$DEPLOY_SSH_KEY" > "$RUNNER_TEMP/kargozar-ssh/id_ed25519"
+          printf '%s\\n' "$DEPLOY_KNOWN_HOSTS" > "$RUNNER_TEMP/kargozar-ssh/known_hosts"
+          chmod 600 "$RUNNER_TEMP/kargozar-ssh/id_ed25519" "$RUNNER_TEMP/kargozar-ssh/known_hosts"
+          known_hosts_target="$DEPLOY_HOST"
+          if [[ "$DEPLOY_PORT" != "22" ]]; then known_hosts_target="[$DEPLOY_HOST]:$DEPLOY_PORT"; fi
+          if ! ssh-keygen -F "$known_hosts_target" -f "$RUNNER_TEMP/kargozar-ssh/known_hosts" >/dev/null; then
+            echo "::error::No matching pre-verified host key in DEPLOY_KNOWN_HOSTS."
+            exit 1
+          fi
+          cat > "$RUNNER_TEMP/kargozar-ssh/config" <<EOF
+          Host kargozar-staging
+            HostName $DEPLOY_HOST
+            Port $DEPLOY_PORT
+            User $DEPLOY_USER
+            IdentityFile $RUNNER_TEMP/kargozar-ssh/id_ed25519
+            IdentitiesOnly yes
+            BatchMode yes
+            StrictHostKeyChecking yes
+            UserKnownHostsFile $RUNNER_TEMP/kargozar-ssh/known_hosts
+            ConnectTimeout 15
+          EOF
+          chmod 600 "$RUNNER_TEMP/kargozar-ssh/config"
+          echo "ssh_config=$RUNNER_TEMP/kargozar-ssh/config" >> "$GITHUB_OUTPUT"
+
+      - name: Run read-only diagnostics on VPS
+        shell: bash
+        env:
+          SSH_CONFIG: ${{ steps.prepare.outputs.ssh_config }}
+        run: |
+          set -euo pipefail
+          ssh -F "$SSH_CONFIG" kargozar-staging 'bash -s' <<'REMOTE'
+          set +e
+          echo "=== OS ==="
+          ( . /etc/os-release 2>/dev/null && printf '%s %s\\n' "$PRETTY_NAME" "$VERSION_ID" ) || true
+          uname -srmo
+          echo "=== Resources ==="
+          df -h /
+          free -h 2>/dev/null || true
+          echo "=== Docker ==="
+          if command -v docker >/dev/null 2>&1; then
+            docker --version
+            docker compose version 2>&1 || true
+            docker info --format 'Docker daemon: {{.ServerVersion}}' 2>&1 || true
+          else
+            echo "docker: not installed"
+          fi
+          echo "=== Relevant listeners ==="
+          if command -v ss >/dev/null 2>&1; then ss -lnt 2>/dev/null | awk 'NR==1 || /:8080[[:space:]]|:8888[[:space:]]|:80[[:space:]]|:443[[:space:]]/' ; else echo "ss unavailable"; fi
+          echo "=== DNS ==="
+          for host in html.duckduckgo.com www.google.com www.bing.com search.brave.com; do
+            if command -v getent >/dev/null 2>&1; then
+              printf '%s: ' "$host"
+              getent ahosts "$host" 2>/dev/null | awk 'NR==1 {print $1; found=1} END {if (!found) print "DNS_FAILED"}'
+            else
+              echo "getent unavailable"
+              break
+            fi
+          done
+          echo "=== HTTPS upstream probes (fixed harmless query; max 8 seconds each) ==="
+          for url in             'https://html.duckduckgo.com/html/?q=kargozar+connectivity+test'             'https://www.google.com/search?q=kargozar+connectivity+test'             'https://www.bing.com/search?q=kargozar+connectivity+test'             'https://search.brave.com/search?q=kargozar+connectivity+test'; do
+            printf '%s -> ' "${url%%\?*}"
+            if command -v curl >/dev/null 2>&1; then
+              curl -L -sS -o /dev/null --connect-timeout 4 --max-time 8 -w 'HTTP %{http_code}; remote_ip=%{remote_ip}; time=%{time_total}s\\n' "$url"
+              rc=$?
+              if [ "$rc" -ne 0 ]; then echo "curl_exit=$rc"; fi
+            else
+              echo "curl unavailable"
+            fi
+          done
+          echo "=== End diagnostics ==="
+          REMOTE
