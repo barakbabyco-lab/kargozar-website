@@ -35,6 +35,37 @@ class SupportChatApiTest extends TestCase
             ->assertJsonCount(2, 'data');
     }
 
+    public function test_guest_can_start_and_continue_support_without_customer_login(): void
+    {
+        $guestToken = str_repeat('a1', 32);
+
+        $started = $this->withHeader('X-Support-Guest-Token', $guestToken)
+            ->postJson('/api/v1/guest/support-conversations', ['body' => 'برای دریافت جواز کسب راهنمایی می‌خواهم.'])
+            ->assertCreated()
+            ->assertJsonPath('data.guest', true)
+            ->assertJsonPath('data.messages.0.sender_type', 'customer');
+
+        $id = $started->json('data.id');
+        $conversation = SupportConversation::findOrFail($id);
+        $this->assertNull($conversation->customer_id);
+        $this->assertSame(hash('sha256', $guestToken), $conversation->guest_token_hash);
+        $this->assertNotSame($guestToken, $conversation->guest_token_hash);
+
+        $this->withHeader('X-Support-Guest-Token', $guestToken)
+            ->postJson('/api/v1/guest/support-conversations/'.$id.'/messages', ['body' => 'مدارک لازم چیست؟'])
+            ->assertCreated()
+            ->assertJsonPath('data.sender_type', 'customer');
+
+        $this->withHeader('X-Support-Guest-Token', $guestToken)
+            ->getJson('/api/v1/guest/support-conversations/'.$id.'/messages')
+            ->assertOk()
+            ->assertJsonCount(2, 'data');
+
+        $this->withHeader('X-Support-Guest-Token', str_repeat('b2', 32))
+            ->getJson('/api/v1/guest/support-conversations/'.$id.'/messages')
+            ->assertUnauthorized();
+    }
+
     public function test_customer_cannot_read_or_send_messages_to_another_customers_conversation(): void
     {
         $owner = Customer::create(['mobile' => '09120000112', 'status' => 'active']);
