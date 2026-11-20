@@ -1,16 +1,26 @@
-name: Diagnose search connectivity on staging VPS
+name: Manage search service on staging VPS
 
 on:
   workflow_dispatch:
+    inputs:
+      task:
+        description: "Choose the VPS operation"
+        required: true
+        type: choice
+        options:
+          - diagnose
+          - install
+          - test
+        default: diagnose
 
 permissions:
   contents: read
 
 jobs:
-  diagnose:
-    name: Read-only VPS and upstream diagnostics
+  search-vps:
+    name: Run selected search service operation
     runs-on: ubuntu-latest
-    timeout-minutes: 8
+    timeout-minutes: 15
     steps:
       - name: Prepare verified SSH connection
         id: prepare
@@ -43,8 +53,8 @@ jobs:
             exit 1
           fi
           install -d -m 700 "$RUNNER_TEMP/kargozar-ssh"
-          printf '%s\n' "$DEPLOY_SSH_KEY" > "$RUNNER_TEMP/kargozar-ssh/id_ed25519"
-          printf '%s\n' "$DEPLOY_KNOWN_HOSTS" > "$RUNNER_TEMP/kargozar-ssh/known_hosts"
+          printf '%s\\n' "$DEPLOY_SSH_KEY" > "$RUNNER_TEMP/kargozar-ssh/id_ed25519"
+          printf '%s\\n' "$DEPLOY_KNOWN_HOSTS" > "$RUNNER_TEMP/kargozar-ssh/known_hosts"
           chmod 600 "$RUNNER_TEMP/kargozar-ssh/id_ed25519" "$RUNNER_TEMP/kargozar-ssh/known_hosts"
           known_hosts_target="$DEPLOY_HOST"
           if [[ "$DEPLOY_PORT" != "22" ]]; then known_hosts_target="[$DEPLOY_HOST]:$DEPLOY_PORT"; fi
@@ -67,62 +77,135 @@ jobs:
           chmod 600 "$RUNNER_TEMP/kargozar-ssh/config"
           echo "ssh_config=$RUNNER_TEMP/kargozar-ssh/config" >> "$GITHUB_OUTPUT"
 
-      - name: Run read-only diagnostics on VPS
+      - name: Execute selected operation on VPS
         shell: bash
         env:
           SSH_CONFIG: ${{ steps.prepare.outputs.ssh_config }}
+          TASK: ${{ inputs.task }}
         run: |
           set -euo pipefail
-          ssh -F "$SSH_CONFIG" kargozar-staging 'bash -s' <<'REMOTE'
-          set +e
-          echo "=== OS ==="
-          ( . /etc/os-release 2>/dev/null && printf '%s %s\n' "$PRETTY_NAME" "$VERSION_ID" ) || true
-          uname -srmo
-          echo "=== Resources ==="
-          df -h /
-          free -h 2>/dev/null || true
-          echo "=== Docker ==="
-          if command -v docker >/dev/null 2>&1; then
-            docker --version
-            docker compose version 2>&1 || true
-            docker info --format 'Docker daemon: {{.ServerVersion}}' 2>&1 || true
+          case "$TASK" in
+            diagnose|install|test) ;;
+            *) echo "::error::Unsupported task."; exit 1 ;;
+          esac
+          ssh -F "$SSH_CONFIG" kargozar-staging "bash -s -- '$TASK'" <<'REMOTE'
+          set -euo pipefail
+          task="$1"
+
+          # Use Docker directly for root, otherwise require non-interactive sudo.
+          if [[ "$(id -u)" -eq 0 ]]; then
+            SUDO=""
+          elif command -v sudo >/dev/null 2>&1 && sudo -n docker info >/dev/null 2>&1; then
+            SUDO="sudo -n"
           else
-            echo "docker: not installed"
+            echo "ERROR: SSH user needs root or passwordless sudo access to Docker."
+            exit 1
           fi
-          echo "=== Non-interactive sudo Docker access ==="
-          if command -v sudo >/dev/null 2>&1; then
-            if sudo -n docker info --format 'sudo Docker daemon: {{.ServerVersion}}' 2>&1; then
-              echo "SUDO_DOCKER_ACCESS=available"
-              sudo -n docker ps --format 'container={{.Names}} image={{.Image}} status={{.Status}} ports={{.Ports}}' 2>&1 || true
+
+          if [[ "$task" == "diagnose" ]]; then
+            echo "=== OS and resources ==="
+            ( . /etc/os-release 2>/dev/null && printf '%s %s\\n' "$PRETTY_NAME" "$VERSION_ID" ) || true
+            uname -srmo
+            df -h /
+            free -h 2>/dev/null || true
+            echo "=== Docker ==="
+            command -v docker >/dev/null 2>&1 && docker --version || true
+            $SUDO docker compose version
+            $SUDO docker info --format 'Docker daemon: {{.ServerVersion}}'
+            $SUDO docker ps --format 'container={{.Names}} image={{.Image}} status={{.Status}} ports={{.Ports}}'
+            echo "=== Relevant listeners ==="
+            if command -v ss >/dev/null 2>&1; then ss -lnt 2>/dev/null | awk 'NR==1 || /:8080[[:space:]]|:8888[[:space:]]|:80[[:space:]]|:443[[:space:]]/'; fi
+            echo "=== Search service directory ==="
+            if [[ -d /opt/kargozar-searxng ]]; then
+              echo "SearXNG directory exists."
+              $SUDO docker compose -f /opt/kargozar-searxng/compose.yml ps 2>&1 || true
             else
-              echo "SUDO_DOCKER_ACCESS=unavailable"
+              echo "SearXNG directory does not exist."
             fi
-          else
-            echo "sudo: not installed"
-            echo "SUDO_DOCKER_ACCESS=unavailable"
+            echo "=== Upstream HTTPS probes ==="
+            for url in 'https://html.duckduckgo.com/html/?q=kargozar+connectivity+test' 'https://www.google.com/search?q=kargozar+connectivity+test' 'https://www.bing.com/search?q=kargozar+connectivity+test' 'https://search.brave.com/search?q=kargozar+connectivity+test'; do
+              printf '%s -> ' "${url%%\\?*}"
+              curl -L -sS -o /dev/null --connect-timeout 4 --max-time 8 -w 'HTTP %{http_code}; time=%{time_total}s\\n' "$url" || true
+            done
+            exit 0
           fi
-          echo "=== Relevant listeners ==="
-          if command -v ss >/dev/null 2>&1; then ss -lnt 2>/dev/null | awk 'NR==1 || /:8080[[:space:]]|:8888[[:space:]]|:80[[:space:]]|:443[[:space:]]/' ; else echo "ss unavailable"; fi
-          echo "=== DNS ==="
-          for host in html.duckduckgo.com www.google.com www.bing.com search.brave.com; do
-            if command -v getent >/dev/null 2>&1; then
-              printf '%s: ' "$host"
-              getent ahosts "$host" 2>/dev/null | awk 'NR==1 {print $1; found=1} END {if (!found) print "DNS_FAILED"}'
-            else
-              echo "getent unavailable"
-              break
+
+          if ! command -v curl >/dev/null 2>&1; then
+            echo "ERROR: curl is required on the VPS."
+            exit 1
+          fi
+          $SUDO docker compose version >/dev/null
+          if [[ "$task" == "install" ]]; then
+            if $SUDO ss -lnt 2>/dev/null | grep -Eq '127\\.0\\.0\\.1:8888|0\\.0\\.0\\.0:8888|\\*:8888'; then
+              if ! $SUDO docker ps --format '{{.Names}} {{.Ports}}' | grep -q 'kargozar-searxng'; then
+                echo "ERROR: Host port 8888 is already in use by another service; refusing to continue."
+                exit 1
+              fi
             fi
-          done
-          echo "=== HTTPS upstream probes (fixed harmless query; max 8 seconds each) ==="
-          for url in             'https://html.duckduckgo.com/html/?q=kargozar+connectivity+test'             'https://www.google.com/search?q=kargozar+connectivity+test'             'https://www.bing.com/search?q=kargozar+connectivity+test'             'https://search.brave.com/search?q=kargozar+connectivity+test'; do
-            printf '%s -> ' "${url%%\?*}"
-            if command -v curl >/dev/null 2>&1; then
-              curl -L -sS -o /dev/null --connect-timeout 4 --max-time 8 -w 'HTTP %{http_code}; remote_ip=%{remote_ip}; time=%{time_total}s\n' "$url"
-              rc=$?
-              if [ "$rc" -ne 0 ]; then echo "curl_exit=$rc"; fi
-            else
-              echo "curl unavailable"
+            $SUDO install -d -m 700 -o root -g root /opt/kargozar-searxng
+            secret="$($SUDO sh -c 'umask 077; openssl rand -hex 32')"
+            if [[ -z "$secret" || "${#secret}" -lt 32 ]]; then
+              echo "ERROR: Could not generate SearXNG secret."
+              exit 1
             fi
+            $SUDO tee /opt/kargozar-searxng/settings.yml >/dev/null <<SETTINGS
+          use_default_settings: true
+          server:
+            secret_key: "$secret"
+            bind_address: "0.0.0.0"
+            port: 8080
+          search:
+            formats:
+              - html
+              - json
+          SETTINGS
+            unset secret
+            $SUDO chmod 600 /opt/kargozar-searxng/settings.yml
+            $SUDO tee /opt/kargozar-searxng/compose.yml >/dev/null <<'COMPOSE'
+          services:
+            searxng:
+              image: searxng/searxng:latest
+              container_name: kargozar-searxng
+              restart: unless-stopped
+              ports:
+                - "127.0.0.1:8888:8080"
+              volumes:
+                - ./settings.yml:/etc/searxng/settings.yml:ro
+              environment:
+                - SEARXNG_BASE_URL=http://localhost/
+              mem_limit: 1g
+              cpus: 1.0
+          COMPOSE
+            $SUDO chmod 600 /opt/kargozar-searxng/compose.yml
+            cd /opt/kargozar-searxng
+            $SUDO docker compose -f compose.yml pull
+            $SUDO docker compose -f compose.yml up -d
+          fi
+
+          echo "=== SearXNG loopback health and JSON test ==="
+          ok=0
+          for attempt in $(seq 1 24); do
+            if curl --silent --show-error --fail --max-time 5 'http://127.0.0.1:8888/search?q=kargozar+connectivity+test&format=json' -o /tmp/kargozar-searxng-test.json 2>/dev/null; then
+              if python3 -c 'import json; d=json.load(open("/tmp/kargozar-searxng-test.json")); assert isinstance(d.get("results"), list)' 2>/dev/null; then
+                ok=1
+                break
+              fi
+            fi
+            sleep 5
           done
-          echo "=== End diagnostics ==="
+          if [[ "$ok" -ne 1 ]]; then
+            echo "ERROR: SearXNG did not return valid JSON on 127.0.0.1:8888."
+            $SUDO docker logs --tail 80 kargozar-searxng 2>&1 || true
+            rm -f /tmp/kargozar-searxng-test.json
+            exit 1
+          fi
+          python3 - <<'PY'
+          import json
+          d=json.load(open("/tmp/kargozar-searxng-test.json"))
+          print("HTTP JSON response: valid")
+          print("Result count:", len(d.get("results", [])))
+          print("Service URL: http://127.0.0.1:8888")
+          PY
+          rm -f /tmp/kargozar-searxng-test.json
+          echo "SearXNG task completed successfully."
           REMOTE
