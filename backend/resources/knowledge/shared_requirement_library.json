@@ -1,0 +1,146 @@
+{
+  "schema_version": 1,
+  "knowledge_key": "shared_requirement_library",
+  "title": "کتابخانه الزامات عمومی و اختصاصی خدمات کارگزار",
+  "status": "draft_needs_legal_and_authority_review",
+  "reviewed_at": null,
+  "applicability_model": {
+    "layers": [
+      "national_common",
+      "service_category_common",
+      "activity_specific",
+      "applicant_specific",
+      "premises_specific",
+      "local_authority_specific"
+    ],
+    "rule": "هر الزام فقط در دامنه شمول ثبت‌شده اعمال شود؛ الزام یک فعالیت به همه فعالیت‌ها تعمیم داده نشود.",
+    "mandatory_fields": [
+      "requirement_key",
+      "title",
+      "scope",
+      "applicability",
+      "evidence_or_document",
+      "issuing_or_verifying_authority",
+      "source_url",
+      "source_date",
+      "verified_at",
+      "verification_status"
+    ],
+    "verification_statuses": [
+      "verified_current",
+      "needs_review",
+      "unverified",
+      "superseded",
+      "not_applicable"
+    ]
+  },
+  "requirements": [
+    {
+      "requirement_key": "premises_legal_possession",
+      "title": "مدرک تصرف یا حق استفاده از محل",
+      "scope": "activity_dependent",
+      "applicability": "مطابق کاربرگ همان مجوز؛ سند مالکیت، اجاره‌نامه یا سایر مستندات مورد قبول کاربرگ",
+      "verification_status": "needs_review",
+      "source_url": "https://mojavez.ir/"
+    },
+    {
+      "requirement_key": "premises_use_compatibility",
+      "title": "تناسب وضعیت و کاربری محل",
+      "scope": "premises_specific",
+      "applicability": "فقط مطابق کاربرگ و استعلام‌های لازم برای فعالیت و موقعیت ملک؛ کاربری تجاری را شرط عمومی همه فعالیت‌ها فرض نکنید",
+      "verification_status": "needs_review",
+      "source_url": "https://mojavez.ir/"
+    },
+    {
+      "requirement_key": "business_signage",
+      "title": "تابلو و مشخصات معرفی واحد",
+      "scope": "activity_dependent",
+      "applicability": "متن، زبان، ابعاد، محل نصب و الزامات محلی باید از کاربرگ و مقررات مرتبط همان فعالیت احراز شود",
+      "verification_status": "needs_review",
+      "source_url": null
+    },
+    {
+      "requirement_key": "cctv_installation",
+      "title": "دوربین مداربسته و الزامات حفاظتی",
+      "scope": "activity_and_location_specific",
+      "applicability": "الزام نصب یا اخذ موافقت برای دوربین باید از کاربرگ همان فعالیت و وضعیت محل بررسی شود؛ برای استقرار در حریم یا اشراف بر اماکن طبقه‌بندی‌شده، موافقت مرجع ذی‌ربط در متن مصوبه ذکر شده است",
+      "verification_status": "needs_review",
+      "source_url": "https://hoghogh.ai/circulars/c-e8e5e44a"
+    },
+    {
+      "requirement_key": "neighbor_privacy_and_overlooking",
+      "title": "حریم خصوصی و اشراف به اماکن مجاور",
+      "scope": "premises_specific",
+      "applicability": "تنها در مواردی که ضابطه رسمی همان فعالیت یا مرجع صلاحیت‌دار مقرر کرده باشد؛ نوع مانع، پنجره و شیشه باید عیناً از ضابطه استخراج شود",
+      "verification_status": "needs_review",
+      "source_url": "https://hoghogh.ai/circulars/c-e8e5e44a"
+    },
+    {
+      "requirement_key": "public_places_police_approval",
+      "title": "تأییدیه پلیس نظارت بر اماکن عمومی",
+      "scope": "activity_dependent",
+      "applicability": "به‌عنوان عنوان تأییدیه مستقل در مصوبه هیأت مقررات‌زدایی آمده است؛ نیاز به آن برای هر فعالیت باید از کاربرگ جاری همان فعالیت تعیین شود",
+      "verification_status": "needs_review",
+      "source_url": "https://hoghogh.ai/circulars/c-781044f9"
+    },
+    {
+      "requirement_key": "health_card",
+      "title": "کارت بهداشت / گواهی سلامت شاغلان",
+      "scope": "food_and_health_related_activity",
+      "applicability": "برای مشاغل و کارکنانی که طبق ضوابط بهداشتی مشمول‌اند؛ گروه شغلی، مدارک، مرجع و مدت اعتبار باید از ضابطه جاری وزارت بهداشت/دانشگاه علوم پزشکی احراز شود",
+      "verification_status": "needs_review",
+      "source_url": "https://www.irancodify.com/b/آیین_نامه_مقررات_بهداشتی_مصوب_1347-11-01"
+    },
+    {
+      "requirement_key": "environmental_health_approval",
+      "title": "تأییدیه بهداشت محیط",
+      "scope": "health_related_activity_and_premises",
+      "applicability": "بر اساس نوع فعالیت، محل، فرایند تولید/عرضه و کاربرگ جاری؛ چک‌لیست فنی نباید بین فعالیت‌های متفاوت یکسان فرض شود",
+      "verification_status": "needs_review",
+      "source_url": "https://mojavez.ir/"
+    },
+    {
+      "requirement_key": "trade_law_training",
+      "title": "گواهی دوره احکام تجارت و کسب‌وکار",
+      "scope": "guild_license_if_required_by_worksheet",
+      "applicability": "در کاربرگ صنفی مربوط درج شده باشد؛ از جمله در متن منتشرشده راهنمای مجوز برخی واحدهای صنفی",
+      "verification_status": "needs_review",
+      "source_url": "https://hoghogh.ai/circulars/c-e8e5e44a"
+    }
+  ],
+  "police_approval": {
+    "service_key": "police-public-places-approval",
+    "title": "تأییدیه پلیس نظارت بر اماکن عمومی",
+    "resolution_reference": "مصوبه هفتاد و نهمین نشست هیأت مقررات‌زدایی، ۱۴۰۲/۰۹/۰۷",
+    "official_worksheet_required": true,
+    "worksheet_fields": [
+      "شرایط",
+      "مدارک",
+      "هزینه",
+      "زمان صدور",
+      "مرجع صادرکننده",
+      "پیش‌نیازها",
+      "مسیر ثبت درخواست"
+    ],
+    "current_worksheet_status": "not_yet_retrieved_from_national_portal",
+    "generic_checklist_status": "needs_review",
+    "activity_specific_conditions": [],
+    "notes": "وجود عنوان تأییدیه مستقل به معنی الزام یکسان آن برای تمام مشاغل نیست؛ شمول باید از کاربرگ جاری هر فعالیت تعیین شود."
+  },
+  "health_card": {
+    "service_key": "health-card",
+    "title": "کارت بهداشت و گواهی سلامت شاغلان",
+    "status": "needs_current_official_review",
+    "required_fields": [
+      "گروه‌های شغلی مشمول",
+      "افراد مشمول در هر واحد",
+      "معاینات و آزمایش‌ها",
+      "دوره آموزشی بهداشت",
+      "مرجع صدور",
+      "مدت اعتبار",
+      "تمدید",
+      "هزینه جاری"
+    ],
+    "notes": "منابع قدیمی صرفاً برای کشف موضوع هستند؛ مدت اعتبار و مدارک جاری بدون سند به‌روز اعلام نشوند."
+  }
+}
