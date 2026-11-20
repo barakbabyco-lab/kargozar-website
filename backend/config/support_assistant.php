@@ -14,6 +14,20 @@ return [
 
     'fallback' => 'برای اینکه پاسخ اشتباه یا ناقص به شما ندهم، این سؤال نیاز به بررسی دقیق‌تر دارد. لطفاً کمی بیشتر توضیح دهید یا اگر مایل هستید عبارت «تماس کارشناس» را ارسال کنید تا درخواست شما برای پیگیری انسانی مشخص شود. در حال حاضر پاسخ خودکار برای این موضوع ندارم.',
 
+    // Public-web fallback is used only after internal knowledge and FAQs miss.
+    // Configure TAVILY_API_KEY in the server environment to enable live search.
+    'web_search' => [
+        'enabled' => (bool) env('SUPPORT_WEB_SEARCH_ENABLED', true),
+        'api_key' => env('TAVILY_API_KEY', ''),
+        'endpoint' => env('TAVILY_API_URL', 'https://api.tavily.com/search'),
+        'timeout' => 8,
+        'max_results' => 5,
+        'fallback_intro' => 'پاسخ این سؤال در بانک اطلاعاتی کارگزار نبود؛ نتیجه جست‌وجوی وب رو بررسی کردم. لطفاً توجه کنید این اطلاعات عمومی است و ممکنه برای تصمیم‌های رسمی نیاز به بررسی بیشتر داشته باشه.',
+        'no_result' => 'برای این سؤال در حال حاضر نتیجه وبِ قابل اتکایی پیدا نکردم. اگر موضوع مربوط به خدمات کارگزار است، شماره تماس‌تون رو ثبت کنید تا کارشناس بررسی کنه.',
+    ],
+
+    'timezone' => 'Asia/Tehran',
+
     // When a customer lacks a required item, stop self-service guidance and route to a human.
     'missing_requirement_phrases' => [
         'مدرک ندارم', 'مدارک را ندارم', 'شرایطش را ندارم', 'این شرط را ندارم',
