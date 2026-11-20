@@ -3,7 +3,7 @@
   "category_key": "02-company-registration",
   "category_number": 2,
   "title": "ثبت شرکت",
-  "status": "populated_draft_needs_domain_and_source_review",
+  "status": "populated_draft_official_registry_portal_identified_live_review_required",
   "reviewed_at": "2026-11-21",
   "review_version": 2,
   "knowledge_mode": "local_with_official_verification",
@@ -45,13 +45,13 @@
         "status": "case_and_authority_dependent_not_guaranteed",
         "estimate": null
       },
-      "issuing_authority": null,
-      "official_source": null,
-      "source_url": null,
+      "issuing_authority": "سازمان ثبت اسناد و املاک کشور / مرجع ثبت شرکت‌ها و مؤسسات غیرتجاری",
+      "official_source": "درگاه یکپارچه خدمات الکترونیکی سازمان ثبت اسناد و املاک کشور",
+      "source_url": "https://my.ssaa.ir/portal/company",
       "source_date": null,
       "verified_at": null,
       "reviewed_at": "2026-11-21",
-      "verification_status": "draft_needs_primary_source_or_provider_validation",
+      "verification_status": "needs_live_portal_and_latest_forms_review",
       "shared_requirement_refs": [],
       "activity_specific_requirements": [],
       "customer_questions": [
@@ -106,13 +106,13 @@
         "status": "case_and_authority_dependent_not_guaranteed",
         "estimate": null
       },
-      "issuing_authority": null,
-      "official_source": null,
-      "source_url": null,
+      "issuing_authority": "سازمان ثبت اسناد و املاک کشور / مرجع ثبت شرکت‌ها و مؤسسات غیرتجاری",
+      "official_source": "درگاه یکپارچه خدمات الکترونیکی سازمان ثبت اسناد و املاک کشور",
+      "source_url": "https://my.ssaa.ir/portal/company",
       "source_date": null,
       "verified_at": null,
       "reviewed_at": "2026-11-21",
-      "verification_status": "draft_needs_primary_source_or_provider_validation",
+      "verification_status": "needs_live_portal_and_latest_forms_review",
       "shared_requirement_refs": [],
       "activity_specific_requirements": [],
       "customer_questions": [
@@ -165,13 +165,13 @@
         "status": "case_and_authority_dependent_not_guaranteed",
         "estimate": null
       },
-      "issuing_authority": null,
-      "official_source": null,
-      "source_url": null,
+      "issuing_authority": "سازمان ثبت اسناد و املاک کشور / مرجع ثبت شرکت‌ها و مؤسسات غیرتجاری",
+      "official_source": "درگاه یکپارچه خدمات الکترونیکی سازمان ثبت اسناد و املاک کشور",
+      "source_url": "https://my.ssaa.ir/portal/company",
       "source_date": null,
       "verified_at": null,
       "reviewed_at": "2026-11-21",
-      "verification_status": "draft_needs_primary_source_or_provider_validation",
+      "verification_status": "needs_live_portal_and_latest_forms_review",
       "shared_requirement_refs": [],
       "activity_specific_requirements": [],
       "customer_questions": [
@@ -206,5 +206,20 @@
       "گزارش مغایرت از پرونده واقعی"
     ]
   },
-  "content_policy": "هر خدمت تعریف، دامنه، شرایط، مدارک، مراحل، خروجی، پرسش‌های تشخیصی و موارد ارجاع دارد؛ هزینه و زمان تا تأیید روزآمد اعلام قطعی نمی‌شوند."
+  "content_policy": "هر خدمت تعریف، دامنه، شرایط، مدارک، مراحل، خروجی، پرسش‌های تشخیصی و موارد ارجاع دارد؛ هزینه و زمان تا تأیید روزآمد اعلام قطعی نمی‌شوند.",
+  "source_review_notes": {
+    "official_electronic_registry": {
+      "authority": "سازمان ثبت اسناد و املاک کشور",
+      "service_portal": "https://my.ssaa.ir/portal/company",
+      "services": [
+        "ثبت درخواست تأسیس",
+        "رهگیری درخواست",
+        "ثبت صورت‌جلسات تغییرات",
+        "خدمات شرکت‌ها و مؤسسات غیرتجاری"
+      ],
+      "source_type": "official_service_portal_url_identified; current workflows and form fields not yet live-inspected",
+      "verification_status": "official_portal_identified_live_form_review_required"
+    },
+    "scope_warning": "ثبت شرکت به‌تنهایی جایگزین مجوز تخصصی فعالیت نیست. مجوزهای پیش‌نیاز موضوع فعالیت باید پیش از ثبت یا در مرحله‌ای که مرجع ثبتی مطالبه می‌کند بررسی شوند."
+  }
 }
