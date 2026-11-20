@@ -557,134 +557,100 @@ class ServicesPage extends StatefulWidget {
 
 class _ServicesPageState extends State<ServicesPage> {
   @override
-  Widget build(BuildContext context) {
-    return ListView(
-      padding: const EdgeInsets.fromLTRB(12, 0, 12, 20),
-      children: [
-        AppBannerStrip(
-          onNavigate: widget.onNavigate,
-          onConsultation: widget.onConsultation,
-        ),
-        const SizedBox(height: 18),
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 4),
-          child: Text(
-            'دسته‌بندی خدمات',
-            style: TextStyle(
-              color: _ink,
-              fontSize: 16,
-              fontWeight: FontWeight.w900,
+  Widget build(BuildContext context) => ListView(
+        padding: EdgeInsets.zero,
+        children: [
+          AppBannerStrip(
+            onNavigate: widget.onNavigate,
+            onConsultation: widget.onConsultation,
+          ),
+          const SizedBox(height: 12),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: Column(
+              children: [
+                for (var i = 0; i < serviceTaxonomy.length; i++) ...[
+                  _ServiceCategoryAction(
+                    icon: _serviceCategoryIcon(serviceTaxonomy[i].slug),
+                    title: serviceTaxonomy[i].name,
+                    subtitle: 'مشاهده خدمات و ثبت درخواست',
+                    onTap: () => widget.onOpenCategory(serviceTaxonomy[i]),
+                  ),
+                  if (i != serviceTaxonomy.length - 1)
+                    const SizedBox(height: 7),
+                ],
+              ],
             ),
           ),
-        ),
-        const SizedBox(height: 10),
-        GridView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: serviceTaxonomy.length,
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            crossAxisSpacing: 9,
-            mainAxisSpacing: 9,
-            childAspectRatio: 2.05,
-          ),
-          itemBuilder: (context, index) {
-            final category = serviceTaxonomy[index];
-            return _CategoryIconTile(
-              title: category.name,
-              icon: _serviceCategoryIcon(category.slug),
-              onTap: () => widget.onOpenCategory(category),
-            );
-          },
-        ),
-        const SizedBox(height: 16),
-      ],
-    );
-  }
+          const SizedBox(height: 16),
+        ],
+      );
 }
 
 IconData _serviceCategoryIcon(String slug) {
   switch (slug) {
-    case 'business-licenses':
-      return Icons.storefront_outlined;
-    case 'trademark-intellectual-property':
-      return Icons.verified_outlined;
-    case 'company-registration':
-      return Icons.apartment_outlined;
-    case 'supplementary-certificates':
-      return Icons.fact_check_outlined;
-    case 'banking-services':
-      return Icons.account_balance_outlined;
-    case 'legal-contract-services':
-      return Icons.gavel_outlined;
-    case 'internet-commerce-services':
-      return Icons.language_rounded;
-    case 'real-estate-contracts':
-      return Icons.real_estate_agent_outlined;
-    case 'business-development':
-      return Icons.trending_up_rounded;
-    case 'specialized-services':
-      return Icons.workspace_premium_outlined;
-    default:
-      return Icons.grid_view_rounded;
+    case 'business-licenses': return Icons.storefront_outlined;
+    case 'trademark-intellectual-property': return Icons.verified_outlined;
+    case 'company-registration': return Icons.apartment_outlined;
+    case 'supplementary-certificates': return Icons.fact_check_outlined;
+    case 'banking-services': return Icons.account_balance_outlined;
+    case 'legal-contract-services': return Icons.gavel_outlined;
+    case 'internet-commerce-services': return Icons.language_rounded;
+    case 'real-estate-contracts': return Icons.real_estate_agent_outlined;
+    case 'business-development': return Icons.trending_up_rounded;
+    case 'specialized-services': return Icons.workspace_premium_outlined;
+    default: return Icons.grid_view_rounded;
   }
 }
 
-class _CategoryIconTile extends StatelessWidget {
-  const _CategoryIconTile({
-    required this.title,
+class _ServiceCategoryAction extends StatelessWidget {
+  const _ServiceCategoryAction({
     required this.icon,
-    required this.onTap,
+    required this.title,
+    required this.subtitle,
+    this.onTap,
   });
 
-  final String title;
   final IconData icon;
-  final VoidCallback onTap;
+  final String title;
+  final String subtitle;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) => Material(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(12),
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(12),
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+            height: 58,
+            padding: const EdgeInsets.symmetric(horizontal: 13),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: const Color(0xFFECEFF3)),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: const Color(0xFFF0B9B9)),
             ),
             child: Row(
               children: [
-                Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFFFF1F1),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Icon(icon, color: _teal, size: 22),
-                ),
-                const SizedBox(width: 9),
+                Icon(icon, color: const Color(0xFFC62828), size: 22),
+                const SizedBox(width: 12),
                 Expanded(
-                  child: Text(
-                    title,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      color: _ink,
-                      fontSize: 11,
-                      height: 1.45,
-                      fontWeight: FontWeight.w800,
-                    ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(title, style: const TextStyle(
+                        color: Color(0xFF1E293B),
+                        fontSize: 12,
+                        fontWeight: FontWeight.w800,
+                      )),
+                      const Text('مشاهده خدمات و ثبت درخواست',
+                        style: TextStyle(color: Color(0xFF64748B), fontSize: 10)),
+                    ],
                   ),
                 ),
-                const SizedBox(width: 2),
-                const Icon(
-                  Icons.chevron_left_rounded,
-                  color: Color(0xFF9AA4B2),
-                  size: 17,
-                ),
+                const Icon(Icons.chevron_left_rounded,
+                  color: Color(0xFF64748B), size: 20),
               ],
             ),
           ),
