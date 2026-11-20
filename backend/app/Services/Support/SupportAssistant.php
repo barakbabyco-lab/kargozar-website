@@ -5,9 +5,8 @@ namespace App\Services\Support;
 class SupportAssistant
 {
     /**
-     * Return a reviewed answer only when the message clearly matches a known FAQ.
-     * This first version is deliberately deterministic: it never invents prices,
-     * timelines, legal requirements or licensing outcomes.
+     * Answer only from reviewed FAQ or structured service records.
+     * Unknown, sensitive or unverified variable questions are routed to a human.
      */
     public function reply(string $message): string
     {
@@ -15,14 +14,19 @@ class SupportAssistant
 
         foreach (config('support_assistant.missing_requirement_phrases', []) as $phrase) {
             if ($phrase !== '' && str_contains($text, $this->normalize($phrase))) {
-                return config('support_assistant.missing_requirement_response');
+                return (string) config('support_assistant.missing_requirement_response', config('support_assistant.fallback'));
             }
         }
 
         foreach (config('support_assistant.escalation_terms', []) as $term) {
             if ($term !== '' && str_contains($text, $this->normalize($term))) {
-                return config('support_assistant.fallback');
+                return (string) config('support_assistant.fallback');
             }
+        }
+
+        $knowledgeAnswer = $this->knowledgeServiceReply($text);
+        if ($knowledgeAnswer !== null) {
+            return $knowledgeAnswer;
         }
 
         $best = null;
@@ -57,26 +61,176 @@ class SupportAssistant
         $margin = (float) config('support_assistant.minimum_score_margin', 0.15);
 
         if ($best !== null && $bestScore >= $threshold && ($bestScore - $secondScore) >= $margin) {
-            $answer = $best['answer'];
+            $answer = (string) ($best['answer'] ?? '');
             if (($best['service_assurance'] ?? false) === true) {
-                $closing = (string) config('support_assistant.customer_communication.standard_closing_text', config('support_assistant.service_assurance_closing', ''));
-                if ($closing !== '' && ! str_contains($answer, $closing)) {
-                    $answer = rtrim($answer) . "\n\n" . $closing;
-                }
+                $answer = $this->appendCustomerClosing($answer);
             }
 
             return $answer;
         }
 
-        return config('support_assistant.fallback');
+        return (string) config('support_assistant.fallback');
+    }
+
+    /**
+     * Resolve a service against the registry and its category knowledge file.
+     * This provides a concise first-pass answer from existing structured records.
+     */
+    private function knowledgeServiceReply(string $text): ?string
+    {
+        $registryPath = resource_path('knowledge/service_knowledge_registry.json');
+        if (! is_file($registryPath)) {
+            return null;
+        }
+
+        $registry = json_decode((string) file_get_contents($registryPath), true);
+        if (! is_array($registry) || ! is_array($registry['categories'] ?? null)) {
+            return null;
+        }
+
+        $best = null;
+        $bestScore = 0;
+        $secondScore = 0;
+
+        foreach ($registry['categories'] as $category) {
+            $file = $category['knowledge_file'] ?? null;
+            if (! is_string($file) || $file === '') {
+                continue;
+            }
+
+            $categoryPath = resource_path('knowledge/'.$file);
+            if (! is_file($categoryPath)) {
+                continue;
+            }
+
+            $knowledge = json_decode((string) file_get_contents($categoryPath), true);
+            if (! is_array($knowledge) || ! is_array($knowledge['services'] ?? null)) {
+                continue;
+            }
+
+            foreach (($category['services'] ?? []) as $registeredService) {
+                $key = $registeredService['service_key'] ?? null;
+                if (! is_string($key)) {
+                    continue;
+                }
+
+                $record = null;
+                foreach ($knowledge['services'] as $candidate) {
+                    if (($candidate['service_key'] ?? null) === $key) {
+                        $record = $candidate;
+                        break;
+                    }
+                }
+                if (! is_array($record)) {
+                    continue;
+                }
+
+                $title = $this->normalize((string) ($record['title'] ?? $registeredService['title'] ?? ''));
+                $tokens = preg_split('/\s+/u', $title, -1, PREG_SPLIT_NO_EMPTY) ?: [];
+                $stopWords = ['و', 'در', 'از', 'به', 'با', 'برای', 'یا', 'بر', 'را', 'آن'];
+                $tokens = array_values(array_unique(array_filter(
+                    $tokens,
+                    fn ($token) => ! in_array($token, $stopWords, true) && mb_strlen($token, 'UTF-8') >= 2
+                )));
+
+                $matchedTokens = array_filter($tokens, fn ($token) => str_contains($text, $token));
+                $score = count($matchedTokens);
+
+                // A single distinctive service name such as «اینماد» can identify a record.
+                if ($score === 1 && count($tokens) === 1 && mb_strlen($tokens[0], 'UTF-8') >= 4) {
+                    $score = 2;
+                }
+
+                if ($score > $bestScore) {
+                    $secondScore = $bestScore;
+                    $bestScore = $score;
+                    $best = $record;
+                } elseif ($score > $secondScore) {
+                    $secondScore = $score;
+                }
+            }
+        }
+
+        if (! is_array($best) || $bestScore < 2 || ($bestScore - $secondScore) < 1) {
+            return null;
+        }
+
+        $answer = 'برای «'.($best['title'] ?? 'این خدمت').'»، راهنمای اولیه کارگزار به این صورته:';
+        $lowerText = $text;
+
+        if (str_contains($lowerText, 'مدرک') || str_contains($lowerText, 'مدارک')) {
+            $items = $this->firstItems($best['documents'] ?? [], 5);
+            if ($items !== []) {
+                $answer .= "\n\nمدارک قابل بررسی:\n".$this->formatItems($items);
+            }
+        } elseif (str_contains($lowerText, 'مرحله') || str_contains($lowerText, 'مراحل') || str_contains($lowerText, 'چطور')) {
+            $items = $this->firstItems($best['steps'] ?? [], 5);
+            if ($items !== []) {
+                $answer .= "\n\nمراحل کلی:\n".$this->formatItems($items);
+            }
+        } elseif (str_contains($lowerText, 'شرط') || str_contains($lowerText, 'شرایط')) {
+            $items = $this->firstItems($best['conditions'] ?? [], 5);
+            if ($items !== []) {
+                $answer .= "\n\nشرایط اولیه:\n".$this->formatItems($items);
+            }
+        } else {
+            $summary = $best['what_is_it'] ?? $best['scope'] ?? $best['eligibility'] ?? null;
+            if (is_string($summary) && trim($summary) !== '') {
+                $answer .= "\n\n".$summary;
+            }
+            $items = $this->firstItems($best['conditions'] ?? [], 3);
+            if ($items !== []) {
+                $answer .= "\n\nمواردی که معمولاً بررسی می‌شن:\n".$this->formatItems($items);
+            }
+        }
+
+        $verification = (string) ($best['verification_status'] ?? 'needs_review');
+        if ($verification !== 'verified_current') {
+            $answer .= "\n\nاین راهنمای اولیه‌ست؛ جزئیات نهایی باید با شرایط پرونده و آخرین ضوابط مرجع مربوط بررسی بشه.";
+        }
+
+        return $this->appendCustomerClosing($answer);
+    }
+
+    private function appendCustomerClosing(string $answer): string
+    {
+        $closing = (string) config(
+            'support_assistant.customer_communication.standard_closing_text',
+            config('support_assistant.service_assurance_closing', '')
+        );
+
+        if ($closing !== '' && ! str_contains($answer, $closing)) {
+            return rtrim($answer)."\n\n".$closing;
+        }
+
+        return $answer;
+    }
+
+    private function firstItems(mixed $items, int $limit): array
+    {
+        if (! is_array($items)) {
+            return is_string($items) && trim($items) !== '' ? [trim($items)] : [];
+        }
+
+        $items = array_values(array_filter($items, fn ($item) => is_string($item) && trim($item) !== ''));
+        return array_slice($items, 0, $limit);
+    }
+
+    private function formatItems(array $items): string
+    {
+        $lines = [];
+        foreach ($items as $index => $item) {
+            $lines[] = ($index + 1).'. '.trim($item);
+        }
+
+        return implode("\n", $lines);
     }
 
     /**
      * Classify a guild activity into one or more specialist requirement groups.
-     * This is a first-pass heuristic; the official worksheet for the exact activity
-     * remains authoritative and can add or override requirements.
+     * The official worksheet for the exact activity remains authoritative.
      *
-     * @return array{common_preflight: array, groups: array, requirements: array, needs_clarification: bool, default_only: bool}
+     * @return array{common_preflight: array, groups: array, requirements: array, needs_clarification: bool, default_only: bool, official_worksheet_overrides_classifier: bool}
      */
     public function classifyGuildActivity(string $activity): array
     {
@@ -91,6 +245,14 @@ class SupportAssistant
                 $needle = $this->normalize($keyword);
                 if ($needle !== '' && str_contains($text, $needle)) {
                     $matchedKeywords[] = $keyword;
+                }
+            }
+
+            foreach (($group['exclude_if_only'] ?? []) as $excluded) {
+                $excludedNeedle = $this->normalize($excluded);
+                if ($excludedNeedle !== '' && str_contains($text, $excludedNeedle)) {
+                    $matchedKeywords = [];
+                    break;
                 }
             }
 
@@ -136,7 +298,7 @@ class SupportAssistant
             '‌' => ' ',
         ]);
 
-        $value = preg_replace('/[^\\p{L}\\p{N}\\s]/u', ' ', $value) ?? $value;
-        return trim(preg_replace('/\\s+/u', ' ', $value) ?? $value);
+        $value = preg_replace('/[^\p{L}\p{N}\s]/u', ' ', $value) ?? $value;
+        return trim(preg_replace('/\s+/u', ' ', $value) ?? $value);
     }
 }
