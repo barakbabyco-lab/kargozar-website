@@ -192,6 +192,17 @@
       ],
       "priority": 3,
       "source_limitations": "نسخه تاریخی سال ۱۳۹۴ و با کاربرد اصلی تخصیص کد پذیرندگان شبکه پرداخت؛ مرجع جاری صدور مجوز یا تأیید اعتبار فعلی رسته نیست. فقط برای کشف عنوان و تطبیق تاریخی استفاده شود."
+    },
+    {
+      "source_key": "resolution_92_guild_changes",
+      "name": "مصوبات نود و دومین نشست هیأت مقررات‌زدایی",
+      "url": "https://hoghogh.ai/circulars/c-58d38535",
+      "authority": "مصوبه هیأت مقررات‌زدایی و بهبود محیط کسب‌وکار",
+      "intended_data": [
+        "guild_license_withdrawal",
+        "replacement_license_track"
+      ],
+      "priority": 1
     }
   ],
   "license_tracks": [
@@ -3689,7 +3700,8 @@
     "guild_base_resolution": "مصوبه ۶۷: ۸۷ کاربرگ، شامل ۲۸۴۰ عنوان مجوز",
     "total_guild_heading_and_amendment_records": 120,
     "legacy_shaparak_crosswalk_records_imported": 22,
-    "total_guild_reference_records": 142
+    "total_guild_reference_records": 143,
+    "guild_license_status_changes_imported": 1
   },
   "subsequent_guild_license_records": [
     {
@@ -4670,7 +4682,7 @@
       "verification_status": "needs_review",
       "record_type": "subsequent_official_guild_license_addition",
       "classification_status": "initial_mapping_needs_review",
-      "notes": "عنوان مجوز از مصوبه بعدی هیأت مقررات‌زدایی استخراج شده است. جزئیات کاربرگ، شناسه یکتا، مرجع دقیق صادرکننده و شرایط جاری باید در درگاه ملی مجوزها تطبیق شود."
+      "notes": "عنوان مجوز از مصوبه بعدی هیأت مقررات‌زدایی استخراج شده است. جزئیات کاربرگ، شناسه یکتا، مرجع دقیق صادرکننده و شرایط جاری باید در درگاه ملی مجوزها تطبیق شود. توجه: این مجوز مصوبه ۹۴ با مجوز سامانه معاملات برخط طلا و نقره مصوبه ۹۲ متفاوت است؛ عنوان و دامنه آن‌ها نباید با هم ادغام شوند."
     },
     {
       "activity_id": "guild-add-094-02",
@@ -5522,6 +5534,20 @@
       "record_type": "historical_code_crosswalk_discovery",
       "classification_status": "initial_mapping_needs_review",
       "notes": "عنوان و کد از راهنمای تاریخی شاپرک با تاریخ 1394/11/20 استخراج شده است. این کدها شناسه یکتای مجوز فعلی نیستند و نباید برای تعیین شرایط یا مرجع صدور مجوز استفاده شوند؛ فقط سرنخ کشف و تطبیق با درگاه ملی و اتحادیه جاری هستند."
+    }
+  ],
+  "guild_license_status_changes": [
+    {
+      "change_id": "guild-status-092-01",
+      "license_title": "پروانه کسب سامانه معاملات برخط طلای آب‌شده و مصنوعات طلا و جواهر",
+      "change_type": "removed_from_guild_license_list",
+      "effective_decision_date": "1404-09-10",
+      "replacement_or_related_license": "مجوز سامانه معاملات برخط طلا و نقره (سکوهای خرید و فروش طلا و نقره)",
+      "source_key": "resolution_92_guild_changes",
+      "source_url": "https://hoghogh.ai/circulars/c-58d38535",
+      "verified_at": "2026-11-21",
+      "verification_status": "needs_review",
+      "notes": "مصوبه ۹۲ این عنوان قدیمی را از فهرست مجوزهای صنفی حذف و کاربرگ مجوز سامانه معاملات برخط طلا و نقره را تصویب کرده است. عنوان جدید نباید با پروانه کسب خرید و فروش برخط مصنوعات طلا، نقره و جواهر مصوبه ۹۴ یکسان فرض شود."
     }
   ]
 }
