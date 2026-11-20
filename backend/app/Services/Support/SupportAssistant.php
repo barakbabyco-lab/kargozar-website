@@ -24,6 +24,11 @@ class SupportAssistant
             }
         }
 
+        $guildAnswer = $this->guildLicenseReply($text);
+        if ($guildAnswer !== null) {
+            return $guildAnswer;
+        }
+
         $knowledgeAnswer = $this->knowledgeServiceReply($text);
         if ($knowledgeAnswer !== null) {
             return $knowledgeAnswer;
@@ -70,6 +75,85 @@ class SupportAssistant
         }
 
         return (string) config('support_assistant.fallback');
+    }
+
+    /**
+     * Answer common guild-license document questions using the shared checklist
+     * plus the activity classifier. This is a preflight, not a universal legal list.
+     */
+    private function guildLicenseReply(string $text): ?string
+    {
+        $guildTerms = ['جواز کسب', 'پروانه کسب', 'مجوز صنفی', 'مجوز کسب'];
+        $isGuildQuestion = false;
+        foreach ($guildTerms as $term) {
+            if (str_contains($text, $this->normalize($term))) {
+                $isGuildQuestion = true;
+                break;
+            }
+        }
+
+        if (! $isGuildQuestion || preg_match('/مدرک|مدارک|شرط|شرایط|لازم|نیاز|پیش نیاز/u', $text) !== 1) {
+            return null;
+        }
+
+        $classification = $this->classifyGuildActivity($text);
+        $labels = $this->requirementDisplayLabels();
+        $commonKeys = $classification['common_preflight'] ?? [];
+        $specialKeys = $classification['requirements'] ?? [];
+        $commonLabels = [];
+        $specialLabels = [];
+
+        foreach ($commonKeys as $key) {
+            $label = $labels[$key] ?? config('support_assistant.customer_communication.document_labels.'.$key);
+            if (is_string($label) && $label !== '') {
+                $commonLabels[] = $label;
+            }
+        }
+        foreach ($specialKeys as $key) {
+            $label = $labels[$key] ?? config('support_assistant.customer_communication.document_labels.'.$key);
+            if (is_string($label) && $label !== '') {
+                $specialLabels[] = $label;
+            }
+        }
+
+        $answer = "برای جواز کسب، اول این موارد رو به‌عنوان چک‌لیست اولیه بررسی می‌کنیم:\n";
+        if ($commonLabels !== []) {
+            $answer .= $this->formatItems(array_values(array_unique($commonLabels)));
+        }
+
+        if ($specialLabels !== []) {
+            $answer .= "\n\nبا توجه به نوع شغل، این موارد تخصصی هم ممکنه لازم باشه:\n";
+            $answer .= $this->formatItems(array_values(array_unique($specialLabels)));
+        } elseif (($classification['needs_clarification'] ?? true) === true) {
+            $answer .= "\n\nبرای مشخص‌کردن مدارک تخصصی، لطفاً نوع دقیق شغل و شهر محل فعالیت رو هم بفرمایید.";
+        }
+
+        $answer .= "\n\nاین فهرست برای بررسی اولیه‌ست؛ شمول قطعی هر مورد با کاربرگ همان رسته و شرایط متقاضی تطبیق داده می‌شه.";
+        return $this->appendCustomerClosing($answer);
+    }
+
+    private function requirementDisplayLabels(): array
+    {
+        $path = resource_path('knowledge/shared_requirement_library.json');
+        if (! is_file($path)) {
+            return [];
+        }
+
+        $library = json_decode((string) file_get_contents($path), true);
+        if (! is_array($library) || ! is_array($library['requirements'] ?? null)) {
+            return [];
+        }
+
+        $labels = [];
+        foreach ($library['requirements'] as $requirement) {
+            $key = $requirement['requirement_key'] ?? null;
+            $label = $requirement['customer_display_label'] ?? null;
+            if (is_string($key) && is_string($label) && $label !== '') {
+                $labels[$key] = $label;
+            }
+        }
+
+        return $labels;
     }
 
     /**
