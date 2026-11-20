@@ -4,6 +4,7 @@ namespace Tests\Unit;
 
 use App\Services\Support\SupportAssistant;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
 class SupportAssistantTest extends TestCase
