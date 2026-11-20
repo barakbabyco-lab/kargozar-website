@@ -92,8 +92,17 @@ class SupportAssistant
      */
     private function currentDateTimeReply(string $text): ?string
     {
-        if (preg_match('/\b(ساعت|تاریخ|امروز|الان چه روز|امروز چندمه|چه روزیه|time now|current date)\b/u', $text) !== 1) {
+        $dateTimeTerms = ['ساعت', 'تاریخ', 'امروز', 'الان چه روز', 'امروز چندمه', 'چه روزیه', 'time now', 'current date'];
+        $asksDateTime = false;
+        foreach ($dateTimeTerms as $term) {
+            if (str_contains($text, $term)) {
+                $asksDateTime = true;
+                break;
+            }
+        }
+        if (! $asksDateTime) {
             return null;
+        }
         }
 
         $now = now((string) config('support_assistant.timezone', 'Asia/Tehran'));
