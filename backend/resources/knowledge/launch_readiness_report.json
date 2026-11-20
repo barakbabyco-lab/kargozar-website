@@ -1,0 +1,854 @@
+{
+  "schema_version": 1,
+  "report_key": "kargozar_v1_launch_readiness",
+  "title": "گزارش آمادگی نسخه اول بانک دانش کارگزار",
+  "reviewed_at": "2026-11-21",
+  "launch_scope": "نسخه اول برای پاسخ به پرسش‌های متداول خدمات و ارجاع موارد خاص، مبهم، فاقد منبع جاری یا نیازمند بررسی پرونده به کارشناس انسانی آماده می‌شود؛ پوشش همه استثناها در این نسخه الزامی نیست.",
+  "overall_status": "structured_content_ready_for_integration_and_human_escalation; official_source_verification_and_runtime_tests_pending",
+  "totals": {
+    "category_count": 10,
+    "service_count": 46,
+    "services_with_conditions": 46,
+    "services_with_documents": 46,
+    "services_with_steps": 46,
+    "services_with_source_url": 20,
+    "services_without_source_url": 26,
+    "services_verified_current": 0
+  },
+  "launch_rules": [
+    "پاسخ مستقیم فقط بر اساس اطلاعات موجود در رکورد همان خدمت و کتابخانه الزامات مشترک ارائه شود.",
+    "استثناها و وضعیت‌های خاص در نسخه اول در بانک قواعد جداگانه مدل‌سازی نمی‌شوند و به کارشناس ارجاع می‌شوند.",
+    "اگر منبع رسمی جاری، کاربرگ یا وضعیت پرونده در دسترس نیست، ربات نباید الزام، هزینه یا زمان قطعی اعلام کند.",
+    "هزینه و زمان فقط با منبع معتبر و تاریخ بررسی جاری اعلام شود؛ در غیر این صورت ارجاع به کارشناس.",
+    "برای مجوزها، صدور نهایی تابع ضوابط و تصمیم مرجع صادرکننده است و نباید تضمین شود.",
+    "در فقدان مدرک یا پیش‌نیاز، ربات وارد شرح راهکارهای اجرایی نمی‌شود؛ شماره تماس می‌گیرد و پرونده را به کارشناس ارجاع می‌دهد.",
+    "در پاسخ‌های متداول مربوط به شرایط و مدارک، پیام اطمینان‌بخش جداگانه و درخواست ثبت شماره تماس نمایش داده شود."
+  ],
+  "categories": [
+    {
+      "number": 1,
+      "title": "مجوزهای کسب‌وکار",
+      "file": "backend/resources/knowledge/category_01_business_licenses.json",
+      "service_count": 3,
+      "services": [
+        {
+          "service_key": "guild-business-license",
+          "title": "پروانه کسب و مجوزهای صنفی",
+          "status": "structured_draft_live_worksheet_required",
+          "verification_status": "needs_live_worksheet_retrieval",
+          "source_url": "https://mojavez.ir/",
+          "content_sections": {
+            "conditions": true,
+            "documents": true,
+            "steps": true,
+            "source": true,
+            "fees": true,
+            "time": true
+          },
+          "review_required": true
+        },
+        {
+          "service_key": "home-business-license",
+          "title": "مجوز مشاغل خانگی",
+          "status": "structured_draft_live_worksheet_required",
+          "verification_status": "needs_live_activity_record_retrieval",
+          "source_url": "https://mojavez.ir/",
+          "content_sections": {
+            "conditions": true,
+            "documents": true,
+            "steps": true,
+            "source": true,
+            "fees": true,
+            "time": true
+          },
+          "review_required": true
+        },
+        {
+          "service_key": "industrial-establishment-permits",
+          "title": "مجوزهای صنعتی و دستگاهی",
+          "status": "structured_draft_live_worksheet_required",
+          "verification_status": "needs_live_worksheet_retrieval",
+          "source_url": "https://mojavez.ir/",
+          "content_sections": {
+            "conditions": true,
+            "documents": true,
+            "steps": true,
+            "source": true,
+            "fees": true,
+            "time": true
+          },
+          "review_required": true
+        }
+      ]
+    },
+    {
+      "number": 2,
+      "title": "ثبت شرکت",
+      "file": "backend/resources/knowledge/category_02_company_registration.json",
+      "service_count": 3,
+      "services": [
+        {
+          "service_key": "company-registration",
+          "title": "ثبت شرکت و انتخاب قالب حقوقی",
+          "status": "populated_draft_needs_source_review",
+          "verification_status": "needs_live_portal_and_latest_forms_review",
+          "source_url": "https://my.ssaa.ir/portal/company",
+          "content_sections": {
+            "conditions": true,
+            "documents": true,
+            "steps": true,
+            "source": true,
+            "fees": true,
+            "time": true
+          },
+          "review_required": true
+        },
+        {
+          "service_key": "company-changes",
+          "title": "ثبت تغییرات شرکت",
+          "status": "populated_draft_needs_source_review",
+          "verification_status": "needs_live_portal_and_latest_forms_review",
+          "source_url": "https://my.ssaa.ir/portal/company",
+          "content_sections": {
+            "conditions": true,
+            "documents": true,
+            "steps": true,
+            "source": true,
+            "fees": true,
+            "time": true
+          },
+          "review_required": true
+        },
+        {
+          "service_key": "company-dissolution",
+          "title": "انحلال و تصفیه شرکت",
+          "status": "populated_draft_needs_source_review",
+          "verification_status": "needs_live_portal_and_latest_forms_review",
+          "source_url": "https://my.ssaa.ir/portal/company",
+          "content_sections": {
+            "conditions": true,
+            "documents": true,
+            "steps": true,
+            "source": true,
+            "fees": true,
+            "time": true
+          },
+          "review_required": true
+        }
+      ]
+    },
+    {
+      "number": 3,
+      "title": "ثبت برند و مالکیت فکری",
+      "file": "backend/resources/knowledge/category_03_intellectual_property.json",
+      "service_count": 4,
+      "services": [
+        {
+          "service_key": "trademark-registration",
+          "title": "ثبت علامت تجاری و برند",
+          "status": "populated_draft_needs_source_review",
+          "verification_status": "law_catalog_verified_implementation_and_live_procedure_review_required",
+          "source_url": "https://www.wipo.int/wipolex/en/legislation/details/23341",
+          "content_sections": {
+            "conditions": true,
+            "documents": true,
+            "steps": true,
+            "source": true,
+            "fees": true,
+            "time": true
+          },
+          "review_required": true
+        },
+        {
+          "service_key": "logo-registration",
+          "title": "ثبت لوگو به‌عنوان علامت",
+          "status": "populated_draft_needs_source_review",
+          "verification_status": "law_catalog_verified_implementation_and_live_procedure_review_required",
+          "source_url": "https://www.wipo.int/wipolex/en/legislation/details/23341",
+          "content_sections": {
+            "conditions": true,
+            "documents": true,
+            "steps": true,
+            "source": true,
+            "fees": true,
+            "time": true
+          },
+          "review_required": true
+        },
+        {
+          "service_key": "industrial-design-registration",
+          "title": "ثبت طرح صنعتی",
+          "status": "populated_draft_needs_source_review",
+          "verification_status": "law_catalog_verified_implementation_and_live_procedure_review_required",
+          "source_url": "https://www.wipo.int/wipolex/en/legislation/details/23341",
+          "content_sections": {
+            "conditions": true,
+            "documents": true,
+            "steps": true,
+            "source": true,
+            "fees": true,
+            "time": true
+          },
+          "review_required": true
+        },
+        {
+          "service_key": "invention-registration",
+          "title": "ثبت اختراع",
+          "status": "populated_draft_needs_source_review",
+          "verification_status": "law_catalog_verified_implementation_and_live_procedure_review_required",
+          "source_url": "https://www.wipo.int/wipolex/en/legislation/details/23341",
+          "content_sections": {
+            "conditions": true,
+            "documents": true,
+            "steps": true,
+            "source": true,
+            "fees": true,
+            "time": true
+          },
+          "review_required": true
+        }
+      ]
+    },
+    {
+      "number": 4,
+      "title": "مدارک و تأییدیه‌های مکمل",
+      "file": "backend/resources/knowledge/category_04_complementary_documents_approvals.json",
+      "service_count": 6,
+      "services": [
+        {
+          "service_key": "police-public-places-approval",
+          "title": "تأییدیه پلیس نظارت بر اماکن عمومی",
+          "status": "partially_sourced_needs_current_verification",
+          "verification_status": "needs_current_portal_worksheet_revalidation",
+          "source_url": "https://hoghogh.ai/circulars/c-781044f9",
+          "content_sections": {
+            "conditions": true,
+            "documents": true,
+            "steps": true,
+            "source": true,
+            "fees": false,
+            "time": false
+          },
+          "review_required": true
+        },
+        {
+          "service_key": "health-card",
+          "title": "کارت بهداشت و گواهی سلامت شاغلان",
+          "status": "partially_sourced_needs_current_verification",
+          "verification_status": "needs_current_health_authority_review",
+          "source_url": "https://hoghogh.ai/circulars/c-e8e5e44a",
+          "content_sections": {
+            "conditions": true,
+            "documents": true,
+            "steps": true,
+            "source": true,
+            "fees": false,
+            "time": false
+          },
+          "review_required": true
+        },
+        {
+          "service_key": "environment-health-approval",
+          "title": "تأییدیه بهداشت محیط",
+          "status": "partially_sourced_needs_current_verification",
+          "verification_status": "needs_current_health_authority_review",
+          "source_url": "https://hoghogh.ai/circulars/c-e8e5e44a",
+          "content_sections": {
+            "conditions": true,
+            "documents": true,
+            "steps": true,
+            "source": true,
+            "fees": false,
+            "time": false
+          },
+          "review_required": true
+        },
+        {
+          "service_key": "trade-law-training-certificate",
+          "title": "گواهی دوره احکام تجارت و کسب‌وکار",
+          "status": "detailed_instruction_extracted_needs_live_local_confirmation",
+          "verification_status": "consolidated_instruction_text_reviewed_current_worksheet_and_local_execution_confirmation_required",
+          "source_url": "https://hoghogh.ai/laws/دستورالعمل-آموزش-احکام-تجارت-و-کسب-و-کار-با-اصلاحات-و-الحاقات-بعدی",
+          "content_sections": {
+            "conditions": true,
+            "documents": true,
+            "steps": true,
+            "source": true,
+            "fees": true,
+            "time": true
+          },
+          "review_required": true
+        },
+        {
+          "service_key": "national-standards-approval",
+          "title": "تأییدیه‌ها و نشان استاندارد",
+          "status": "structured_needs_official_standard_lookup",
+          "verification_status": "official_portal_verified_procedure_copy_secondary_needs_official_revision_confirmation",
+          "source_url": "https://www.inso.gov.ir/",
+          "content_sections": {
+            "conditions": true,
+            "documents": true,
+            "steps": true,
+            "source": true,
+            "fees": true,
+            "time": true
+          },
+          "review_required": true
+        },
+        {
+          "service_key": "other-regulatory-approvals",
+          "title": "سایر تأییدیه‌های تخصصی",
+          "status": "structured_needs_case_specific_authority_review",
+          "verification_status": "unverified_until_specific_approval_identified",
+          "source_url": "https://mojavez.ir/",
+          "content_sections": {
+            "conditions": true,
+            "documents": true,
+            "steps": true,
+            "source": true,
+            "fees": true,
+            "time": true
+          },
+          "review_required": true
+        }
+      ]
+    },
+    {
+      "number": 5,
+      "title": "خدمات بانکی",
+      "file": "backend/resources/knowledge/category_05_banking_services.json",
+      "service_count": 3,
+      "services": [
+        {
+          "service_key": "business-account-opening",
+          "title": "افتتاح حساب جاری و حساب تجاری",
+          "status": "populated_draft_needs_source_review",
+          "verification_status": "needs_primary_cbi_circular_and_bank_specific_implementation_review",
+          "source_url": "https://hoghogh.ai/circulars/c-cb6aea0a",
+          "content_sections": {
+            "conditions": true,
+            "documents": true,
+            "steps": true,
+            "source": true,
+            "fees": true,
+            "time": true
+          },
+          "review_required": true
+        },
+        {
+          "service_key": "banking-facilities",
+          "title": "پیگیری تسهیلات و خدمات بانکی",
+          "status": "populated_draft_needs_source_review",
+          "verification_status": "draft_needs_primary_source_or_provider_validation",
+          "source_url": null,
+          "content_sections": {
+            "conditions": true,
+            "documents": true,
+            "steps": true,
+            "source": false,
+            "fees": true,
+            "time": true
+          },
+          "review_required": true
+        },
+        {
+          "service_key": "bank-guarantees",
+          "title": "ضمانت‌نامه و تعهدات بانکی",
+          "status": "populated_draft_needs_source_review",
+          "verification_status": "draft_needs_primary_source_or_provider_validation",
+          "source_url": null,
+          "content_sections": {
+            "conditions": true,
+            "documents": true,
+            "steps": true,
+            "source": false,
+            "fees": true,
+            "time": true
+          },
+          "review_required": true
+        }
+      ]
+    },
+    {
+      "number": 6,
+      "title": "خدمات حقوقی و قراردادی",
+      "file": "backend/resources/knowledge/category_06_legal_and_contractual.json",
+      "service_count": 4,
+      "services": [
+        {
+          "service_key": "employment-contract",
+          "title": "تنظیم قرارداد کار",
+          "status": "populated_draft_needs_source_review",
+          "verification_status": "needs_official_gazette_and_latest_amendments_review",
+          "source_url": "https://irandataportal.syr.edu/labor-law",
+          "content_sections": {
+            "conditions": true,
+            "documents": true,
+            "steps": true,
+            "source": true,
+            "fees": true,
+            "time": true
+          },
+          "review_required": true
+        },
+        {
+          "service_key": "contractor-agreement",
+          "title": "تنظیم قرارداد پیمانکاری",
+          "status": "populated_draft_needs_source_review",
+          "verification_status": "draft_needs_primary_source_or_provider_validation",
+          "source_url": null,
+          "content_sections": {
+            "conditions": true,
+            "documents": true,
+            "steps": true,
+            "source": false,
+            "fees": true,
+            "time": true
+          },
+          "review_required": true
+        },
+        {
+          "service_key": "business-contracts",
+          "title": "تنظیم و بازبینی قراردادهای تجاری",
+          "status": "populated_draft_needs_source_review",
+          "verification_status": "draft_needs_primary_source_or_provider_validation",
+          "source_url": null,
+          "content_sections": {
+            "conditions": true,
+            "documents": true,
+            "steps": true,
+            "source": false,
+            "fees": true,
+            "time": true
+          },
+          "review_required": true
+        },
+        {
+          "service_key": "legal-documentation",
+          "title": "تنظیم اسناد و مکاتبات حقوقی",
+          "status": "populated_draft_needs_source_review",
+          "verification_status": "draft_needs_primary_source_or_provider_validation",
+          "source_url": null,
+          "content_sections": {
+            "conditions": true,
+            "documents": true,
+            "steps": true,
+            "source": false,
+            "fees": true,
+            "time": true
+          },
+          "review_required": true
+        }
+      ]
+    },
+    {
+      "number": 7,
+      "title": "خدمات اینترنتی و تجاری",
+      "file": "backend/resources/knowledge/category_07_internet_and_commercial_services.json",
+      "service_count": 6,
+      "services": [
+        {
+          "service_key": "enamad",
+          "title": "دریافت و تمدید اینماد",
+          "status": "populated_draft_needs_source_review",
+          "verification_status": "needs_current_live_enamad_worksheet_and_directive_review",
+          "source_url": "https://enamad.ir/",
+          "content_sections": {
+            "conditions": true,
+            "documents": true,
+            "steps": true,
+            "source": true,
+            "fees": true,
+            "time": true
+          },
+          "review_required": true
+        },
+        {
+          "service_key": "business-website",
+          "title": "طراحی و راه‌اندازی وب‌سایت فروشگاهی/شرکتی",
+          "status": "populated_draft_needs_source_review",
+          "verification_status": "draft_needs_primary_source_or_provider_validation",
+          "source_url": null,
+          "content_sections": {
+            "conditions": true,
+            "documents": true,
+            "steps": true,
+            "source": false,
+            "fees": true,
+            "time": true
+          },
+          "review_required": true
+        },
+        {
+          "service_key": "payment-gateway",
+          "title": "درگاه پرداخت اینترنتی",
+          "status": "populated_draft_needs_source_review",
+          "verification_status": "needs_current_payment_provider_and_shaparak_terms_review",
+          "source_url": null,
+          "content_sections": {
+            "conditions": true,
+            "documents": true,
+            "steps": true,
+            "source": false,
+            "fees": true,
+            "time": true
+          },
+          "review_required": true
+        },
+        {
+          "service_key": "business-domain",
+          "title": "ثبت دامنه و خدمات میزبانی",
+          "status": "populated_draft_needs_source_review",
+          "verification_status": "draft_needs_primary_source_or_provider_validation",
+          "source_url": null,
+          "content_sections": {
+            "conditions": true,
+            "documents": true,
+            "steps": true,
+            "source": false,
+            "fees": true,
+            "time": true
+          },
+          "review_required": true
+        },
+        {
+          "service_key": "bulk-sms",
+          "title": "پنل پیامک انبوه",
+          "status": "populated_draft_needs_source_review",
+          "verification_status": "draft_needs_primary_source_or_provider_validation",
+          "source_url": null,
+          "content_sections": {
+            "conditions": true,
+            "documents": true,
+            "steps": true,
+            "source": false,
+            "fees": true,
+            "time": true
+          },
+          "review_required": true
+        },
+        {
+          "service_key": "internet-phone",
+          "title": "تلفن اینترنتی کسب‌وکار",
+          "status": "populated_draft_needs_source_review",
+          "verification_status": "draft_needs_primary_source_or_provider_validation",
+          "source_url": null,
+          "content_sections": {
+            "conditions": true,
+            "documents": true,
+            "steps": true,
+            "source": false,
+            "fees": true,
+            "time": true
+          },
+          "review_required": true
+        }
+      ]
+    },
+    {
+      "number": 8,
+      "title": "خدمات ملکی و قراردادها",
+      "file": "backend/resources/knowledge/category_08_property_and_leases.json",
+      "service_count": 3,
+      "services": [
+        {
+          "service_key": "lease-tracking-code",
+          "title": "دریافت کد رهگیری اجاره‌نامه",
+          "status": "populated_draft_needs_source_review",
+          "verification_status": "needs_official_law_publication_and_live_system_workflow_review",
+          "source_url": "https://ibahoosham.ir/divanlaw/law/law-2980561",
+          "content_sections": {
+            "conditions": true,
+            "documents": true,
+            "steps": true,
+            "source": true,
+            "fees": true,
+            "time": true
+          },
+          "review_required": true
+        },
+        {
+          "service_key": "property-contracts",
+          "title": "تنظیم و بررسی قراردادهای ملکی",
+          "status": "populated_draft_needs_source_review",
+          "verification_status": "draft_needs_primary_source_or_provider_validation",
+          "source_url": null,
+          "content_sections": {
+            "conditions": true,
+            "documents": true,
+            "steps": true,
+            "source": false,
+            "fees": true,
+            "time": true
+          },
+          "review_required": true
+        },
+        {
+          "service_key": "property-document-followup",
+          "title": "پیگیری مدارک و استعلامات ملکی",
+          "status": "populated_draft_needs_source_review",
+          "verification_status": "draft_needs_primary_source_or_provider_validation",
+          "source_url": null,
+          "content_sections": {
+            "conditions": true,
+            "documents": true,
+            "steps": true,
+            "source": false,
+            "fees": true,
+            "time": true
+          },
+          "review_required": true
+        }
+      ]
+    },
+    {
+      "number": 9,
+      "title": "خدمات توسعه کسب‌وکار",
+      "file": "backend/resources/knowledge/category_09_business_development.json",
+      "service_count": 7,
+      "services": [
+        {
+          "service_key": "accounting-software",
+          "title": "نرم‌افزار حسابداری و مالی",
+          "status": "populated_draft_needs_source_review",
+          "verification_status": "needs_vendor_specific_current_evidence",
+          "source_url": null,
+          "content_sections": {
+            "conditions": true,
+            "documents": true,
+            "steps": true,
+            "source": false,
+            "fees": true,
+            "time": true
+          },
+          "review_required": true
+        },
+        {
+          "service_key": "sales-invoicing",
+          "title": "صدور فاکتور و مدیریت فروش",
+          "status": "populated_draft_needs_source_review",
+          "verification_status": "needs_vendor_specific_current_evidence",
+          "source_url": null,
+          "content_sections": {
+            "conditions": true,
+            "documents": true,
+            "steps": true,
+            "source": false,
+            "fees": true,
+            "time": true
+          },
+          "review_required": true
+        },
+        {
+          "service_key": "payroll-hr",
+          "title": "حقوق و دستمزد و مدیریت پرسنل",
+          "status": "populated_draft_needs_source_review",
+          "verification_status": "needs_vendor_specific_current_evidence",
+          "source_url": null,
+          "content_sections": {
+            "conditions": true,
+            "documents": true,
+            "steps": true,
+            "source": false,
+            "fees": true,
+            "time": true
+          },
+          "review_required": true
+        },
+        {
+          "service_key": "human-resources",
+          "title": "مدیریت منابع انسانی",
+          "status": "populated_draft_needs_source_review",
+          "verification_status": "needs_vendor_specific_current_evidence",
+          "source_url": null,
+          "content_sections": {
+            "conditions": true,
+            "documents": true,
+            "steps": true,
+            "source": false,
+            "fees": true,
+            "time": true
+          },
+          "review_required": true
+        },
+        {
+          "service_key": "contract-management",
+          "title": "مدیریت قراردادها",
+          "status": "populated_draft_needs_source_review",
+          "verification_status": "needs_vendor_specific_current_evidence",
+          "source_url": null,
+          "content_sections": {
+            "conditions": true,
+            "documents": true,
+            "steps": true,
+            "source": false,
+            "fees": true,
+            "time": true
+          },
+          "review_required": true
+        },
+        {
+          "service_key": "crm",
+          "title": "مدیریت ارتباط با مشتریان (CRM)",
+          "status": "populated_draft_needs_source_review",
+          "verification_status": "needs_vendor_specific_current_evidence",
+          "source_url": null,
+          "content_sections": {
+            "conditions": true,
+            "documents": true,
+            "steps": true,
+            "source": false,
+            "fees": true,
+            "time": true
+          },
+          "review_required": true
+        },
+        {
+          "service_key": "inventory-management",
+          "title": "مدیریت انبار و موجودی",
+          "status": "populated_draft_needs_source_review",
+          "verification_status": "needs_vendor_specific_current_evidence",
+          "source_url": null,
+          "content_sections": {
+            "conditions": true,
+            "documents": true,
+            "steps": true,
+            "source": false,
+            "fees": true,
+            "time": true
+          },
+          "review_required": true
+        }
+      ]
+    },
+    {
+      "number": 10,
+      "title": "سایر خدمات تخصصی",
+      "file": "backend/resources/knowledge/category_10_specialized_services.json",
+      "service_count": 7,
+      "services": [
+        {
+          "service_key": "business-consulting",
+          "title": "مشاوره تخصصی کسب‌وکار",
+          "status": "populated_draft_needs_domain_expert_review",
+          "verification_status": "needs_domain_expert_and_project_template_review",
+          "source_url": null,
+          "content_sections": {
+            "conditions": true,
+            "documents": true,
+            "steps": true,
+            "source": false,
+            "fees": true,
+            "time": true
+          },
+          "review_required": true
+        },
+        {
+          "service_key": "feasibility-study",
+          "title": "طرح توجیهی و امکان‌سنجی",
+          "status": "populated_draft_needs_domain_expert_review",
+          "verification_status": "needs_domain_expert_and_project_template_review",
+          "source_url": null,
+          "content_sections": {
+            "conditions": true,
+            "documents": true,
+            "steps": true,
+            "source": false,
+            "fees": true,
+            "time": true
+          },
+          "review_required": true
+        },
+        {
+          "service_key": "business-plan",
+          "title": "تهیه طرح کسب‌وکار (Business Plan)",
+          "status": "populated_draft_needs_domain_expert_review",
+          "verification_status": "needs_domain_expert_and_project_template_review",
+          "source_url": null,
+          "content_sections": {
+            "conditions": true,
+            "documents": true,
+            "steps": true,
+            "source": false,
+            "fees": true,
+            "time": true
+          },
+          "review_required": true
+        },
+        {
+          "service_key": "business-valuation",
+          "title": "ارزش‌گذاری کسب‌وکار",
+          "status": "populated_draft_needs_domain_expert_review",
+          "verification_status": "needs_domain_expert_and_project_template_review",
+          "source_url": null,
+          "content_sections": {
+            "conditions": true,
+            "documents": true,
+            "steps": true,
+            "source": false,
+            "fees": true,
+            "time": true
+          },
+          "review_required": true
+        },
+        {
+          "service_key": "fundraising",
+          "title": "تأمین سرمایه و جذب سرمایه‌گذار",
+          "status": "populated_draft_needs_domain_expert_review",
+          "verification_status": "needs_domain_expert_and_project_template_review",
+          "source_url": null,
+          "content_sections": {
+            "conditions": true,
+            "documents": true,
+            "steps": true,
+            "source": false,
+            "fees": true,
+            "time": true
+          },
+          "review_required": true
+        },
+        {
+          "service_key": "advertising-video",
+          "title": "تولید ویدئوی تبلیغاتی",
+          "status": "populated_draft_needs_domain_expert_review",
+          "verification_status": "needs_domain_expert_and_project_template_review",
+          "source_url": null,
+          "content_sections": {
+            "conditions": true,
+            "documents": true,
+            "steps": true,
+            "source": false,
+            "fees": true,
+            "time": true
+          },
+          "review_required": true
+        },
+        {
+          "service_key": "business-branding",
+          "title": "برندسازی و توسعه بازار",
+          "status": "populated_draft_needs_domain_expert_review",
+          "verification_status": "needs_domain_expert_and_project_template_review",
+          "source_url": null,
+          "content_sections": {
+            "conditions": true,
+            "documents": true,
+            "steps": true,
+            "source": false,
+            "fees": true,
+            "time": true
+          },
+          "review_required": true
+        }
+      ]
+    }
+  ],
+  "outstanding": [
+    "بازیابی و تطبیق کاربرگ زنده درگاه ملی مجوزها برای رسته‌های پرتکرار",
+    "تأیید منبع اولیه و آخرین اصلاحات برای قوانین و بخشنامه‌های دسته‌های ۲ تا ۸",
+    "تکمیل شواهد عرضه‌کننده و قیمت تاریخ‌دار برای خدمات نرم‌افزاری دسته ۹",
+    "بازبینی خروجی‌ها، معیار پذیرش و صلاحیت مجری برای خدمات تخصصی دسته ۱۰",
+    "اجرای php -l و مجموعه تست‌های PHPUnit در محیط واقعی پروژه",
+    "تست مکالمه زنده و بررسی ثبت شماره تماس و صف کارشناس در محیط عملیاتی"
+  ],
+  "disclaimer": "این گزارش ممیزی ساختاری بانک است و به‌تنهایی تأیید حقوقی یا عملیاتی صحت همه اطلاعات هر خدمت محسوب نمی‌شود."
+}
