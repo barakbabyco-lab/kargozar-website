@@ -68,6 +68,38 @@ class SupportChatApiTest extends TestCase
             ->assertUnauthorized();
     }
 
+    public function test_guest_missing_requirement_followup_stays_on_human_escalation_path(): void
+    {
+        $guestToken = str_repeat('d4', 32);
+
+        $started = $this->withHeader('X-Support-Guest-Token', $guestToken)
+            ->postJson('/api/v1/guest/support-conversations', ['body' => 'برای جواز کسب مغازه ندارم'])
+            ->assertCreated()
+            ->assertJsonPath('data.messages.1.sender_type', 'assistant');
+
+        $id = $started->json('data.id');
+        $this->assertStringContainsString('راه‌های رسیدن به خدا زیاده!', $started->json('data.messages.1.body'));
+
+        $this->withHeader('X-Support-Guest-Token', $guestToken)
+            ->postJson('/api/v1/guest/support-conversations/'.$id.'/messages', ['body' => 'چطوری؟'])
+            ->assertCreated();
+
+        $messages = $this->withHeader('X-Support-Guest-Token', $guestToken)
+            ->getJson('/api/v1/guest/support-conversations/'.$id.'/messages')
+            ->assertOk()
+            ->assertJsonCount(4, 'data')
+            ->json('data');
+
+        $this->assertStringContainsString('راه‌های رسیدن به خدا زیاده!', $messages[3]['body']);
+        $this->assertStringContainsString('شماره تماس', $messages[3]['body']);
+
+        $this->withHeader('X-Support-Guest-Token', $guestToken)
+            ->postJson('/api/v1/guest/support-conversations/'.$id.'/messages', ['body' => '۰۹۱۲۳۴۵۶۷۸۷'])
+            ->assertCreated();
+
+        $this->assertSame('09123456787', SupportConversation::findOrFail($id)->contact_mobile);
+    }
+
     public function test_guest_can_submit_a_callback_mobile_after_requesting_a_human_agent(): void
     {
         $guestToken = str_repeat('c3', 32);
