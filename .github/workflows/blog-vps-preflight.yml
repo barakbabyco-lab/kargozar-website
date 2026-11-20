@@ -1,0 +1,123 @@
+name: Kargozar blog VPS preflight (read-only)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Prepare SSH
+        shell: bash
+        env:
+          HOST: ${{ secrets.DEPLOY_HOST }}
+          PORT: ${{ secrets.DEPLOY_PORT }}
+          USER: ${{ secrets.DEPLOY_USER }}
+          KEY: ${{ secrets.VPS_SSH_KEY }}
+          KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+        run: |
+          set -euo pipefail
+          for v in HOST USER KEY KNOWN_HOSTS; do
+            test -n "${!v:-}" || { echo "::error::Missing SSH secret: $v"; exit 1; }
+          done
+          PORT="${PORT:-22}"
+          mkdir -p ~/.ssh
+          printf '%s\\n' "$KEY" > ~/.ssh/kargozar_key
+          printf '%s\\n' "$KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/kargozar_key ~/.ssh/known_hosts
+          TARGET="$HOST"
+          if [ "$PORT" != 22 ]; then TARGET="[$HOST]:$PORT"; fi
+          ssh-keygen -F "$TARGET" -f ~/.ssh/known_hosts >/dev/null
+          {
+            echo "Host kargozar-vps"
+            echo "  HostName $HOST"
+            echo "  Port $PORT"
+            echo "  User $USER"
+            echo "  IdentityFile ~/.ssh/kargozar_key"
+            echo "  IdentitiesOnly yes"
+            echo "  StrictHostKeyChecking yes"
+            echo "  UserKnownHostsFile ~/.ssh/known_hosts"
+            echo "  BatchMode yes"
+            echo "  ConnectTimeout 15"
+          } >> ~/.ssh/config
+          chmod 600 ~/.ssh/config
+      - name: Read-only blog hosting and DNS inspection
+        shell: bash
+        env:
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+        run: |
+          set -euo pipefail
+          ssh kargozar-vps 'bash -s' "$DEPLOY_PATH" <<'REMOTE'
+          set -u
+          DEPLOY_PATH="${1:-}"
+          echo "=== HOST AND RESOURCES ==="
+          hostname
+          date -Is
+          free -h
+          df -h /
+          echo "=== REQUIRED SERVICES ==="
+          for svc in nginx mysql php8.3-fpm bind9; do
+            printf '%-12s ' "$svc"
+            systemctl is-active "$svc" 2>/dev/null || true
+          done
+          echo "=== NGINX CONFIG TEST ==="
+          nginx -t 2>&1 || true
+          echo "=== NGINX VHOST SUMMARY ==="
+          if [ -d /etc/nginx/sites-enabled ]; then
+            for file in /etc/nginx/sites-enabled/*; do
+              [ -f "$file" ] || continue
+              echo "--- $(basename "$file") ---"
+              grep -E '^[[:space:]]*(listen|server_name|root|index|proxy_pass|fastcgi_pass)[[:space:]]' "$file" 2>/dev/null | head -n 40 || true
+            done
+          else
+            echo "No sites-enabled directory"
+          fi
+          echo "=== DNS TOOL AND LOCAL ZONE STATUS ==="
+          if command -v dig >/dev/null 2>&1; then
+            for name in kargozarr.ir blog.kargozarr.ir; do
+              for type in NS A AAAA SOA; do
+                echo "--- local resolver $name $type ---"
+                dig @127.0.0.1 "$name" "$type" +time=2 +tries=1 +noall +answer +authority +comments 2>&1 || true
+                echo "--- Cloudflare $name $type ---"
+                dig @1.1.1.1 "$name" "$type" +time=3 +tries=1 +noall +answer +authority +comments 2>&1 || true
+                echo "--- Google $name $type ---"
+                dig @8.8.8.8 "$name" "$type" +time=3 +tries=1 +noall +answer +authority +comments 2>&1 || true
+              done
+            done
+            echo "=== AUTHORITATIVE NAMESERVERS ==="
+            dig @1.1.1.1 kargozarr.ir NS +short
+          else
+            echo "dig is not installed"
+          fi
+          echo "=== BIND CONFIG VALIDATION ==="
+          if command -v named-checkconf >/dev/null 2>&1; then
+            named-checkconf -z 2>&1 || true
+          else
+            echo "BIND tools not installed"
+          fi
+          echo "=== BIND ZONE DECLARATIONS ==="
+          if [ -d /etc/bind ]; then
+            grep -RhnE 'zone[[:space:]]+"(kargozarr\\.ir|blog\\.kargozarr\\.ir)"' /etc/bind --include='*.conf' 2>/dev/null || true
+          fi
+          echo "=== DEPLOYMENT USER AND PERMISSIONS ==="
+          whoami
+          id
+          sudo -n -l 2>&1 | head -n 35 || true
+          echo "=== DEPLOYMENT ROOT PRESENCE ==="
+          if [ -n "$DEPLOY_PATH" ]; then
+            for p in "$DEPLOY_PATH" "$DEPLOY_PATH/current" "$DEPLOY_PATH/shared" "$DEPLOY_PATH/releases"; do
+              if [ -e "$p" ]; then stat -c 'PRESENT %F %U:%G %a %n' "$p"; else echo "MISSING $p"; fi
+            done
+          else
+            echo "DEPLOY_PATH not configured"
+          fi
+          echo "=== PORT LISTENERS ==="
+          ss -lntup 2>&1 | grep -E '(:80[[:space:]]|:443[[:space:]]|:53[[:space:]])' || true
+          echo "=== BLOG HOST HTTP TEST (NO DNS CHANGE) ==="
+          curl -sSI --connect-timeout 3 --max-time 5 -H 'Host: blog.kargozarr.ir' http://127.0.0.1/ 2>&1 | head -n 12 || true
+          echo "=== END READ-ONLY PREFLIGHT ==="
+          REMOTE
