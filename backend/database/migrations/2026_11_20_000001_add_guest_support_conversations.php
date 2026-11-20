@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::table('support_conversations', function (Blueprint $table) {
             $table->dropForeign(['customer_id']);
             $table->foreignId('customer_id')->nullable()->change();
-            $table->string('guest_token_hash', 64)->nullable()->unique();
+            $table->string('guest_token_hash', 64)->nullable()->index();
             $table->foreign('customer_id')->references('id')->on('customers')->nullOnDelete();
         });
     }
@@ -20,7 +20,7 @@ return new class extends Migration
     {
         Schema::table('support_conversations', function (Blueprint $table) {
             $table->dropForeign(['customer_id']);
-            $table->dropUnique(['guest_token_hash']);
+            $table->dropIndex(['guest_token_hash']);
             $table->dropColumn('guest_token_hash');
             $table->foreignId('customer_id')->nullable(false)->change();
             $table->foreign('customer_id')->references('id')->on('customers')->cascadeOnDelete();
