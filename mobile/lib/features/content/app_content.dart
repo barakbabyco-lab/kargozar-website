@@ -381,12 +381,14 @@ class _AppBannerStripState extends State<AppBannerStrip> {
 class CompanionContentPage extends StatelessWidget {
   const CompanionContentPage({
     super.key,
-    required this.onOpen,
+    required this.onOpenDetails,
+    required this.onExpand,
     required this.onNavigate,
     required this.onConsultation,
   });
 
-  final ValueChanged<int> onOpen;
+  final ValueChanged<CompanionModule> onOpenDetails;
+  final ValueChanged<CompanionModule> onExpand;
   final ValueChanged<int> onNavigate;
   final VoidCallback onConsultation;
 
@@ -404,11 +406,15 @@ class CompanionContentPage extends StatelessWidget {
             child: Column(
               children: [
                 for (var i = 0; i < companionModules.length; i++) ...[
-                  _SupportAction(
-                    icon: companionModules[i].icon,
+                  CompanionModuleRow(
                     title: companionModules[i].title,
-                    subtitle: 'ورود به بخش مربوطه',
-                    onTap: () => onOpen(i),
+                    subtitle: companionModules[i].subtitle,
+                    icon: companionModules[i].icon,
+                    hasChildren: companionModules[i].children.isNotEmpty,
+                    onDetails: () => onOpenDetails(companionModules[i]),
+                    onExpand: companionModules[i].children.isEmpty
+                        ? null
+                        : () => onExpand(companionModules[i]),
                   ),
                   if (i != companionModules.length - 1)
                     const SizedBox(height: 7),
@@ -417,6 +423,167 @@ class CompanionContentPage extends StatelessWidget {
             ),
           ),
         ],
+      );
+}
+
+class CompanionModuleRow extends StatelessWidget {
+  const CompanionModuleRow({
+    super.key,
+    required this.title,
+    required this.subtitle,
+    required this.icon,
+    required this.hasChildren,
+    required this.onDetails,
+    this.onExpand,
+  });
+
+  final String title;
+  final String subtitle;
+  final IconData icon;
+  final bool hasChildren;
+  final VoidCallback onDetails;
+  final VoidCallback? onExpand;
+
+  @override
+  Widget build(BuildContext context) => Material(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          height: 58,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: const Color(0xFFF0B9B9)),
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: InkWell(
+                  onTap: onDetails,
+                  borderRadius: BorderRadius.circular(12),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 13),
+                    child: Row(
+                      children: [
+                        Icon(icon, color: const Color(0xFFC62828), size: 22),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(title, style: const TextStyle(
+                                color: Color(0xFF1E293B),
+                                fontSize: 12,
+                                fontWeight: FontWeight.w800,
+                              )),
+                              Text(subtitle, style: const TextStyle(
+                                color: Color(0xFF64748B),
+                                fontSize: 10,
+                              )),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              if (hasChildren)
+                IconButton(
+                  tooltip: 'نمایش زیرشاخه‌ها',
+                  onPressed: onExpand,
+                  icon: const Icon(Icons.chevron_left_rounded,
+                    color: Color(0xFF64748B), size: 21),
+                )
+              else
+                const SizedBox(width: 12),
+            ],
+          ),
+        ),
+      );
+}
+
+class CompanionDescriptionPage extends StatelessWidget {
+  const CompanionDescriptionPage({
+    super.key,
+    required this.title,
+    required this.description,
+    required this.image,
+    required this.icon,
+    required this.points,
+  });
+
+  final String title;
+  final String description;
+  final String image;
+  final IconData icon;
+  final List<String> points;
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+        appBar: AppBar(title: const Text('معرفی بخش')),
+        body: ListView(
+          padding: const EdgeInsets.fromLTRB(18, 12, 18, 28),
+          children: [
+            AppContentImage(
+              fileName: image,
+              height: 170,
+              width: double.infinity,
+              fallbackIcon: icon,
+            ),
+            const SizedBox(height: 18),
+            Text(title, style: const TextStyle(
+              color: Color(0xFF1E293B),
+              fontSize: 20,
+              fontWeight: FontWeight.w900,
+            )),
+            const SizedBox(height: 10),
+            Text(description, style: const TextStyle(
+              color: Color(0xFF64748B),
+              fontSize: 13,
+              height: 1.9,
+            )),
+            if (points.isNotEmpty) ...[
+              const SizedBox(height: 22),
+              const Text('شرح خدمات و امکانات', style: TextStyle(
+                color: Color(0xFF49334F),
+                fontSize: 15,
+                fontWeight: FontWeight.w900,
+              )),
+              const SizedBox(height: 10),
+              for (final point in points)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 9),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Icon(Icons.check_circle_outline,
+                        color: Color(0xFFC62828), size: 18),
+                      const SizedBox(width: 8),
+                      Expanded(child: Text(point, style: const TextStyle(
+                        color: Color(0xFF475569),
+                        fontSize: 12,
+                        height: 1.8,
+                      ))),
+                    ],
+                  ),
+                ),
+            ],
+            const SizedBox(height: 18),
+            Container(
+              padding: const EdgeInsets.all(13),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF8F3F8),
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: const Color(0xFFE8DDE9)),
+              ),
+              child: const Text(
+                'برای دریافت جزئیات متناسب با نوع کسب‌وکار، شرایط ارائه و ترکیب نهایی خدمات، می‌توانید با کارشناسان کارگزار مشاوره کنید.',
+                style: TextStyle(color: Color(0xFF49334F), fontSize: 12, height: 1.8),
+              ),
+            ),
+          ],
+        ),
       );
 }
 
