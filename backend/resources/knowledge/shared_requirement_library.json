@@ -41,7 +41,9 @@
       "scope": "activity_dependent",
       "applicability": "مطابق کاربرگ همان مجوز؛ سند مالکیت، اجاره‌نامه یا سایر مستندات مورد قبول کاربرگ",
       "verification_status": "needs_review",
-      "source_url": "https://mojavez.ir/"
+      "source_url": "https://mojavez.ir/",
+      "customer_display_label": "مدرک محل فعالیت",
+      "customer_language_rule": "در پاسخ مشتری فقط customer_display_label را نشان بده؛ عنوان رسمی، مرجع صادرکننده و جزئیات حقوقی فقط در توضیح تکمیلیِ درخواستی مشتری یا پنل داخلی نمایش داده شود."
     },
     {
       "requirement_key": "premises_use_compatibility",
@@ -49,7 +51,9 @@
       "scope": "premises_specific",
       "applicability": "فقط مطابق کاربرگ و استعلام‌های لازم برای فعالیت و موقعیت ملک؛ کاربری تجاری را شرط عمومی همه فعالیت‌ها فرض نکنید",
       "verification_status": "needs_review",
-      "source_url": "https://mojavez.ir/"
+      "source_url": "https://mojavez.ir/",
+      "customer_display_label": "وضعیت و کاربری محل",
+      "customer_language_rule": "در پاسخ مشتری فقط customer_display_label را نشان بده؛ عنوان رسمی، مرجع صادرکننده و جزئیات حقوقی فقط در توضیح تکمیلیِ درخواستی مشتری یا پنل داخلی نمایش داده شود."
     },
     {
       "requirement_key": "business_signage",
@@ -57,7 +61,9 @@
       "scope": "activity_dependent",
       "applicability": "متن، زبان، ابعاد، محل نصب و الزامات محلی باید از کاربرگ و مقررات مرتبط همان فعالیت احراز شود",
       "verification_status": "needs_review",
-      "source_url": null
+      "source_url": null,
+      "customer_display_label": "تابلو",
+      "customer_language_rule": "در پاسخ مشتری فقط customer_display_label را نشان بده؛ عنوان رسمی، مرجع صادرکننده و جزئیات حقوقی فقط در توضیح تکمیلیِ درخواستی مشتری یا پنل داخلی نمایش داده شود."
     },
     {
       "requirement_key": "cctv_installation",
@@ -65,7 +71,9 @@
       "scope": "activity_and_location_specific",
       "applicability": "الزام نصب یا اخذ موافقت برای دوربین باید از کاربرگ همان فعالیت و وضعیت محل بررسی شود؛ برای استقرار در حریم یا اشراف بر اماکن طبقه‌بندی‌شده، موافقت مرجع ذی‌ربط در متن مصوبه ذکر شده است",
       "verification_status": "needs_review",
-      "source_url": "https://hoghogh.ai/circulars/c-e8e5e44a"
+      "source_url": "https://hoghogh.ai/circulars/c-e8e5e44a",
+      "customer_display_label": "دوربین مداربسته",
+      "customer_language_rule": "در پاسخ مشتری فقط customer_display_label را نشان بده؛ عنوان رسمی، مرجع صادرکننده و جزئیات حقوقی فقط در توضیح تکمیلیِ درخواستی مشتری یا پنل داخلی نمایش داده شود."
     },
     {
       "requirement_key": "neighbor_privacy_and_overlooking",
@@ -73,7 +81,9 @@
       "scope": "premises_specific",
       "applicability": "تنها در مواردی که ضابطه رسمی همان فعالیت یا مرجع صلاحیت‌دار مقرر کرده باشد؛ نوع مانع، پنجره و شیشه باید عیناً از ضابطه استخراج شود",
       "verification_status": "needs_review",
-      "source_url": "https://hoghogh.ai/circulars/c-e8e5e44a"
+      "source_url": "https://hoghogh.ai/circulars/c-e8e5e44a",
+      "customer_display_label": "رعایت حریم همسایه‌ها",
+      "customer_language_rule": "در پاسخ مشتری فقط customer_display_label را نشان بده؛ عنوان رسمی، مرجع صادرکننده و جزئیات حقوقی فقط در توضیح تکمیلیِ درخواستی مشتری یا پنل داخلی نمایش داده شود."
     },
     {
       "requirement_key": "public_places_police_approval",
@@ -81,7 +91,9 @@
       "scope": "activity_dependent",
       "applicability": "به‌عنوان عنوان تأییدیه مستقل در مصوبه هیأت مقررات‌زدایی آمده است؛ نیاز به آن برای هر فعالیت باید از کاربرگ جاری همان فعالیت تعیین شود",
       "verification_status": "needs_review",
-      "source_url": "https://hoghogh.ai/circulars/c-781044f9"
+      "source_url": "https://hoghogh.ai/circulars/c-781044f9",
+      "customer_display_label": "تأییدیه اماکن",
+      "customer_language_rule": "در پاسخ مشتری فقط customer_display_label را نشان بده؛ عنوان رسمی، مرجع صادرکننده و جزئیات حقوقی فقط در توضیح تکمیلیِ درخواستی مشتری یا پنل داخلی نمایش داده شود."
     },
     {
       "requirement_key": "health_card",
@@ -89,7 +101,9 @@
       "scope": "food_health_hygiene_group_only",
       "applicability": "برای مشاغل و کارکنانی که طبق ضوابط بهداشتی مشمول‌اند؛ گروه شغلی، مدارک، مرجع و مدت اعتبار باید از ضابطه جاری وزارت بهداشت/دانشگاه علوم پزشکی احراز شود",
       "verification_status": "needs_review",
-      "source_url": "https://www.irancodify.com/b/آیین_نامه_مقررات_بهداشتی_مصوب_1347-11-01"
+      "source_url": "https://www.irancodify.com/b/آیین_نامه_مقررات_بهداشتی_مصوب_1347-11-01",
+      "customer_display_label": "کارت بهداشت",
+      "customer_language_rule": "در پاسخ مشتری فقط customer_display_label را نشان بده؛ عنوان رسمی، مرجع صادرکننده و جزئیات حقوقی فقط در توضیح تکمیلیِ درخواستی مشتری یا پنل داخلی نمایش داده شود."
     },
     {
       "requirement_key": "environmental_health_approval",
@@ -97,7 +111,9 @@
       "scope": "food_health_hygiene_group_only_activity_and_premises_specific",
       "applicability": "بر اساس نوع فعالیت، محل، فرایند تولید/عرضه و کاربرگ جاری؛ چک‌لیست فنی نباید بین فعالیت‌های متفاوت یکسان فرض شود",
       "verification_status": "needs_review",
-      "source_url": "https://mojavez.ir/"
+      "source_url": "https://mojavez.ir/",
+      "customer_display_label": "تأییدیه بهداشت",
+      "customer_language_rule": "در پاسخ مشتری فقط customer_display_label را نشان بده؛ عنوان رسمی، مرجع صادرکننده و جزئیات حقوقی فقط در توضیح تکمیلیِ درخواستی مشتری یا پنل داخلی نمایش داده شود."
     },
     {
       "requirement_key": "trade_law_training",
@@ -110,7 +126,9 @@
       "verified_at": null,
       "notes": "دوره حضوری و غیرحضوری است؛ فقه بازار فقط حضوری. دروس اجباری طبق جدول ۲۰ ساعت و حداقل ۳ ساعت اختیاری است؛ ماده تعرفه به دوره ۲۴ ساعته اشاره دارد، بنابراین اختلاف ۲۳/۲۴ ساعت باید از مرجع مجری استعلام شود. متن جدید حدنصاب نمره قبولی/آزمون کتبی عمومی را تصریح نکرده؛ حدنصاب قدیمی را بدون سند جاری اعلام نکنید. تعرفه غیرحضوری در متن تا سقف ۶,۰۰۰,۰۰۰ ریال و تعرفه حضوری تابع مصوبه محلی و حداکثر دو برابر غیرحضوری است؛ قبل از اعلام، نرخ روز را کنترل کنید.",
       "evidence_or_document": "گواهینامه پایان دوره دارای طرح یکسان و ثبت اطلاعات فردی در سامانه دبیرخانه هیأت عالی نظارت؛ گواهی قبلی و تاریخ صدور برای کنترل اعتبار.",
-      "issuing_or_verifying_authority": "اتاق اصناف شهرستان/اتاق اصناف ایران با تأییدیه فقه بازار از بسیج اصناف، طبق دستورالعمل"
+      "issuing_or_verifying_authority": "اتاق اصناف شهرستان/اتاق اصناف ایران با تأییدیه فقه بازار از بسیج اصناف، طبق دستورالعمل",
+      "customer_display_label": "گواهی احکام",
+      "customer_language_rule": "در پاسخ مشتری فقط customer_display_label را نشان بده؛ عنوان رسمی، مرجع صادرکننده و جزئیات حقوقی فقط در توضیح تکمیلیِ درخواستی مشتری یا پنل داخلی نمایش داده شود."
     },
     {
       "requirement_key": "tax_file_and_tracking",
@@ -122,7 +140,9 @@
       "source_url": "https://my.tax.gov.ir/",
       "source_date": null,
       "verified_at": null,
-      "verification_status": "official_portal_identified_live_workflow_and_current_worksheet_review_required"
+      "verification_status": "official_portal_identified_live_workflow_and_current_worksheet_review_required",
+      "customer_display_label": "پرونده مالیاتی",
+      "customer_language_rule": "در پاسخ مشتری فقط customer_display_label را نشان بده؛ عنوان رسمی، مرجع صادرکننده و جزئیات حقوقی فقط در توضیح تکمیلیِ درخواستی مشتری یا پنل داخلی نمایش داده شود."
     },
     {
       "requirement_key": "military_service_status",
@@ -134,7 +154,9 @@
       "source_url": null,
       "source_date": null,
       "verified_at": null,
-      "verification_status": "owner_supplied_common_intake_rule_legal_scope_review_required"
+      "verification_status": "owner_supplied_common_intake_rule_legal_scope_review_required",
+      "customer_display_label": "وضعیت سربازی",
+      "customer_language_rule": "در پاسخ مشتری فقط customer_display_label را نشان بده؛ عنوان رسمی، مرجع صادرکننده و جزئیات حقوقی فقط در توضیح تکمیلیِ درخواستی مشتری یا پنل داخلی نمایش داده شود."
     },
     {
       "requirement_key": "national_housing_postal_code_registration",
@@ -146,7 +168,9 @@
       "source_url": null,
       "source_date": null,
       "verified_at": null,
-      "verification_status": "owner_supplied_common_intake_rule_official_scope_and_live_workflow_review_required"
+      "verification_status": "owner_supplied_common_intake_rule_official_scope_and_live_workflow_review_required",
+      "customer_display_label": "ثبت کدپستی",
+      "customer_language_rule": "در پاسخ مشتری فقط customer_display_label را نشان بده؛ عنوان رسمی، مرجع صادرکننده و جزئیات حقوقی فقط در توضیح تکمیلیِ درخواستی مشتری یا پنل داخلی نمایش داده شود."
     },
     {
       "requirement_key": "vocational_skill_certificate",
@@ -158,7 +182,9 @@
       "source_url": "https://www.irantvto.ir/",
       "source_date": null,
       "verified_at": null,
-      "verification_status": "owner_defined_group_rule_official_scope_and_trade_mapping_review_required"
+      "verification_status": "owner_defined_group_rule_official_scope_and_trade_mapping_review_required",
+      "customer_display_label": "مدرک فنی‌وحرفه‌ای مرتبط",
+      "customer_language_rule": "در پاسخ مشتری فقط customer_display_label را نشان بده؛ عنوان رسمی، مرجع صادرکننده و جزئیات حقوقی فقط در توضیح تکمیلیِ درخواستی مشتری یا پنل داخلی نمایش داده شود."
     },
     {
       "requirement_key": "related_academic_degree",
@@ -170,7 +196,9 @@
       "source_url": null,
       "source_date": null,
       "verified_at": null,
-      "verification_status": "owner_defined_group_rule_activity_specific_legal_review_required"
+      "verification_status": "owner_defined_group_rule_activity_specific_legal_review_required",
+      "customer_display_label": "مدرک دانشگاهی مرتبط",
+      "customer_language_rule": "در پاسخ مشتری فقط customer_display_label را نشان بده؛ عنوان رسمی، مرجع صادرکننده و جزئیات حقوقی فقط در توضیح تکمیلیِ درخواستی مشتری یا پنل داخلی نمایش داده شود."
     }
   ],
   "police_approval": {
@@ -512,5 +540,14 @@
     ],
     "notes": "تشکیل پرونده مالیاتی را با دریافت شناسه یکتای مجوز، کد اقتصادی یا کد رهگیری یکسان نگیرید؛ عنوان دقیق شناسه و الزام آن باید در زمان اقدام بررسی شود.",
     "verification_status": "official_portal_identified_live_workflow_and_current_worksheet_review_required"
+  },
+  "customer_communication_policy": {
+    "language": "فارسی محاوره‌ایِ محترمانه، ساده، روان و روشن؛ مانند گفت‌وگوی یک کارشناس خوش‌بیان.",
+    "first_response": "کوتاه و مستقیم؛ فقط مدارک و شرایط مرتبط با همان خدمت و همان فعالیت را فهرست کن.",
+    "labels": "برای نام مدارک از customer_display_label و عبارت‌های رایج استفاده کن؛ از عنوان‌های اداری طولانی در پاسخ اول پرهیز کن.",
+    "detail_on_request": "توضیح کامل هر مدرک فقط وقتی ارائه شود که مشتری درباره همان مورد سؤال کند.",
+    "avoid": "متن کتابی، نقل عین بخشنامه، اصطلاحات اداری غیرضروری، فهرست‌های طولانی، تکرار شرط نامرتبط و لحنی که مشتری را از ادامه کار منصرف کند.",
+    "accuracy": "ساده‌سازی فقط در بیان است؛ دامنه شمول، الزام قانونی و استثناها نباید تغییر کند. مورد نامطمئن را قطعی یا همگانی معرفی نکن.",
+    "standard_closing": "یک پاراگراف جدا و برجسته در پایان هر پاسخ شرایط و مدارک قرار بده و مشتری را از امکان پیگیری در صورت نداشتن بعضی موارد مطمئن کن."
   }
 }
