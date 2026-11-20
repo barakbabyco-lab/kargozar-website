@@ -12,8 +12,8 @@ void main() {
   runApp(const KargozarApp());
 }
 
-const _navy = Color(0xFF49334F); // برند مکمل: بادمجانی تیره
-const _teal = Color(0xFFC62828); // رنگ اصلی برند: قرمز
+const _navy = Color(0xFF4B0082); // برند مکمل: بادمجانی تیره
+const _teal = Color(0xFFE30613); // رنگ اصلی برند: قرمز
 const _ink = Color(0xFF1E293B);
 const _muted = Color(0xFF64748B);
 const _canvas = Color(0xFFFFFFFF);
@@ -669,7 +669,7 @@ class _ServiceCategoryAction extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 13),
             child: Row(children: [
-              Icon(icon, color: const Color(0xFFC62828), size: 22),
+              Icon(icon, color: const Color(0xFFE30613), size: 22),
               const SizedBox(width: 12),
               Expanded(child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
