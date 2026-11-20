@@ -26,8 +26,8 @@ class KargozarApp extends StatefulWidget {
 }
 class _KargozarAppState extends State<KargozarApp>{
  late final KargozarApiClient _api; late final CustomerSession _session; late final CustomerRequestRepository _requests;
- bool _loading=true,_signedIn=false;
- @override void initState(){super.initState();_api=widget.apiClient??KargozarApiClient();_session=CustomerSession(_api);_requests=CustomerRequestRepository(_api);_restore();}
+ bool _loading=false,_signedIn=false;
+ @override void initState(){super.initState();_api=widget.apiClient??KargozarApiClient();_session=CustomerSession(_api);_requests=CustomerRequestRepository(_api);}
  Future<void> _restore()async{try{final ok=await _session.restore();if(mounted)setState(()=>_signedIn=ok);}catch(_){}finally{if(mounted)setState(()=>_loading=false);}}
  final _navigatorKey=GlobalKey<NavigatorState>();
  Future<bool> _login()async{final dialogContext=_navigatorKey.currentContext;if(dialogContext==null)return false;final ok=await showDialog<bool>(context:dialogContext,barrierDismissible:false,builder:(_)=>OtpDialog(session:_session));final authenticated=ok==true&&_session.isAuthenticated;if(mounted)setState(()=>_signedIn=authenticated);return authenticated;}
