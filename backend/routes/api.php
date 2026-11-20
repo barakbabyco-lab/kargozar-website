@@ -21,6 +21,12 @@ Route::prefix('v1')->group(function (): void {
     Route::get('services', [ServiceController::class, 'index']);
     Route::get('services/{slug}', [ServiceController::class, 'show']);
 
+    Route::prefix('guest')->middleware('throttle:30,1')->group(function (): void {
+        Route::post('support-conversations', [SupportChatController::class, 'guestStart'])->middleware('throttle:10,1');
+        Route::get('support-conversations/{conversationId}/messages', [SupportChatController::class, 'guestMessages']);
+        Route::post('support-conversations/{conversationId}/messages', [SupportChatController::class, 'guestSend']);
+    });
+
     Route::post('staff/auth/login', StaffLoginController::class)->middleware('throttle:10,1');
 
     Route::middleware(['auth:sanctum', 'staff.role:admin,supervisor,expert,finance,support'])
