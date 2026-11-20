@@ -549,8 +549,21 @@ class ServicesPage extends StatefulWidget {
 }
 
 class _ServicesPageState extends State<ServicesPage> {
+  String _query = '';
+
   @override
   Widget build(BuildContext context) {
+    final normalizedQuery = _query.trim();
+    final matchingServices = services.where((service) {
+      if (normalizedQuery.isEmpty) return true;
+      return service.title.contains(normalizedQuery) ||
+          service.category.contains(normalizedQuery) ||
+          service.subtitle.contains(normalizedQuery);
+    }).toList();
+    final visibleServices = normalizedQuery.isEmpty
+        ? matchingServices.take(4).toList()
+        : matchingServices;
+
     return ListView(
       padding: EdgeInsets.zero,
       children: [
@@ -559,6 +572,14 @@ class _ServicesPageState extends State<ServicesPage> {
           onConsultation: widget.onConsultation,
         ),
         const SizedBox(height: 12),
+        const Padding(
+          padding: EdgeInsets.fromLTRB(14, 2, 14, 10),
+          child: Text(
+            'دسته‌بندی خدمات',
+            textAlign: TextAlign.right,
+            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w900, color: _navy),
+          ),
+        ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12),
           child: GridView.builder(
@@ -567,39 +588,50 @@ class _ServicesPageState extends State<ServicesPage> {
             itemCount: serviceTaxonomy.length,
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
-              crossAxisSpacing: 8,
-              mainAxisSpacing: 8,
-              childAspectRatio: 1.15,
+              crossAxisSpacing: 9,
+              mainAxisSpacing: 9,
+              childAspectRatio: 1.05,
             ),
             itemBuilder: (context, index) {
               final category = serviceTaxonomy[index];
               return Material(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(15),
+                borderRadius: BorderRadius.circular(17),
                 clipBehavior: Clip.antiAlias,
                 child: InkWell(
                   onTap: () => widget.onOpenCategory(category),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                  child: Stack(
+                    fit: StackFit.expand,
                     children: [
-                      Expanded(
-                        child: AppContentImage(
-                          fileName: serviceCategoryImages[category.slug] ??
-                              'missing.png',
-                          fallbackIcon: Icons.category_outlined,
-                          borderRadius: 0,
-                        ),
+                      AppContentImage(
+                        fileName: serviceCategoryImages[category.slug] ?? 'missing.png',
+                        fallbackIcon: Icons.category_outlined,
+                        borderRadius: 0,
                       ),
-                      Padding(
-                        padding: const EdgeInsets.all(9),
-                        child: Text(
-                          category.name,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w800,
-                            color: _ink,
+                      Align(
+                        alignment: Alignment.bottomCenter,
+                        child: Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.fromLTRB(8, 20, 8, 11),
+                          decoration: const BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [Colors.transparent, Color(0xD9000000)],
+                            ),
+                          ),
+                          child: Text(
+                            category.name,
+                            maxLines: 2,
+                            textAlign: TextAlign.center,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 11,
+                              height: 1.35,
+                              fontWeight: FontWeight.w900,
+                              shadows: [Shadow(color: Colors.black54, blurRadius: 4)],
+                            ),
                           ),
                         ),
                       ),
@@ -610,7 +642,50 @@ class _ServicesPageState extends State<ServicesPage> {
             },
           ),
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: 18),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 14),
+          child: TextField(
+            textDirection: TextDirection.rtl,
+            onChanged: (value) => setState(() => _query = value),
+            decoration: InputDecoration(
+              hintText: 'جست‌وجوی خدمات...',
+              prefixIcon: const Icon(Icons.search_rounded),
+              filled: true,
+              fillColor: Colors.white,
+              contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(16),
+                borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(16),
+                borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+              ),
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 18, 16, 8),
+          child: Text(
+            normalizedQuery.isEmpty ? 'خدمات پرکاربرد' : 'نتایج جست‌وجو',
+            textAlign: TextAlign.right,
+            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w900, color: _navy),
+          ),
+        ),
+        if (visibleServices.isEmpty)
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 18, vertical: 20),
+            child: Text('خدمتی با این عبارت پیدا نشد.', textAlign: TextAlign.center),
+          )
+        else
+          ...visibleServices.map(
+            (service) => Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+              child: ServiceListTile(service: service, onRequest: widget.onRequest),
+            ),
+          ),
+        const SizedBox(height: 24),
       ],
     );
   }
