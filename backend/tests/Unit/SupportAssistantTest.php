@@ -52,6 +52,20 @@ class SupportAssistantTest extends TestCase
         $this->assertStringContainsString('شماره تماس‌تان را ثبت کنید', $reply);
     }
 
+    public function test_guild_license_document_question_uses_shared_and_activity_specific_checklists(): void
+    {
+        Config::set('support_assistant.missing_requirement_phrases', []);
+        Config::set('support_assistant.escalation_terms', []);
+        Config::set('support_assistant.customer_communication.standard_closing_text', 'برای پیگیری، شماره تماس‌تان را ثبت کنید.');
+
+        $reply = app(SupportAssistant::class)->reply('مدارک جواز کسب برای آرایشگاه چیست؟');
+
+        $this->assertStringContainsString('چک‌لیست اولیه', $reply);
+        $this->assertStringContainsString('کارت بهداشت', $reply);
+        $this->assertStringContainsString('تأییدیه بهداشت', $reply);
+        $this->assertStringContainsString('شماره تماس‌تان را ثبت کنید', $reply);
+    }
+
     public function test_unknown_question_uses_safe_fallback(): void
     {
         Config::set('support_assistant.missing_requirement_phrases', []);
