@@ -1097,6 +1097,28 @@ class ServiceCategoryDetailPage extends StatelessWidget {
 
   String get _intro {
     final name = category.name;
+    switch (category.slug) {
+      case 'business-licenses':
+        return 'این بخش مسیر بررسی و پیگیری مجوزهای لازم برای شروع یا ادامه فعالیت اقتصادی را پوشش می‌دهد؛ از مجوز مشاغل خانگی و صنفی تا مجوزهای صنعتی و امور مرتبط با کارت بازرگانی. نوع مجوز بر اساس موضوع فعالیت، محل اجرا و شرایط متقاضی تعیین می‌شود.';
+      case 'company-registration':
+        return 'خدمات ثبتی شرکت‌ها و مؤسسات، از انتخاب قالب حقوقی و تأسیس تا ثبت تغییرات، شعب، انحلال و امور دفاتر قانونی را در بر می‌گیرد. مسیر مناسب بر اساس نوع شخصیت حقوقی و وضعیت پرونده مشخص می‌شود.';
+      case 'trademark-intellectual-property':
+        return 'این بخش برای ثبت و پیگیری حقوق مرتبط با نام و نشان تجاری، اختراع، طرح صنعتی و آثار فکری است. امکان ثبت و میزان حمایت، به ماهیت دارایی فکری و بررسی سوابق و شرایط قانونی وابسته است.';
+      case 'supplementary-certificates':
+        return 'مدارک و تأییدیه‌های مکمل موردنیاز برخی فعالیت‌ها، از جمله الزامات بهداشتی، استاندارد، تأییدیه‌های مرتبط با محل فعالیت و امور مالیاتی در این بخش قرار می‌گیرند. نوع مدرک بر اساس فعالیت و مرجع ذی‌صلاح تعیین می‌شود.';
+      case 'banking-services':
+        return 'این بخش خدمات مرتبط با امور بانکی کسب‌وکار را پوشش می‌دهد؛ از بررسی شرایط افتتاح حساب جاری و دریافت ابزار پذیرش تا پیگیری درخواست تسهیلات. تصمیم نهایی درباره افتتاح حساب یا اعطای تسهیلات با بانک و بر اساس ضوابط آن است.';
+      case 'legal-contract-services':
+        return 'خدمات تنظیم و بررسی قراردادها و اسناد موردنیاز روابط کاری، پیمانکاری، تجاری و مشارکتی در این بخش ارائه می‌شود. متن هر سند باید متناسب با موضوع، تعهدات طرفین و شرایط واقعی توافق تهیه و بررسی شود.';
+      case 'internet-commerce-services':
+        return 'این بخش به راه‌اندازی و توسعه حضور آنلاین کسب‌وکار اختصاص دارد؛ از وب‌سایت، دامنه و میزبانی تا تلفن اینترنتی، پیامک، تجارت الکترونیک و اپلیکیشن. دامنه کار بر اساس نیاز و زیرساخت موردنظر تعیین می‌شود.';
+      case 'real-estate-contracts':
+        return 'خدمات تنظیم، تمدید، اصلاح و بررسی قراردادهای ملکی در این بخش قرار می‌گیرند. نوع قرارداد، مشخصات ملک و طرفین، وضعیت مالکیت و الزامات ثبت و رهگیری پیش از تنظیم سند بررسی می‌شود.';
+      case 'business-development':
+        return 'این بخش ابزارها و نرم‌افزارهای مدیریتی برای اداره منظم‌تر کسب‌وکار را معرفی می‌کند؛ از حسابداری و فروش تا مدیریت پرسنل، قراردادها، مشتریان، انبار و گزارش‌گیری.';
+      case 'specialized-services':
+        return 'در این بخش درخواست‌های تخصصی و پروژه‌ای قرار می‌گیرند که در دسته‌های اصلی دیگر جای نمی‌گیرند؛ مانند مطالعات امکان‌سنجی، تدوین طرح کسب‌وکار، ارزش‌گذاری و خدمات تخصصی تجارت خارجی یا جذب سرمایه.';
+    }
     if (category.slug.startsWith('guild-')) {
       return 'این بخش برای متقاضیان دریافت جواز کسب صنفی در گروه «$name» طراحی شده است. نوع فعالیت، محل کسب و شرایط اختصاصی رسته پس از بررسی اولیه مشخص می‌شود.';
     }
@@ -1122,6 +1144,9 @@ class ServiceCategoryDetailPage extends StatelessWidget {
   }
 
   List<String> get _examples {
+    if (category.children.isNotEmpty) {
+      return category.children.map((child) => child.name).toList(growable: false);
+    }
     if (category.slug == 'guild-production') return const ['تولید پوشاک و منسوجات', 'تولید محصولات غذایی و خوراکی', 'تولید مصنوعات چوبی و فلزی', 'تولید محصولات هنری', 'صنایع‌دستی', 'تولید محصولات چرمی', 'تولید محصولات پلاستیکی', 'تولید لوازم و تجهیزات', 'تولید محصولات تزئینی', 'سایر فعالیت‌های تولیدی مجاز'];
     if (category.slug == 'guild-technical-services') return const ['تعمیر لوازم خانگی', 'تعمیر تجهیزات الکترونیکی', 'خدمات برق‌کاری', 'تأسیسات ساختمان', 'تعمیر خودرو', 'تعمیر موتورسیکلت', 'خدمات رایانه و شبکه', 'تعمیر تجهیزات صنعتی', 'خدمات فنی ساختمان', 'سایر خدمات فنی مجاز'];
     if (category.slug == 'guild-distribution-retail') return const ['فروشگاه پوشاک', 'فروشگاه مواد غذایی', 'فروشگاه لوازم خانگی', 'فروشگاه لوازم آرایشی و بهداشتی', 'فروشگاه ابزار و یراق', 'فروشگاه لوازم الکترونیکی', 'فروشگاه محصولات فرهنگی', 'عمده‌فروشی کالا', 'خرده‌فروشی کالا', 'سایر فعالیت‌های توزیعی مجاز'];
@@ -1146,8 +1171,18 @@ class ServiceCategoryDetailPage extends StatelessWidget {
             ),
             child: Column(
               children: [
-                const Icon(Icons.assignment_turned_in_outlined, color: _navy, size: 42),
-                const SizedBox(height: 12),
+                if (serviceCategoryImages[category.slug] != null) ...[
+                  AppContentImage(
+                    fileName: serviceCategoryImages[category.slug]!,
+                    height: 118,
+                    width: double.infinity,
+                    fallbackIcon: Icons.assignment_turned_in_outlined,
+                  ),
+                  const SizedBox(height: 12),
+                ] else ...[
+                  const Icon(Icons.assignment_turned_in_outlined, color: _navy, size: 42),
+                  const SizedBox(height: 12),
+                ],
                 Text(category.name, textAlign: TextAlign.center,
                   style: const TextStyle(fontSize: 19, fontWeight: FontWeight.w900, color: _ink)),
                 const SizedBox(height: 10),
