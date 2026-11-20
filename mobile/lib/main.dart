@@ -538,7 +538,14 @@ class _HomePageState extends State<HomePage> {
 }
 
 class ServicesPage extends StatefulWidget {
-  const ServicesPage({super.key, required this.onRequest, required this.onOpenCategory, required this.onNavigate, required this.onConsultation});
+  const ServicesPage({
+    super.key,
+    required this.onRequest,
+    required this.onOpenCategory,
+    required this.onNavigate,
+    required this.onConsultation,
+  });
+
   final Future<void> Function(ServiceItem service) onRequest;
   final ValueChanged<ServiceCategory> onOpenCategory;
   final ValueChanged<int> onNavigate;
@@ -552,68 +559,137 @@ class _ServicesPageState extends State<ServicesPage> {
   @override
   Widget build(BuildContext context) {
     return ListView(
-      padding: EdgeInsets.zero,
+      padding: const EdgeInsets.fromLTRB(12, 0, 12, 20),
       children: [
         AppBannerStrip(
           onNavigate: widget.onNavigate,
           onConsultation: widget.onConsultation,
         ),
-        const SizedBox(height: 12),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12),
-          child: GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: serviceTaxonomy.length,
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              crossAxisSpacing: 8,
-              mainAxisSpacing: 8,
-              childAspectRatio: 1.15,
+        const SizedBox(height: 18),
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 4),
+          child: Text(
+            'دسته‌بندی خدمات',
+            style: TextStyle(
+              color: _ink,
+              fontSize: 16,
+              fontWeight: FontWeight.w900,
             ),
-            itemBuilder: (context, index) {
-              final category = serviceTaxonomy[index];
-              return Material(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(15),
-                clipBehavior: Clip.antiAlias,
-                child: InkWell(
-                  onTap: () => widget.onOpenCategory(category),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Expanded(
-                        child: AppContentImage(
-                          fileName: serviceCategoryImages[category.slug] ??
-                              'missing.png',
-                          fallbackIcon: Icons.category_outlined,
-                          borderRadius: 0,
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(9),
-                        child: Text(
-                          category.name,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w800,
-                            color: _ink,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            },
           ),
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: 10),
+        GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: serviceTaxonomy.length,
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            crossAxisSpacing: 9,
+            mainAxisSpacing: 9,
+            childAspectRatio: 2.05,
+          ),
+          itemBuilder: (context, index) {
+            final category = serviceTaxonomy[index];
+            return _CategoryIconTile(
+              title: category.name,
+              icon: _serviceCategoryIcon(category.slug),
+              onTap: () => widget.onOpenCategory(category),
+            );
+          },
+        ),
+        const SizedBox(height: 16),
       ],
     );
   }
+}
+
+IconData _serviceCategoryIcon(String slug) {
+  switch (slug) {
+    case 'business-licenses':
+      return Icons.storefront_outlined;
+    case 'trademark-intellectual-property':
+      return Icons.verified_outlined;
+    case 'company-registration':
+      return Icons.apartment_outlined;
+    case 'supplementary-certificates':
+      return Icons.fact_check_outlined;
+    case 'banking-services':
+      return Icons.account_balance_outlined;
+    case 'legal-contract-services':
+      return Icons.gavel_outlined;
+    case 'internet-commerce-services':
+      return Icons.language_rounded;
+    case 'real-estate-contracts':
+      return Icons.real_estate_agent_outlined;
+    case 'business-development':
+      return Icons.trending_up_rounded;
+    case 'specialized-services':
+      return Icons.workspace_premium_outlined;
+    default:
+      return Icons.grid_view_rounded;
+  }
+}
+
+class _CategoryIconTile extends StatelessWidget {
+  const _CategoryIconTile({
+    required this.title,
+    required this.icon,
+    required this.onTap,
+  });
+
+  final String title;
+  final IconData icon;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) => Material(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(14),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: const Color(0xFFECEFF3)),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFFF1F1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(icon, color: _teal, size: 22),
+                ),
+                const SizedBox(width: 9),
+                Expanded(
+                  child: Text(
+                    title,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      color: _ink,
+                      fontSize: 11,
+                      height: 1.45,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 2),
+                const Icon(
+                  Icons.chevron_left_rounded,
+                  color: Color(0xFF9AA4B2),
+                  size: 17,
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
 }
 
 ServiceItem _serviceItemFromCatalog(CatalogService item) => ServiceItem(
