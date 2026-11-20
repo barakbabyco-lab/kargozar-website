@@ -12,8 +12,8 @@ class KnowledgeRetrievalService
 
     /**
      * Return source instructions and approved local knowledge, if available.
-     * Live retrieval is intentionally reported as pending until a verified
-     * source adapter is registered for that official portal.
+     * Live retrieval remains unavailable until a verified portal adapter
+     * has been implemented and explicitly marked operational in config.
      */
     public function retrieve(string $serviceKey): array
     {
@@ -35,7 +35,10 @@ class KnowledgeRetrievalService
 
         $localUsable = is_array($knowledge) && ($knowledge['usable'] ?? false) === true;
         $needsLive = in_array($route['mode'], ['live', 'hybrid'], true);
-        $liveReady = $this->isLiveSourceReady($route);
+        $liveSourceKey = $route['mode'] === 'hybrid'
+            ? ($route['live_verification_source'] ?? null)
+            : ($route['source'] ?? null);
+        $liveReady = $needsLive && $this->isLiveSourceReady($liveSourceKey);
 
         if ($route['mode'] === 'local') {
             $status = $localUsable ? 'local_knowledge_available' : 'local_knowledge_requires_review';
@@ -53,19 +56,15 @@ class KnowledgeRetrievalService
             'knowledge' => $localUsable ? $knowledge['document'] : null,
             'knowledge_review' => $localUsable ? null : ($knowledge['reason'] ?? 'knowledge_document_missing'),
             'live_lookup' => $needsLive ? [
-                'source' => $route['source'],
+                'source' => $liveSourceKey,
                 'ready' => $liveReady,
                 'status' => $liveReady ? 'adapter_configured' : 'adapter_pending_verification',
             ] : null,
         ];
     }
 
-    private function isLiveSourceReady(array $route): bool
+    private function isLiveSourceReady(?string $sourceKey): bool
     {
-        $sourceKey = $route['mode'] === 'hybrid'
-            ? ($route['live_verification_source'] ?? null)
-            : ($route['source'] ?? null);
-
         if (! $sourceKey) {
             return false;
         }
