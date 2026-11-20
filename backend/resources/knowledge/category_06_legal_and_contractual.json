@@ -3,9 +3,9 @@
   "category_key": "06-legal-and-contractual",
   "category_number": 6,
   "title": "خدمات حقوقی و قراردادی",
-  "status": "draft_needs_review",
-  "reviewed_at": null,
-  "review_version": 1,
+  "status": "populated_draft_needs_domain_and_source_review",
+  "reviewed_at": "2026-11-21",
+  "review_version": 2,
   "knowledge_mode": "local_with_legal_review",
   "scope": "الگوهای پایه و بندهای قراردادی در بانک داخلی؛ متن نهایی متناسب با طرفین، موضوع، ریسک و قوانین جاری و با کنترل کارشناس حقوقی.",
   "services": [
@@ -13,97 +13,232 @@
       "service_key": "employment-contract",
       "title": "تنظیم قرارداد کار",
       "knowledge_mode": "local",
-      "status": "draft_needs_review",
-      "scope": null,
-      "eligibility": null,
-      "conditions": [],
-      "documents": [],
-      "steps": [],
-      "fees": null,
-      "issuance_time": null,
+      "status": "populated_draft_needs_source_review",
+      "scope": "کارفرمایان و کارکنانی که رابطه آن‌ها واجد عناصر رابطه کار است.",
+      "eligibility": "کارفرمایان و کارکنانی که رابطه آن‌ها واجد عناصر رابطه کار است.",
+      "conditions": [
+        "نوع قرارداد و مدت باید با ماهیت واقعی رابطه و قانون کار سازگار باشد",
+        "شرط قراردادی نباید مزایای قانونی کارگر را کاهش دهد",
+        "مفاد اصلی موضوع ماده ۱۰ قانون کار از جمله نوع کار، مزد، ساعات، محل، تاریخ و مدت باید پوشش داده شود"
+      ],
+      "documents": [
+        "مشخصات هویتی طرفین",
+        "عنوان شغل، شرح وظایف و محل انجام کار",
+        "مزد و مزایا، ساعات کار، تعطیلات و مرخصی",
+        "تاریخ شروع، مدت و شرایط خاص توافق‌شده",
+        "اطلاعات بیمه و مقررات داخلی مرتبط"
+      ],
+      "steps": [
+        "مصاحبه با کارفرما و تعیین ماهیت رابطه",
+        "جمع‌آوری اطلاعات شغل، مزد، ساعات و مدت",
+        "تنظیم قرارداد مطابق قانون و مقررات جاری",
+        "بازبینی بندهای محرمانگی، اموال، ایمنی و خاتمه",
+        "امضا و تحویل نسخه‌ها و ثبت/نگهداری طبق تکالیف جاری"
+      ],
+      "fees": {
+        "status": "not_published_without_current_provider_or_official_quote",
+        "amount": null
+      },
+      "issuance_time": {
+        "status": "case_and_authority_dependent_not_guaranteed",
+        "estimate": null
+      },
       "issuing_authority": null,
       "official_source": null,
       "source_url": null,
       "source_date": null,
       "verified_at": null,
-      "reviewed_at": null,
-      "verification_status": "unverified",
+      "reviewed_at": "2026-11-21",
+      "verification_status": "draft_needs_primary_source_or_provider_validation",
       "shared_requirement_refs": [],
       "activity_specific_requirements": [],
-      "customer_questions": [],
-      "expert_escalation_rules": []
+      "customer_questions": [
+        "نوع کار و شرح وظایف چیست؟",
+        "قرارداد موقت است یا نامحدود؟",
+        "مزد و مزایا و ساعات کار چگونه است؟",
+        "محل کار و تاریخ شروع چیست؟"
+      ],
+      "expert_escalation_rules": [
+        "اخراج، مطالبات مزدی، حادثه کار، اختلاف بیمه‌ای، قرارداد مدیران یا شرط رقابت/محرمانگی پیچیده"
+      ],
+      "what_is_it": "قرارداد رابطه کار میان کارگر و کارفرما با تعیین شغل، مزد، زمان و محل کار و سایر شرایط قانونی؛ عنوان قرارداد به‌تنهایی ماهیت رابطه کار را تغییر نمی‌دهد.",
+      "deliverables": [
+        "قرارداد متناسب با شغل و شرایط واقعی",
+        "چک‌لیست مدارک و بندهای مهم کارفرما/کارگر"
+      ],
+      "notes": "این محتوای پایه برای گفت‌وگوی تشخیصی و چک‌لیست اجرایی است؛ شروط حقوقی/سامانه‌ای، هزینه و زمان تا اتصال به منبع رسمی یا تأیید متخصص، قطعی اعلام نشود."
     },
     {
       "service_key": "contractor-agreement",
       "title": "تنظیم قرارداد پیمانکاری",
       "knowledge_mode": "local",
-      "status": "draft_needs_review",
-      "scope": null,
-      "eligibility": null,
-      "conditions": [],
-      "documents": [],
-      "steps": [],
-      "fees": null,
-      "issuance_time": null,
+      "status": "populated_draft_needs_source_review",
+      "scope": "اشخاص یا شرکت‌هایی که اجرای پروژه/خدمت را به پیمانکار می‌سپارند یا به‌عنوان پیمانکار می‌پذیرند.",
+      "eligibility": "اشخاص یا شرکت‌هایی که اجرای پروژه/خدمت را به پیمانکار می‌سپارند یا به‌عنوان پیمانکار می‌پذیرند.",
+      "conditions": [
+        "ماهیت واقعی رابطه باید بررسی شود تا قرارداد پیمانکاری پوششی برای رابطه کار نباشد",
+        "موضوع و خروجی قابل سنجش و معیار تحویل باید روشن باشد",
+        "مسئولیت بیمه، مالیات، مجوزها، محرمانگی، مالکیت فکری و خسارت باید متناسب تعیین شود"
+      ],
+      "documents": [
+        "مشخصات طرفین و اختیار امضاکنندگان",
+        "شرح خدمات/مشخصات فنی و برنامه زمان‌بندی",
+        "مبلغ، روش پرداخت و مالیات/کسورات مرتبط",
+        "ضمانت‌ها، بیمه‌ها و مجوزهای موردنیاز حسب موضوع"
+      ],
+      "steps": [
+        "تعریف دقیق موضوع و خروجی",
+        "تعیین زمان‌بندی، نقاط تحویل و معیار پذیرش",
+        "توافق درباره مبلغ، پرداخت، تضمین و ریسک‌ها",
+        "تنظیم و بازبینی قرارداد و پیوست‌ها",
+        "امضا، نظارت بر اجرا و صورتجلسه تحویل"
+      ],
+      "fees": {
+        "status": "not_published_without_current_provider_or_official_quote",
+        "amount": null
+      },
+      "issuance_time": {
+        "status": "case_and_authority_dependent_not_guaranteed",
+        "estimate": null
+      },
       "issuing_authority": null,
       "official_source": null,
       "source_url": null,
       "source_date": null,
       "verified_at": null,
-      "reviewed_at": null,
-      "verification_status": "unverified",
+      "reviewed_at": "2026-11-21",
+      "verification_status": "draft_needs_primary_source_or_provider_validation",
       "shared_requirement_refs": [],
       "activity_specific_requirements": [],
-      "customer_questions": [],
-      "expert_escalation_rules": []
+      "customer_questions": [
+        "موضوع دقیق پیمان چیست؟",
+        "خروجی قابل تحویل چیست؟",
+        "مبلغ و زمان‌بندی چگونه است؟",
+        "مواد، تجهیزات و نیروی انسانی را چه کسی تأمین می‌کند؟"
+      ],
+      "expert_escalation_rules": [
+        "پروژه ساختمانی/فنی دارای مقررات خاص، پیمان دولتی، بیمه پیمان، مالکیت فکری یا ریسک بالای خسارت"
+      ],
+      "what_is_it": "قرارداد انجام کار یا ارائه خدمت توسط پیمانکار مستقل با تعیین موضوع، خروجی، زمان، مبلغ، معیار پذیرش و مسئولیت‌ها.",
+      "deliverables": [
+        "قرارداد و پیوست شرح خدمات",
+        "چک‌لیست تحویل، تغییر کار و تسویه"
+      ],
+      "notes": "این محتوای پایه برای گفت‌وگوی تشخیصی و چک‌لیست اجرایی است؛ شروط حقوقی/سامانه‌ای، هزینه و زمان تا اتصال به منبع رسمی یا تأیید متخصص، قطعی اعلام نشود."
     },
     {
       "service_key": "business-contracts",
       "title": "تنظیم و بازبینی قراردادهای تجاری",
       "knowledge_mode": "local",
-      "status": "draft_needs_review",
-      "scope": null,
-      "eligibility": null,
-      "conditions": [],
-      "documents": [],
-      "steps": [],
-      "fees": null,
-      "issuance_time": null,
+      "status": "populated_draft_needs_source_review",
+      "scope": "اشخاص حقیقی و حقوقی در معاملات و همکاری‌های تجاری.",
+      "eligibility": "اشخاص حقیقی و حقوقی در معاملات و همکاری‌های تجاری.",
+      "conditions": [
+        "اهلیت و اختیار امضاکنندگان و مالکیت موضوع قرارداد بررسی شود",
+        "موضوع، مبلغ، تعهدات، زمان، تحویل، پرداخت، تضمین و روش حل اختلاف روشن باشد",
+        "شرایط فسخ، فورس‌ماژور، محرمانگی و مالکیت فکری متناسب با ریسک تنظیم شود"
+      ],
+      "documents": [
+        "پیش‌نویس یا توافق اولیه",
+        "مدارک هویتی/ثبتی طرفین و اختیار امضا",
+        "پیوست فنی، مالی، زمان‌بندی و اسناد مالکیت موضوع معامله"
+      ],
+      "steps": [
+        "مصاحبه و تعیین هدف و ریسک‌های طرف",
+        "بررسی مدارک و پیش‌نویس",
+        "شناسایی بندهای مبهم یا یک‌طرفه",
+        "تنظیم/اصلاح متن و پیوست‌ها",
+        "بازبینی نهایی و امضا"
+      ],
+      "fees": {
+        "status": "not_published_without_current_provider_or_official_quote",
+        "amount": null
+      },
+      "issuance_time": {
+        "status": "case_and_authority_dependent_not_guaranteed",
+        "estimate": null
+      },
       "issuing_authority": null,
       "official_source": null,
       "source_url": null,
       "source_date": null,
       "verified_at": null,
-      "reviewed_at": null,
-      "verification_status": "unverified",
+      "reviewed_at": "2026-11-21",
+      "verification_status": "draft_needs_primary_source_or_provider_validation",
       "shared_requirement_refs": [],
       "activity_specific_requirements": [],
-      "customer_questions": [],
-      "expert_escalation_rules": []
+      "customer_questions": [
+        "نوع معامله یا همکاری چیست؟",
+        "چه چیزی و با چه مبلغی مبادله می‌شود؟",
+        "ریسک اصلی شما چیست؟",
+        "در صورت اختلاف چه مرجعی/روشی مدنظر است؟"
+      ],
+      "expert_escalation_rules": [
+        "قرارداد بین‌المللی، داوری خارجی، املاک/سهام، ضمانت سنگین یا دعوای جاری"
+      ],
+      "what_is_it": "تنظیم یا بازبینی قراردادهای خریدوفروش، مشارکت، نمایندگی، توزیع، محرمانگی، تأمین و سایر روابط تجاری.",
+      "deliverables": [
+        "قرارداد یا گزارش اصلاحات و ریسک‌ها",
+        "چک‌لیست تعهدات و نقاط کنترل اجرا"
+      ],
+      "notes": "این محتوای پایه برای گفت‌وگوی تشخیصی و چک‌لیست اجرایی است؛ شروط حقوقی/سامانه‌ای، هزینه و زمان تا اتصال به منبع رسمی یا تأیید متخصص، قطعی اعلام نشود."
     },
     {
       "service_key": "legal-documentation",
       "title": "تنظیم اسناد و مکاتبات حقوقی",
       "knowledge_mode": "local",
-      "status": "draft_needs_review",
-      "scope": null,
-      "eligibility": null,
-      "conditions": [],
-      "documents": [],
-      "steps": [],
-      "fees": null,
-      "issuance_time": null,
+      "status": "populated_draft_needs_source_review",
+      "scope": "اشخاص و کسب‌وکارهایی که به مکاتبه مستند با طرف قرارداد یا مرجع نیاز دارند.",
+      "eligibility": "اشخاص و کسب‌وکارهایی که به مکاتبه مستند با طرف قرارداد یا مرجع نیاز دارند.",
+      "conditions": [
+        "موضوع و خواسته باید روشن و مبتنی بر واقعیت و مستندات باشد",
+        "متن نباید ادعای اثبات‌نشده یا اقرار ناخواسته ایجاد کند",
+        "در موارد دارای مهلت قانونی، تاریخ ابلاغ و مهلت باید فوراً بررسی شود"
+      ],
+      "documents": [
+        "شرح ماجرا به ترتیب زمانی",
+        "قراردادها، رسیدها، مکاتبات و مستندات",
+        "مشخصات طرف مقابل و مرجع مخاطب",
+        "خواسته و نتیجه مورد انتظار"
+      ],
+      "steps": [
+        "دریافت روایت و مستندات",
+        "تنظیم خط زمانی و تعیین خواسته",
+        "تشخیص نوع سند و مخاطب",
+        "تهیه پیش‌نویس و بازبینی حقوقی",
+        "تحویل متن و راهنمای ارسال/ثبت"
+      ],
+      "fees": {
+        "status": "not_published_without_current_provider_or_official_quote",
+        "amount": null
+      },
+      "issuance_time": {
+        "status": "case_and_authority_dependent_not_guaranteed",
+        "estimate": null
+      },
       "issuing_authority": null,
       "official_source": null,
       "source_url": null,
       "source_date": null,
       "verified_at": null,
-      "reviewed_at": null,
-      "verification_status": "unverified",
+      "reviewed_at": "2026-11-21",
+      "verification_status": "draft_needs_primary_source_or_provider_validation",
       "shared_requirement_refs": [],
       "activity_specific_requirements": [],
-      "customer_questions": [],
-      "expert_escalation_rules": []
+      "customer_questions": [
+        "موضوع اختلاف یا درخواست چیست؟",
+        "چه مدارکی در اختیار دارید؟",
+        "آیا ابلاغیه یا مهلت قانونی دریافت کرده‌اید؟",
+        "مخاطب سند شخص است یا مرجع رسمی؟"
+      ],
+      "expert_escalation_rules": [
+        "دادخواست، دفاع قضایی، مهلت واخواهی/تجدیدنظر، پرونده کیفری یا نیاز به وکیل دارای پروانه"
+      ],
+      "what_is_it": "تهیه و بازبینی نامه‌ها، اظهارنامه‌ها، اخطارها، درخواست‌ها و اسناد اداری/حقوقی با هدف بیان دقیق خواسته و حفظ مستندات.",
+      "deliverables": [
+        "پیش‌نویس سند/مکاتبه و فهرست پیوست‌ها"
+      ],
+      "notes": "این محتوای پایه برای گفت‌وگوی تشخیصی و چک‌لیست اجرایی است؛ شروط حقوقی/سامانه‌ای، هزینه و زمان تا اتصال به منبع رسمی یا تأیید متخصص، قطعی اعلام نشود."
     }
   ],
   "data_quality_rules": [
@@ -120,5 +255,6 @@
       "تغییر هزینه یا زمان",
       "گزارش مغایرت از پرونده واقعی"
     ]
-  }
+  },
+  "content_policy": "هر خدمت تعریف، دامنه، شرایط، مدارک، مراحل، خروجی، پرسش‌های تشخیصی و موارد ارجاع دارد؛ هزینه و زمان تا تأیید روزآمد اعلام قطعی نمی‌شوند."
 }
