@@ -3,7 +3,7 @@
   "category_key": "09-business-development",
   "category_number": 9,
   "title": "خدمات توسعه کسب‌وکار",
-  "status": "populated_draft_needs_domain_and_source_review",
+  "status": "populated_draft_vendor_evidence_schema_added",
   "reviewed_at": "2026-11-21",
   "review_version": 2,
   "knowledge_mode": "local_with_vendor_verification",
@@ -47,7 +47,7 @@
       "source_date": null,
       "verified_at": null,
       "reviewed_at": "2026-11-21",
-      "verification_status": "draft_needs_primary_source_or_provider_validation",
+      "verification_status": "needs_vendor_specific_current_evidence",
       "shared_requirement_refs": [],
       "activity_specific_requirements": [],
       "customer_questions": [
@@ -63,7 +63,9 @@
       "deliverables": [
         "نرم‌افزار پیکربندی‌شده، داده اولیه و آموزش"
       ],
-      "notes": "این محتوای پایه برای گفت‌وگوی تشخیصی و چک‌لیست اجرایی است؛ شروط حقوقی/سامانه‌ای، هزینه و زمان تا اتصال به منبع رسمی یا تأیید متخصص، قطعی اعلام نشود."
+      "notes": "این محتوای پایه برای گفت‌وگوی تشخیصی و چک‌لیست اجرایی است؛ شروط حقوقی/سامانه‌ای، هزینه و زمان تا اتصال به منبع رسمی یا تأیید متخصص، قطعی اعلام نشود.",
+      "vendor_verification_required": true,
+      "pricing_policy": "quote_and_date_from_selected_vendor; never reuse an undated price"
     },
     {
       "service_key": "sales-invoicing",
@@ -103,7 +105,7 @@
       "source_date": null,
       "verified_at": null,
       "reviewed_at": "2026-11-21",
-      "verification_status": "draft_needs_primary_source_or_provider_validation",
+      "verification_status": "needs_vendor_specific_current_evidence",
       "shared_requirement_refs": [],
       "activity_specific_requirements": [],
       "customer_questions": [
@@ -118,7 +120,9 @@
       "deliverables": [
         "فرایند فروش و صدور فاکتور پیکربندی‌شده"
       ],
-      "notes": "این محتوای پایه برای گفت‌وگوی تشخیصی و چک‌لیست اجرایی است؛ شروط حقوقی/سامانه‌ای، هزینه و زمان تا اتصال به منبع رسمی یا تأیید متخصص، قطعی اعلام نشود."
+      "notes": "این محتوای پایه برای گفت‌وگوی تشخیصی و چک‌لیست اجرایی است؛ شروط حقوقی/سامانه‌ای، هزینه و زمان تا اتصال به منبع رسمی یا تأیید متخصص، قطعی اعلام نشود.",
+      "vendor_verification_required": true,
+      "pricing_policy": "quote_and_date_from_selected_vendor; never reuse an undated price"
     },
     {
       "service_key": "payroll-hr",
@@ -159,7 +163,7 @@
       "source_date": null,
       "verified_at": null,
       "reviewed_at": "2026-11-21",
-      "verification_status": "draft_needs_primary_source_or_provider_validation",
+      "verification_status": "needs_vendor_specific_current_evidence",
       "shared_requirement_refs": [],
       "activity_specific_requirements": [],
       "customer_questions": [
@@ -176,7 +180,9 @@
         "ساختار حقوق و دستمزد و فیش‌های محاسباتی",
         "گزارش‌های قابل کنترل"
       ],
-      "notes": "این محتوای پایه برای گفت‌وگوی تشخیصی و چک‌لیست اجرایی است؛ شروط حقوقی/سامانه‌ای، هزینه و زمان تا اتصال به منبع رسمی یا تأیید متخصص، قطعی اعلام نشود."
+      "notes": "این محتوای پایه برای گفت‌وگوی تشخیصی و چک‌لیست اجرایی است؛ شروط حقوقی/سامانه‌ای، هزینه و زمان تا اتصال به منبع رسمی یا تأیید متخصص، قطعی اعلام نشود.",
+      "vendor_verification_required": true,
+      "pricing_policy": "quote_and_date_from_selected_vendor; never reuse an undated price"
     },
     {
       "service_key": "human-resources",
@@ -216,7 +222,7 @@
       "source_date": null,
       "verified_at": null,
       "reviewed_at": "2026-11-21",
-      "verification_status": "draft_needs_primary_source_or_provider_validation",
+      "verification_status": "needs_vendor_specific_current_evidence",
       "shared_requirement_refs": [],
       "activity_specific_requirements": [],
       "customer_questions": [
@@ -231,7 +237,9 @@
       "deliverables": [
         "فرایندها، فرم‌ها، شرح شغل و شاخص‌های پیشنهادی"
       ],
-      "notes": "این محتوای پایه برای گفت‌وگوی تشخیصی و چک‌لیست اجرایی است؛ شروط حقوقی/سامانه‌ای، هزینه و زمان تا اتصال به منبع رسمی یا تأیید متخصص، قطعی اعلام نشود."
+      "notes": "این محتوای پایه برای گفت‌وگوی تشخیصی و چک‌لیست اجرایی است؛ شروط حقوقی/سامانه‌ای، هزینه و زمان تا اتصال به منبع رسمی یا تأیید متخصص، قطعی اعلام نشود.",
+      "vendor_verification_required": true,
+      "pricing_policy": "quote_and_date_from_selected_vendor; never reuse an undated price"
     },
     {
       "service_key": "contract-management",
@@ -271,7 +279,7 @@
       "source_date": null,
       "verified_at": null,
       "reviewed_at": "2026-11-21",
-      "verification_status": "draft_needs_primary_source_or_provider_validation",
+      "verification_status": "needs_vendor_specific_current_evidence",
       "shared_requirement_refs": [],
       "activity_specific_requirements": [],
       "customer_questions": [
@@ -286,7 +294,9 @@
       "deliverables": [
         "ساختار مدیریت قرارداد و قالب‌ها/هشدارها"
       ],
-      "notes": "این محتوای پایه برای گفت‌وگوی تشخیصی و چک‌لیست اجرایی است؛ شروط حقوقی/سامانه‌ای، هزینه و زمان تا اتصال به منبع رسمی یا تأیید متخصص، قطعی اعلام نشود."
+      "notes": "این محتوای پایه برای گفت‌وگوی تشخیصی و چک‌لیست اجرایی است؛ شروط حقوقی/سامانه‌ای، هزینه و زمان تا اتصال به منبع رسمی یا تأیید متخصص، قطعی اعلام نشود.",
+      "vendor_verification_required": true,
+      "pricing_policy": "quote_and_date_from_selected_vendor; never reuse an undated price"
     },
     {
       "service_key": "crm",
@@ -326,7 +336,7 @@
       "source_date": null,
       "verified_at": null,
       "reviewed_at": "2026-11-21",
-      "verification_status": "draft_needs_primary_source_or_provider_validation",
+      "verification_status": "needs_vendor_specific_current_evidence",
       "shared_requirement_refs": [],
       "activity_specific_requirements": [],
       "customer_questions": [
@@ -341,7 +351,9 @@
       "deliverables": [
         "CRM پیکربندی‌شده و فرایند پیگیری مشتری"
       ],
-      "notes": "این محتوای پایه برای گفت‌وگوی تشخیصی و چک‌لیست اجرایی است؛ شروط حقوقی/سامانه‌ای، هزینه و زمان تا اتصال به منبع رسمی یا تأیید متخصص، قطعی اعلام نشود."
+      "notes": "این محتوای پایه برای گفت‌وگوی تشخیصی و چک‌لیست اجرایی است؛ شروط حقوقی/سامانه‌ای، هزینه و زمان تا اتصال به منبع رسمی یا تأیید متخصص، قطعی اعلام نشود.",
+      "vendor_verification_required": true,
+      "pricing_policy": "quote_and_date_from_selected_vendor; never reuse an undated price"
     },
     {
       "service_key": "inventory-management",
@@ -381,7 +393,7 @@
       "source_date": null,
       "verified_at": null,
       "reviewed_at": "2026-11-21",
-      "verification_status": "draft_needs_primary_source_or_provider_validation",
+      "verification_status": "needs_vendor_specific_current_evidence",
       "shared_requirement_refs": [],
       "activity_specific_requirements": [],
       "customer_questions": [
@@ -396,7 +408,9 @@
       "deliverables": [
         "ساختار انبار و نرم‌افزار/فرایند کنترل موجودی"
       ],
-      "notes": "این محتوای پایه برای گفت‌وگوی تشخیصی و چک‌لیست اجرایی است؛ شروط حقوقی/سامانه‌ای، هزینه و زمان تا اتصال به منبع رسمی یا تأیید متخصص، قطعی اعلام نشود."
+      "notes": "این محتوای پایه برای گفت‌وگوی تشخیصی و چک‌لیست اجرایی است؛ شروط حقوقی/سامانه‌ای، هزینه و زمان تا اتصال به منبع رسمی یا تأیید متخصص، قطعی اعلام نشود.",
+      "vendor_verification_required": true,
+      "pricing_policy": "quote_and_date_from_selected_vendor; never reuse an undated price"
     }
   ],
   "data_quality_rules": [
@@ -414,5 +428,25 @@
       "گزارش مغایرت از پرونده واقعی"
     ]
   },
-  "content_policy": "هر خدمت تعریف، دامنه، شرایط، مدارک، مراحل، خروجی، پرسش‌های تشخیصی و موارد ارجاع دارد؛ هزینه و زمان تا تأیید روزآمد اعلام قطعی نمی‌شوند."
+  "content_policy": "هر خدمت تعریف، دامنه، شرایط، مدارک، مراحل، خروجی، پرسش‌های تشخیصی و موارد ارجاع دارد؛ هزینه و زمان تا تأیید روزآمد اعلام قطعی نمی‌شوند.",
+  "source_review_notes": {
+    "knowledge_class": "service_delivery_and_vendor_selection",
+    "source_policy": "برای نرم‌افزارهای حسابداری، فروش، حقوق و دستمزد، منابع انسانی، قرارداد، CRM و انبار یک مرجع مقرراتی واحد وجود ندارد. اطلاعات قابلیت‌ها، مجوز استفاده، قیمت، پشتیبانی، امنیت و سازگاری باید برای هر عرضه‌کننده و نسخه در زمان پیشنهاد ثبت شود.",
+    "required_vendor_evidence": [
+      "نام عرضه‌کننده و نسخه محصول",
+      "صفحه رسمی محصول و مستندات فنی",
+      "قابلیت‌های تأییدشده با دمو یا مستند",
+      "مدل قیمت‌گذاری و تاریخ استعلام",
+      "پشتیبانی، SLA و شرایط تمدید",
+      "مالکیت داده و امکان خروجی‌گیری",
+      "سیاست پشتیبان‌گیری و کنترل دسترسی",
+      "سازگاری با تکالیف جاری مالیاتی/صورتحساب الکترونیکی در صورت کاربرد"
+    ],
+    "tax_reference": {
+      "authority": "سازمان امور مالیاتی کشور",
+      "portal": "https://my.tax.gov.ir/",
+      "scope": "فقط برای کنترل تکالیف مالیاتی و پرونده مودی؛ نه تأییدیه کیفیت نرم‌افزار یا توصیه تجاری.",
+      "verification_status": "official_portal_identified_live_workflow_not_checked"
+    }
+  }
 }
