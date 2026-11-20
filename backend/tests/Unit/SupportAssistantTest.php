@@ -39,6 +39,19 @@ class SupportAssistantTest extends TestCase
         $this->assertStringContainsString("\n\nاگر مدرکی ندارید", $reply);
     }
 
+    public function test_structured_service_bank_answers_document_questions(): void
+    {
+        Config::set('support_assistant.missing_requirement_phrases', []);
+        Config::set('support_assistant.escalation_terms', []);
+        Config::set('support_assistant.customer_communication.standard_closing_text', 'برای پیگیری، شماره تماس‌تان را ثبت کنید.');
+
+        $reply = app(SupportAssistant::class)->reply('مدارک ثبت شرکت چیست؟');
+
+        $this->assertStringContainsString('ثبت شرکت', $reply);
+        $this->assertStringContainsString('مدارک قابل بررسی', $reply);
+        $this->assertStringContainsString('شماره تماس‌تان را ثبت کنید', $reply);
+    }
+
     public function test_unknown_question_uses_safe_fallback(): void
     {
         Config::set('support_assistant.missing_requirement_phrases', []);
