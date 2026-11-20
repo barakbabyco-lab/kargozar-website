@@ -90,7 +90,7 @@ jobs:
         env:
           SSH_CONFIG: ${{ steps.ssh.outputs.ssh_config }}
           DEPLOY_PATH: ${{ steps.ssh.outputs.deploy_path }}
-          TASK: ${{ inputs.task || (github.event_name == 'push' && 'logo-locate' || 'health') }}
+          TASK: ${{ inputs.task || (github.event_name == 'push' && 'logo-export' || 'health') }}
         run: |
           set -euo pipefail
           case "$TASK" in
@@ -110,7 +110,7 @@ jobs:
               REMOTE_COMMAND='find /var/www /home /srv /opt /var/lib/sftpgo /var/lib -type f -name "Picsart_26-11-20_20-13-50-129.jpg" -print 2>/dev/null | head -20'
               ;;
             logo-export)
-              REMOTE_COMMAND='test -s /var/www/html/kargozar-assets/Final/Picsart_26-11-20_20-13-50-129.jpg && file /var/www/html/kargozar-assets/Final/Picsart_26-11-20_20-13-50-129.jpg && sha256sum /var/www/html/kargozar-assets/Final/Picsart_26-11-20_20-13-50-129.jpg'
+              REMOTE_COMMAND='test -s /var/www/html/kargozar-assets/final/Picsart_26-11-20_20-13-50-129.jpg && file /var/www/html/kargozar-assets/final/Picsart_26-11-20_20-13-50-129.jpg && sha256sum /var/www/html/kargozar-assets/final/Picsart_26-11-20_20-13-50-129.jpg /var/www/html/kargozar-assets/Picsart_26-11-20_20-13-50-129.jpg'
               ;;
             storage)
               REMOTE_COMMAND='printf "current=%s\\n" "$(readlink "$1/current")"; test -f "$1/current/artisan"; test -d "$1/current/vendor"; test -d "$1/shared/storage"; stat -c "%U:%G %a %n" "$1/shared/.env" "$1/shared/storage"'
@@ -153,14 +153,14 @@ jobs:
           ssh -F "$SSH_CONFIG" kargozar-staging "bash -lc $(printf '%q' "$REMOTE_COMMAND") -- $(printf '%q' "$DEPLOY_PATH")"
 
       - name: Download uploaded Kargozar logo
-        if: inputs.task == 'logo-export'
+        if: github.event_name == 'push' || inputs.task == 'logo-export'
         shell: bash
         env:
           SSH_CONFIG: ${{ steps.ssh.outputs.ssh_config }}
         run: |
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/kargozar-logo"
-          scp -F "$SSH_CONFIG" kargozar-staging:/var/www/html/kargozar-assets/Final/Picsart_26-11-20_20-13-50-129.jpg "$RUNNER_TEMP/kargozar-logo/kargozar-logo-original.jpg"
+          scp -F "$SSH_CONFIG" kargozar-staging:/var/www/html/kargozar-assets/final/Picsart_26-11-20_20-13-50-129.jpg "$RUNNER_TEMP/kargozar-logo/kargozar-logo-original.jpg"
           test -s "$RUNNER_TEMP/kargozar-logo/kargozar-logo-original.jpg"
           file "$RUNNER_TEMP/kargozar-logo/kargozar-logo-original.jpg"
           sha256sum "$RUNNER_TEMP/kargozar-logo/kargozar-logo-original.jpg"
