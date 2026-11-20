@@ -2,7 +2,7 @@
   "schema_version": 1,
   "registry_key": "kargozar_all_ten_service_categories",
   "title": "فهرست مادر بانک دانش ده دسته خدمات کارگزار",
-  "status": "initial_registry_created_content_completion_pending",
+  "status": "all_ten_categories_registered_partial_source_review_and_live_worksheet_completion_pending",
   "policy": "برای هر دسته یک پرونده دانشی مستقل و برای هر خدمت یک رکورد مستقل ایجاد شود؛ شروط مشترک از کتابخانه مشترک ارجاع شوند و شروط اختصاصی فقط در دامنه همان خدمت اعمال شوند.",
   "category_count": 10,
   "categories": [
@@ -385,5 +385,11 @@
       "file": "shared_requirement_library.json#guild_license_common_preflight",
       "status": "draft_needs_official_validation"
     }
+  ],
+  "source_review_register": "source_review_register.json",
+  "reviewed_at": "2026-11-21",
+  "notes": [
+    "دفتر ثبت منابع و وضعیت راستی‌آزمایی در source_review_register.json ایجاد شد؛ این دفتر منابع رسمی، منابع ثانویه، وضعیت دسترسی و صف پژوهش بعدی را نگهداری می‌کند.",
+    "دسته اول از رکوردهای خالی به ساختار عملیاتی برای سه گروه صنفی، مشاغل خانگی و صنعتی/دستگاهی ارتقا یافت؛ کاربرگ‌های جاری هر فعالیت هنوز باید به‌صورت زنده استخراج شوند."
   ]
 }
