@@ -208,6 +208,11 @@ class CompanionContentPage extends StatelessWidget {
   final ValueChanged<int> onNavigate;
   final VoidCallback onConsultation;
 
+  static const _accent = Color(0xFFC62828);
+  static const _softAccent = Color(0xFFFFF1F1);
+  static const _ink = Color(0xFF1E293B);
+  static const _muted = Color(0xFF64748B);
+
   @override
   Widget build(BuildContext context) => ListView(
         padding: EdgeInsets.zero,
@@ -216,7 +221,19 @@ class CompanionContentPage extends StatelessWidget {
             onNavigate: onNavigate,
             onConsultation: onConsultation,
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 18),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16),
+            child: Text(
+              'امکانات همراه کسب‌وکار',
+              style: TextStyle(
+                color: _ink,
+                fontSize: 16,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+          ),
+          const SizedBox(height: 10),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12),
             child: GridView.builder(
@@ -225,48 +242,71 @@ class CompanionContentPage extends StatelessWidget {
               itemCount: companionModules.length,
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
-                crossAxisSpacing: 8,
-                mainAxisSpacing: 8,
-                childAspectRatio: 1.15,
+                crossAxisSpacing: 9,
+                mainAxisSpacing: 9,
+                childAspectRatio: 2.05,
               ),
               itemBuilder: (context, index) {
                 final item = companionModules[index];
                 return Material(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(15),
-                  clipBehavior: Clip.antiAlias,
+                  borderRadius: BorderRadius.circular(14),
                   child: InkWell(
                     onTap: () => onOpen(index),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Expanded(
-                          child: AppContentImage(
-                            fileName: item.image,
-                            borderRadius: 0,
-                            fallbackIcon: item.icon,
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(9),
-                          child: Text(
-                            item.title,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              fontSize: 11,
-                              fontWeight: FontWeight.w800,
-                              color: Color(0xFF1E293B),
+                    borderRadius: BorderRadius.circular(14),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 9,
+                      ),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(14),
+                        border: Border.all(color: const Color(0xFFECEFF3)),
+                      ),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              color: _softAccent,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Icon(
+                              item.icon,
+                              color: _accent,
+                              size: 22,
                             ),
                           ),
-                        ),
-                      ],
+                          const SizedBox(width: 9),
+                          Expanded(
+                            child: Text(
+                              item.title,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                color: _ink,
+                                fontSize: 11,
+                                height: 1.4,
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 2),
+                          const Icon(
+                            Icons.chevron_left_rounded,
+                            color: Color(0xFF9AA4B2),
+                            size: 17,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 );
               },
             ),
           ),
+          const SizedBox(height: 18),
         ],
       );
 }
