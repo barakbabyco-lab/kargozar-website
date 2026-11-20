@@ -21,7 +21,8 @@ class WebSearchService
             return null;
         }
 
-        $query = trim(mb_substr($question, 0, 300, 'UTF-8'));
+        $query = $this->sanitizeQuery($question);
+        $query = trim(mb_substr($query, 0, 300, 'UTF-8'));
         if ($query === '') {
             return null;
         }
@@ -93,5 +94,23 @@ class WebSearchService
                 return null;
             }
         });
+
+    /**
+     * Remove obvious direct identifiers before sending a query to the search provider.
+     */
+    private function sanitizeQuery(string $question): string
+    {
+        $question = preg_replace('/[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,}/iu', ' ', $question) ?? $question;
+        $question = strtr($question, [
+            '۰' => '0', '۱' => '1', '۲' => '2', '۳' => '3', '۴' => '4',
+            '۵' => '5', '۶' => '6', '۷' => '7', '۸' => '8', '۹' => '9',
+            '٠' => '0', '١' => '1', '٢' => '2', '٣' => '3', '٤' => '4',
+            '٥' => '5', '٦' => '6', '٧' => '7', '٨' => '8', '٩' => '9',
+        ]);
+        $question = preg_replace('/(?<!\\d)(?:(?:\\+|00)?98|0)?9\\d{9}(?!\\d)/u', ' ', $question) ?? $question;
+        $question = preg_replace('/(?<!\\d)\\d{10}(?!\\d)/u', ' ', $question) ?? $question;
+
+        return trim(preg_replace('/\\s+/u', ' ', $question) ?? $question);
+    }
     }
 }
