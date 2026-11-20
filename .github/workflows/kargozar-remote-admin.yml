@@ -166,7 +166,7 @@ jobs:
           sha256sum "$RUNNER_TEMP/kargozar-logo/kargozar-logo-original.jpg"
 
       - name: Upload original logo artifact
-        if: inputs.task == 'logo-export'
+        if: github.event_name == 'push' || inputs.task == 'logo-export'
         uses: actions/upload-artifact@v4
         with:
           name: kargozar-logo-original
