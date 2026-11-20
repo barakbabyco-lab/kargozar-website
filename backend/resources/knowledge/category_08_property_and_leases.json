@@ -3,9 +3,9 @@
   "category_key": "08-property-and-leases",
   "category_number": 8,
   "title": "خدمات ملکی و قراردادها",
-  "status": "draft_needs_review",
-  "reviewed_at": null,
-  "review_version": 1,
+  "status": "populated_draft_needs_domain_and_source_review",
+  "reviewed_at": "2026-11-21",
+  "review_version": 2,
   "knowledge_mode": "hybrid",
   "scope": "بانک داخلی برای انواع قرارداد و مدارک؛ ثبت، شناسه، استعلام و فرایندهای سامانه‌ای از درگاه رسمی روز بررسی شوند.",
   "services": [
@@ -13,73 +13,172 @@
       "service_key": "lease-tracking-code",
       "title": "دریافت کد رهگیری اجاره‌نامه",
       "knowledge_mode": "hybrid",
-      "status": "draft_needs_review",
-      "scope": null,
-      "eligibility": null,
-      "conditions": [],
-      "documents": [],
-      "steps": [],
-      "fees": null,
-      "issuance_time": null,
+      "status": "populated_draft_needs_source_review",
+      "scope": "موجر و مستأجر و قراردادهایی که طبق قانون باید در سامانه ثبت و شناسه دریافت کنند.",
+      "eligibility": "موجر و مستأجر و قراردادهایی که طبق قانون باید در سامانه ثبت و شناسه دریافت کنند.",
+      "conditions": [
+        "هویت و اختیار موجر و مستأجر و اطلاعات ملک باید قابل احراز باشد",
+        "مشخصات ملک، مدت، مبلغ، ودیعه و شروط باید با توافق واقعی طرفین تطبیق داشته باشد",
+        "مسیر سامانه‌ای و اشخاص مجاز به ثبت باید مطابق مقررات روز کنترل شود"
+      ],
+      "documents": [
+        "مدارک هویتی طرفین",
+        "مدرک مالکیت یا اختیار قانونی موجر/نماینده",
+        "مشخصات ملک و کدپستی/شناسه‌های لازم",
+        "مدت اجاره، مبلغ ودیعه و اجاره‌بها و شروط توافق‌شده"
+      ],
+      "steps": [
+        "احراز هویت و اختیار طرفین",
+        "کنترل اطلاعات ملک و طرفین",
+        "تنظیم مفاد قرارداد با توافق طرفین",
+        "ثبت در سامانه رسمی مجاز و اخذ تأییدهای لازم",
+        "دریافت و بایگانی شناسه رهگیری و نسخه قرارداد"
+      ],
+      "fees": {
+        "status": "not_published_without_current_provider_or_official_quote",
+        "amount": null
+      },
+      "issuance_time": {
+        "status": "case_and_authority_dependent_not_guaranteed",
+        "estimate": null
+      },
       "issuing_authority": null,
       "official_source": null,
       "source_url": null,
       "source_date": null,
       "verified_at": null,
-      "reviewed_at": null,
-      "verification_status": "unverified",
+      "reviewed_at": "2026-11-21",
+      "verification_status": "draft_needs_primary_source_or_provider_validation",
       "shared_requirement_refs": [],
       "activity_specific_requirements": [],
-      "customer_questions": [],
-      "expert_escalation_rules": []
+      "customer_questions": [
+        "ملک مسکونی است یا تجاری؟",
+        "مالک شخصی است یا نماینده/وکیل؟",
+        "طرفین و اطلاعات ملک آماده‌اند؟",
+        "قرارداد جدید است یا تمدید؟"
+      ],
+      "expert_escalation_rules": [
+        "مالکیت مشاع/ورثه‌ای، وکالت مبهم، اختلاف مالکیت، ممنوعیت معامله یا تعارض اطلاعات"
+      ],
+      "what_is_it": "ثبت الکترونیکی قرارداد اجاره در سامانه مجاز و دریافت شناسه/کد رهگیری طبق مقررات و مسیر جاری.",
+      "deliverables": [
+        "قرارداد ثبت‌شده و شناسه رهگیری در صورت تکمیل شرایط سامانه"
+      ],
+      "notes": "این محتوای پایه برای گفت‌وگوی تشخیصی و چک‌لیست اجرایی است؛ شروط حقوقی/سامانه‌ای، هزینه و زمان تا اتصال به منبع رسمی یا تأیید متخصص، قطعی اعلام نشود."
     },
     {
       "service_key": "property-contracts",
       "title": "تنظیم و بررسی قراردادهای ملکی",
       "knowledge_mode": "local",
-      "status": "draft_needs_review",
-      "scope": null,
-      "eligibility": null,
-      "conditions": [],
-      "documents": [],
-      "steps": [],
-      "fees": null,
-      "issuance_time": null,
+      "status": "populated_draft_needs_source_review",
+      "scope": "مالک، خریدار، مستأجر، سرمایه‌گذار یا نماینده قانونی.",
+      "eligibility": "مالک، خریدار، مستأجر، سرمایه‌گذار یا نماینده قانونی.",
+      "conditions": [
+        "نوع حق و وضعیت ثبتی ملک و اختیار انتقال‌دهنده بررسی شود",
+        "مفاد مالی، زمان تحویل، تعهدات، تضمین‌ها و شروط فسخ روشن باشد",
+        "قواعد آمره و الزامات ثبت رسمی/الکترونیکی حسب نوع معامله رعایت شود"
+      ],
+      "documents": [
+        "مدارک هویتی طرفین",
+        "سند مالکیت و استعلامات در دسترس",
+        "وکالت‌نامه/نمایندگی در صورت اقدام نماینده",
+        "مشخصات ملک، مبلغ و شروط توافق"
+      ],
+      "steps": [
+        "شناسایی نوع قرارداد و هدف طرفین",
+        "کنترل اولیه هویت و اختیار",
+        "بررسی وضعیت ملک و ریسک‌های اعلام‌شده",
+        "تنظیم متن و شروط و پیوست‌ها",
+        "بازبینی نهایی، امضا و ثبت در مسیر قانونی لازم"
+      ],
+      "fees": {
+        "status": "not_published_without_current_provider_or_official_quote",
+        "amount": null
+      },
+      "issuance_time": {
+        "status": "case_and_authority_dependent_not_guaranteed",
+        "estimate": null
+      },
       "issuing_authority": null,
       "official_source": null,
       "source_url": null,
       "source_date": null,
       "verified_at": null,
-      "reviewed_at": null,
-      "verification_status": "unverified",
+      "reviewed_at": "2026-11-21",
+      "verification_status": "draft_needs_primary_source_or_provider_validation",
       "shared_requirement_refs": [],
       "activity_specific_requirements": [],
-      "customer_questions": [],
-      "expert_escalation_rules": []
+      "customer_questions": [
+        "نوع قرارداد و کاربری ملک چیست؟",
+        "مالک/نماینده چه کسی است؟",
+        "سند و استعلامات موجود است؟",
+        "مبلغ، موعد تحویل و شروط خاص چیست؟"
+      ],
+      "expert_escalation_rules": [
+        "دعوی مالکیت، بازداشت ملک، سرقفلی پیچیده، پیش‌فروش، معامله معارض یا نیاز به سند رسمی"
+      ],
+      "what_is_it": "تنظیم یا بازبینی قراردادهای اجاره، خریدوفروش، مشارکت، سرقفلی و سایر توافق‌های ملکی متناسب با نوع ملک و حقوق طرفین.",
+      "deliverables": [
+        "پیش‌نویس یا نسخه بازبینی‌شده قرارداد",
+        "چک‌لیست ریسک‌ها و مدارک"
+      ],
+      "notes": "این محتوای پایه برای گفت‌وگوی تشخیصی و چک‌لیست اجرایی است؛ شروط حقوقی/سامانه‌ای، هزینه و زمان تا اتصال به منبع رسمی یا تأیید متخصص، قطعی اعلام نشود."
     },
     {
       "service_key": "property-document-followup",
       "title": "پیگیری مدارک و استعلامات ملکی",
       "knowledge_mode": "hybrid",
-      "status": "draft_needs_review",
-      "scope": null,
-      "eligibility": null,
-      "conditions": [],
-      "documents": [],
-      "steps": [],
-      "fees": null,
-      "issuance_time": null,
+      "status": "populated_draft_needs_source_review",
+      "scope": "مالک یا ذی‌نفع/نماینده قانونی با اختیار معتبر.",
+      "eligibility": "مالک یا ذی‌نفع/نماینده قانونی با اختیار معتبر.",
+      "conditions": [
+        "نوع استعلام به هدف معامله و نوع ملک بستگی دارد",
+        "دسترسی به برخی اطلاعات فقط برای مالک یا نماینده مجاز امکان‌پذیر است",
+        "نتیجه استعلام مرجع رسمی جایگزین بررسی حقوقی/فنی کامل نیست"
+      ],
+      "documents": [
+        "مدارک هویتی و مدرک سمت/وکالت",
+        "شناسه و مشخصات ملک و سند",
+        "درخواست و هدف استعلام"
+      ],
+      "steps": [
+        "تعیین فهرست استعلام‌های لازم",
+        "احراز سمت و مدارک",
+        "ثبت درخواست در مراجع/سامانه‌های مجاز",
+        "پیگیری پاسخ و کنترل مغایرت‌ها",
+        "تحویل نتایج و موارد نیازمند اقدام"
+      ],
+      "fees": {
+        "status": "not_published_without_current_provider_or_official_quote",
+        "amount": null
+      },
+      "issuance_time": {
+        "status": "case_and_authority_dependent_not_guaranteed",
+        "estimate": null
+      },
       "issuing_authority": null,
       "official_source": null,
       "source_url": null,
       "source_date": null,
       "verified_at": null,
-      "reviewed_at": null,
-      "verification_status": "unverified",
+      "reviewed_at": "2026-11-21",
+      "verification_status": "draft_needs_primary_source_or_provider_validation",
       "shared_requirement_refs": [],
       "activity_specific_requirements": [],
-      "customer_questions": [],
-      "expert_escalation_rules": []
+      "customer_questions": [
+        "هدف استعلام چیست؟",
+        "نوع ملک و شهر کجاست؟",
+        "سند تک‌برگ یا دفترچه‌ای است؟",
+        "شما مالک هستید یا نماینده؟"
+      ],
+      "expert_escalation_rules": [
+        "مغایرت ثبتی، بازداشت، تعارض مالکیت، تخلف ساختمانی یا دعوای قضایی"
+      ],
+      "what_is_it": "پیگیری و آماده‌سازی مدارک و استعلامات ملکی مانند سوابق ثبتی، وضعیت سند، پایان‌کار یا مدارک شهرداری در حدود دسترسی و اختیار قانونی.",
+      "deliverables": [
+        "گزارش وضعیت مدارک و استعلامات دریافت‌شده"
+      ],
+      "notes": "این محتوای پایه برای گفت‌وگوی تشخیصی و چک‌لیست اجرایی است؛ شروط حقوقی/سامانه‌ای، هزینه و زمان تا اتصال به منبع رسمی یا تأیید متخصص، قطعی اعلام نشود."
     }
   ],
   "data_quality_rules": [
@@ -96,5 +195,6 @@
       "تغییر هزینه یا زمان",
       "گزارش مغایرت از پرونده واقعی"
     ]
-  }
+  },
+  "content_policy": "هر خدمت تعریف، دامنه، شرایط، مدارک، مراحل، خروجی، پرسش‌های تشخیصی و موارد ارجاع دارد؛ هزینه و زمان تا تأیید روزآمد اعلام قطعی نمی‌شوند."
 }
