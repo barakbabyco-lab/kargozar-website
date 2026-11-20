@@ -62,6 +62,9 @@ class SupportChatController extends Controller
             return $conversation->load(['customer', 'messages']);
         });
 
+        $this->appendAssistantReply($conversation, $validator->validated()['body']);
+        $conversation->load(['customer', 'messages']);
+
         return response()->json(['data' => $this->conversationPayload($conversation)], 201);
     }
 
@@ -104,6 +107,8 @@ class SupportChatController extends Controller
             $conversation->update(['last_message_at' => $message->created_at]);
             return $message;
         });
+
+        $this->appendAssistantReply($conversation, $validator->validated()['body']);
 
         return response()->json(['data' => $this->messagePayload($message)], 201);
     }
@@ -222,9 +227,16 @@ class SupportChatController extends Controller
             ->first();
         $mobile = $this->extractIranianMobile($customerMessage);
 
+        $normalizedMessage = strtr($customerMessage, ['ي' => 'ی', 'ك' => 'ک', '‌' => ' ']);
+        $isMissingRequirementFollowup = $lastAssistant !== null
+            && str_contains($lastAssistant->body, 'راه‌های رسیدن به خدا زیاده!')
+            && preg_match('/چطوری|چطور|چه راهکاری|یعنی چی|از چه راهی/u', $normalizedMessage) === 1;
+
         if ($mobile !== null && $lastAssistant !== null && str_contains($lastAssistant->body, 'شماره تماس')) {
             $conversation->update(['contact_mobile' => $mobile]);
             $answer = 'شماره تماس شما با موفقیت دریافت شد. درخواست پیگیری انسانی در این گفت‌وگو ثبت شد و کارشناس می‌تواند از طریق همین اطلاعات با شما تماس بگیرد.';
+        } elseif ($isMissingRequirementFollowup) {
+            $answer = (string) config('support_assistant.missing_requirement_response');
         } else {
             $answer = app(SupportAssistant::class)->reply($customerMessage);
         }
