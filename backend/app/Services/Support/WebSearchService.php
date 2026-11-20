@@ -94,6 +94,7 @@ class WebSearchService
                 return null;
             }
         });
+    }
 
     /**
      * Remove obvious direct identifiers before sending a query to the search provider.
@@ -111,6 +112,5 @@ class WebSearchService
         $question = preg_replace('/(?<!\\d)\\d{10}(?!\\d)/u', ' ', $question) ?? $question;
 
         return trim(preg_replace('/\\s+/u', ' ', $question) ?? $question);
-    }
     }
 }
