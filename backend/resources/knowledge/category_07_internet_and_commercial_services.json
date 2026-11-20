@@ -3,7 +3,7 @@
   "category_key": "07-internet-and-commercial-services",
   "category_number": 7,
   "title": "خدمات اینترنتی و تجاری",
-  "status": "populated_draft_needs_domain_and_source_review",
+  "status": "populated_draft_enamad_and_tax_portal_sources_added_live_review_required",
   "reviewed_at": "2026-11-21",
   "review_version": 2,
   "knowledge_mode": "hybrid",
@@ -19,7 +19,8 @@
       "conditions": [
         "نوع فعالیت، مالک دامنه/وب‌سایت و هویت متقاضی باید با ضوابط سامانه تطبیق داشته باشد",
         "اطلاعات تماس، نشانی، کالا/خدمت، شرایط فروش و سیاست‌های مشتری باید شفاف باشد",
-        "الزامات و مدارک با نوع شخصیت و مدل فعالیت تغییر می‌کند؛ وضعیت روز سامانه ملاک است"
+        "الزامات و مدارک با نوع شخصیت و مدل فعالیت تغییر می‌کند؛ وضعیت روز سامانه ملاک است",
+        "نیاز به اینماد باید با مدل واقعی کسب‌وکار، ابزار پذیرش مجازی و ضوابط جاری مرکز توسعه تجارت الکترونیکی تطبیق داده شود؛ وب‌سایت صرفاً اطلاع‌رسانی را بدون بررسی، مشمول فرض نکنید."
       ],
       "documents": [
         "مدارک هویتی/ثبتی متقاضی",
@@ -45,12 +46,12 @@
         "estimate": null
       },
       "issuing_authority": null,
-      "official_source": null,
-      "source_url": null,
-      "source_date": null,
+      "official_source": "مرکز توسعه تجارت الکترونیکی؛ دستورالعمل اعطای نماد اعتماد الکترونیکی و سامانه رسمی اینماد",
+      "source_url": "https://enamad.ir/",
+      "source_date": "1400-12",
       "verified_at": null,
       "reviewed_at": "2026-11-21",
-      "verification_status": "draft_needs_primary_source_or_provider_validation",
+      "verification_status": "needs_current_live_enamad_worksheet_and_directive_review",
       "shared_requirement_refs": [],
       "activity_specific_requirements": [],
       "customer_questions": [
@@ -162,12 +163,12 @@
         "estimate": null
       },
       "issuing_authority": null,
-      "official_source": null,
-      "source_url": null,
+      "official_source": "بانک مرکزی و شاپرک/پرداخت‌یار منتخب؛ الزامات پذیرندگی و پرونده مالیاتی باید جاری کنترل شود",
+      "source_url": "https://my.tax.gov.ir/",
       "source_date": null,
       "verified_at": null,
       "reviewed_at": "2026-11-21",
-      "verification_status": "draft_needs_primary_source_or_provider_validation",
+      "verification_status": "needs_live_tax_and_payment_provider_requirement_review",
       "shared_requirement_refs": [],
       "activity_specific_requirements": [],
       "customer_questions": [
@@ -368,5 +369,26 @@
       "گزارش مغایرت از پرونده واقعی"
     ]
   },
-  "content_policy": "هر خدمت تعریف، دامنه، شرایط، مدارک، مراحل، خروجی، پرسش‌های تشخیصی و موارد ارجاع دارد؛ هزینه و زمان تا تأیید روزآمد اعلام قطعی نمی‌شوند."
+  "content_policy": "هر خدمت تعریف، دامنه، شرایط، مدارک، مراحل، خروجی، پرسش‌های تشخیصی و موارد ارجاع دارد؛ هزینه و زمان تا تأیید روزآمد اعلام قطعی نمی‌شوند.",
+  "source_review_notes": {
+    "enamad": {
+      "authority": "مرکز توسعه تجارت الکترونیکی وزارت صنعت، معدن و تجارت",
+      "portal": "https://enamad.ir/",
+      "governing_document": "دستورالعمل اعطای نماد اعتماد الکترونیکی و نظارت بر فعالیت کسب‌وکارهای اینترنتی، ویرایش ۰/۴، اسفند ۱۴۰۰",
+      "source_url": "https://hoghogh.ai/case-law/تخصصی-صنایع-و-بازرگانی-دستورالعمل-اعطای-نماد-الکترونیکی-و-نظارت-بر-140531390000563943",
+      "source_type": "متن دستورالعمل بازنشرشده در رأی قضایی؛ آخرین اصلاحات و رویه سامانه باید زنده کنترل شود",
+      "extracted_facts": [
+        "سامانه مدیریت خدمات نماد در enamad.ir معرفی شده است.",
+        "درخواست‌ها و پیگیری‌های مربوط به اعطا، شکایت و نظارت در سامانه انجام می‌شود.",
+        "اینماد در متن دستورالعمل به‌عنوان مجوز حوزه تجارت الکترونیکی و پیش‌نیاز ابزار پذیرش مجازی معرفی شده است."
+      ],
+      "verification_status": "directive_text_found_live_enamad_flow_and_latest_amendments_review_required"
+    },
+    "tax_portal": {
+      "authority": "سازمان امور مالیاتی کشور",
+      "portal": "https://my.tax.gov.ir/",
+      "source_type": "official portal URL; exact menus and workflow must be checked in live portal",
+      "verification_status": "official_portal_identified_live_workflow_review_required"
+    }
+  }
 }
