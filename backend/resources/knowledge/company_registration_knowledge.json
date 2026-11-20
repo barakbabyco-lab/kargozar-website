@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "knowledge_key": "company_registration_knowledge",
+  "title": "بانک دانش ثبت شرکت",
+  "status": "draft_needs_legal_review",
+  "reviewed_at": null,
+  "review_version": 1,
+  "language": "fa-IR",
+  "scope": "راهنمای انواع قالب‌های ثبتی شرکت، انتخاب قالب، اطلاعات و مدارک لازم، مراحل و نکات تصمیم‌گیری.",
+  "source_policy": {
+    "primary": "بانک دانش داخلی بازبینی‌شده کارگزار",
+    "official_verification": "در موارد تغییرپذیر یا اختلافی، آخرین مقررات و اطلاعیه‌های مرجع رسمی ثبت شرکت‌ها بررسی شود.",
+    "never_infer": [
+      "صلاحیت یا امکان ثبت یک موضوع فعالیت بدون بررسی ضوابط آن",
+      "هزینه و زمان قطعی بدون استعلام جاری",
+      "تأیید نام یا پذیرش نهایی پرونده"
+    ]
+  },
+  "company_types": [
+    {
+      "key": "limited_liability",
+      "title": "شرکت با مسئولیت محدود",
+      "status": "content_pending_review",
+      "eligibility": null,
+      "founders": null,
+      "capital_rules": null,
+      "governance": null,
+      "documents": [],
+      "steps": [],
+      "official_references": []
+    },
+    {
+      "key": "private_joint_stock",
+      "title": "شرکت سهامی خاص",
+      "status": "content_pending_review",
+      "eligibility": null,
+      "founders": null,
+      "capital_rules": null,
+      "governance": null,
+      "documents": [],
+      "steps": [],
+      "official_references": []
+    },
+    {
+      "key": "public_joint_stock",
+      "title": "شرکت سهامی عام",
+      "status": "content_pending_review",
+      "eligibility": null,
+      "founders": null,
+      "capital_rules": null,
+      "governance": null,
+      "documents": [],
+      "steps": [],
+      "official_references": []
+    },
+    {
+      "key": "cooperative",
+      "title": "شرکت تعاونی",
+      "status": "content_pending_review",
+      "eligibility": null,
+      "founders": null,
+      "capital_rules": null,
+      "governance": null,
+      "documents": [],
+      "steps": [],
+      "official_references": []
+    },
+    {
+      "key": "general_partnership",
+      "title": "شرکت تضامنی",
+      "status": "content_pending_review",
+      "eligibility": null,
+      "founders": null,
+      "capital_rules": null,
+      "governance": null,
+      "documents": [],
+      "steps": [],
+      "official_references": []
+    },
+    {
+      "key": "other",
+      "title": "سایر قالب‌های قانونی",
+      "status": "content_pending_review",
+      "eligibility": null,
+      "founders": null,
+      "capital_rules": null,
+      "governance": null,
+      "documents": [],
+      "steps": [],
+      "official_references": []
+    }
+  ],
+  "customer_intake": [
+    "هدف از ثبت شرکت و نوع فعالیت",
+    "تعداد شرکا و نقش هر یک",
+    "ترجیح یا محدودیت درباره مسئولیت شرکا",
+    "نیاز به جذب سرمایه یا ورود سرمایه‌گذار",
+    "نیاز به مناقصه، قرارداد سازمانی یا اخذ مجوز تخصصی"
+  ],
+  "change_control": {
+    "review_interval_days": 90,
+    "review_triggers": [
+      "تغییر قانون یا آیین‌نامه",
+      "تغییر فرایند یا درگاه رسمی",
+      "تغییر هزینه‌ها یا مدارک",
+      "گزارش خطا یا مغایرت از پرونده واقعی"
+    ]
+  }
+}
