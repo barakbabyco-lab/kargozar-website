@@ -51,7 +51,15 @@ class SupportAssistant
         $margin = (float) config('support_assistant.minimum_score_margin', 0.15);
 
         if ($best !== null && $bestScore >= $threshold && ($bestScore - $secondScore) >= $margin) {
-            return $best['answer'];
+            $answer = $best['answer'];
+            if (($best['service_assurance'] ?? false) === true) {
+                $closing = (string) config('support_assistant.service_assurance_closing', '');
+                if ($closing !== '' && ! str_contains($answer, $closing)) {
+                    $answer = rtrim($answer) . "\\n\\n" . $closing;
+                }
+            }
+
+            return $answer;
         }
 
         return config('support_assistant.fallback');
