@@ -3,7 +3,7 @@
   "category_key": "06-legal-and-contractual",
   "category_number": 6,
   "title": "خدمات حقوقی و قراردادی",
-  "status": "populated_draft_needs_domain_and_source_review",
+  "status": "populated_draft_labor_law_source_added_official_revalidation_required",
   "reviewed_at": "2026-11-21",
   "review_version": 2,
   "knowledge_mode": "local_with_legal_review",
@@ -19,7 +19,8 @@
       "conditions": [
         "نوع قرارداد و مدت باید با ماهیت واقعی رابطه و قانون کار سازگار باشد",
         "شرط قراردادی نباید مزایای قانونی کارگر را کاهش دهد",
-        "مفاد اصلی موضوع ماده ۱۰ قانون کار از جمله نوع کار، مزد، ساعات، محل، تاریخ و مدت باید پوشش داده شود"
+        "مفاد اصلی موضوع ماده ۱۰ قانون کار از جمله نوع کار، مزد، ساعات، محل، تاریخ و مدت باید پوشش داده شود",
+        "در قرارداد کار، مفاد ماده ۱۰ قانون کار از جمله نوع کار، مزد و مزایا، ساعات کار، تعطیلات و مرخصی، محل انجام کار، تاریخ انعقاد و در قرارداد مدت‌دار مدت قرارداد درج شود؛ شروط نباید مزایای قانونی کارگر را کاهش دهند."
       ],
       "documents": [
         "مشخصات هویتی طرفین",
@@ -44,12 +45,12 @@
         "estimate": null
       },
       "issuing_authority": null,
-      "official_source": null,
-      "source_url": null,
-      "source_date": null,
+      "official_source": "قانون کار جمهوری اسلامی ایران، به‌ویژه مواد ۷، ۸ و ۱۰",
+      "source_url": "https://irandataportal.syr.edu/labor-law",
+      "source_date": "1369-08-21",
       "verified_at": null,
       "reviewed_at": "2026-11-21",
-      "verification_status": "draft_needs_primary_source_or_provider_validation",
+      "verification_status": "needs_official_gazette_and_latest_amendments_review",
       "shared_requirement_refs": [],
       "activity_specific_requirements": [],
       "customer_questions": [
@@ -256,5 +257,20 @@
       "گزارش مغایرت از پرونده واقعی"
     ]
   },
-  "content_policy": "هر خدمت تعریف، دامنه، شرایط، مدارک، مراحل، خروجی، پرسش‌های تشخیصی و موارد ارجاع دارد؛ هزینه و زمان تا تأیید روزآمد اعلام قطعی نمی‌شوند."
+  "content_policy": "هر خدمت تعریف، دامنه، شرایط، مدارک، مراحل، خروجی، پرسش‌های تشخیصی و موارد ارجاع دارد؛ هزینه و زمان تا تأیید روزآمد اعلام قطعی نمی‌شوند.",
+  "source_review_notes": {
+    "labor_law": {
+      "title": "قانون کار جمهوری اسلامی ایران",
+      "relevant_articles": [
+        "ماده ۷ تعریف و چارچوب قرارداد کار",
+        "ماده ۸ منع شروط کاهنده مزایای قانونی کارگر",
+        "ماده ۱۰ حداقل مفاد قرارداد کار",
+        "ماده ۲۱ موارد خاتمه قرارداد"
+      ],
+      "source_url": "https://irandataportal.syr.edu/labor-law",
+      "source_type": "متن قانون در پایگاه دانشگاهی/پژوهشی؛ برای استناد نهایی متن رسمی روزنامه رسمی یا مجلس باید تطبیق شود",
+      "verification_status": "substantive_text_found_official_gazette_revalidation_required"
+    },
+    "legal_review_rule": "الگوهای قرارداد پیمانکاری و تجاری باید با توجه به ماهیت واقعی رابطه، قوانین آمره، مالیات، بیمه، مسئولیت و صلاحیت قضایی بازبینی شوند؛ متن عمومی جایگزین مشاوره حقوقی پرونده‌محور نیست."
+  }
 }
