@@ -3,7 +3,7 @@
   "category_key": "05-banking-services",
   "category_number": 5,
   "title": "خدمات بانکی",
-  "status": "populated_draft_needs_domain_and_source_review",
+  "status": "populated_draft_with_1404_bank_directive_secondary_source_review",
   "reviewed_at": "2026-11-21",
   "review_version": 2,
   "knowledge_mode": "local_with_bank_policy_verification",
@@ -20,13 +20,15 @@
         "احراز هویت و شناسایی ذی‌نفع واقعی و صاحبان امضای مجاز",
         "برای شخص حقوقی، احراز ثبت، شناسه ملی، اساسنامه و حدود اختیار امضاکنندگان",
         "سیاست اعتباری و الزامات مبارزه با پولشویی بانک اعمال می‌شود",
-        "افتتاح حساب یا اعطای دسته‌چک تابع شرایط و تصمیم بانک است"
+        "افتتاح حساب یا اعطای دسته‌چک تابع شرایط و تصمیم بانک است",
+        "افتتاح حساب جاری، افتتاح حساب سپرده و دریافت دسته‌چک سه موضوع متفاوت‌اند؛ ضوابط هر کدام جداگانه و با آخرین بخشنامه بانک مرکزی و بانک منتخب بررسی شود."
       ],
       "documents": [
         "مدارک هویتی متقاضی و نماینده",
         "برای شخص حقوقی: اساسنامه، آگهی تأسیس و آخرین تغییرات، شناسه ملی و مدارک صاحبان امضای مجاز",
         "مدارک نشانی و اطلاعات مالیاتی/فعالیت در صورت مطالبه بانک",
-        "معرفی‌نامه یا وکالت‌نامه معتبر در صورت اقدام نماینده"
+        "معرفی‌نامه یا وکالت‌نامه معتبر در صورت اقدام نماینده",
+        "برای شخص حقوقی، اسناد ثبت/در شرف تأسیس و مستندات اختیار صاحبان امضای مجاز طبق دستورالعمل جاری؛ فهرست نهایی با بانک منتخب تطبیق داده شود."
       ],
       "steps": [
         "تشخیص نوع حساب و بانک هدف",
@@ -44,12 +46,12 @@
         "estimate": null
       },
       "issuing_authority": null,
-      "official_source": null,
-      "source_url": null,
-      "source_date": null,
+      "official_source": "بانک مرکزی جمهوری اسلامی ایران؛ دستورالعمل حساب جاری ۱۴۰۴ و ضوابط افتتاح حساب سپرده حسب نوع حساب",
+      "source_url": "https://hoghogh.ai/circulars/c-cb6aea0a",
+      "source_date": "1404-07-06",
       "verified_at": null,
       "reviewed_at": "2026-11-21",
-      "verification_status": "draft_needs_primary_source_or_provider_validation",
+      "verification_status": "needs_primary_cbi_circular_and_bank_specific_implementation_review",
       "shared_requirement_refs": [],
       "activity_specific_requirements": [],
       "customer_questions": [
@@ -200,5 +202,30 @@
       "گزارش مغایرت از پرونده واقعی"
     ]
   },
-  "content_policy": "هر خدمت تعریف، دامنه، شرایط، مدارک، مراحل، خروجی، پرسش‌های تشخیصی و موارد ارجاع دارد؛ هزینه و زمان تا تأیید روزآمد اعلام قطعی نمی‌شوند."
+  "content_policy": "هر خدمت تعریف، دامنه، شرایط، مدارک، مراحل، خروجی، پرسش‌های تشخیصی و موارد ارجاع دارد؛ هزینه و زمان تا تأیید روزآمد اعلام قطعی نمی‌شوند.",
+  "source_review_notes": {
+    "current_account_directive": {
+      "title": "دستورالعمل حساب جاری (ریالی) و ضوابط اجرایی ماده ۶ اصلاحی قانون صدور چک",
+      "authority": "هیأت عالی بانک مرکزی جمهوری اسلامی ایران",
+      "approval_date": "1404-06-18",
+      "circular_date": "1404-07-06",
+      "source_url": "https://hoghogh.ai/circulars/c-cb6aea0a",
+      "source_type": "متن بازنشرشده بخشنامه/دستورالعمل؛ منبع اولیه بانک مرکزی باید برای استناد نهایی بازیابی شود",
+      "extracted_points": [
+        "دستورالعمل بازنگری و با ضوابط اجرایی ماده ۶ اصلاحی قانون صدور چک ادغام شده است.",
+        "الزام ارائه معرف برای افتتاح حساب جاری ممنوع اعلام شده است.",
+        "برای شخص حقوقی، شرایط افتتاح حساب جاری بدون دسته‌چک شامل ثبت در کشور یا شرکت در شرف تأسیس و احراز اختیارات صاحبان امضا است.",
+        "افتتاح حساب و اعطای دسته‌چک دو موضوع متفاوت‌اند و باید جداگانه ارزیابی شوند."
+      ],
+      "verification_status": "secondary_text_found_primary_bank_circular_retrieval_required"
+    },
+    "deposit_account_rules": {
+      "title": "ضوابط اجرایی ناظر بر الزامات افتتاح و نگهداری حساب‌های سپرده ریالی اشخاص حقیقی",
+      "authority": "هیأت عامل بانک مرکزی",
+      "approval_date": "1404-06-16",
+      "source_url": "https://hoghogh.ai/circulars/c-1a7a561f",
+      "source_type": "متن بازنشرشده؛ نسخه ابلاغی بانک مرکزی باید بازیابی شود",
+      "verification_status": "secondary_text_found_primary_bank_circular_retrieval_required"
+    }
+  }
 }
