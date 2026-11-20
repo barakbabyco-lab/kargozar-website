@@ -93,7 +93,7 @@ jobs:
         env:
           SSH_CONFIG: ${{ steps.ssh.outputs.ssh_config }}
           DEPLOY_PATH: ${{ steps.ssh.outputs.deploy_path }}
-          TASK: ${{ inputs.task || (github.event_name == 'push' && 'logo-export' || 'health') }}
+          TASK: ${{ inputs.task || 'health' }}
         run: |
           set -euo pipefail
           case "$TASK" in
@@ -156,7 +156,7 @@ jobs:
           ssh -F "$SSH_CONFIG" kargozar-staging "bash -lc $(printf '%q' "$REMOTE_COMMAND") -- $(printf '%q' "$DEPLOY_PATH")"
 
       - name: Download uploaded Kargozar logo
-        if: github.event_name == 'push' || inputs.task == 'logo-export'
+        if: inputs.task == 'logo-export'
         shell: bash
         env:
           SSH_CONFIG: ${{ steps.ssh.outputs.ssh_config }}
@@ -169,7 +169,7 @@ jobs:
           sha256sum "$RUNNER_TEMP/kargozar-logo/kargozar-logo-original.jpg"
 
       - name: Prepare and commit app brand assets
-        if: github.event_name == 'push' || inputs.task == 'logo-export'
+        if: inputs.task == 'logo-export'
         shell: bash
         run: |
           set -euo pipefail
@@ -187,7 +187,7 @@ jobs:
           git push origin HEAD:main
 
       - name: Upload original logo artifact
-        if: github.event_name == 'push' || inputs.task == 'logo-export'
+        if: inputs.task == 'logo-export'
         uses: actions/upload-artifact@v4
         with:
           name: kargozar-logo-original
