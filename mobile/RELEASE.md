@@ -18,18 +18,17 @@ The application ID is a permanent store identity after first publication. Confir
 - The approved logo and all generated icon assets are committed in the repository; Android CI regenerates launcher resource densities from these sources.
 - Before final submission, verify any additional file-size or image-format validation shown in the Myket developer console.
 
-## Release signing (private GitHub Actions secrets)
+## Release signing (private GitHub Actions secret)
 
-The Android workflow continues to build a debug APK for development. A signed release APK and AAB are built only after all four repository Actions secrets are configured:
+The current Android workflow expects one repository Actions secret:
 
-1. `ANDROID_KEYSTORE_BASE64`: Base64-encoded contents of the release keystore.
-2. `ANDROID_KEYSTORE_PASSWORD`: keystore password.
-3. `ANDROID_KEY_ALIAS`: key alias.
-4. `ANDROID_KEY_PASSWORD`: key password.
+- `ANDROID_SIGNING_BUNDLE_BASE64`: Base64-encoded ZIP containing:
+  - `android/app/upload-keystore.jks`
+  - `android/key.properties`
 
-Create the keystore once, keep an encrypted offline backup, and never regenerate it for an update. Do not commit the keystore, `key.properties`, passwords, or API credentials. Add the four values under GitHub repository Settings → Secrets and variables → Actions. The workflow writes the keystore and properties only into its temporary runner.
+The `key.properties` file must contain the keystore's `storePassword`, `keyPassword`, `keyAlias`, and `storeFile` values. Keep the ZIP, keystore, properties file, and passwords private; never commit them. Create the keystore once, keep an encrypted offline backup, and use the same keystore for every future update.
 
-After the secrets are added, run the workflow manually from Actions. The release artifacts are named `kargozar-android-release` and contain APK and AAB outputs.
+After adding the secret under GitHub repository Settings → Secrets and variables → Actions, run the Android workflow manually or push an app change. When the secret is present, the workflow builds and verifies a signed release APK and AAB, then publishes them as the `kargozar-android-release` artifact. Without it, CI builds only a debug APK and skips release signing.
 
 ## Release gates still required
 
