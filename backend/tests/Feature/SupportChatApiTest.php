@@ -68,6 +68,31 @@ class SupportChatApiTest extends TestCase
             ->assertUnauthorized();
     }
 
+    public function test_guest_can_submit_a_callback_mobile_after_requesting_a_human_agent(): void
+    {
+        $guestToken = str_repeat('c3', 32);
+
+        $started = $this->withHeader('X-Support-Guest-Token', $guestToken)
+            ->postJson('/api/v1/guest/support-conversations', ['body' => 'تماس کارشناس'])
+            ->assertCreated()
+            ->assertJsonPath('data.messages.1.sender_type', 'assistant')
+            ->assertJsonPath('data.messages.1.body', fn ($value) => str_contains($value, 'شماره تماس'));
+
+        $id = $started->json('data.id');
+
+        $this->withHeader('X-Support-Guest-Token', $guestToken)
+            ->postJson('/api/v1/guest/support-conversations/'.$id.'/messages', ['body' => '۰۹۱۲۳۴۵۶۷۸۹'])
+            ->assertCreated();
+
+        $this->assertSame('09123456789', SupportConversation::findOrFail($id)->contact_mobile);
+
+        $this->withHeader('X-Support-Guest-Token', $guestToken)
+            ->getJson('/api/v1/guest/support-conversations/'.$id.'/messages')
+            ->assertOk()
+            ->assertJsonCount(4, 'data')
+            ->assertJsonPath('data.3.sender_type', 'assistant');
+    }
+
     public function test_customer_cannot_read_or_send_messages_to_another_customers_conversation(): void
     {
         $owner = Customer::create(['mobile' => '09120000112', 'status' => 'active']);
