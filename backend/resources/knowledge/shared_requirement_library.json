@@ -109,6 +109,18 @@
       "source_date": "1403-12-20",
       "verified_at": null,
       "notes": "حدنصاب نمره‌ای قدیمی را به دستورالعمل جدید تعمیم ندهید. اختلاف ۲۳ ساعت حداقل محاسباتی با اشاره ماده تعرفه به ۲۴ ساعت باید از مرجع مجری استعلام شود."
+    },
+    {
+      "requirement_key": "tax_file_and_tracking",
+      "title": "تشکیل پرونده مالیاتی و شناسه/کد رهگیری مرتبط",
+      "scope": "taxpayer_and_activity_specific",
+      "applicability": "وضعیت تشکیل پرونده، ثبت‌نام و شناسه مالیاتی بر اساس قانون مالیات‌های مستقیم، قانون پایانه‌های فروشگاهی و سامانه مودیان، نوع فعالیت، شخصیت حقیقی/حقوقی و کاربرگ مجوز بررسی شود؛ عنوان «کد رهگیری» بدون مشخص کردن شناسه دقیق به‌صورت کلی به مشتری گفته نشود.",
+      "evidence_or_document": "اطلاعات ثبت‌نام و پرونده مودی در درگاه ملی خدمات الکترونیک سازمان امور مالیاتی؛ شناسه دقیق مورد مطالبه باید از کاربرگ و سامانه جاری استخراج شود.",
+      "issuing_or_verifying_authority": "سازمان امور مالیاتی کشور",
+      "source_url": "https://my.tax.gov.ir/",
+      "source_date": null,
+      "verified_at": null,
+      "verification_status": "official_portal_identified_live_workflow_and_current_worksheet_review_required"
     }
   ],
   "police_approval": {
@@ -254,7 +266,8 @@
         "key": "tax_file_and_tracking",
         "title": "تشکیل پرونده مالیاتی و شناسه/کد رهگیری مرتبط",
         "candidate_scope": "پرونده‌های صنفی طبق قانون و کاربرگ جاری؛ عنوان دقیق شناسه و ترتیب انجام باید احراز شود",
-        "current_status": "needs_official_source_and_worksheet_validation"
+        "current_status": "official_portal_identified_needs_live_worksheet_validation",
+        "shared_ref": "tax_file_and_tracking"
       },
       {
         "key": "police_public_places",
@@ -304,5 +317,19 @@
       "human_handoff_required": true,
       "customer_message_style": "اطمینان‌بخش، کوتاه و ارجاع‌محور؛ بدون تشریح راهکارها"
     }
+  },
+  "tax_file_and_tracking": {
+    "title": "تشکیل پرونده مالیاتی و شناسه/کد رهگیری مرتبط",
+    "official_portal": "https://my.tax.gov.ir/",
+    "authority": "سازمان امور مالیاتی کشور",
+    "workflow_fields_to_verify": [
+      "شخص حقیقی یا حقوقی",
+      "نوع پرونده و منبع درآمد",
+      "شناسه مالیاتی دقیق مورد مطالبه",
+      "وضعیت ثبت‌نام و تکمیل اطلاعات",
+      "ارتباط با مجوز صنفی و پذیرنده پرداخت در صورت شمول"
+    ],
+    "notes": "تشکیل پرونده مالیاتی را با دریافت شناسه یکتای مجوز، کد اقتصادی یا کد رهگیری یکسان نگیرید؛ عنوان دقیق شناسه و الزام آن باید در زمان اقدام بررسی شود.",
+    "verification_status": "official_portal_identified_live_workflow_and_current_worksheet_review_required"
   }
 }
