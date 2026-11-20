@@ -27,7 +27,6 @@ class _KargozarAppState extends State<KargozarApp>{
  late final KargozarApiClient _api; late final CustomerSession _session; late final CustomerRequestRepository _requests;
  bool _loading=false,_signedIn=false;
  @override void initState(){super.initState();_api=widget.apiClient??KargozarApiClient();_session=CustomerSession(_api);_requests=CustomerRequestRepository(_api);}
- Future<void> _restore()async{try{final ok=await _session.restore();if(mounted)setState(()=>_signedIn=ok);}catch(_){}finally{if(mounted)setState(()=>_loading=false);}}
  final _navigatorKey=GlobalKey<NavigatorState>();
  Future<bool> _login()async{final dialogContext=_navigatorKey.currentContext;if(dialogContext==null)return false;final ok=await showDialog<bool>(context:dialogContext,barrierDismissible:false,builder:(_)=>OtpDialog(session:_session));final authenticated=ok==true&&_session.isAuthenticated;if(mounted)setState(()=>_signedIn=authenticated);return authenticated;}
  Future<void> _logout()async{try{await _session.signOut();}catch(_){}if(mounted)setState(()=>_signedIn=false);}
@@ -935,33 +934,6 @@ class ProfileOption extends StatelessWidget {
       color: _ink, fontWeight: FontWeight.w600, fontSize: 13)),
     trailing: const Icon(Icons.chevron_left_rounded, color: _muted),
     onTap: () => _showInfo(context),
-  );
-}
-
-class _ServiceMetaRow extends StatelessWidget {
-  const _ServiceMetaRow({
-    required this.icon,
-    required this.label,
-    required this.value,
-  });
-
-  final IconData icon;
-  final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.only(bottom: 7),
-    child: Row(
-      children: [
-        Icon(icon, size: 17, color: _teal),
-        const SizedBox(width: 8),
-        Expanded(child: Text(label,
-            style: const TextStyle(color: _muted, fontSize: 12))),
-        Text(value, style: const TextStyle(
-            color: _ink, fontSize: 12, fontWeight: FontWeight.w700)),
-      ],
-    ),
   );
 }
 
