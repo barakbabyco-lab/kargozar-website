@@ -371,5 +371,19 @@
       "unverified",
       "superseded"
     ]
-  }
+  },
+  "cross_cutting_policies": [
+    {
+      "key": "customer-guidance-and-service-assurance",
+      "title": "سیاست پاسخ‌گویی مشتری‌محور و اطمینان‌بخشی",
+      "file": "customer_guidance_and_service_assurance.json",
+      "status": "draft_for_product_and_legal_review"
+    },
+    {
+      "key": "guild-license-common-preflight",
+      "title": "پیش‌بررسی الزامات عمومی متقاضیان پروانه کسب صنفی",
+      "file": "shared_requirement_library.json#guild_license_common_preflight",
+      "status": "draft_needs_official_validation"
+    }
+  ]
 }
