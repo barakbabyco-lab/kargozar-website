@@ -89,6 +89,18 @@ jobs:
           else
             echo "docker: not installed"
           fi
+          echo "=== Non-interactive sudo Docker access ==="
+          if command -v sudo >/dev/null 2>&1; then
+            if sudo -n docker info --format 'sudo Docker daemon: {{.ServerVersion}}' 2>&1; then
+              echo "SUDO_DOCKER_ACCESS=available"
+              sudo -n docker ps --format 'container={{.Names}} image={{.Image}} status={{.Status}} ports={{.Ports}}' 2>&1 || true
+            else
+              echo "SUDO_DOCKER_ACCESS=unavailable"
+            fi
+          else
+            echo "sudo: not installed"
+            echo "SUDO_DOCKER_ACCESS=unavailable"
+          fi
           echo "=== Relevant listeners ==="
           if command -v ss >/dev/null 2>&1; then ss -lnt 2>/dev/null | awk 'NR==1 || /:8080[[:space:]]|:8888[[:space:]]|:80[[:space:]]|:443[[:space:]]/' ; else echo "ss unavailable"; fi
           echo "=== DNS ==="
