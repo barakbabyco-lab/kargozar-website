@@ -1,0 +1,375 @@
+{
+  "schema_version": 1,
+  "registry_key": "kargozar_all_ten_service_categories",
+  "title": "فهرست مادر بانک دانش ده دسته خدمات کارگزار",
+  "status": "initial_registry_created_content_completion_pending",
+  "policy": "برای هر دسته یک پرونده دانشی مستقل و برای هر خدمت یک رکورد مستقل ایجاد شود؛ شروط مشترک از کتابخانه مشترک ارجاع شوند و شروط اختصاصی فقط در دامنه همان خدمت اعمال شوند.",
+  "category_count": 10,
+  "categories": [
+    {
+      "number": 1,
+      "key": "01-business-licenses",
+      "title": "مجوزهای کسب‌وکار",
+      "knowledge_file": "category_01_business_licenses.json",
+      "source_mode": "live_plus_local_rules",
+      "services": [
+        {
+          "service_key": "guild-business-license",
+          "title": "پروانه کسب و مجوزهای صنفی",
+          "knowledge_mode": "live"
+        },
+        {
+          "service_key": "home-business-license",
+          "title": "مجوز مشاغل خانگی",
+          "knowledge_mode": "live"
+        },
+        {
+          "service_key": "industrial-establishment-permits",
+          "title": "مجوزهای صنعتی و دستگاهی",
+          "knowledge_mode": "live"
+        }
+      ],
+      "notes": "عنوان مجوز، کاربرگ، شرایط، مدارک، هزینه و زمان فقط از مرجع رسمی جاری استخراج شود. بانک داخلی برای قواعد عمومی، پرسش‌های تشخیص فعالیت و راهنمایی استفاده می‌شود."
+    },
+    {
+      "number": 2,
+      "key": "02-company-registration",
+      "title": "ثبت شرکت",
+      "knowledge_file": "category_02_company_registration.json",
+      "source_mode": "local_with_official_verification",
+      "services": [
+        {
+          "service_key": "company-registration",
+          "title": "ثبت شرکت و انتخاب قالب حقوقی",
+          "knowledge_mode": "local"
+        },
+        {
+          "service_key": "company-changes",
+          "title": "ثبت تغییرات شرکت",
+          "knowledge_mode": "hybrid"
+        },
+        {
+          "service_key": "company-dissolution",
+          "title": "انحلال و تصفیه شرکت",
+          "knowledge_mode": "hybrid"
+        }
+      ],
+      "notes": "قالب‌های ثبتی، ارکان، شرکا، سرمایه، مدارک و مراحل به‌صورت بانک دانشی ساختاریافته نگهداری و با آخرین مقررات رسمی بازبینی شوند."
+    },
+    {
+      "number": 3,
+      "key": "03-intellectual-property",
+      "title": "ثبت برند و مالکیت فکری",
+      "knowledge_file": "category_03_intellectual_property.json",
+      "source_mode": "hybrid",
+      "services": [
+        {
+          "service_key": "trademark-registration",
+          "title": "ثبت علامت تجاری و برند",
+          "knowledge_mode": "hybrid"
+        },
+        {
+          "service_key": "logo-registration",
+          "title": "ثبت لوگو به‌عنوان علامت",
+          "knowledge_mode": "hybrid"
+        },
+        {
+          "service_key": "industrial-design-registration",
+          "title": "ثبت طرح صنعتی",
+          "knowledge_mode": "hybrid"
+        },
+        {
+          "service_key": "invention-registration",
+          "title": "ثبت اختراع",
+          "knowledge_mode": "hybrid"
+        }
+      ],
+      "notes": "تعاریف و فرایندهای پایه داخلی؛ تشابه، طبقات، قابلیت حمایت، هزینه و وضعیت پرونده از مرجع رسمی بررسی شود."
+    },
+    {
+      "number": 4,
+      "key": "04-complementary-documents-approvals",
+      "title": "مدارک و تأییدیه‌های مکمل",
+      "knowledge_file": "category_04_complementary_documents_approvals.json",
+      "source_mode": "local_with_activity_specific_rules",
+      "services": [
+        {
+          "service_key": "police-public-places-approval",
+          "title": "تأییدیه پلیس نظارت بر اماکن عمومی",
+          "knowledge_mode": "hybrid"
+        },
+        {
+          "service_key": "health-card",
+          "title": "کارت بهداشت و گواهی سلامت شاغلان",
+          "knowledge_mode": "hybrid"
+        },
+        {
+          "service_key": "environment-health-approval",
+          "title": "تأییدیه بهداشت محیط",
+          "knowledge_mode": "hybrid"
+        },
+        {
+          "service_key": "trade-law-training-certificate",
+          "title": "گواهی دوره احکام تجارت و کسب‌وکار",
+          "knowledge_mode": "hybrid"
+        },
+        {
+          "service_key": "national-standards-approval",
+          "title": "تأییدیه‌ها و نشان استاندارد",
+          "knowledge_mode": "hybrid"
+        },
+        {
+          "service_key": "other-regulatory-approvals",
+          "title": "سایر تأییدیه‌های تخصصی",
+          "knowledge_mode": "hybrid"
+        }
+      ],
+      "notes": "الزامات عمومی مشترک از الزامات اختصاصی هر شغل جدا شوند. هر شرط باید دامنه شمول، مرجع، سند، تاریخ و وضعیت اعتبار داشته باشد."
+    },
+    {
+      "number": 5,
+      "key": "05-banking-services",
+      "title": "خدمات بانکی",
+      "knowledge_file": "category_05_banking_services.json",
+      "source_mode": "local_with_bank_policy_verification",
+      "services": [
+        {
+          "service_key": "business-account-opening",
+          "title": "افتتاح حساب جاری و حساب تجاری",
+          "knowledge_mode": "hybrid"
+        },
+        {
+          "service_key": "banking-facilities",
+          "title": "پیگیری تسهیلات و خدمات بانکی",
+          "knowledge_mode": "hybrid"
+        },
+        {
+          "service_key": "bank-guarantees",
+          "title": "ضمانت‌نامه و تعهدات بانکی",
+          "knowledge_mode": "hybrid"
+        }
+      ],
+      "notes": "راهنمای عمومی و چک‌لیست مدارک داخلی؛ ضوابط احراز هویت، اعتبارسنجی و سیاست هر بانک باید جاری و بانک‌محور بررسی شود."
+    },
+    {
+      "number": 6,
+      "key": "06-legal-and-contractual",
+      "title": "خدمات حقوقی و قراردادی",
+      "knowledge_file": "category_06_legal_and_contractual.json",
+      "source_mode": "local_with_legal_review",
+      "services": [
+        {
+          "service_key": "employment-contract",
+          "title": "تنظیم قرارداد کار",
+          "knowledge_mode": "local"
+        },
+        {
+          "service_key": "contractor-agreement",
+          "title": "تنظیم قرارداد پیمانکاری",
+          "knowledge_mode": "local"
+        },
+        {
+          "service_key": "business-contracts",
+          "title": "تنظیم و بازبینی قراردادهای تجاری",
+          "knowledge_mode": "local"
+        },
+        {
+          "service_key": "legal-documentation",
+          "title": "تنظیم اسناد و مکاتبات حقوقی",
+          "knowledge_mode": "local"
+        }
+      ],
+      "notes": "الگوهای پایه و بندهای قراردادی در بانک داخلی؛ متن نهایی متناسب با طرفین، موضوع، ریسک و قوانین جاری و با کنترل کارشناس حقوقی."
+    },
+    {
+      "number": 7,
+      "key": "07-internet-and-commercial-services",
+      "title": "خدمات اینترنتی و تجاری",
+      "knowledge_file": "category_07_internet_and_commercial_services.json",
+      "source_mode": "hybrid",
+      "services": [
+        {
+          "service_key": "enamad",
+          "title": "دریافت و تمدید اینماد",
+          "knowledge_mode": "hybrid"
+        },
+        {
+          "service_key": "business-website",
+          "title": "طراحی و راه‌اندازی وب‌سایت فروشگاهی/شرکتی",
+          "knowledge_mode": "local"
+        },
+        {
+          "service_key": "payment-gateway",
+          "title": "درگاه پرداخت اینترنتی",
+          "knowledge_mode": "hybrid"
+        },
+        {
+          "service_key": "business-domain",
+          "title": "ثبت دامنه و خدمات میزبانی",
+          "knowledge_mode": "hybrid"
+        },
+        {
+          "service_key": "bulk-sms",
+          "title": "پنل پیامک انبوه",
+          "knowledge_mode": "hybrid"
+        },
+        {
+          "service_key": "internet-phone",
+          "title": "تلفن اینترنتی کسب‌وکار",
+          "knowledge_mode": "hybrid"
+        }
+      ],
+      "notes": "آموزش و چک‌لیست داخلی؛ قیمت‌ها، شرایط ارائه‌دهندگان و ضوابط سامانه‌های رسمی در زمان درخواست به‌روزرسانی شوند."
+    },
+    {
+      "number": 8,
+      "key": "08-property-and-leases",
+      "title": "خدمات ملکی و قراردادها",
+      "knowledge_file": "category_08_property_and_leases.json",
+      "source_mode": "hybrid",
+      "services": [
+        {
+          "service_key": "lease-tracking-code",
+          "title": "دریافت کد رهگیری اجاره‌نامه",
+          "knowledge_mode": "hybrid"
+        },
+        {
+          "service_key": "property-contracts",
+          "title": "تنظیم و بررسی قراردادهای ملکی",
+          "knowledge_mode": "local"
+        },
+        {
+          "service_key": "property-document-followup",
+          "title": "پیگیری مدارک و استعلامات ملکی",
+          "knowledge_mode": "hybrid"
+        }
+      ],
+      "notes": "بانک داخلی برای انواع قرارداد و مدارک؛ ثبت، شناسه، استعلام و فرایندهای سامانه‌ای از درگاه رسمی روز بررسی شوند."
+    },
+    {
+      "number": 9,
+      "key": "09-business-development",
+      "title": "خدمات توسعه کسب‌وکار",
+      "knowledge_file": "category_09_business_development.json",
+      "source_mode": "local_with_vendor_verification",
+      "services": [
+        {
+          "service_key": "accounting-software",
+          "title": "نرم‌افزار حسابداری و مالی",
+          "knowledge_mode": "local"
+        },
+        {
+          "service_key": "sales-invoicing",
+          "title": "صدور فاکتور و مدیریت فروش",
+          "knowledge_mode": "local"
+        },
+        {
+          "service_key": "payroll-hr",
+          "title": "حقوق و دستمزد و مدیریت پرسنل",
+          "knowledge_mode": "local"
+        },
+        {
+          "service_key": "human-resources",
+          "title": "مدیریت منابع انسانی",
+          "knowledge_mode": "local"
+        },
+        {
+          "service_key": "contract-management",
+          "title": "مدیریت قراردادها",
+          "knowledge_mode": "local"
+        },
+        {
+          "service_key": "crm",
+          "title": "مدیریت ارتباط با مشتریان (CRM)",
+          "knowledge_mode": "local"
+        },
+        {
+          "service_key": "inventory-management",
+          "title": "مدیریت انبار و موجودی",
+          "knowledge_mode": "local"
+        }
+      ],
+      "notes": "بانک راهنما و نیازسنجی داخلی؛ امکانات، قیمت، پشتیبانی و سازگاری محصولات هنگام پیشنهاد به‌روز بررسی شود."
+    },
+    {
+      "number": 10,
+      "key": "10-specialized-services",
+      "title": "سایر خدمات تخصصی",
+      "knowledge_file": "category_10_specialized_services.json",
+      "source_mode": "local_or_hybrid_by_service",
+      "services": [
+        {
+          "service_key": "business-consulting",
+          "title": "مشاوره تخصصی کسب‌وکار",
+          "knowledge_mode": "local"
+        },
+        {
+          "service_key": "feasibility-study",
+          "title": "طرح توجیهی و امکان‌سنجی",
+          "knowledge_mode": "local"
+        },
+        {
+          "service_key": "business-plan",
+          "title": "تهیه طرح کسب‌وکار (Business Plan)",
+          "knowledge_mode": "local"
+        },
+        {
+          "service_key": "business-valuation",
+          "title": "ارزش‌گذاری کسب‌وکار",
+          "knowledge_mode": "local"
+        },
+        {
+          "service_key": "fundraising",
+          "title": "تأمین سرمایه و جذب سرمایه‌گذار",
+          "knowledge_mode": "hybrid"
+        },
+        {
+          "service_key": "advertising-video",
+          "title": "تولید ویدئوی تبلیغاتی",
+          "knowledge_mode": "local"
+        },
+        {
+          "service_key": "business-branding",
+          "title": "برندسازی و توسعه بازار",
+          "knowledge_mode": "local"
+        }
+      ],
+      "notes": "روش انجام و خروجی هر خدمت در بانک داخلی تعریف شود؛ قیمت بازار، ضوابط تخصصی و ظرفیت تأمین‌کنندگان در صورت نیاز زنده بررسی شوند."
+    }
+  ],
+  "shared_requirement_library": "shared_requirement_library.json",
+  "record_schema": {
+    "required": [
+      "service_key",
+      "official_or_service_title",
+      "knowledge_mode",
+      "status",
+      "scope",
+      "eligibility",
+      "conditions",
+      "documents",
+      "steps",
+      "fees",
+      "issuance_time",
+      "issuing_authority",
+      "official_source",
+      "source_url",
+      "source_date",
+      "verified_at",
+      "reviewed_at",
+      "verification_status"
+    ],
+    "statuses": [
+      "draft",
+      "needs_review",
+      "approved",
+      "superseded"
+    ],
+    "verification_statuses": [
+      "verified_current",
+      "needs_review",
+      "unverified",
+      "superseded"
+    ]
+  }
+}
