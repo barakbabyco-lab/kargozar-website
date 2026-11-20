@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "knowledge_key": "trademark_registration_knowledge",
+  "title": "بانک دانش ثبت علامت تجاری، لوگو و طرح صنعتی",
+  "status": "draft_needs_legal_review",
+  "reviewed_at": null,
+  "review_version": 1,
+  "language": "fa-IR",
+  "scope": "راهنمای داخلی خدمات مالکیت صنعتی؛ تفکیک علامت تجاری، نام، لوگو و طرح صنعتی و جمع‌آوری اطلاعات متقاضی.",
+  "source_policy": {
+    "primary": "بانک دانش داخلی بازبینی‌شده کارگزار",
+    "official_verification": "وضعیت پرونده، هزینه، طبقه‌بندی، مدارک و رویه‌های جاری از سامانه رسمی مالکیت صنعتی کنترل شود.",
+    "never_infer": [
+      "قابلیت ثبت یا نبود تشابه علامت بدون جست‌وجوی رسمی و بررسی تخصصی",
+      "طبقه کالا یا خدمت صرفاً از روی نام برند",
+      "پذیرش یا ثبت قطعی علامت یا طرح"
+    ]
+  },
+  "service_tracks": [
+    {
+      "key": "trademark",
+      "title": "ثبت علامت تجاری",
+      "status": "content_pending_review",
+      "required_intake": [
+        "تصویر یا نوشتار علامت",
+        "نام مالک حقیقی یا حقوقی",
+        "کالاها و خدمات موردنظر",
+        "مدارک هویتی و ثبتی متقاضی"
+      ],
+      "steps": [],
+      "official_references": []
+    },
+    {
+      "key": "logo",
+      "title": "ثبت لوگو به‌عنوان علامت",
+      "status": "content_pending_review",
+      "required_intake": [
+        "فایل واضح لوگو",
+        "نام مالک",
+        "شرح کالاها و خدمات",
+        "مدارک متقاضی"
+      ],
+      "steps": [],
+      "official_references": []
+    },
+    {
+      "key": "industrial_design",
+      "title": "ثبت طرح صنعتی",
+      "status": "content_pending_review",
+      "required_intake": [
+        "تصاویر و نماهای طرح",
+        "شرح ویژگی‌های ظاهری",
+        "اطلاعات طراح و مالک",
+        "مدارک متقاضی"
+      ],
+      "steps": [],
+      "official_references": []
+    }
+  ],
+  "change_control": {
+    "review_interval_days": 90,
+    "review_triggers": [
+      "تغییر قانون یا آیین‌نامه",
+      "تغییر در سامانه رسمی مالکیت صنعتی",
+      "تغییر طبقه‌بندی یا مدارک",
+      "تغییر هزینه‌ها یا رویه بررسی"
+    ]
+  }
+}
