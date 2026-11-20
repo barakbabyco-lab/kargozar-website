@@ -4,7 +4,7 @@
   "title": "گزارش آمادگی نسخه اول بانک دانش کارگزار",
   "reviewed_at": "2026-11-21",
   "launch_scope": "نسخه اول برای پاسخ به پرسش‌های متداول خدمات و ارجاع موارد خاص، مبهم، فاقد منبع جاری یا نیازمند بررسی پرونده به کارشناس انسانی آماده می‌شود؛ پوشش همه استثناها در این نسخه الزامی نیست.",
-  "overall_status": "version_one_bank_integrated; backend_phpunit_test_job_passed; cpanel_bundle_build_passed; mysql_migration_job_pending; official_source_verification_pending",
+  "overall_status": "version_one_bank_integrated; backend_phpunit_40_passed_204_assertions; mysql_migrations_passed; cpanel_bundle_build_passed; official_source_verification_pending",
   "totals": {
     "category_count": 10,
     "service_count": 46,
@@ -843,7 +843,6 @@
     }
   ],
   "outstanding": [
-    "تکمیل job مهاجرت MySQL در GitHub Actions و بررسی نتیجه نهایی pipeline",
     "بازیابی و تطبیق کاربرگ زنده درگاه ملی مجوزها برای رسته‌های پرتکرار",
     "تأیید منبع اولیه و آخرین اصلاحات برای قوانین و بخشنامه‌های دسته‌های ۲ تا ۸",
     "تکمیل شواهد عرضه‌کننده و قیمت تاریخ‌دار برای خدمات نرم‌افزاری دسته ۹",
@@ -859,7 +858,7 @@
     "حفظ زمینه سؤال «چطوری؟» پس از اعلام فقدان پیش‌نیاز و تکرار مسیر ارجاع انسانی",
     "ثبت سیاست نسخه اول برای پوشش موارد متداول و ارجاع استثناها",
     "افزودن تست‌های واحد و یکپارچه برای پاسخ‌گویی، طبقه‌بندی، چت و دریافت شماره تماس",
-    "GitHub Actions اجرای تست‌های PHPUnit در job اصلی را با موفقیت گذراند."
+    "GitHub Actions در نسخه commit 6019ecdb83c31a4994dc4e8c8e65a50b8434e980: تعداد ۴۰ تست با ۲۰۴ assertion موفق شد؛ مهاجرت MySQL 8 و ساخت بسته cPanel نیز موفق بود."
   ],
   "notes": [
     "۴۶ خدمت در ده دسته ثبت شده‌اند و برای همه رکوردها فیلدهای شرایط، مدارک و مراحل اولیه وجود دارد.",
