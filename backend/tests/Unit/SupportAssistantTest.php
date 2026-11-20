@@ -26,16 +26,16 @@ class SupportAssistantTest extends TestCase
         Config::set('support_assistant.faqs', [[
             'key' => 'test_service',
             'service_assurance' => true,
-            'keywords' => ['ثبت برند'],
-            'answer' => 'برای ثبت برند، نام و زمینه فعالیت باید بررسی شود.',
+            'keywords' => ['خدمات آزمایشی'],
+            'answer' => 'برای خدمات آزمایشی، اطلاعات اولیه بررسی می‌شود.',
         ]]);
         Config::set('support_assistant.confidence_threshold', 0.25);
         Config::set('support_assistant.minimum_score_margin', 0.0);
         Config::set('support_assistant.customer_communication.standard_closing_text', 'اگر مدرکی ندارید، شماره تماس‌تان را ثبت کنید.');
 
-        $reply = app(SupportAssistant::class)->reply('برای ثبت برند راهنمایی می‌خواهم');
+        $reply = app(SupportAssistant::class)->reply('برای خدمات آزمایشی راهنمایی می‌خواهم');
 
-        $this->assertStringContainsString('برای ثبت برند', $reply);
+        $this->assertStringContainsString('برای خدمات آزمایشی', $reply);
         $this->assertStringContainsString("\n\nاگر مدرکی ندارید", $reply);
     }
 
