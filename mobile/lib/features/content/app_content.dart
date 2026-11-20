@@ -260,7 +260,7 @@ class AppContentImage extends StatelessWidget {
   Widget _fallback() => Container(
         color: const Color(0xFFF3F0F4),
         alignment: Alignment.center,
-        child: Icon(fallbackIcon, color: const Color(0xFF49334F), size: 34),
+        child: Icon(fallbackIcon, color: const Color(0xFF4B0082), size: 34),
       );
 }
 
@@ -345,7 +345,7 @@ class _AppBannerStripState extends State<AppBannerStrip> {
                             vertical: 7,
                           ),
                           decoration: BoxDecoration(
-                            color: const Color(0xE649334F),
+                            color: const Color(0xE64B0082),
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: Text(
@@ -454,7 +454,7 @@ class CompanionModuleRow extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 13),
                     child: Row(
                       children: [
-                        Icon(icon, color: const Color(0xFFC62828), size: 22),
+                        Icon(icon, color: const Color(0xFFE30613), size: 22),
                         const SizedBox(width: 12),
                         Expanded(
                           child: Column(
@@ -536,7 +536,7 @@ class CompanionDescriptionPage extends StatelessWidget {
             if (points.isNotEmpty) ...[
               const SizedBox(height: 22),
               const Text('شرح خدمات و امکانات', style: TextStyle(
-                color: Color(0xFF49334F),
+                color: Color(0xFF4B0082),
                 fontSize: 15,
                 fontWeight: FontWeight.w900,
               )),
@@ -548,7 +548,7 @@ class CompanionDescriptionPage extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Icon(Icons.check_circle_outline,
-                        color: Color(0xFFC62828), size: 18),
+                        color: Color(0xFFE30613), size: 18),
                       const SizedBox(width: 8),
                       Expanded(child: Text(point, style: const TextStyle(
                         color: Color(0xFF475569),
@@ -569,7 +569,7 @@ class CompanionDescriptionPage extends StatelessWidget {
               ),
               child: const Text(
                 'برای دریافت جزئیات متناسب با نوع کسب‌وکار، شرایط ارائه و ترکیب نهایی خدمات، می‌توانید با کارشناسان کارگزار مشاوره کنید.',
-                style: TextStyle(color: Color(0xFF49334F), fontSize: 12, height: 1.8),
+                style: TextStyle(color: Color(0xFF4B0082), fontSize: 12, height: 1.8),
               ),
             ),
           ],
@@ -604,7 +604,7 @@ class _SupportAction extends StatelessWidget {
  @override Widget build(BuildContext context)=>Material(color:Colors.white,borderRadius:BorderRadius.circular(12),
    child:InkWell(onTap:onTap,borderRadius:BorderRadius.circular(12),child:Container(height:58,padding:const EdgeInsets.symmetric(horizontal:13),
      decoration:BoxDecoration(borderRadius:BorderRadius.circular(12),border:Border.all(color:const Color(0xFFF0B9B9))),
-     child:Row(children:[Icon(icon,color:const Color(0xFFC62828),size:22),const SizedBox(width:12),
+     child:Row(children:[Icon(icon,color:const Color(0xFFE30613),size:22),const SizedBox(width:12),
        Expanded(child:Column(mainAxisAlignment:MainAxisAlignment.center,crossAxisAlignment:CrossAxisAlignment.start,children:[
          Text(title,style:const TextStyle(color:Color(0xFF1E293B),fontSize:12,fontWeight:FontWeight.w800)),
          Text(subtitle,style:const TextStyle(color:Color(0xFF64748B),fontSize:10)),
