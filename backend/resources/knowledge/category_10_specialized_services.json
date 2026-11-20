@@ -3,9 +3,9 @@
   "category_key": "10-specialized-services",
   "category_number": 10,
   "title": "سایر خدمات تخصصی",
-  "status": "draft_needs_review",
-  "reviewed_at": null,
-  "review_version": 1,
+  "status": "populated_draft_needs_domain_expert_review",
+  "reviewed_at": "2026-11-21",
+  "review_version": 2,
   "knowledge_mode": "local_or_hybrid_by_service",
   "scope": "روش انجام و خروجی هر خدمت در بانک داخلی تعریف شود؛ قیمت بازار، ضوابط تخصصی و ظرفیت تأمین‌کنندگان در صورت نیاز زنده بررسی شوند.",
   "services": [
@@ -13,169 +13,407 @@
       "service_key": "business-consulting",
       "title": "مشاوره تخصصی کسب‌وکار",
       "knowledge_mode": "local",
-      "status": "draft_needs_review",
-      "scope": null,
-      "eligibility": null,
-      "conditions": [],
-      "documents": [],
-      "steps": [],
-      "fees": null,
-      "issuance_time": null,
+      "status": "populated_draft_needs_domain_expert_review",
+      "scope": "کسب‌وکار یا متقاضی متناسب با موضوع خدمت و هدف تعریف‌شده.",
+      "eligibility": "پس از نیازسنجی و بررسی دامنه کار و صلاحیت تخصصی موردنیاز تعیین می‌شود.",
+      "conditions": [
+        "شرح کسب‌وکار، هدف، مسئله اصلی، داده‌های عملکردی و محدودیت منابع.",
+        "هدف، خروجی قابل تحویل، محدوده مسئولیت و شاخص پذیرش باید پیش از شروع روشن شود.",
+        "هزینه و زمان به دامنه، داده‌های ورودی و پیچیدگی پروژه وابسته است و پس از بررسی اعلام می‌شود."
+      ],
+      "documents": [
+        "شرح کسب‌وکار",
+        "هدف",
+        "مسئله اصلی",
+        "داده‌های عملکردی و محدودیت منابع."
+      ],
+      "steps": [
+        "جلسه تشخیص",
+        "گردآوری داده",
+        "تحلیل ریشه‌ای",
+        "ارائه گزینه‌ها",
+        "تدوین نقشه اقدام و شاخص سنجش."
+      ],
+      "fees": {
+        "status": "quote_after_scope_definition",
+        "amount": null
+      },
+      "issuance_time": {
+        "status": "project_scope_dependent",
+        "estimate": null
+      },
       "issuing_authority": null,
       "official_source": null,
       "source_url": null,
       "source_date": null,
       "verified_at": null,
-      "reviewed_at": null,
-      "verification_status": "unverified",
+      "reviewed_at": "2026-11-21",
+      "verification_status": "draft_needs_domain_expert_review",
       "shared_requirement_refs": [],
       "activity_specific_requirements": [],
-      "customer_questions": [],
-      "expert_escalation_rules": []
+      "customer_questions": [
+        "مرحله کسب‌وکار، مسئله اولویت‌دار، هدف زمانی و داده‌های قابل ارائه چیست؟؟"
+      ],
+      "expert_escalation_rules": [
+        "درخواست تضمین نتیجه مالی/سرمایه‌گذاری یا بازده",
+        "موضوع نیازمند مجوز حرفه‌ای، کارشناس رسمی، حسابرس یا مشاور حقوقی دارای صلاحیت",
+        "نبود داده کافی برای نتیجه‌گیری قابل اتکا"
+      ],
+      "what_is_it": "مشاوره تخصصی برای تشخیص مسئله و طراحی راهکار اجرایی در فروش، عملیات، مالی، منابع انسانی یا بازاریابی.",
+      "deliverables": [
+        "خروجی مکتوب/اجرایی متناسب با شرح خدمات و قرارداد"
+      ],
+      "notes": "اطلاعات پایه خدمت برای مکالمه و تعیین دامنه کار است؛ نرخ و زمان پس از دریافت شرح پروژه و بررسی تأمین‌کننده اعلام شود."
     },
     {
       "service_key": "feasibility-study",
       "title": "طرح توجیهی و امکان‌سنجی",
       "knowledge_mode": "local",
-      "status": "draft_needs_review",
-      "scope": null,
-      "eligibility": null,
-      "conditions": [],
-      "documents": [],
-      "steps": [],
-      "fees": null,
-      "issuance_time": null,
+      "status": "populated_draft_needs_domain_expert_review",
+      "scope": "کسب‌وکار یا متقاضی متناسب با موضوع خدمت و هدف تعریف‌شده.",
+      "eligibility": "پس از نیازسنجی و بررسی دامنه کار و صلاحیت تخصصی موردنیاز تعیین می‌شود.",
+      "conditions": [
+        "شرح طرح، محل اجرا، ظرفیت، سرمایه، داده بازار، برآورد هزینه و منابع فنی.",
+        "هدف، خروجی قابل تحویل، محدوده مسئولیت و شاخص پذیرش باید پیش از شروع روشن شود.",
+        "هزینه و زمان به دامنه، داده‌های ورودی و پیچیدگی پروژه وابسته است و پس از بررسی اعلام می‌شود."
+      ],
+      "documents": [
+        "شرح طرح",
+        "محل اجرا",
+        "ظرفیت",
+        "سرمایه",
+        "داده بازار",
+        "برآورد هزینه و منابع فنی."
+      ],
+      "steps": [
+        "تعریف فرضیات",
+        "تحقیق بازار",
+        "بررسی فنی",
+        "مدل مالی و جریان نقد",
+        "تحلیل حساسیت و ریسک",
+        "گزارش نتیجه مشروط."
+      ],
+      "fees": {
+        "status": "quote_after_scope_definition",
+        "amount": null
+      },
+      "issuance_time": {
+        "status": "project_scope_dependent",
+        "estimate": null
+      },
       "issuing_authority": null,
       "official_source": null,
       "source_url": null,
       "source_date": null,
       "verified_at": null,
-      "reviewed_at": null,
-      "verification_status": "unverified",
+      "reviewed_at": "2026-11-21",
+      "verification_status": "draft_needs_domain_expert_review",
       "shared_requirement_refs": [],
       "activity_specific_requirements": [],
-      "customer_questions": [],
-      "expert_escalation_rules": []
+      "customer_questions": [
+        "طرح در کدام شهر و بازار است؟ سرمایه و ظرفیت هدف چقدر است؟ داده واقعی بازار و قیمت‌ها چیست؟؟"
+      ],
+      "expert_escalation_rules": [
+        "درخواست تضمین نتیجه مالی/سرمایه‌گذاری یا بازده",
+        "موضوع نیازمند مجوز حرفه‌ای، کارشناس رسمی، حسابرس یا مشاور حقوقی دارای صلاحیت",
+        "نبود داده کافی برای نتیجه‌گیری قابل اتکا"
+      ],
+      "what_is_it": "ارزیابی بازار، فنی، مالی، اجرایی و ریسک یک طرح پیش از سرمایه‌گذاری.",
+      "deliverables": [
+        "خروجی مکتوب/اجرایی متناسب با شرح خدمات و قرارداد"
+      ],
+      "notes": "اطلاعات پایه خدمت برای مکالمه و تعیین دامنه کار است؛ نرخ و زمان پس از دریافت شرح پروژه و بررسی تأمین‌کننده اعلام شود."
     },
     {
       "service_key": "business-plan",
       "title": "تهیه طرح کسب‌وکار (Business Plan)",
       "knowledge_mode": "local",
-      "status": "draft_needs_review",
-      "scope": null,
-      "eligibility": null,
-      "conditions": [],
-      "documents": [],
-      "steps": [],
-      "fees": null,
-      "issuance_time": null,
+      "status": "populated_draft_needs_domain_expert_review",
+      "scope": "کسب‌وکار یا متقاضی متناسب با موضوع خدمت و هدف تعریف‌شده.",
+      "eligibility": "پس از نیازسنجی و بررسی دامنه کار و صلاحیت تخصصی موردنیاز تعیین می‌شود.",
+      "conditions": [
+        "شرح محصول، مشتری هدف، مدل درآمد، رقبا، تیم، هزینه‌ها و عملکرد واقعی در صورت وجود.",
+        "هدف، خروجی قابل تحویل، محدوده مسئولیت و شاخص پذیرش باید پیش از شروع روشن شود.",
+        "هزینه و زمان به دامنه، داده‌های ورودی و پیچیدگی پروژه وابسته است و پس از بررسی اعلام می‌شود."
+      ],
+      "documents": [
+        "شرح محصول",
+        "مشتری هدف",
+        "مدل درآمد",
+        "رقبا",
+        "تیم",
+        "هزینه‌ها و عملکرد واقعی در صورت وجود."
+      ],
+      "steps": [
+        "تعیین مخاطب سند",
+        "تحلیل بازار",
+        "تدوین مدل و استراتژی",
+        "برنامه عملیات",
+        "مدل مالی",
+        "تهیه نسخه ارائه."
+      ],
+      "fees": {
+        "status": "quote_after_scope_definition",
+        "amount": null
+      },
+      "issuance_time": {
+        "status": "project_scope_dependent",
+        "estimate": null
+      },
       "issuing_authority": null,
       "official_source": null,
       "source_url": null,
       "source_date": null,
       "verified_at": null,
-      "reviewed_at": null,
-      "verification_status": "unverified",
+      "reviewed_at": "2026-11-21",
+      "verification_status": "draft_needs_domain_expert_review",
       "shared_requirement_refs": [],
       "activity_specific_requirements": [],
-      "customer_questions": [],
-      "expert_escalation_rules": []
+      "customer_questions": [
+        "طرح برای مدیریت داخلی، بانک یا سرمایه‌گذار است؟ کسب‌وکار فعال است یا در مرحله راه‌اندازی؟؟"
+      ],
+      "expert_escalation_rules": [
+        "درخواست تضمین نتیجه مالی/سرمایه‌گذاری یا بازده",
+        "موضوع نیازمند مجوز حرفه‌ای، کارشناس رسمی، حسابرس یا مشاور حقوقی دارای صلاحیت",
+        "نبود داده کافی برای نتیجه‌گیری قابل اتکا"
+      ],
+      "what_is_it": "سند یکپارچه مدل کسب‌وکار، بازار، عملیات، تیم، بازاریابی، مالی و نقشه رشد.",
+      "deliverables": [
+        "خروجی مکتوب/اجرایی متناسب با شرح خدمات و قرارداد"
+      ],
+      "notes": "اطلاعات پایه خدمت برای مکالمه و تعیین دامنه کار است؛ نرخ و زمان پس از دریافت شرح پروژه و بررسی تأمین‌کننده اعلام شود."
     },
     {
       "service_key": "business-valuation",
       "title": "ارزش‌گذاری کسب‌وکار",
       "knowledge_mode": "local",
-      "status": "draft_needs_review",
-      "scope": null,
-      "eligibility": null,
-      "conditions": [],
-      "documents": [],
-      "steps": [],
-      "fees": null,
-      "issuance_time": null,
+      "status": "populated_draft_needs_domain_expert_review",
+      "scope": "کسب‌وکار یا متقاضی متناسب با موضوع خدمت و هدف تعریف‌شده.",
+      "eligibility": "پس از نیازسنجی و بررسی دامنه کار و صلاحیت تخصصی موردنیاز تعیین می‌شود.",
+      "conditions": [
+        "صورت‌های مالی، درآمد و هزینه، بدهی و دارایی، قراردادها، ساختار سهام و اطلاعات بازار.",
+        "هدف، خروجی قابل تحویل، محدوده مسئولیت و شاخص پذیرش باید پیش از شروع روشن شود.",
+        "هزینه و زمان به دامنه، داده‌های ورودی و پیچیدگی پروژه وابسته است و پس از بررسی اعلام می‌شود."
+      ],
+      "documents": [
+        "صورت‌های مالی",
+        "درآمد و هزینه",
+        "بدهی و دارایی",
+        "قراردادها",
+        "ساختار سهام و اطلاعات بازار."
+      ],
+      "steps": [
+        "تعیین مبنای ارزش",
+        "بررسی کیفیت داده",
+        "انتخاب روش",
+        "تحلیل مفروضات و ریسک",
+        "ارائه بازه ارزش و حساسیت."
+      ],
+      "fees": {
+        "status": "quote_after_scope_definition",
+        "amount": null
+      },
+      "issuance_time": {
+        "status": "project_scope_dependent",
+        "estimate": null
+      },
       "issuing_authority": null,
       "official_source": null,
       "source_url": null,
       "source_date": null,
       "verified_at": null,
-      "reviewed_at": null,
-      "verification_status": "unverified",
+      "reviewed_at": "2026-11-21",
+      "verification_status": "draft_needs_domain_expert_review",
       "shared_requirement_refs": [],
       "activity_specific_requirements": [],
-      "customer_questions": [],
-      "expert_escalation_rules": []
+      "customer_questions": [
+        "ارزش‌گذاری برای فروش، جذب سرمایه یا اختلاف شرکاست؟ صورت‌های مالی و اطلاعات بدهی موجود است؟؟"
+      ],
+      "expert_escalation_rules": [
+        "درخواست تضمین نتیجه مالی/سرمایه‌گذاری یا بازده",
+        "موضوع نیازمند مجوز حرفه‌ای، کارشناس رسمی، حسابرس یا مشاور حقوقی دارای صلاحیت",
+        "نبود داده کافی برای نتیجه‌گیری قابل اتکا"
+      ],
+      "what_is_it": "برآورد ارزش اقتصادی کسب‌وکار/سهام بر اساس هدف، تاریخ مبنا، دارایی، درآمد، جریان نقد و ریسک.",
+      "deliverables": [
+        "خروجی مکتوب/اجرایی متناسب با شرح خدمات و قرارداد"
+      ],
+      "notes": "اطلاعات پایه خدمت برای مکالمه و تعیین دامنه کار است؛ نرخ و زمان پس از دریافت شرح پروژه و بررسی تأمین‌کننده اعلام شود."
     },
     {
       "service_key": "fundraising",
       "title": "تأمین سرمایه و جذب سرمایه‌گذار",
       "knowledge_mode": "hybrid",
-      "status": "draft_needs_review",
-      "scope": null,
-      "eligibility": null,
-      "conditions": [],
-      "documents": [],
-      "steps": [],
-      "fees": null,
-      "issuance_time": null,
+      "status": "populated_draft_needs_domain_expert_review",
+      "scope": "کسب‌وکار یا متقاضی متناسب با موضوع خدمت و هدف تعریف‌شده.",
+      "eligibility": "پس از نیازسنجی و بررسی دامنه کار و صلاحیت تخصصی موردنیاز تعیین می‌شود.",
+      "conditions": [
+        "معرفی کسب‌وکار، تیم، بازار، شاخص‌های عملکرد، مبلغ و محل مصرف سرمایه، ساختار سهام و بدهی‌ها.",
+        "هدف، خروجی قابل تحویل، محدوده مسئولیت و شاخص پذیرش باید پیش از شروع روشن شود.",
+        "هزینه و زمان به دامنه، داده‌های ورودی و پیچیدگی پروژه وابسته است و پس از بررسی اعلام می‌شود."
+      ],
+      "documents": [
+        "معرفی کسب‌وکار",
+        "تیم",
+        "بازار",
+        "شاخص‌های عملکرد",
+        "مبلغ و محل مصرف سرمایه",
+        "ساختار سهام و بدهی‌ها."
+      ],
+      "steps": [
+        "ارزیابی آمادگی",
+        "تدوین مدل مالی و ارزش پیشنهادی",
+        "آماده‌سازی Pitch Deck",
+        "شناسایی منابع",
+        "هماهنگی جلسات و پیگیری بررسی."
+      ],
+      "fees": {
+        "status": "quote_after_scope_definition",
+        "amount": null
+      },
+      "issuance_time": {
+        "status": "project_scope_dependent",
+        "estimate": null
+      },
       "issuing_authority": null,
       "official_source": null,
       "source_url": null,
       "source_date": null,
       "verified_at": null,
-      "reviewed_at": null,
-      "verification_status": "unverified",
+      "reviewed_at": "2026-11-21",
+      "verification_status": "draft_needs_domain_expert_review",
       "shared_requirement_refs": [],
       "activity_specific_requirements": [],
-      "customer_questions": [],
-      "expert_escalation_rules": []
+      "customer_questions": [
+        "چه مبلغی برای چه مصرفی نیاز دارید؟ در چه مرحله‌ای هستید؟ واگذاری سهام قابل بررسی است؟؟"
+      ],
+      "expert_escalation_rules": [
+        "درخواست تضمین نتیجه مالی/سرمایه‌گذاری یا بازده",
+        "موضوع نیازمند مجوز حرفه‌ای، کارشناس رسمی، حسابرس یا مشاور حقوقی دارای صلاحیت",
+        "نبود داده کافی برای نتیجه‌گیری قابل اتکا"
+      ],
+      "what_is_it": "آماده‌سازی کسب‌وکار برای جذب سرمایه یا تأمین مالی و معرفی به منابع متناسب.",
+      "deliverables": [
+        "خروجی مکتوب/اجرایی متناسب با شرح خدمات و قرارداد"
+      ],
+      "notes": "اطلاعات پایه خدمت برای مکالمه و تعیین دامنه کار است؛ نرخ و زمان پس از دریافت شرح پروژه و بررسی تأمین‌کننده اعلام شود."
     },
     {
       "service_key": "advertising-video",
       "title": "تولید ویدئوی تبلیغاتی",
       "knowledge_mode": "local",
-      "status": "draft_needs_review",
-      "scope": null,
-      "eligibility": null,
-      "conditions": [],
-      "documents": [],
-      "steps": [],
-      "fees": null,
-      "issuance_time": null,
+      "status": "populated_draft_needs_domain_expert_review",
+      "scope": "کسب‌وکار یا متقاضی متناسب با موضوع خدمت و هدف تعریف‌شده.",
+      "eligibility": "پس از نیازسنجی و بررسی دامنه کار و صلاحیت تخصصی موردنیاز تعیین می‌شود.",
+      "conditions": [
+        "لوگو، اطلاعات محصول، مزیت‌های قابل اثبات، تصاویر موجود، بریف و مجوز استفاده از دارایی‌ها.",
+        "هدف، خروجی قابل تحویل، محدوده مسئولیت و شاخص پذیرش باید پیش از شروع روشن شود.",
+        "هزینه و زمان به دامنه، داده‌های ورودی و پیچیدگی پروژه وابسته است و پس از بررسی اعلام می‌شود."
+      ],
+      "documents": [
+        "لوگو",
+        "اطلاعات محصول",
+        "مزیت‌های قابل اثبات",
+        "تصاویر موجود",
+        "بریف و مجوز استفاده از دارایی‌ها."
+      ],
+      "steps": [
+        "دریافت بریف",
+        "ایده و سناریو",
+        "استوری‌بورد",
+        "تولید",
+        "تدوین و صداگذاری",
+        "اصلاحات و تحویل نسخه‌های توافق‌شده."
+      ],
+      "fees": {
+        "status": "quote_after_scope_definition",
+        "amount": null
+      },
+      "issuance_time": {
+        "status": "project_scope_dependent",
+        "estimate": null
+      },
       "issuing_authority": null,
       "official_source": null,
       "source_url": null,
       "source_date": null,
       "verified_at": null,
-      "reviewed_at": null,
-      "verification_status": "unverified",
+      "reviewed_at": "2026-11-21",
+      "verification_status": "draft_needs_domain_expert_review",
       "shared_requirement_refs": [],
       "activity_specific_requirements": [],
-      "customer_questions": [],
-      "expert_escalation_rules": []
+      "customer_questions": [
+        "ویدئو برای فروش یا معرفی برند است؟ مدت، پلتفرم، مخاطب و سبک مدنظر چیست؟؟"
+      ],
+      "expert_escalation_rules": [
+        "درخواست تضمین نتیجه مالی/سرمایه‌گذاری یا بازده",
+        "موضوع نیازمند مجوز حرفه‌ای، کارشناس رسمی، حسابرس یا مشاور حقوقی دارای صلاحیت",
+        "نبود داده کافی برای نتیجه‌گیری قابل اتکا"
+      ],
+      "what_is_it": "طراحی و تولید ویدئوی تبلیغاتی یا معرفی محصول/خدمت برای مخاطب و کانال مشخص.",
+      "deliverables": [
+        "خروجی مکتوب/اجرایی متناسب با شرح خدمات و قرارداد"
+      ],
+      "notes": "اطلاعات پایه خدمت برای مکالمه و تعیین دامنه کار است؛ نرخ و زمان پس از دریافت شرح پروژه و بررسی تأمین‌کننده اعلام شود."
     },
     {
       "service_key": "business-branding",
       "title": "برندسازی و توسعه بازار",
       "knowledge_mode": "local",
-      "status": "draft_needs_review",
-      "scope": null,
-      "eligibility": null,
-      "conditions": [],
-      "documents": [],
-      "steps": [],
-      "fees": null,
-      "issuance_time": null,
+      "status": "populated_draft_needs_domain_expert_review",
+      "scope": "کسب‌وکار یا متقاضی متناسب با موضوع خدمت و هدف تعریف‌شده.",
+      "eligibility": "پس از نیازسنجی و بررسی دامنه کار و صلاحیت تخصصی موردنیاز تعیین می‌شود.",
+      "conditions": [
+        "نام و هویت فعلی، محصولات، مشتریان، رقبا، کانال‌ها، اهداف و بودجه.",
+        "هدف، خروجی قابل تحویل، محدوده مسئولیت و شاخص پذیرش باید پیش از شروع روشن شود.",
+        "هزینه و زمان به دامنه، داده‌های ورودی و پیچیدگی پروژه وابسته است و پس از بررسی اعلام می‌شود."
+      ],
+      "documents": [
+        "نام و هویت فعلی",
+        "محصولات",
+        "مشتریان",
+        "رقبا",
+        "کانال‌ها",
+        "اهداف و بودجه."
+      ],
+      "steps": [
+        "تحلیل بازار",
+        "تعیین مخاطب و جایگاه",
+        "ارزش پیشنهادی",
+        "پیام و هویت",
+        "راهنمای برند",
+        "نقشه توسعه بازار."
+      ],
+      "fees": {
+        "status": "quote_after_scope_definition",
+        "amount": null
+      },
+      "issuance_time": {
+        "status": "project_scope_dependent",
+        "estimate": null
+      },
       "issuing_authority": null,
       "official_source": null,
       "source_url": null,
       "source_date": null,
       "verified_at": null,
-      "reviewed_at": null,
-      "verification_status": "unverified",
+      "reviewed_at": "2026-11-21",
+      "verification_status": "draft_needs_domain_expert_review",
       "shared_requirement_refs": [],
       "activity_specific_requirements": [],
-      "customer_questions": [],
-      "expert_escalation_rules": []
+      "customer_questions": [
+        "برند جدید است یا بازطراحی؟ مشتری هدف و مزیت واقعی شما چیست؟؟"
+      ],
+      "expert_escalation_rules": [
+        "درخواست تضمین نتیجه مالی/سرمایه‌گذاری یا بازده",
+        "موضوع نیازمند مجوز حرفه‌ای، کارشناس رسمی، حسابرس یا مشاور حقوقی دارای صلاحیت",
+        "نبود داده کافی برای نتیجه‌گیری قابل اتکا"
+      ],
+      "what_is_it": "تحلیل و توسعه هویت، جایگاه‌یابی، پیام، تجربه مشتری و برنامه بازاریابی برند.",
+      "deliverables": [
+        "خروجی مکتوب/اجرایی متناسب با شرح خدمات و قرارداد"
+      ],
+      "notes": "اطلاعات پایه خدمت برای مکالمه و تعیین دامنه کار است؛ نرخ و زمان پس از دریافت شرح پروژه و بررسی تأمین‌کننده اعلام شود."
     }
   ],
   "data_quality_rules": [
