@@ -237,26 +237,38 @@ class CompanionContentPage extends StatelessWidget {
                   clipBehavior: Clip.antiAlias,
                   child: InkWell(
                     onTap: () => onOpen(index),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                    child: Stack(
+                      fit: StackFit.expand,
                       children: [
-                        Expanded(
-                          child: AppContentImage(
-                            fileName: item.image,
-                            borderRadius: 0,
-                            fallbackIcon: item.icon,
-                          ),
+                        AppContentImage(
+                          fileName: item.image,
+                          borderRadius: 0,
+                          fallbackIcon: item.icon,
                         ),
-                        Padding(
-                          padding: const EdgeInsets.all(9),
-                          child: Text(
-                            item.title,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              fontSize: 11,
-                              fontWeight: FontWeight.w800,
-                              color: Color(0xFF1E293B),
+                        Align(
+                          alignment: Alignment.bottomCenter,
+                          child: Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.fromLTRB(8, 18, 8, 10),
+                            decoration: const BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                                colors: [Colors.transparent, Color(0xD9000000)],
+                              ),
+                            ),
+                            child: Text(
+                              item.title,
+                              maxLines: 2,
+                              textAlign: TextAlign.center,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 11,
+                                height: 1.35,
+                                fontWeight: FontWeight.w900,
+                                shadows: [Shadow(color: Colors.black54, blurRadius: 4)],
+                              ),
                             ),
                           ),
                         ),
