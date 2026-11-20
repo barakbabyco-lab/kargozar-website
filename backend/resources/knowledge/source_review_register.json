@@ -3,7 +3,7 @@
   "register_key": "kargozar_official_source_review_register",
   "title": "دفتر ثبت منابع و وضعیت راستی‌آزمایی بانک دانش کارگزار",
   "reviewed_at": "2026-11-21",
-  "status": "active_research_register_partial_not_all_services_verified",
+  "status": "active_research_register_updated_trade_training_rules",
   "policy": [
     "منبع رسمی و کاربرگ جاری بر هر منبع ثانویه یا راهنمای قدیمی اولویت دارد.",
     "وجود URL یا یافتن متن بازنشرشده به‌تنهایی به معنی راستی‌آزمایی کامل محتوای جاری نیست.",
@@ -156,6 +156,23 @@
       "source_type": "project_specific_evidence",
       "status": "domain_expert_review_required",
       "use": "دامنه کار، خروجی، معیار پذیرش، روش، فرضیات، صلاحیت مجری و قیمت‌گذاری"
+    },
+    {
+      "key": "trade_law_training_instruction",
+      "category": 4,
+      "title": "دستورالعمل آموزش احکام تجارت و کسب‌وکار با اصلاحات و الحاقات بعدی",
+      "authority": "دبیرخانه هیأت عالی نظارت / اتاق اصناف ایران",
+      "url": "https://hoghogh.ai/laws/دستورالعمل-آموزش-احکام-تجارت-و-کسب-و-کار-با-اصلاحات-و-الحاقات-بعدی",
+      "source_type": "consolidated_text_identified_as_national_laws_and_regulations_database",
+      "status": "detailed_rules_extracted_local_implementation_and_worksheet_confirmation_pending",
+      "source_date": "1403-12-20",
+      "extracted_facts": [
+        "اعتبار گواهی پنج سال است.",
+        "تغییر رسته یا جابه‌جایی واحد صنفی موجب تکرار دوره نمی‌شود.",
+        "دوره حضوری و غیرحضوری است و فقه بازار حضوری برگزار می‌شود.",
+        "دروس اجباری ۲۰ ساعت و حداقل سه ساعت اختیاری است؛ متن تعرفه به دوره ۲۴ ساعته اشاره می‌کند و اختلاف باید استعلام شود.",
+        "حدنصاب نمره قبولی یا آزمون کتبی عمومی در متن جدید تصریح نشده است."
+      ]
     }
   ],
   "categories_status": [
@@ -201,6 +218,7 @@
     }
   ],
   "next_research_queue": [
+    "تطبیق اجرای محلی دستورالعمل احکام تجارت با اتاق اصناف شهر پرونده و بررسی اختلاف ۲۳/۲۴ ساعت و نبود حدنصاب آزمون در متن جدید.",
     "بازیابی کاربرگ‌های زنده درگاه ملی مجوزها برای رسته‌های پرتکرار و ایجاد رکورد فعالیت‌محور",
     "دریافت نسخه اولیه بخشنامه‌های بانک مرکزی از دامنه cbi.ir",
     "تطبیق قانون کار و اصلاحات آن با روزنامه رسمی/مجلس",
