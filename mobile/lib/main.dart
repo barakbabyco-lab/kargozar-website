@@ -207,52 +207,45 @@ class _MainShellState extends State<MainShell> {
       ),
     )));
   }
-  Future<void> _openCategory(ServiceCategory category) async {
-    if (category.children.isNotEmpty) {
-      await showModalBottomSheet<void>(
-        context: context,
-        isScrollControlled: true,
-        backgroundColor: Colors.white,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
-        ),
-        builder: (sheetContext) => SafeArea(
-          child: SizedBox(
-            height: MediaQuery.sizeOf(sheetContext).height * .68,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 18, 16, 12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(category.name, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w900, color: _ink)),
-                  const SizedBox(height: 10),
-                  Expanded(
-                    child: ListView.separated(
-                      itemCount: category.children.length,
-                      separatorBuilder: (_, __) => const Divider(height: 1),
-                      itemBuilder: (_, index) {
-                        final child = category.children[index];
-                        return ListTile(
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 6),
-                          title: Text(child.name, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
-                          trailing: const Icon(Icons.chevron_left_rounded, color: _muted),
-                          onTap: () {
-                            Navigator.pop(sheetContext);
-                            _openCategory(child);
-                          },
-                        );
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      );
+  Future<void> _showCategoryChildren(ServiceCategory category) async {
+    if (category.children.isEmpty) {
+      await _openCategoryDetail(category);
       return;
     }
+    await showModalBottomSheet<void>(
+      context: context, isScrollControlled: true, backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(22))),
+      builder: (sheetContext) => SafeArea(
+        child: SizedBox(
+          height: MediaQuery.sizeOf(sheetContext).height * .68,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 18, 16, 12),
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text(category.name, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w900, color: _ink)),
+              const SizedBox(height: 10),
+              Expanded(child: ListView.separated(
+                itemCount: category.children.length,
+                separatorBuilder: (_, __) => const Divider(height: 1),
+                itemBuilder: (_, index) {
+                  final child = category.children[index];
+                  return _ServiceCategoryAction(
+                    icon: _serviceCategoryIcon(child.slug),
+                    title: child.name,
+                    subtitle: child.children.isEmpty ? 'مشاهده توضیحات خدمت' : 'مشاهده توضیحات یا زیرشاخه‌ها',
+                    hasChildren: child.children.isNotEmpty,
+                    onDetails: () { Navigator.pop(sheetContext); _openCategoryDetail(child); },
+                    onExpand: child.children.isEmpty ? null : () { Navigator.pop(sheetContext); _showCategoryChildren(child); },
+                  );
+                },
+              )),
+            ]),
+          ),
+        ),
+      ),
+    );
+  }
 
+  Future<void> _openCategoryDetail(ServiceCategory category) async {
     await Navigator.of(context).push(MaterialPageRoute<void>(
       builder: (_) => Directionality(
         textDirection: TextDirection.rtl,
@@ -324,14 +317,54 @@ class _MainShellState extends State<MainShell> {
       actions: [TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('متوجه شدم'))],
     ));
   }
-  void _openCompanion(int index) {
-    final item = companionModules[index];
-    showDialog<void>(context: context, builder: (ctx) => AlertDialog(
-      title: Text(item.title),
-      content: Text('${item.subtitle}\n\nصفحه عملیاتی این ماژول در مرحله تکمیل و اتصال به سامانه است.'),
-      actions: [TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('بستن'))],
+  void _openCompanionDetail(CompanionModule module) {
+    Navigator.of(context).push(MaterialPageRoute<void>(
+      builder: (_) => Directionality(textDirection: TextDirection.rtl, child: CompanionDescriptionPage(
+        title: module.title, description: module.description ?? module.subtitle,
+        image: module.image, icon: module.icon, points: module.points,
+      )),
     ));
   }
+
+  void _openCompanionSubmodule(CompanionModule module, CompanionSubmodule submodule) {
+    Navigator.of(context).push(MaterialPageRoute<void>(
+      builder: (_) => Directionality(textDirection: TextDirection.rtl, child: CompanionDescriptionPage(
+        title: submodule.title, description: submodule.description,
+        image: module.image, icon: submodule.icon, points: submodule.points,
+      )),
+    ));
+  }
+
+  Future<void> _expandCompanion(CompanionModule module) async {
+    if (module.children.isEmpty) { _openCompanionDetail(module); return; }
+    await showModalBottomSheet<void>(
+      context: context, isScrollControlled: true, backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(22))),
+      builder: (sheetContext) => SafeArea(child: SizedBox(
+        height: MediaQuery.sizeOf(sheetContext).height * .68,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 18, 16, 12),
+          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text(module.title, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w900, color: _ink)),
+            const SizedBox(height: 10),
+            Expanded(child: ListView.separated(
+              itemCount: module.children.length,
+              separatorBuilder: (_, __) => const Divider(height: 1),
+              itemBuilder: (_, index) {
+                final child = module.children[index];
+                return CompanionModuleRow(
+                  title: child.title, subtitle: child.description, icon: child.icon,
+                  hasChildren: false,
+                  onDetails: () { Navigator.pop(sheetContext); _openCompanionSubmodule(module, child); },
+                );
+              },
+            )),
+          ]),
+        ),
+      )),
+    );
+  }
+
   @override Widget build(BuildContext context) => Scaffold(
     body: SafeArea(child: Stack(children: [
       PageView(
@@ -341,8 +374,8 @@ class _MainShellState extends State<MainShell> {
         onPageChanged: (value) => setState(() => _index = value),
         children: [
           ProfilePage(signedIn: widget.signedIn, onLogin: widget.onLogin, onLogout: widget.onLogout, onShowRequests: _showRequests, onNavigate: _goToTab),
-          ServicesPage(onRequest: _request, onOpenCategory: _openCategory, onNavigate: (tab) { if (tab == 4) { _goToTab(2); _openCompanion(0); } else { _goToTab(tab); } }, onConsultation: _showConsultation),
-          CompanionContentPage(onOpen: _openCompanion, onNavigate: (tab) { if (tab == 4) { _goToTab(2); _openCompanion(0); } else { _goToTab(tab); } }, onConsultation: _showConsultation),
+          ServicesPage(onRequest: _request, onOpenCategoryDetails: _openCategoryDetail, onExpandCategory: _showCategoryChildren, onNavigate: (tab) { if (tab == 4) { _goToTab(2); _openCompanionDetail(companionModules[0]); } else { _goToTab(tab); } }, onConsultation: _showConsultation),
+          CompanionContentPage(onOpenDetails: _openCompanionDetail, onExpand: _expandCompanion, onNavigate: (tab) { if (tab == 4) { _goToTab(2); _openCompanion(0); } else { _goToTab(tab); } }, onConsultation: _showConsultation),
           SupportContentPage(onConsultation: _showConsultation, onNavigate: _goToTab),
         ],
       ),
@@ -552,52 +585,43 @@ class _HomePageState extends State<HomePage> {
 
 class ServicesPage extends StatefulWidget {
   const ServicesPage({
-    super.key,
-    required this.onRequest,
-    required this.onOpenCategory,
-    required this.onNavigate,
-    required this.onConsultation,
+    super.key, required this.onRequest, required this.onOpenCategoryDetails,
+    required this.onExpandCategory, required this.onNavigate, required this.onConsultation,
   });
-
   final Future<void> Function(ServiceItem service) onRequest;
-  final ValueChanged<ServiceCategory> onOpenCategory;
+  final ValueChanged<ServiceCategory> onOpenCategoryDetails;
+  final ValueChanged<ServiceCategory> onExpandCategory;
   final ValueChanged<int> onNavigate;
   final VoidCallback onConsultation;
-
-  @override
-  State<ServicesPage> createState() => _ServicesPageState();
+  @override State<ServicesPage> createState() => _ServicesPageState();
 }
 
 class _ServicesPageState extends State<ServicesPage> {
   @override
   Widget build(BuildContext context) => ListView(
-        padding: EdgeInsets.zero,
-        children: [
-          AppBannerStrip(
-            onNavigate: widget.onNavigate,
-            onConsultation: widget.onConsultation,
-          ),
-          const SizedBox(height: 12),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            child: Column(
-              children: [
-                for (var i = 0; i < serviceTaxonomy.length; i++) ...[
-                  _ServiceCategoryAction(
-                    icon: _serviceCategoryIcon(serviceTaxonomy[i].slug),
-                    title: serviceTaxonomy[i].name,
-                    subtitle: 'مشاهده خدمات و ثبت درخواست',
-                    onTap: () => widget.onOpenCategory(serviceTaxonomy[i]),
-                  ),
-                  if (i != serviceTaxonomy.length - 1)
-                    const SizedBox(height: 7),
-                ],
-              ],
+    padding: EdgeInsets.zero,
+    children: [
+      AppBannerStrip(onNavigate: widget.onNavigate, onConsultation: widget.onConsultation),
+      const SizedBox(height: 12),
+      Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        child: Column(children: [
+          for (var i = 0; i < serviceTaxonomy.length; i++) ...[
+            _ServiceCategoryAction(
+              icon: _serviceCategoryIcon(serviceTaxonomy[i].slug),
+              title: serviceTaxonomy[i].name,
+              subtitle: 'مشاهده توضیحات یا زیرشاخه‌ها',
+              hasChildren: serviceTaxonomy[i].children.isNotEmpty,
+              onDetails: () => widget.onOpenCategoryDetails(serviceTaxonomy[i]),
+              onExpand: () => widget.onExpandCategory(serviceTaxonomy[i]),
             ),
-          ),
-          const SizedBox(height: 16),
-        ],
-      );
+            if (i != serviceTaxonomy.length - 1) const SizedBox(height: 7),
+          ],
+        ]),
+      ),
+      const SizedBox(height: 16),
+    ],
+  );
 }
 
 IconData _serviceCategoryIcon(String slug) {
@@ -618,57 +642,57 @@ IconData _serviceCategoryIcon(String slug) {
 
 class _ServiceCategoryAction extends StatelessWidget {
   const _ServiceCategoryAction({
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-    this.onTap,
+    required this.icon, required this.title, required this.subtitle,
+    required this.hasChildren, required this.onDetails, this.onExpand,
   });
-
   final IconData icon;
   final String title;
   final String subtitle;
-  final VoidCallback? onTap;
+  final bool hasChildren;
+  final VoidCallback onDetails;
+  final VoidCallback? onExpand;
 
   @override
   Widget build(BuildContext context) => Material(
-        color: Colors.white,
+    color: Colors.white,
+    borderRadius: BorderRadius.circular(12),
+    child: Container(
+      height: 58,
+      decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
-        child: InkWell(
-          onTap: onTap,
+        border: Border.all(color: const Color(0xFFF0B9B9)),
+      ),
+      child: Row(children: [
+        Expanded(child: InkWell(
+          onTap: onDetails,
           borderRadius: BorderRadius.circular(12),
-          child: Container(
-            height: 58,
+          child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 13),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: const Color(0xFFF0B9B9)),
-            ),
-            child: Row(
-              children: [
-                Icon(icon, color: const Color(0xFFC62828), size: 22),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(title, style: const TextStyle(
-                        color: Color(0xFF1E293B),
-                        fontSize: 12,
-                        fontWeight: FontWeight.w800,
-                      )),
-                      const Text('مشاهده خدمات و ثبت درخواست',
-                        style: TextStyle(color: Color(0xFF64748B), fontSize: 10)),
-                    ],
-                  ),
-                ),
-                const Icon(Icons.chevron_left_rounded,
-                  color: Color(0xFF64748B), size: 20),
-              ],
-            ),
+            child: Row(children: [
+              Icon(icon, color: const Color(0xFFC62828), size: 22),
+              const SizedBox(width: 12),
+              Expanded(child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(title, style: const TextStyle(color: Color(0xFF1E293B), fontSize: 12, fontWeight: FontWeight.w800)),
+                  Text(subtitle, style: const TextStyle(color: Color(0xFF64748B), fontSize: 10)),
+                ],
+              )),
+            ]),
           ),
-        ),
-      );
+        )),
+        if (hasChildren)
+          IconButton(
+            tooltip: 'نمایش زیرشاخه‌ها',
+            onPressed: onExpand,
+            icon: const Icon(Icons.chevron_left_rounded, color: Color(0xFF64748B), size: 21),
+          )
+        else
+          const SizedBox(width: 12),
+      ]),
+    ),
+  );
 }
 
 ServiceItem _serviceItemFromCatalog(CatalogService item) => ServiceItem(
