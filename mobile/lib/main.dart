@@ -865,7 +865,7 @@ class _SupportChatSheetState extends State<SupportChatSheet> {
            constraints:BoxConstraints(maxWidth:MediaQuery.sizeOf(context).width*.76),
            margin:const EdgeInsets.only(bottom:8),padding:const EdgeInsets.symmetric(horizontal:12,vertical:9),
            decoration:BoxDecoration(color:mine?const Color(0xFFFCE8E8):assistant?const Color(0xFFF4EEFA):const Color(0xFFF1F5F9),borderRadius:BorderRadius.circular(13)),
-           child:Text('${assistant?'دستیار هوشمند کارگزار\\n':''}${message['body']?.toString()??''}',style:const TextStyle(fontSize:12,height:1.6)),
+           child:Text('${assistant?'دستیار هوشمند کارگزار\n':''}${message['body']?.toString()??''}',style:const TextStyle(fontSize:12,height:1.6)),
          ));
        })),
        if(_error!=null)Padding(padding:const EdgeInsets.only(bottom:8),child:Text(_error!,style:const TextStyle(color:Colors.red,fontSize:11))),
