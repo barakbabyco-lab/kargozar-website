@@ -18,17 +18,6 @@ const serviceTaxonomy = <ServiceCategory>[
       ServiceCategory(id: '1-4-3', name: 'عضویت اتاق بازرگانی', slug: 'chamber-membership'),
     ]),
   ]),
-  ServiceCategory(id: '3', name: 'ثبت برند و مالکیت فکری', slug: 'trademark-intellectual-property', hasChildren: true, children: [
-    ServiceCategory(id: '3-1', name: 'ثبت علامت تجاری (برند)', slug: 'trademark-registration'),
-    ServiceCategory(id: '3-2', name: 'تمدید و تجدید ثبت برند', slug: 'trademark-renewal'),
-    ServiceCategory(id: '3-3', name: 'انتقال و تغییرات برند', slug: 'trademark-transfer-changes'),
-    ServiceCategory(id: '3-4', name: 'ثبت طرح صنعتی', slug: 'industrial-design'),
-    ServiceCategory(id: '3-5', name: 'ثبت اختراع', slug: 'patent-registration'),
-    ServiceCategory(id: '3-6', name: 'ثبت آثار ادبی و هنری', slug: 'copyright-registration'),
-    ServiceCategory(id: '3-7', name: 'جست‌وجو و استعلام مالکیت فکری', slug: 'ip-search'),
-    ServiceCategory(id: '3-8', name: 'خدمات حقوقی و پیگیری مالکیت فکری', slug: 'ip-legal-followup'),
-    ServiceCategory(id: '3-9', name: 'سایر خدمات مالکیت فکری', slug: 'other-ip-services'),
-  ]),
   ServiceCategory(id: '2', name: 'ثبت شرکت', slug: 'company-registration', hasChildren: true, children: [
     ServiceCategory(id: '2-1', name: 'ثبت و تأسیس شرکت', slug: 'company-incorporation'),
     ServiceCategory(id: '2-2', name: 'ثبت مؤسسات غیرتجاری', slug: 'non-commercial-institutions'),
@@ -38,6 +27,18 @@ const serviceTaxonomy = <ServiceCategory>[
     ServiceCategory(id: '2-6', name: 'انحلال و تصفیه شرکت', slug: 'company-dissolution'),
     ServiceCategory(id: '2-7', name: 'پلمپ دفاتر قانونی', slug: 'legal-books'),
     ServiceCategory(id: '2-8', name: 'دریافت و اصلاح شناسه‌ها و اطلاعات ثبتی', slug: 'company-identifiers-records'),
+  ]),
+
+ServiceCategory(id: '3', name: 'ثبت برند و مالکیت فکری', slug: 'trademark-intellectual-property', hasChildren: true, children: [
+    ServiceCategory(id: '3-1', name: 'ثبت علامت تجاری (برند)', slug: 'trademark-registration'),
+    ServiceCategory(id: '3-2', name: 'تمدید و تجدید ثبت برند', slug: 'trademark-renewal'),
+    ServiceCategory(id: '3-3', name: 'انتقال و تغییرات برند', slug: 'trademark-transfer-changes'),
+    ServiceCategory(id: '3-4', name: 'ثبت طرح صنعتی', slug: 'industrial-design'),
+    ServiceCategory(id: '3-5', name: 'ثبت اختراع', slug: 'patent-registration'),
+    ServiceCategory(id: '3-6', name: 'ثبت آثار ادبی و هنری', slug: 'copyright-registration'),
+    ServiceCategory(id: '3-7', name: 'جست‌وجو و استعلام مالکیت فکری', slug: 'ip-search'),
+    ServiceCategory(id: '3-8', name: 'خدمات حقوقی و پیگیری مالکیت فکری', slug: 'ip-legal-followup'),
+    ServiceCategory(id: '3-9', name: 'سایر خدمات مالکیت فکری', slug: 'other-ip-services'),
   ]),
   ServiceCategory(id: '4', name: 'مدارک و تأییدیه‌های مکمل', slug: 'supplementary-certificates', hasChildren: true, children: [
     ServiceCategory(id: '4-1', name: 'کارت بهداشت', slug: 'health-card'),
