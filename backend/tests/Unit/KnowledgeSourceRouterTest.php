@@ -23,6 +23,7 @@ class KnowledgeSourceRouterTest extends TestCase
 
         $this->assertSame('live_source_not_ready', $result['status']);
         $this->assertFalse($result['live_lookup']['ready']);
+        $this->assertSame('iran_intellectual_property_portal', $result['live_lookup']['source']);
         $this->assertSame('iran_national_license_portal', $result['live_lookup']['source']);
     }
 
