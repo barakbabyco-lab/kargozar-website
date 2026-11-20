@@ -59,7 +59,7 @@ class SupportAssistant
         if ($best !== null && $bestScore >= $threshold && ($bestScore - $secondScore) >= $margin) {
             $answer = $best['answer'];
             if (($best['service_assurance'] ?? false) === true) {
-                $closing = (string) config('support_assistant.service_assurance_closing', '');
+                $closing = (string) config('support_assistant.customer_communication.standard_closing_text', config('support_assistant.service_assurance_closing', ''));
                 if ($closing !== '' && ! str_contains($answer, $closing)) {
                     $answer = rtrim($answer) . "\n\n" . $closing;
                 }
