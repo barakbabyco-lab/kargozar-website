@@ -13,6 +13,7 @@ jobs:
     timeout-minutes: 8
     steps:
       - name: Prepare verified SSH connection
+        id: prepare
         shell: bash
         env:
           DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
@@ -42,8 +43,8 @@ jobs:
             exit 1
           fi
           install -d -m 700 "$RUNNER_TEMP/kargozar-ssh"
-          printf '%s\\n' "$DEPLOY_SSH_KEY" > "$RUNNER_TEMP/kargozar-ssh/id_ed25519"
-          printf '%s\\n' "$DEPLOY_KNOWN_HOSTS" > "$RUNNER_TEMP/kargozar-ssh/known_hosts"
+          printf '%s\n' "$DEPLOY_SSH_KEY" > "$RUNNER_TEMP/kargozar-ssh/id_ed25519"
+          printf '%s\n' "$DEPLOY_KNOWN_HOSTS" > "$RUNNER_TEMP/kargozar-ssh/known_hosts"
           chmod 600 "$RUNNER_TEMP/kargozar-ssh/id_ed25519" "$RUNNER_TEMP/kargozar-ssh/known_hosts"
           known_hosts_target="$DEPLOY_HOST"
           if [[ "$DEPLOY_PORT" != "22" ]]; then known_hosts_target="[$DEPLOY_HOST]:$DEPLOY_PORT"; fi
@@ -75,7 +76,7 @@ jobs:
           ssh -F "$SSH_CONFIG" kargozar-staging 'bash -s' <<'REMOTE'
           set +e
           echo "=== OS ==="
-          ( . /etc/os-release 2>/dev/null && printf '%s %s\\n' "$PRETTY_NAME" "$VERSION_ID" ) || true
+          ( . /etc/os-release 2>/dev/null && printf '%s %s\n' "$PRETTY_NAME" "$VERSION_ID" ) || true
           uname -srmo
           echo "=== Resources ==="
           df -h /
@@ -104,7 +105,7 @@ jobs:
           for url in             'https://html.duckduckgo.com/html/?q=kargozar+connectivity+test'             'https://www.google.com/search?q=kargozar+connectivity+test'             'https://www.bing.com/search?q=kargozar+connectivity+test'             'https://search.brave.com/search?q=kargozar+connectivity+test'; do
             printf '%s -> ' "${url%%\?*}"
             if command -v curl >/dev/null 2>&1; then
-              curl -L -sS -o /dev/null --connect-timeout 4 --max-time 8 -w 'HTTP %{http_code}; remote_ip=%{remote_ip}; time=%{time_total}s\\n' "$url"
+              curl -L -sS -o /dev/null --connect-timeout 4 --max-time 8 -w 'HTTP %{http_code}; remote_ip=%{remote_ip}; time=%{time_total}s\n' "$url"
               rc=$?
               if [ "$rc" -ne 0 ]; then echo "curl_exit=$rc"; fi
             else
