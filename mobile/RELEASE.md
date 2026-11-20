@@ -15,6 +15,7 @@ The application ID is a permanent store identity after first publication. Confir
 - The Myket listing artwork is prepared at `assets/brand/myket-store-icon-512.png` (512×512 PNG, opaque background).
 - The Android launcher uses generated legacy density icons plus adaptive foreground/background and Android 13+ monochrome assets from `assets/brand/`.
 - The original approved logo is retained at `assets/brand/kargozar-logo-original.jpg`; derivatives can be regenerated with `python3 tool/prepare_brand_assets.py SOURCE OUTPUT_DIR`.
+- The approved logo and all generated icon assets are committed in the repository; Android CI regenerates launcher resource densities from these sources.
 - Before final submission, verify any additional file-size or image-format validation shown in the Myket developer console.
 
 ## Release signing (private GitHub Actions secrets)
