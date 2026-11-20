@@ -3,7 +3,7 @@
   "category_key": "04-complementary-documents-approvals",
   "category_number": 4,
   "title": "مدارک و تأییدیه‌های مکمل",
-  "status": "expanded_partial_recent_standard_procedure_source_added",
+  "status": "expanded_partial_official_standard_portal_verified",
   "reviewed_at": "2026-11-21",
   "review_version": 2,
   "knowledge_mode": "local_with_activity_specific_rules",
@@ -238,12 +238,12 @@
         "estimate": null
       },
       "issuing_authority": "سازمان ملی استاندارد ایران یا مرجع ارزیابی صلاحیت‌دار طبق نظام ارزیابی انطباق مربوط.",
-      "official_source": "سازمان ملی استاندارد ایران؛ روش اجرایی فرایند گواهی کردن پروانه کاربرد علامت استاندارد",
-      "source_url": "https://hoghogh.ai/circulars/c-08aa67bd",
-      "source_date": "1404-10-01",
+      "official_source": "سازمان ملی استاندارد ایران؛ پورتال رسمی، بخش معاونت ارزیابی کیفیت و دستورالعمل‌ها",
+      "source_url": "https://www.inso.gov.ir/",
+      "source_date": null,
       "verified_at": null,
       "reviewed_at": null,
-      "verification_status": "needs_current_inso_portal_and_product_scope_verification",
+      "verification_status": "official_portal_verified_procedure_copy_secondary_needs_official_revision_confirmation",
       "shared_requirement_refs": [],
       "activity_specific_requirements": [
         "نوع محصول/خدمت",
@@ -259,7 +259,19 @@
       "expert_escalation_rules": [
         "محصولات غذایی، دارویی، پزشکی، برقی یا پرریسک",
         "ابهام درباره اجباری بودن استاندارد یا رد نمونه آزمایشگاهی"
-      ]
+      ],
+      "source_details": {
+        "procedure_copy": "https://hoghogh.ai/circulars/c-08aa67bd",
+        "procedure_revision": "6",
+        "last_revision_date": "1404-10-01",
+        "official_portal_sections": [
+          "معاونت ارزیابی کیفیت",
+          "دستورالعمل‌ها",
+          "بانک‌های اطلاعاتی سازمان"
+        ],
+        "portal_verified_at": "2026-11-21",
+        "evidence": "صفحه اصلی رسمی سازمان باز شد و پیوند معاونت ارزیابی کیفیت، دستورالعمل‌ها و بانک‌های اطلاعاتی سازمان قابل مشاهده بود."
+      }
     },
     {
       "service_key": "other-regulatory-approvals",
