@@ -3,7 +3,7 @@
   "category_key": "08-property-and-leases",
   "category_number": 8,
   "title": "خدمات ملکی و قراردادها",
-  "status": "populated_draft_needs_domain_and_source_review",
+  "status": "populated_draft_lease_law_source_added_live_workflow_review_required",
   "reviewed_at": "2026-11-21",
   "review_version": 2,
   "knowledge_mode": "hybrid",
@@ -19,7 +19,8 @@
       "conditions": [
         "هویت و اختیار موجر و مستأجر و اطلاعات ملک باید قابل احراز باشد",
         "مشخصات ملک، مدت، مبلغ، ودیعه و شروط باید با توافق واقعی طرفین تطبیق داشته باشد",
-        "مسیر سامانه‌ای و اشخاص مجاز به ثبت باید مطابق مقررات روز کنترل شود"
+        "مسیر سامانه‌ای و اشخاص مجاز به ثبت باید مطابق مقررات روز کنترل شود",
+        "ثبت و اخذ شناسه رهگیری باید طبق متن لازم‌الاجرای قانون و مسیر سامانه رسمی روز انجام شود؛ وجود کد رهگیری یا شیوه ثبت را از روی راهنماهای قدیمی فرض نکنید."
       ],
       "documents": [
         "مدارک هویتی طرفین",
@@ -43,12 +44,12 @@
         "estimate": null
       },
       "issuing_authority": null,
-      "official_source": null,
-      "source_url": null,
+      "official_source": "قانون ساماندهی بازار زمین، مسکن و اجاره‌بها و سامانه‌های رسمی ثبت الکترونیک اسناد/معاملات املاک",
+      "source_url": "https://ibahoosham.ir/divanlaw/law/law-2980561",
       "source_date": null,
       "verified_at": null,
       "reviewed_at": "2026-11-21",
-      "verification_status": "draft_needs_primary_source_or_provider_validation",
+      "verification_status": "needs_official_law_publication_and_live_system_workflow_review",
       "shared_requirement_refs": [],
       "activity_specific_requirements": [],
       "customer_questions": [
@@ -196,5 +197,15 @@
       "گزارش مغایرت از پرونده واقعی"
     ]
   },
-  "content_policy": "هر خدمت تعریف، دامنه، شرایط، مدارک، مراحل، خروجی، پرسش‌های تشخیصی و موارد ارجاع دارد؛ هزینه و زمان تا تأیید روزآمد اعلام قطعی نمی‌شوند."
+  "content_policy": "هر خدمت تعریف، دامنه، شرایط، مدارک، مراحل، خروجی، پرسش‌های تشخیصی و موارد ارجاع دارد؛ هزینه و زمان تا تأیید روزآمد اعلام قطعی نمی‌شوند.",
+  "source_review_notes": {
+    "lease_registration": {
+      "title": "قانون ساماندهی بازار زمین، مسکن و اجاره‌بها",
+      "relevant_rule": "اصلاح ماده ۲ قانون روابط موجر و مستأجر ۱۳۷۶؛ ثبت مدت و مبلغ اجاره و مبلغ قرض‌الحسنه در سامانه‌های مقرر و اخذ شناسه رهگیری پس از تأیید طرفین و شهود طبق متن قانون.",
+      "source_url": "https://ibahoosham.ir/divanlaw/law/law-2980561",
+      "source_type": "متن بازنشرشده قانون؛ متن نهایی باید با روزنامه رسمی/مجلس تطبیق شود",
+      "verification_status": "secondary_law_text_found_official_publication_and_current_system_workflow_review_required"
+    },
+    "system_policy": "مسیر ثبت قرارداد، هویت اشخاص مجاز به ثبت، استثناها و کارکرد سامانه‌ها باید در زمان ارائه خدمت از درگاه رسمی وزارت راه و شهرسازی/سازمان ثبت احراز شود."
+  }
 }
