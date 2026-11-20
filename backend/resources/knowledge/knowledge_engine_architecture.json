@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "feature_key": "shared_knowledge_and_live_retrieval_engine",
+  "title": "موتور مشترک دانش داخلی و جست‌وجوی زنده کارگزار",
+  "status": "architecture_and_initial_backend_services_added",
+  "principles": [
+    "یک موتور مکالمه‌ای مرکزی، چند منبع دانشی مستقل",
+    "اطلاعات محدود و نسبتاً پایدار در بانک دانش داخلی نسخه‌بندی‌شده",
+    "اطلاعات وابسته به زمان یا شرایط در سامانه رسمی به‌صورت زنده بررسی شود",
+    "خدمات ترکیبی از دانش داخلی برای راهنمایی پایه و منبع رسمی برای داده‌های متغیر استفاده کنند",
+    "پاسخ فقط از سند تأییدشده یا منبع زنده معتبر ارائه شود",
+    "در نبود داده معتبر، عدم قطعیت اعلام و موضوع به کارشناس ارجاع شود"
+  ],
+  "source_modes": {
+    "local": "بازیابی از اسناد داخلی تأییدشده و دارای تاریخ بازبینی",
+    "live": "جست‌وجو و استخراج در منبع رسمی هنگام درخواست",
+    "hybrid": "ترکیب بانک داخلی با راستی‌آزمایی زنده موارد متغیر"
+  },
+  "initial_service_routing": {
+    "guild-business-license": "live:iran_national_license_portal",
+    "home-business-license": "live:iran_national_license_portal",
+    "company-registration": "local:company_registration_knowledge",
+    "trademark-registration": "hybrid:trademark_registration_knowledge+iran_intellectual_property_portal",
+    "logo-and-industrial-design-registration": "hybrid:trademark_registration_knowledge+iran_intellectual_property_portal"
+  },
+  "operational_gates": [
+    "اسناد محلی تا زمان تکمیل و تأیید حقوقی قابل استفاده برای پاسخ قطعی نیستند",
+    "اتصال زنده تا زمان کشف مسیر واقعی جست‌وجو و موفقیت آزمون انتها‌به‌انتها عملیاتی نیست",
+    "آدرس دامنه رسمی نگهداری می‌شود؛ IP ثابت یا endpoint حدسی استفاده نمی‌شود",
+    "هر پاسخ بازیابی‌شده باید منبع، زمان مشاهده و وضعیت اعتبار داشته باشد"
+  ],
+  "next_implementation_steps": [
+    "تکمیل و بازبینی حقوقی بانک ثبت شرکت و مالکیت صنعتی",
+    "شناسایی مسیر واقعی جست‌وجو و ساختار نتایج در هر سامانه رسمی",
+    "پیاده‌سازی adapter مستقل برای هر سامانه",
+    "افزودن cache با زمان انقضا و ثبت منبع و زمان مشاهده",
+    "اتصال retrieval service به پشتیبانی مکالمه‌ای و پنل کارشناسان",
+    "افزودن تست‌های منبع محلی تأییدشده، سند منقضی، منبع زنده در دسترس و خطای سامانه"
+  ]
+}
