@@ -25,7 +25,7 @@
 </section>
 <section class="box conversation">
 @if($selected)
-<div class="head">گفت‌وگو #{{ $selected->id }} — {{ $selected->customer?->mobile ?: 'کاربر مهمان' }}</div>
+<div class="head">گفت‌وگو #{{ $selected->id }} — {{ $selected->customer?->mobile ?: 'کاربر مهمان' }} · شماره تماس پیگیری: {{ $selected->contact_mobile ?: 'ثبت نشده' }}</div>
 <div class="status">
 <span>وضعیت: {{ $selected->status==='open'?'باز':'بسته' }}</span>
 <form method="post" action="{{ route('staff.portal.status',$selected->id) }}">@csrf @method('PATCH')
