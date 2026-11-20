@@ -3,7 +3,7 @@
   "category_key": "04-complementary-documents-approvals",
   "category_number": 4,
   "title": "مدارک و تأییدیه‌های مکمل",
-  "status": "draft_needs_review",
+  "status": "partially_populated_needs_authority_review",
   "reviewed_at": null,
   "review_version": 1,
   "knowledge_mode": "local_with_activity_specific_rules",
@@ -13,22 +13,35 @@
       "service_key": "police-public-places-approval",
       "title": "تأییدیه پلیس نظارت بر اماکن عمومی",
       "knowledge_mode": "hybrid",
-      "status": "draft_needs_review",
-      "scope": null,
+      "status": "partially_sourced_needs_current_verification",
+      "scope": "تأییدیه مستقل پلیس نظارت بر اماکن عمومی؛ شمول آن برای هر کسب‌وکار باید از کاربرگ جاری همان فعالیت احراز شود.",
       "eligibility": null,
-      "conditions": [],
-      "documents": [],
-      "steps": [],
+      "conditions": [
+        "شرایط دقیق از کاربرگ جاری درگاه ملی مجوزها استخراج شود؛ تا زمان دریافت کاربرگ، شرایط قطعی اعلام نشود."
+      ],
+      "documents": [
+        "مدارک دقیق باید از کاربرگ جاری استخراج شود."
+      ],
+      "steps": [
+        "شناسایی فعالیت و بررسی اینکه کاربرگ مجوز پایه، این تأییدیه را لازم می‌داند.",
+        "استخراج راهنمای رسمی شامل شرایط، مدارک، هزینه و زمان.",
+        "ثبت درخواست از مسیر رسمی درج‌شده در کاربرگ."
+      ],
       "fees": null,
       "issuance_time": null,
       "issuing_authority": null,
-      "official_source": null,
-      "source_url": null,
-      "source_date": null,
+      "official_source": "مصوبات هفتاد و نهمین نشست هیأت مقررات‌زدایی",
+      "source_url": "https://hoghogh.ai/circulars/c-781044f9",
+      "source_date": "1402-09-07",
       "verified_at": null,
       "reviewed_at": null,
-      "verification_status": "unverified",
-      "shared_requirement_refs": [],
+      "verification_status": "needs_current_portal_worksheet_revalidation",
+      "shared_requirement_refs": [
+        "public_places_police_approval",
+        "cctv_installation",
+        "business_signage",
+        "neighbor_privacy"
+      ],
       "activity_specific_requirements": [],
       "customer_questions": [],
       "expert_escalation_rules": []
@@ -37,22 +50,33 @@
       "service_key": "health-card",
       "title": "کارت بهداشت و گواهی سلامت شاغلان",
       "knowledge_mode": "hybrid",
-      "status": "draft_needs_review",
-      "scope": null,
+      "status": "partially_sourced_needs_current_verification",
+      "scope": "افراد شاغل در فعالیت‌هایی که طبق ضوابط بهداشتی جاری مشمول کارت بهداشت/کارت معاینه پزشکی هستند.",
       "eligibility": null,
-      "conditions": [],
-      "documents": [],
-      "steps": [],
+      "conditions": [
+        "گروه شغلی مشمول و افراد مشمول باید از کاربرگ جاری و مرجع بهداشتی مشخص شوند.",
+        "مدت اعتبار و شرایط تمدید بدون منبع جاری اعلام نشود."
+      ],
+      "documents": [
+        "مدارک و آزمایش‌های لازم باید از مرجع بهداشتی محل و دستورالعمل جاری دریافت شود."
+      ],
+      "steps": [
+        "تشخیص شمول فعالیت و کارکنان.",
+        "ارجاع به مرجع بهداشتی تعیین‌شده.",
+        "ثبت نتیجه صدور و تاریخ انقضا در پرونده مشتری."
+      ],
       "fees": null,
       "issuance_time": null,
       "issuing_authority": null,
-      "official_source": null,
-      "source_url": null,
-      "source_date": null,
+      "official_source": "راهنمای مجوز نانوایی سنتی در مصوبه ۷۵؛ صرفاً نمونه فعالیت‌محور",
+      "source_url": "https://hoghogh.ai/circulars/c-e8e5e44a",
+      "source_date": "1402-03-08",
       "verified_at": null,
       "reviewed_at": null,
-      "verification_status": "unverified",
-      "shared_requirement_refs": [],
+      "verification_status": "needs_current_health_authority_review",
+      "shared_requirement_refs": [
+        "health_card"
+      ],
       "activity_specific_requirements": [],
       "customer_questions": [],
       "expert_escalation_rules": []
@@ -61,22 +85,33 @@
       "service_key": "environment-health-approval",
       "title": "تأییدیه بهداشت محیط",
       "knowledge_mode": "hybrid",
-      "status": "draft_needs_review",
-      "scope": null,
+      "status": "partially_sourced_needs_current_verification",
+      "scope": "واحدها و فرایندهایی که بر اساس نوع فعالیت و کاربرگ رسمی نیازمند تأیید بهداشت محیط هستند.",
       "eligibility": null,
-      "conditions": [],
-      "documents": [],
-      "steps": [],
+      "conditions": [
+        "الزامات فنی باید متناسب با نوع فعالیت، محل و فرایند کار استخراج شود.",
+        "چک‌لیست نانوایی یا مراکز غذایی به فعالیت‌های دیگر تعمیم داده نشود."
+      ],
+      "documents": [
+        "مدارک محل و مشخصات فرایند مطابق دستورالعمل مرجع بهداشتی."
+      ],
+      "steps": [
+        "تشخیص مرجع بهداشتی ذی‌صلاح.",
+        "استخراج چک‌لیست تخصصی همان فعالیت.",
+        "بازدید/ارزیابی و ثبت نتیجه رسمی."
+      ],
       "fees": null,
       "issuance_time": null,
       "issuing_authority": null,
-      "official_source": null,
-      "source_url": null,
-      "source_date": null,
+      "official_source": "راهنمای مجوز نانوایی سنتی در مصوبه ۷۵؛ صرفاً نمونه فعالیت‌محور",
+      "source_url": "https://hoghogh.ai/circulars/c-e8e5e44a",
+      "source_date": "1402-03-08",
       "verified_at": null,
       "reviewed_at": null,
-      "verification_status": "unverified",
-      "shared_requirement_refs": [],
+      "verification_status": "needs_current_health_authority_review",
+      "shared_requirement_refs": [
+        "environmental_health_approval"
+      ],
       "activity_specific_requirements": [],
       "customer_questions": [],
       "expert_escalation_rules": []
@@ -85,22 +120,32 @@
       "service_key": "trade-law-training-certificate",
       "title": "گواهی دوره احکام تجارت و کسب‌وکار",
       "knowledge_mode": "hybrid",
-      "status": "draft_needs_review",
-      "scope": null,
+      "status": "partially_sourced_needs_current_verification",
+      "scope": "متقاضیان مجوزهای صنفی‌ای که کاربرگ جاری آنها گواهی دوره احکام تجارت و کسب‌وکار را مقرر کرده است.",
       "eligibility": null,
-      "conditions": [],
-      "documents": [],
-      "steps": [],
+      "conditions": [
+        "الزام و نحوه ارائه گواهی برای هر عنوان مجوز از کاربرگ همان فعالیت بررسی شود."
+      ],
+      "documents": [
+        "گواهی پایان دوره آموزشی احکام تجارت و کسب‌وکار، در صورت تصریح کاربرگ."
+      ],
+      "steps": [
+        "بررسی کاربرگ مجوز.",
+        "تعیین دوره/مرجع آموزشی مورد قبول.",
+        "دریافت گواهی و نگهداری در پرونده مشتری."
+      ],
       "fees": null,
       "issuance_time": null,
       "issuing_authority": null,
-      "official_source": null,
-      "source_url": null,
-      "source_date": null,
+      "official_source": "راهنمای مجوز نانوایی سنتی در مصوبه ۷۵؛ نمونه‌ای از درج شرط در کاربرگ",
+      "source_url": "https://hoghogh.ai/circulars/c-e8e5e44a",
+      "source_date": "1402-03-08",
       "verified_at": null,
       "reviewed_at": null,
-      "verification_status": "unverified",
-      "shared_requirement_refs": [],
+      "verification_status": "needs_current_portal_worksheet_revalidation",
+      "shared_requirement_refs": [
+        "trade_law_training"
+      ],
       "activity_specific_requirements": [],
       "customer_questions": [],
       "expert_escalation_rules": []
@@ -168,5 +213,10 @@
       "تغییر هزینه یا زمان",
       "گزارش مغایرت از پرونده واقعی"
     ]
-  }
+  },
+  "notes": [
+    "نمونه‌های مستند فقط در دامنه فعالیت و منبع ذکرشده معتبرند.",
+    "هیچ شرط فعالیت‌محوری نباید به همه کسب‌وکارها تعمیم داده شود.",
+    "کاربرگ جاری درگاه ملی و دستورالعمل مرجع تخصصی، مرجع نهایی شرایط و مدارک است."
+  ]
 }
