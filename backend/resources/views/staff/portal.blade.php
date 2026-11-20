@@ -16,7 +16,7 @@
 <div class="list">
 @forelse($conversations as $conversation)
 <a class="item {{ $selected?->id===$conversation->id?'active':'' }}" href="{{ route('staff.portal.show',$conversation->id) }}">
-<strong>{{ $conversation->customer?->full_name ?: $conversation->customer?->mobile ?: 'مشتری' }}</strong>
+<strong>{{ $conversation->customer?->full_name ?: $conversation->customer?->mobile ?: 'مهمان اپلیکیشن' }}</strong>
 <small>{{ $conversation->status==='open'?'باز':'بسته' }} · {{ $conversation->messages_count }} پیام · {{ $conversation->last_message_at?->format('Y/m/d H:i') }}</small>
 </a>
 @empty<div class="empty">گفت‌وگویی برای نمایش وجود ندارد.</div>@endforelse
@@ -25,7 +25,7 @@
 </section>
 <section class="box conversation">
 @if($selected)
-<div class="head">گفت‌وگو #{{ $selected->id }} — {{ $selected->customer?->mobile }}</div>
+<div class="head">گفت‌وگو #{{ $selected->id }} — {{ $selected->customer?->mobile ?: 'کاربر مهمان' }}</div>
 <div class="status">
 <span>وضعیت: {{ $selected->status==='open'?'باز':'بسته' }}</span>
 <form method="post" action="{{ route('staff.portal.status',$selected->id) }}">@csrf @method('PATCH')
