@@ -3,9 +3,9 @@
   "category_key": "03-intellectual-property",
   "category_number": 3,
   "title": "ثبت برند و مالکیت فکری",
-  "status": "draft_needs_review",
-  "reviewed_at": null,
-  "review_version": 1,
+  "status": "populated_draft_needs_domain_and_source_review",
+  "reviewed_at": "2026-11-21",
+  "review_version": 2,
   "knowledge_mode": "hybrid",
   "scope": "تعاریف و فرایندهای پایه داخلی؛ تشابه، طبقات، قابلیت حمایت، هزینه و وضعیت پرونده از مرجع رسمی بررسی شود.",
   "services": [
@@ -13,97 +13,236 @@
       "service_key": "trademark-registration",
       "title": "ثبت علامت تجاری و برند",
       "knowledge_mode": "hybrid",
-      "status": "draft_needs_review",
-      "scope": null,
-      "eligibility": null,
-      "conditions": [],
-      "documents": [],
-      "steps": [],
-      "fees": null,
-      "issuance_time": null,
+      "status": "populated_draft_needs_source_review",
+      "scope": "مالک حقیقی یا حقوقی علامت برای کالاها یا خدمات معین.",
+      "eligibility": "مالک حقیقی یا حقوقی علامت برای کالاها یا خدمات معین.",
+      "conditions": [
+        "علامت باید قابلیت تمایز داشته و با علائم مقدم یا حقوق اشخاص دیگر تعارض نداشته باشد",
+        "فهرست کالاها/خدمات و طبقات باید دقیق و متناسب با استفاده واقعی انتخاب شود",
+        "موانع قانونی از جمله توصیفی، گمراه‌کننده یا ممنوع بودن علامت بررسی شود",
+        "مدارک فعالیت/مجوز در مواردی که قانون یا سامانه برای طبقه موردنظر مطالبه کند ارائه شود"
+      ],
+      "documents": [
+        "مشخصات و مدارک هویتی مالک حقیقی یا حقوقی",
+        "نمونه علامت و در صورت لزوم فایل تصویری",
+        "فهرست کالاها/خدمات و طبقات درخواستی",
+        "مدرک فعالیت یا مجوز مرتبط در صورت مطالبه قانونی",
+        "مدارک نمایندگی/وکالت در صورت اقدام توسط نماینده"
+      ],
+      "steps": [
+        "نیازسنجی و تعیین مالک علامت",
+        "جست‌وجوی مقدماتی تشابه و بررسی موانع",
+        "تعیین طبقات و نگارش فهرست کالا/خدمات",
+        "ثبت اظهارنامه در سامانه رسمی مالکیت صنعتی",
+        "پیگیری بررسی، رفع نقص/اعتراض احتمالی و انتشار آگهی‌ها",
+        "پرداخت هزینه‌های قانونی و دریافت گواهی در صورت پذیرش"
+      ],
+      "fees": {
+        "status": "not_published_without_current_provider_or_official_quote",
+        "amount": null
+      },
+      "issuance_time": {
+        "status": "case_and_authority_dependent_not_guaranteed",
+        "estimate": null
+      },
       "issuing_authority": null,
       "official_source": null,
       "source_url": null,
       "source_date": null,
       "verified_at": null,
-      "reviewed_at": null,
-      "verification_status": "unverified",
+      "reviewed_at": "2026-11-21",
+      "verification_status": "draft_needs_primary_source_or_provider_validation",
       "shared_requirement_refs": [],
       "activity_specific_requirements": [],
-      "customer_questions": [],
-      "expert_escalation_rules": []
+      "customer_questions": [
+        "علامت فقط نوشتاری است یا لوگو هم دارد؟",
+        "مالک شخص حقیقی است یا شرکت؟",
+        "برای چه کالاها یا خدماتی استفاده می‌شود؟",
+        "آیا قبلاً از علامت استفاده کرده‌اید یا درخواست مشابه ثبت کرده‌اید؟"
+      ],
+      "expert_escalation_rules": [
+        "اعتراض ثالث، تشابه پرریسک، ادعای حق تقدم، علامت لاتین/ترجمه، مالکیت مشترک یا دعوای مالکیت"
+      ],
+      "what_is_it": "درخواست ثبت علامت متمایزکننده کالا یا خدمات برای ایجاد حق انحصاری در محدوده ثبت‌شده و طبقات مربوط.",
+      "deliverables": [
+        "گزارش جست‌وجوی مقدماتی و ریسک تشابه",
+        "پیشنهاد طبقات و متن فهرست کالا/خدمات",
+        "اظهارنامه و پیگیری پرونده"
+      ],
+      "notes": "این محتوای پایه برای گفت‌وگوی تشخیصی و چک‌لیست اجرایی است؛ شروط حقوقی/سامانه‌ای، هزینه و زمان تا اتصال به منبع رسمی یا تأیید متخصص، قطعی اعلام نشود."
     },
     {
       "service_key": "logo-registration",
       "title": "ثبت لوگو به‌عنوان علامت",
       "knowledge_mode": "hybrid",
-      "status": "draft_needs_review",
-      "scope": null,
-      "eligibility": null,
-      "conditions": [],
-      "documents": [],
-      "steps": [],
-      "fees": null,
-      "issuance_time": null,
+      "status": "populated_draft_needs_source_review",
+      "scope": "مالک لوگو که قصد حمایت از نشان تصویری یا ترکیبی را دارد.",
+      "eligibility": "مالک لوگو که قصد حمایت از نشان تصویری یا ترکیبی را دارد.",
+      "conditions": [
+        "لوگو باید قابلیت تمایز و شرایط قانونی ثبت علامت را داشته باشد",
+        "نسخه نهایی، رنگی یا سیاه‌وسفید بودن و اجزای کلامی باید پیش از اظهارنامه مشخص شود",
+        "حمایت در محدوده طبقات و شکل ثبت‌شده بررسی می‌شود"
+      ],
+      "documents": [
+        "فایل واضح لوگو با کیفیت و قالب مورد قبول سامانه",
+        "مدارک مالک و در صورت لزوم مجوز فعالیت مرتبط",
+        "طبقات و فهرست کالاها/خدمات",
+        "مدارک نمایندگی در صورت وجود"
+      ],
+      "steps": [
+        "بررسی مالکیت و نسخه نهایی لوگو",
+        "جست‌وجوی تشابه تصویری/کلامی",
+        "انتخاب طبقات",
+        "ثبت اظهارنامه و پیگیری رفع نقص و آگهی‌ها",
+        "دریافت گواهی پس از طی تشریفات و پذیرش"
+      ],
+      "fees": {
+        "status": "not_published_without_current_provider_or_official_quote",
+        "amount": null
+      },
+      "issuance_time": {
+        "status": "case_and_authority_dependent_not_guaranteed",
+        "estimate": null
+      },
       "issuing_authority": null,
       "official_source": null,
       "source_url": null,
       "source_date": null,
       "verified_at": null,
-      "reviewed_at": null,
-      "verification_status": "unverified",
+      "reviewed_at": "2026-11-21",
+      "verification_status": "draft_needs_primary_source_or_provider_validation",
       "shared_requirement_refs": [],
       "activity_specific_requirements": [],
-      "customer_questions": [],
-      "expert_escalation_rules": []
+      "customer_questions": [
+        "فایل نهایی لوگو آماده است؟",
+        "آیا لوگو شامل واژه یا حروف است؟",
+        "چه کسی مالک لوگو است؟",
+        "برای چه کالاها یا خدماتی استفاده خواهد شد؟"
+      ],
+      "expert_escalation_rules": [
+        "ادعای مالکیت طراح، استفاده از نمادهای رسمی، عناصر دارای حق مؤلف یا تشابه جدی"
+      ],
+      "what_is_it": "ثبت نسخه تصویری/ترکیبی لوگو به‌عنوان علامت تجاری؛ ثبت لوگو از نظر حقوقی تابع قواعد علامت و طبقات کالا/خدمات است.",
+      "deliverables": [
+        "ارزیابی مقدماتی قابلیت ثبت",
+        "پرونده اظهارنامه و پیگیری"
+      ],
+      "notes": "این محتوای پایه برای گفت‌وگوی تشخیصی و چک‌لیست اجرایی است؛ شروط حقوقی/سامانه‌ای، هزینه و زمان تا اتصال به منبع رسمی یا تأیید متخصص، قطعی اعلام نشود."
     },
     {
       "service_key": "industrial-design-registration",
       "title": "ثبت طرح صنعتی",
       "knowledge_mode": "hybrid",
-      "status": "draft_needs_review",
-      "scope": null,
-      "eligibility": null,
-      "conditions": [],
-      "documents": [],
-      "steps": [],
-      "fees": null,
-      "issuance_time": null,
+      "status": "populated_draft_needs_source_review",
+      "scope": "طراح یا مالک حقوقی طرح محصولی که شرایط حمایت را دارد.",
+      "eligibility": "طراح یا مالک حقوقی طرح محصولی که شرایط حمایت را دارد.",
+      "conditions": [
+        "موضوع باید جنبه ظاهری محصول داشته باشد نه صرفاً کارکرد فنی",
+        "جدید بودن و سایر شرایط قانونی در تاریخ مؤثر اظهارنامه بررسی شود",
+        "افشای عمومی پیش از ثبت ممکن است بر قابلیت حمایت اثر بگذارد"
+      ],
+      "documents": [
+        "تصاویر/نماهای دقیق طرح از زوایای لازم",
+        "توصیف کوتاه و عنوان محصول",
+        "مشخصات طراح و مالک و اسناد انتقال حق در صورت تفاوت",
+        "مدارک هویتی و وکالت‌نامه در صورت نیاز"
+      ],
+      "steps": [
+        "تعیین محصول و جنبه‌های ظاهری مورد حمایت",
+        "بررسی افشای قبلی و جست‌وجوی مقدماتی",
+        "تهیه تصاویر و توصیف",
+        "ثبت اظهارنامه رسمی",
+        "رفع نقص و پیگیری بررسی و انتشار/ثبت"
+      ],
+      "fees": {
+        "status": "not_published_without_current_provider_or_official_quote",
+        "amount": null
+      },
+      "issuance_time": {
+        "status": "case_and_authority_dependent_not_guaranteed",
+        "estimate": null
+      },
       "issuing_authority": null,
       "official_source": null,
       "source_url": null,
       "source_date": null,
       "verified_at": null,
-      "reviewed_at": null,
-      "verification_status": "unverified",
+      "reviewed_at": "2026-11-21",
+      "verification_status": "draft_needs_primary_source_or_provider_validation",
       "shared_requirement_refs": [],
       "activity_specific_requirements": [],
-      "customer_questions": [],
-      "expert_escalation_rules": []
+      "customer_questions": [
+        "محصول چیست و کدام بخش ظاهری آن جدید است؟",
+        "آیا طرح قبلاً در بازار، نمایشگاه یا اینترنت منتشر شده؟",
+        "طراح و مالک حقوقی چه اشخاصی هستند؟"
+      ],
+      "expert_escalation_rules": [
+        "افشای قبلی، اختلاف طراح و کارفرما، جنبه فنی غالب یا احتمال نقض حق ثالث"
+      ],
+      "what_is_it": "حمایت ثبتی از ظاهر و جنبه‌های بصری محصول، مانند شکل، خطوط، رنگ یا آرایش ظاهری، در حدود تعریف قانونی طرح صنعتی.",
+      "deliverables": [
+        "آماده‌سازی تصاویر و توصیف",
+        "اظهارنامه و پیگیری پرونده"
+      ],
+      "notes": "این محتوای پایه برای گفت‌وگوی تشخیصی و چک‌لیست اجرایی است؛ شروط حقوقی/سامانه‌ای، هزینه و زمان تا اتصال به منبع رسمی یا تأیید متخصص، قطعی اعلام نشود."
     },
     {
       "service_key": "invention-registration",
       "title": "ثبت اختراع",
       "knowledge_mode": "hybrid",
-      "status": "draft_needs_review",
-      "scope": null,
-      "eligibility": null,
-      "conditions": [],
-      "documents": [],
-      "steps": [],
-      "fees": null,
-      "issuance_time": null,
+      "status": "populated_draft_needs_source_review",
+      "scope": "مخترع یا مالک حقوقی ادعای اختراع.",
+      "eligibility": "مخترع یا مالک حقوقی ادعای اختراع.",
+      "conditions": [
+        "موضوع باید راه‌حل فنی قابل حمایت باشد و از موارد مستثناشده قانونی نباشد",
+        "جدید بودن، گام ابتکاری و کاربرد صنعتی نیازمند بررسی تخصصی است",
+        "افشای عمومی پیش از تاریخ مؤثر اظهارنامه می‌تواند خطر جدی ایجاد کند"
+      ],
+      "documents": [
+        "شرح فنی کامل و قابل اجرا",
+        "ادعاهای اختراع با تعیین دقیق حدود حمایت",
+        "خلاصه و نقشه‌ها/نمودارهای لازم",
+        "مشخصات مخترع و مالک و اسناد انتقال حق در صورت وجود"
+      ],
+      "steps": [
+        "مصاحبه فنی و تشخیص ماهیت اختراع",
+        "جست‌وجوی پیشینه فنی و ارزیابی اولیه",
+        "تهیه شرح، ادعاها، خلاصه و نقشه‌ها",
+        "ثبت اظهارنامه رسمی",
+        "پاسخ به اخطارها و پیگیری ارزیابی ماهوی تا نتیجه"
+      ],
+      "fees": {
+        "status": "not_published_without_current_provider_or_official_quote",
+        "amount": null
+      },
+      "issuance_time": {
+        "status": "case_and_authority_dependent_not_guaranteed",
+        "estimate": null
+      },
       "issuing_authority": null,
       "official_source": null,
       "source_url": null,
       "source_date": null,
       "verified_at": null,
-      "reviewed_at": null,
-      "verification_status": "unverified",
+      "reviewed_at": "2026-11-21",
+      "verification_status": "draft_needs_primary_source_or_provider_validation",
       "shared_requirement_refs": [],
       "activity_specific_requirements": [],
-      "customer_questions": [],
-      "expert_escalation_rules": []
+      "customer_questions": [
+        "چه مشکل فنی را حل می‌کند؟",
+        "تفاوت آن با نمونه‌های موجود چیست؟",
+        "آیا قبلاً منتشر یا فروخته شده؟",
+        "مخترعان و مالک حقوقی چه کسانی هستند؟"
+      ],
+      "expert_escalation_rules": [
+        "نیاز به نظر کارشناس فنی، افشای قبلی، اختلاف مالکیت، موضوعات زیستی/دارویی یا ادعای پیچیده"
+      ],
+      "what_is_it": "درخواست حمایت اختراعی برای راه‌حل فنی که شرایط قانونی از جمله جدید بودن، گام ابتکاری و کاربرد صنعتی را احراز کند.",
+      "deliverables": [
+        "گزارش اولیه قابلیت حمایت و ریسک",
+        "پیش‌نویس مستندات فنی و اظهارنامه"
+      ],
+      "notes": "این محتوای پایه برای گفت‌وگوی تشخیصی و چک‌لیست اجرایی است؛ شروط حقوقی/سامانه‌ای، هزینه و زمان تا اتصال به منبع رسمی یا تأیید متخصص، قطعی اعلام نشود."
     }
   ],
   "data_quality_rules": [
@@ -120,5 +259,6 @@
       "تغییر هزینه یا زمان",
       "گزارش مغایرت از پرونده واقعی"
     ]
-  }
+  },
+  "content_policy": "هر خدمت تعریف، دامنه، شرایط، مدارک، مراحل، خروجی، پرسش‌های تشخیصی و موارد ارجاع دارد؛ هزینه و زمان تا تأیید روزآمد اعلام قطعی نمی‌شوند."
 }
