@@ -13,7 +13,7 @@ void main() {
 }
 
 const _navy = Color(0xFF4B0082); // برند مکمل: بادمجانی تیره
-const _teal = Color(0xFFE30613); // رنگ اصلی برند: قرمز
+const _brandRed = Color(0xFFE30613); // رنگ اصلی برند: قرمز
 const _ink = Color(0xFF1E293B);
 const _muted = Color(0xFF64748B);
 const _canvas = Color(0xFFFFFFFF);
@@ -34,7 +34,7 @@ class _KargozarAppState extends State<KargozarApp>{
  @override Widget build(BuildContext context)=>MaterialApp(
  navigatorKey:_navigatorKey,
  debugShowCheckedModeBanner:false,title:'کارگزار',
- theme:ThemeData(useMaterial3:true,scaffoldBackgroundColor:_canvas,colorScheme:ColorScheme.fromSeed(seedColor:_teal,primary:_teal,secondary:_navy,surface:Colors.white),fontFamily:'Roboto',
+ theme:ThemeData(useMaterial3:true,scaffoldBackgroundColor:_canvas,colorScheme:ColorScheme.fromSeed(seedColor:_brandRed,primary:_brandRed,secondary:_navy,surface:Colors.white),fontFamily:'Roboto',
  appBarTheme:const AppBarTheme(backgroundColor:_canvas,foregroundColor:_ink,centerTitle:false,elevation:0),
  inputDecorationTheme:InputDecorationTheme(filled:true,fillColor:Colors.white,border:OutlineInputBorder(borderRadius:BorderRadius.circular(14),borderSide:const BorderSide(color:Color(0xFFE2E8F0))),enabledBorder:OutlineInputBorder(borderRadius:BorderRadius.circular(14),borderSide:const BorderSide(color:Color(0xFFE2E8F0))))),
  home:Directionality(textDirection:TextDirection.rtl,child:_loading?const Scaffold(body:Center(child:CircularProgressIndicator())):MainShell(api:_api,requests:_requests,signedIn:_signedIn,onLogin:_login,onLogout:_logout)),
@@ -382,20 +382,20 @@ class _MainShellState extends State<MainShell> {
       Positioned(right: 14, bottom: 8, child: SupportChatLauncher(api: widget.api, signedIn: widget.signedIn, onLogin: widget.onLogin)),
     ])),
     bottomNavigationBar: NavigationBar(
-      height: 44,
-      backgroundColor: _teal,
+      height: 76,
+      backgroundColor: _brandRed,
       indicatorColor: Colors.transparent,
       labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
       labelTextStyle: const WidgetStatePropertyAll(
-        TextStyle(color: Colors.white, fontSize: 7, fontWeight: FontWeight.w600),
+        TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w700),
       ),
       selectedIndex: _index,
       onDestinationSelected: _goToTab,
       destinations: const [
-        NavigationDestination(icon: Icon(Icons.person_outline_rounded, color: Colors.white, size: 16), selectedIcon: Icon(Icons.person_rounded, color: Colors.white, size: 16), label: 'حساب کاربری من'),
-        NavigationDestination(icon: Icon(Icons.grid_view_outlined, color: Colors.white, size: 16), selectedIcon: Icon(Icons.grid_view_rounded, color: Colors.white, size: 16), label: 'خدمات'),
-        NavigationDestination(icon: Icon(Icons.business_center_outlined, color: Colors.white, size: 16), selectedIcon: Icon(Icons.business_center_rounded, color: Colors.white, size: 16), label: 'همراه کسب‌وکار'),
-        NavigationDestination(icon: Icon(Icons.support_agent_outlined, color: Colors.white, size: 16), selectedIcon: Icon(Icons.support_agent_rounded, color: Colors.white, size: 16), label: 'تماس و پشتیبانی'),
+        NavigationDestination(icon: Icon(Icons.person_outline_rounded, color: Colors.white, size: 20), selectedIcon: Icon(Icons.person_rounded, color: Colors.white, size: 20), label: 'حساب کاربری من'),
+        NavigationDestination(icon: Icon(Icons.grid_view_outlined, color: Colors.white, size: 20), selectedIcon: Icon(Icons.grid_view_rounded, color: Colors.white, size: 20), label: 'خدمات'),
+        NavigationDestination(icon: Icon(Icons.business_center_outlined, color: Colors.white, size: 20), selectedIcon: Icon(Icons.business_center_rounded, color: Colors.white, size: 20), label: 'همراه کسب‌وکار'),
+        NavigationDestination(icon: Icon(Icons.support_agent_outlined, color: Colors.white, size: 20), selectedIcon: Icon(Icons.support_agent_rounded, color: Colors.white, size: 20), label: 'تماس و پشتیبانی'),
       ],
     ),
   );
@@ -737,7 +737,7 @@ class _RequestsPageState extends State<RequestsPage>{
  }),
  ]);
 }
-void _showRequestDetails(BuildContext context,CustomerServiceRequest request){showModalBottomSheet<void>(context:context,isScrollControlled:true,backgroundColor:Colors.white,shape:const RoundedRectangleBorder(borderRadius:BorderRadius.vertical(top:Radius.circular(24))),builder:(ctx)=>SafeArea(child:Padding(padding:const EdgeInsets.all(20),child:ListView(shrinkWrap:true,children:[Text('پیگیری ${request.trackingCode}',style:const TextStyle(fontSize:19,fontWeight:FontWeight.w900)),const SizedBox(height:10),Text('وضعیت فعلی: ${requestStatusLabel(request.status)}'),if(request.customerNote?.isNotEmpty==true)Text('توضیحات: ${request.customerNote}'),const SizedBox(height:18),const Text('آخرین رویدادها',style:TextStyle(fontWeight:FontWeight.w800)),if(request.events.isEmpty)const Text('هنوز رویدادی برای این درخواست ثبت نشده است.'),...request.events.map((e)=>ListTile(contentPadding:EdgeInsets.zero,leading:const Icon(Icons.timeline_rounded,color:_teal),title:Text(e.publicMessage??requestStatusLabel(e.status)),subtitle:Text(requestStatusLabel(e.status))))]))));}
+void _showRequestDetails(BuildContext context,CustomerServiceRequest request){showModalBottomSheet<void>(context:context,isScrollControlled:true,backgroundColor:Colors.white,shape:const RoundedRectangleBorder(borderRadius:BorderRadius.vertical(top:Radius.circular(24))),builder:(ctx)=>SafeArea(child:Padding(padding:const EdgeInsets.all(20),child:ListView(shrinkWrap:true,children:[Text('پیگیری ${request.trackingCode}',style:const TextStyle(fontSize:19,fontWeight:FontWeight.w900)),const SizedBox(height:10),Text('وضعیت فعلی: ${requestStatusLabel(request.status)}'),if(request.customerNote?.isNotEmpty==true)Text('توضیحات: ${request.customerNote}'),const SizedBox(height:18),const Text('آخرین رویدادها',style:TextStyle(fontWeight:FontWeight.w800)),if(request.events.isEmpty)const Text('هنوز رویدادی برای این درخواست ثبت نشده است.'),...request.events.map((e)=>ListTile(contentPadding:EdgeInsets.zero,leading:const Icon(Icons.timeline_rounded,color:_brandRed),title:Text(e.publicMessage??requestStatusLabel(e.status)),subtitle:Text(requestStatusLabel(e.status))))]))));}
 String requestStatusLabel(String status)=>switch(status){'submitted'=>'ثبت‌شده','reviewing'=>'در حال بررسی','awaiting_customer'=>'نیازمند اقدام شما','in_progress'=>'در حال انجام','completed'=>'تکمیل‌شده','rejected'=>'ردشده','cancelled'=>'لغوشده',_=>status};
 class ProfilePage extends StatelessWidget {
  const ProfilePage({super.key,required this.signedIn,required this.onLogin,required this.onLogout,required this.onShowRequests,required this.onNavigate});
@@ -767,7 +767,7 @@ class _ProfileAction extends StatelessWidget {
    child:InkWell(onTap:onTap,borderRadius:BorderRadius.circular(12),
      child:Container(height:54,padding:const EdgeInsets.symmetric(horizontal:14),
        decoration:BoxDecoration(borderRadius:BorderRadius.circular(12),border:Border.all(color:const Color(0xFFF0B9B9))),
-       child:Row(children:[Icon(icon,color:_teal,size:22),const SizedBox(width:12),Expanded(child:Text(title,style:const TextStyle(color:_ink,fontSize:13,fontWeight:FontWeight.w700))),const Icon(Icons.chevron_left_rounded,color:_muted,size:20)]),
+       child:Row(children:[Icon(icon,color:_brandRed,size:22),const SizedBox(width:12),Expanded(child:Text(title,style:const TextStyle(color:_ink,fontSize:13,fontWeight:FontWeight.w700))),const Icon(Icons.chevron_left_rounded,color:_muted,size:20)]),
      ),
    ),
  );
@@ -798,7 +798,7 @@ class _SupportChatLauncherState extends State<SupportChatLauncher> {
    if(_showInvite)Container(constraints:const BoxConstraints(maxWidth:210),margin:const EdgeInsets.only(bottom:7),padding:const EdgeInsets.symmetric(horizontal:11,vertical:8),
      decoration:BoxDecoration(color:Colors.white,borderRadius:BorderRadius.circular(13),border:Border.all(color:const Color(0xFFE7B4B4)),boxShadow:const [BoxShadow(color:Color(0x22000000),blurRadius:9,offset:Offset(0,3))]),
      child:const Text('سؤالی دارید؟ برای راهنمایی در کنار شما هستیم.',style:TextStyle(color:_ink,fontSize:11,height:1.5))),
-   Material(color:_teal,shape:const CircleBorder(),elevation:4,child:InkWell(onTap:_openChat,customBorder:const CircleBorder(),child:const SizedBox(width:44,height:44,child:Icon(Icons.chat_bubble_outline_rounded,color:Colors.white,size:21)))),
+   Material(color:_brandRed,shape:const CircleBorder(),elevation:4,child:InkWell(onTap:_openChat,customBorder:const CircleBorder(),child:const SizedBox(width:44,height:44,child:Icon(Icons.chat_bubble_outline_rounded,color:Colors.white,size:21)))),
  ]);
 }
 
@@ -858,7 +858,7 @@ class _SupportChatSheetState extends State<SupportChatSheet> {
    height:MediaQuery.sizeOf(context).height*.68,
    child:Padding(padding:EdgeInsets.fromLTRB(16,16,16,MediaQuery.viewInsetsOf(context).bottom+12),
      child:Column(children:[
-       const Row(children:[Icon(Icons.support_agent,color:_teal),SizedBox(width:8),Text('پشتیبانی آنلاین کارگزار',style:TextStyle(fontSize:16,fontWeight:FontWeight.w800)),Spacer(),Text('گفت‌وگو',style:TextStyle(fontSize:11,color:_muted))]),
+       const Row(children:[Icon(Icons.support_agent,color:_brandRed),SizedBox(width:8),Text('پشتیبانی آنلاین کارگزار',style:TextStyle(fontSize:16,fontWeight:FontWeight.w800)),Spacer(),Text('گفت‌وگو',style:TextStyle(fontSize:11,color:_muted))]),
        const Divider(height:22),
        Expanded(child:_messages.isEmpty?const Center(child:Text('پیام خود را بنویسید تا گفت‌وگو با کارشناس آغاز شود.',textAlign:TextAlign.center,style:TextStyle(color:_muted,height:1.8))):ListView.builder(controller:_scroll,itemCount:_messages.length,itemBuilder:(context,index){
          final message=_messages[index];final mine=message['sender_type']=='customer';
@@ -873,7 +873,7 @@ class _SupportChatSheetState extends State<SupportChatSheet> {
        Row(children:[
          Expanded(child:TextField(controller:_controller,minLines:1,maxLines:3,textInputAction:TextInputAction.send,onSubmitted:(_)=>_send(),decoration:const InputDecoration(hintText:'پیام شما...',contentPadding:EdgeInsets.symmetric(horizontal:12,vertical:10)))),
          const SizedBox(width:8),
-         IconButton.filled(onPressed:_busy?null:_send,icon:_busy?const SizedBox(width:18,height:18,child:CircularProgressIndicator(strokeWidth:2)):const Icon(Icons.send_rounded),style:IconButton.styleFrom(backgroundColor:_teal,foregroundColor:Colors.white)),
+         IconButton.filled(onPressed:_busy?null:_send,icon:_busy?const SizedBox(width:18,height:18,child:CircularProgressIndicator(strokeWidth:2)):const Icon(Icons.send_rounded),style:IconButton.styleFrom(backgroundColor:_brandRed,foregroundColor:Colors.white)),
        ]),
      ]),
    ),
@@ -894,7 +894,7 @@ class SectionHeading extends StatelessWidget {
       const Spacer(),
       if (action != null)
         Text(action!, style: const TextStyle(
-          color: _teal, fontSize: 12, fontWeight: FontWeight.w700)),
+          color: _brandRed, fontSize: 12, fontWeight: FontWeight.w700)),
     ],
   );
 }
@@ -917,7 +917,7 @@ class ServiceCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Icon(service.icon, color: _teal, size: 27),
+          Icon(service.icon, color: _brandRed, size: 27),
           Text(service.title, maxLines: 2, overflow: TextOverflow.ellipsis,
               style: const TextStyle(
                 color: _ink, fontWeight: FontWeight.w800, fontSize: 13)),
@@ -940,7 +940,7 @@ class ServiceListTile extends StatelessWidget {
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
     leading: CircleAvatar(
       backgroundColor: const Color(0xFFFCE8E8),
-      child: Icon(service.icon, color: _teal),
+      child: Icon(service.icon, color: _brandRed),
     ),
     title: Text(service.title, style: const TextStyle(
       fontWeight: FontWeight.w800, color: _ink, fontSize: 14)),
@@ -965,7 +965,7 @@ class StepTile extends StatelessWidget {
       children: [
         CircleAvatar(
           backgroundColor: const Color(0xFFFCE8E8),
-          foregroundColor: _teal,
+          foregroundColor: _brandRed,
           child: Text(number, style: const TextStyle(fontWeight: FontWeight.w900)),
         ),
         const SizedBox(width: 12),
@@ -1042,7 +1042,7 @@ class _ServiceMetaRow extends StatelessWidget {
     padding: const EdgeInsets.only(bottom: 7),
     child: Row(
       children: [
-        Icon(icon, size: 17, color: _teal),
+        Icon(icon, size: 17, color: _brandRed),
         const SizedBox(width: 8),
         Expanded(child: Text(label,
             style: const TextStyle(color: _muted, fontSize: 12))),
@@ -1055,10 +1055,10 @@ class _ServiceMetaRow extends StatelessWidget {
 
 void _showService(BuildContext context,ServiceItem service,Future<void> Function(ServiceItem service) onRequest){
  showModalBottomSheet<void>(context:context,isScrollControlled:true,backgroundColor:Colors.white,shape:const RoundedRectangleBorder(borderRadius:BorderRadius.vertical(top:Radius.circular(24))),builder:(sheet)=>Padding(padding:const EdgeInsets.fromLTRB(22,24,22,32),child:SingleChildScrollView(child:Column(mainAxisSize:MainAxisSize.min,crossAxisAlignment:CrossAxisAlignment.start,children:[
- Center(child:Container(width:42,height:4,decoration:BoxDecoration(color:const Color(0xFFCBD5E1),borderRadius:BorderRadius.circular(5)))),const SizedBox(height:22),Icon(service.icon,color:_teal,size:34),const SizedBox(height:14),
+ Center(child:Container(width:42,height:4,decoration:BoxDecoration(color:const Color(0xFFCBD5E1),borderRadius:BorderRadius.circular(5)))),const SizedBox(height:22),Icon(service.icon,color:_brandRed,size:34),const SizedBox(height:14),
  Text(service.title,style:const TextStyle(color:_ink,fontWeight:FontWeight.w900,fontSize:20)),const SizedBox(height:8),Text(service.subtitle,style:const TextStyle(color:_muted,height:1.8)),
  if(service.estimatedDays!=null||service.basePrice!=null)...[const SizedBox(height:14),if(service.estimatedDays!=null)_ServiceMetaRow(icon:Icons.schedule_outlined,label:'زمان تخمینی انجام',value:'${service.estimatedDays} روز کاری'),if(service.basePrice!=null)_ServiceMetaRow(icon:Icons.payments_outlined,label:'مبلغ پایه ثبت‌شده (واحد نیازمند تأیید)',value:service.basePrice!.toString())],
- if(service.requirements.isNotEmpty)...[const SizedBox(height:16),const Text('مدارک و اطلاعات موردنیاز',style:TextStyle(color:_ink,fontWeight:FontWeight.w800)),const SizedBox(height:6),...service.requirements.map((item)=>Padding(padding:const EdgeInsets.only(bottom:5),child:Row(crossAxisAlignment:CrossAxisAlignment.start,children:[const Text('•  ',style:TextStyle(color:_teal)),Expanded(child:Text(item,style:const TextStyle(color:_muted,height:1.6)))])))],
+ if(service.requirements.isNotEmpty)...[const SizedBox(height:16),const Text('مدارک و اطلاعات موردنیاز',style:TextStyle(color:_ink,fontWeight:FontWeight.w800)),const SizedBox(height:6),...service.requirements.map((item)=>Padding(padding:const EdgeInsets.only(bottom:5),child:Row(crossAxisAlignment:CrossAxisAlignment.start,children:[const Text('•  ',style:TextStyle(color:_brandRed)),Expanded(child:Text(item,style:const TextStyle(color:_muted,height:1.6)))])))],
  const SizedBox(height:20),SizedBox(width:double.infinity,child:FilledButton(onPressed:(){Navigator.pop(sheet);onRequest(service);},child:const Text('درخواست این خدمت'))),const SizedBox(height:8),const Text('برای ثبت درخواست واقعی، ورود و اتصال امن به سامانه لازم است.',textAlign:TextAlign.center,style:TextStyle(color:_muted,fontSize:10)),
  ]))));
 }
@@ -1257,7 +1257,7 @@ Widget _detailHeading(String title) => Padding(
 Widget _detailBullet(String value) => Padding(
   padding: const EdgeInsets.only(bottom: 6),
   child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-    const Text('•  ', style: TextStyle(color: _teal, fontWeight: FontWeight.w900)),
+    const Text('•  ', style: TextStyle(color: _brandRed, fontWeight: FontWeight.w900)),
     Expanded(child: Text(value, style: const TextStyle(color: _muted, fontSize: 12, height: 1.7))),
   ]),
 );
