@@ -3,9 +3,9 @@
   "category_key": "07-internet-and-commercial-services",
   "category_number": 7,
   "title": "خدمات اینترنتی و تجاری",
-  "status": "draft_needs_review",
-  "reviewed_at": null,
-  "review_version": 1,
+  "status": "populated_draft_needs_domain_and_source_review",
+  "reviewed_at": "2026-11-21",
+  "review_version": 2,
   "knowledge_mode": "hybrid",
   "scope": "آموزش و چک‌لیست داخلی؛ قیمت‌ها، شرایط ارائه‌دهندگان و ضوابط سامانه‌های رسمی در زمان درخواست به‌روزرسانی شوند.",
   "services": [
@@ -13,145 +13,344 @@
       "service_key": "enamad",
       "title": "دریافت و تمدید اینماد",
       "knowledge_mode": "hybrid",
-      "status": "draft_needs_review",
-      "scope": null,
-      "eligibility": null,
-      "conditions": [],
-      "documents": [],
-      "steps": [],
-      "fees": null,
-      "issuance_time": null,
+      "status": "populated_draft_needs_source_review",
+      "scope": "کسب‌وکار اینترنتی که حسب مدل فعالیت و نوع درگاه/خدمت، به نماد یا سطح مشخصی از احراز نیاز دارد.",
+      "eligibility": "کسب‌وکار اینترنتی که حسب مدل فعالیت و نوع درگاه/خدمت، به نماد یا سطح مشخصی از احراز نیاز دارد.",
+      "conditions": [
+        "نوع فعالیت، مالک دامنه/وب‌سایت و هویت متقاضی باید با ضوابط سامانه تطبیق داشته باشد",
+        "اطلاعات تماس، نشانی، کالا/خدمت، شرایط فروش و سیاست‌های مشتری باید شفاف باشد",
+        "الزامات و مدارک با نوع شخصیت و مدل فعالیت تغییر می‌کند؛ وضعیت روز سامانه ملاک است"
+      ],
+      "documents": [
+        "مدارک هویتی/ثبتی متقاضی",
+        "دامنه و دسترسی مدیریتی وب‌سایت",
+        "اطلاعات تماس و نشانی و راه‌های پاسخ‌گویی",
+        "صفحات معرفی، قوانین خرید، ارسال، مرجوعی و حریم خصوصی",
+        "مجوز تخصصی در صورت فعالیت مجوزمحور"
+      ],
+      "steps": [
+        "تشخیص مدل فروش و نیاز به نماد",
+        "آماده‌سازی وب‌سایت و صفحات الزامی",
+        "ثبت‌نام در سامانه رسمی و احراز هویت",
+        "ثبت دامنه و اطلاعات کسب‌وکار",
+        "رفع ایرادهای اعلامی و تکمیل بررسی",
+        "دریافت نماد در صورت تأیید و رعایت تمدید/پایش"
+      ],
+      "fees": {
+        "status": "not_published_without_current_provider_or_official_quote",
+        "amount": null
+      },
+      "issuance_time": {
+        "status": "case_and_authority_dependent_not_guaranteed",
+        "estimate": null
+      },
       "issuing_authority": null,
       "official_source": null,
       "source_url": null,
       "source_date": null,
       "verified_at": null,
-      "reviewed_at": null,
-      "verification_status": "unverified",
+      "reviewed_at": "2026-11-21",
+      "verification_status": "draft_needs_primary_source_or_provider_validation",
       "shared_requirement_refs": [],
       "activity_specific_requirements": [],
-      "customer_questions": [],
-      "expert_escalation_rules": []
+      "customer_questions": [
+        "وب‌سایت فعال و دامنه به نام چه کسی است؟",
+        "فروش کالا دارید یا خدمات؟",
+        "شخص حقیقی هستید یا شرکت؟",
+        "درگاه پرداخت مستقیم نیاز دارید؟"
+      ],
+      "expert_escalation_rules": [
+        "فعالیت دارای مجوز تخصصی، کالاهای ممنوع/محدود، مغایرت مالک دامنه یا اخطار/تعلیق نماد"
+      ],
+      "what_is_it": "نماد اعتماد الکترونیکی برای احراز هویت و برخی الزامات کسب‌وکار اینترنتی در چارچوب ضوابط جاری مرکز توسعه تجارت الکترونیکی.",
+      "deliverables": [
+        "چک‌لیست آمادگی وب‌سایت",
+        "تکمیل پرونده و پیگیری درخواست"
+      ],
+      "notes": "این محتوای پایه برای گفت‌وگوی تشخیصی و چک‌لیست اجرایی است؛ شروط حقوقی/سامانه‌ای، هزینه و زمان تا اتصال به منبع رسمی یا تأیید متخصص، قطعی اعلام نشود."
     },
     {
       "service_key": "business-website",
       "title": "طراحی و راه‌اندازی وب‌سایت فروشگاهی/شرکتی",
       "knowledge_mode": "local",
-      "status": "draft_needs_review",
-      "scope": null,
-      "eligibility": null,
-      "conditions": [],
-      "documents": [],
-      "steps": [],
-      "fees": null,
-      "issuance_time": null,
+      "status": "populated_draft_needs_source_review",
+      "scope": "کسب‌وکارهایی که به حضور آنلاین یا فروش اینترنتی نیاز دارند.",
+      "eligibility": "کسب‌وکارهایی که به حضور آنلاین یا فروش اینترنتی نیاز دارند.",
+      "conditions": [
+        "هدف سایت، مخاطب، ساختار صفحات و نیازهای عملیاتی باید پیش از طراحی مشخص شود",
+        "مالکیت دامنه، میزبانی، دسترسی‌ها و داده‌های مشتری باید به‌صورت شفاف به کارفرما تحویل شود",
+        "الزامات امنیت، حریم خصوصی، تجارت الکترونیکی و مجوزهای فعالیت رعایت شود"
+      ],
+      "documents": [
+        "نام برند و هویت بصری",
+        "متن معرفی، محصولات/خدمات، تصاویر و اطلاعات تماس",
+        "اطلاعات مالک دامنه و دسترسی‌های لازم",
+        "درگاه پرداخت و مجوزها در صورت نیاز"
+      ],
+      "steps": [
+        "نیازسنجی و تعیین نقشه سایت",
+        "طراحی تجربه کاربری و ساختار صفحات",
+        "پیاده‌سازی، ورود محتوا و اتصال ابزارها",
+        "آزمون موبایل، سرعت، امنیت و فرم‌ها",
+        "آموزش مدیریت و تحویل دسترسی‌ها",
+        "پشتیبانی و به‌روزرسانی طبق قرارداد"
+      ],
+      "fees": {
+        "status": "not_published_without_current_provider_or_official_quote",
+        "amount": null
+      },
+      "issuance_time": {
+        "status": "case_and_authority_dependent_not_guaranteed",
+        "estimate": null
+      },
       "issuing_authority": null,
       "official_source": null,
       "source_url": null,
       "source_date": null,
       "verified_at": null,
-      "reviewed_at": null,
-      "verification_status": "unverified",
+      "reviewed_at": "2026-11-21",
+      "verification_status": "draft_needs_primary_source_or_provider_validation",
       "shared_requirement_refs": [],
       "activity_specific_requirements": [],
-      "customer_questions": [],
-      "expert_escalation_rules": []
+      "customer_questions": [
+        "سایت شرکتی است یا فروشگاهی؟",
+        "چه تعداد محصول/خدمت و چه امکاناتی لازم دارید؟",
+        "دامنه و لوگو دارید؟",
+        "چه کسی محتوا و تصاویر را تأمین می‌کند؟"
+      ],
+      "expert_escalation_rules": [
+        "پرداخت/اطلاعات حساس، سامانه اختصاصی، اتصال ERP/CRM، داده شخصی حساس یا الزامات امنیتی ویژه"
+      ],
+      "what_is_it": "طراحی و راه‌اندازی وب‌سایت شرکتی یا فروشگاهی برای معرفی، جذب مشتری، فروش، پشتیبانی و مدیریت محتوا.",
+      "deliverables": [
+        "وب‌سایت عملیاتی مطابق محدوده قرارداد",
+        "دسترسی مالک، آموزش و مستندات تحویل"
+      ],
+      "notes": "این محتوای پایه برای گفت‌وگوی تشخیصی و چک‌لیست اجرایی است؛ شروط حقوقی/سامانه‌ای، هزینه و زمان تا اتصال به منبع رسمی یا تأیید متخصص، قطعی اعلام نشود."
     },
     {
       "service_key": "payment-gateway",
       "title": "درگاه پرداخت اینترنتی",
       "knowledge_mode": "hybrid",
-      "status": "draft_needs_review",
-      "scope": null,
-      "eligibility": null,
-      "conditions": [],
-      "documents": [],
-      "steps": [],
-      "fees": null,
-      "issuance_time": null,
+      "status": "populated_draft_needs_source_review",
+      "scope": "کسب‌وکارهای واجد شرایط پذیرندگی و مدل فروش مورد قبول ارائه‌دهنده.",
+      "eligibility": "کسب‌وکارهای واجد شرایط پذیرندگی و مدل فروش مورد قبول ارائه‌دهنده.",
+      "conditions": [
+        "احراز هویت پذیرنده و تطبیق مالکیت حساب/درگاه طبق ضوابط ارائه‌دهنده",
+        "نماد یا مجوزهای لازم در صورت مطالبه برای مدل فعالیت",
+        "اطلاعات تسویه، نشانی سایت، کالا/خدمات و سیاست بازپرداخت باید روشن باشد"
+      ],
+      "documents": [
+        "مدارک هویتی/ثبتی و اطلاعات صاحبان امضا",
+        "شماره حساب/شبا به نام پذیرنده طبق ضابطه ارائه‌دهنده",
+        "دامنه و وب‌سایت آماده",
+        "نماد یا مجوز مرتبط در صورت نیاز"
+      ],
+      "steps": [
+        "انتخاب ارائه‌دهنده مجاز و مدل درگاه",
+        "بررسی شرایط و کارمزدهای جاری",
+        "ثبت درخواست و احراز هویت",
+        "اتصال فنی و آزمون پرداخت/بازگشت وجه",
+        "فعال‌سازی و پایش تسویه‌ها"
+      ],
+      "fees": {
+        "status": "not_published_without_current_provider_or_official_quote",
+        "amount": null
+      },
+      "issuance_time": {
+        "status": "case_and_authority_dependent_not_guaranteed",
+        "estimate": null
+      },
       "issuing_authority": null,
       "official_source": null,
       "source_url": null,
       "source_date": null,
       "verified_at": null,
-      "reviewed_at": null,
-      "verification_status": "unverified",
+      "reviewed_at": "2026-11-21",
+      "verification_status": "draft_needs_primary_source_or_provider_validation",
       "shared_requirement_refs": [],
       "activity_specific_requirements": [],
-      "customer_questions": [],
-      "expert_escalation_rules": []
+      "customer_questions": [
+        "درگاه برای وب‌سایت است یا اپلیکیشن؟",
+        "نوع شخصیت حقیقی است یا حقوقی؟",
+        "کدام بانک یا پرداخت‌یار مدنظر است؟",
+        "حجم و مدل فروش چیست؟"
+      ],
+      "expert_escalation_rules": [
+        "رد پذیرندگی، فعالیت محدودشده، مغایرت مالک حساب، اختلاف تسویه یا برگشت وجه"
+      ],
+      "what_is_it": "اتصال وب‌سایت یا نرم‌افزار فروش به ابزار پرداخت آنلاین از مسیر پرداخت‌یار یا شرکت ارائه‌دهنده خدمات پرداخت و شبکه پرداخت.",
+      "deliverables": [
+        "پرونده پذیرندگی و راهنمای اتصال",
+        "آزمون و تحویل درگاه در محدوده دسترسی‌ها"
+      ],
+      "notes": "این محتوای پایه برای گفت‌وگوی تشخیصی و چک‌لیست اجرایی است؛ شروط حقوقی/سامانه‌ای، هزینه و زمان تا اتصال به منبع رسمی یا تأیید متخصص، قطعی اعلام نشود."
     },
     {
       "service_key": "business-domain",
       "title": "ثبت دامنه و خدمات میزبانی",
       "knowledge_mode": "hybrid",
-      "status": "draft_needs_review",
-      "scope": null,
-      "eligibility": null,
-      "conditions": [],
-      "documents": [],
-      "steps": [],
-      "fees": null,
-      "issuance_time": null,
+      "status": "populated_draft_needs_source_review",
+      "scope": "افراد و شرکت‌هایی که به نام اینترنتی یا زیرساخت میزبانی نیاز دارند.",
+      "eligibility": "افراد و شرکت‌هایی که به نام اینترنتی یا زیرساخت میزبانی نیاز دارند.",
+      "conditions": [
+        "پسوند و قواعد ثبت به نوع دامنه و مرجع ثبت وابسته است",
+        "مالک دامنه، ایمیل بازیابی و اطلاعات تماس باید تحت کنترل مشتری باشد",
+        "هزینه تمدید، انتقال و منابع میزبانی متغیر است"
+      ],
+      "documents": [
+        "نام‌های پیشنهادی دامنه",
+        "اطلاعات مالک حقیقی/حقوقی",
+        "مدارک تکمیلی برای پسوندهای محدود، در صورت مطالبه"
+      ],
+      "steps": [
+        "جست‌وجوی آزاد بودن نام",
+        "بررسی حقوق برند و خطر تشابه",
+        "انتخاب پسوند و ثبت به نام مالک",
+        "انتخاب میزبانی و تنظیم DNS/SSL",
+        "ثبت تاریخ تمدید و تحویل دسترسی مالک"
+      ],
+      "fees": {
+        "status": "not_published_without_current_provider_or_official_quote",
+        "amount": null
+      },
+      "issuance_time": {
+        "status": "case_and_authority_dependent_not_guaranteed",
+        "estimate": null
+      },
       "issuing_authority": null,
       "official_source": null,
       "source_url": null,
       "source_date": null,
       "verified_at": null,
-      "reviewed_at": null,
-      "verification_status": "unverified",
+      "reviewed_at": "2026-11-21",
+      "verification_status": "draft_needs_primary_source_or_provider_validation",
       "shared_requirement_refs": [],
       "activity_specific_requirements": [],
-      "customer_questions": [],
-      "expert_escalation_rules": []
+      "customer_questions": [
+        "چه نام و پسوندی مدنظر دارید؟",
+        "دامنه برای سایت شرکتی است یا فروشگاه؟",
+        "دامنه فعلی دارید و قصد انتقال دارید؟"
+      ],
+      "expert_escalation_rules": [
+        "اختلاف مالکیت دامنه، شکایت علامت تجاری یا انتقال دامنه مسدود"
+      ],
+      "what_is_it": "ثبت و مدیریت نام دامنه و تهیه میزبانی/گواهی امنیتی متناسب با وب‌سایت.",
+      "deliverables": [
+        "دامنه ثبت‌شده/منتقل‌شده و اطلاعات مالکیت",
+        "میزبانی و تنظیمات پایه طبق قرارداد"
+      ],
+      "notes": "این محتوای پایه برای گفت‌وگوی تشخیصی و چک‌لیست اجرایی است؛ شروط حقوقی/سامانه‌ای، هزینه و زمان تا اتصال به منبع رسمی یا تأیید متخصص، قطعی اعلام نشود."
     },
     {
       "service_key": "bulk-sms",
       "title": "پنل پیامک انبوه",
       "knowledge_mode": "hybrid",
-      "status": "draft_needs_review",
-      "scope": null,
-      "eligibility": null,
-      "conditions": [],
-      "documents": [],
-      "steps": [],
-      "fees": null,
-      "issuance_time": null,
+      "status": "populated_draft_needs_source_review",
+      "scope": "کسب‌وکارهایی که برای اطلاع‌رسانی مجاز به مشتریان نیاز به پیامک دارند.",
+      "eligibility": "کسب‌وکارهایی که برای اطلاع‌رسانی مجاز به مشتریان نیاز به پیامک دارند.",
+      "conditions": [
+        "نوع خط و محتوای پیام باید با ضوابط اپراتور و مقررات تبلیغات/حریم خصوصی سازگار باشد",
+        "ارسال تبلیغاتی باید امکان مدیریت عدم دریافت و رعایت فهرست‌های منع را داشته باشد",
+        "قیمت خطوط، اعتبار و تعرفه پیامک متغیر است"
+      ],
+      "documents": [
+        "مدارک هویتی/ثبتی و اطلاعات تماس",
+        "شرح نوع پیام و گروه مخاطب",
+        "مجوز یا مستندات برای خطوط خدماتی در صورت مطالبه"
+      ],
+      "steps": [
+        "تعیین کاربرد و حجم پیام",
+        "انتخاب ارائه‌دهنده و پنل",
+        "احراز هویت و خرید/شارژ",
+        "تعریف الگوها و گروه‌های مجاز",
+        "آزمون ارسال و پایش گزارش‌ها"
+      ],
+      "fees": {
+        "status": "not_published_without_current_provider_or_official_quote",
+        "amount": null
+      },
+      "issuance_time": {
+        "status": "case_and_authority_dependent_not_guaranteed",
+        "estimate": null
+      },
       "issuing_authority": null,
       "official_source": null,
       "source_url": null,
       "source_date": null,
       "verified_at": null,
-      "reviewed_at": null,
-      "verification_status": "unverified",
+      "reviewed_at": "2026-11-21",
+      "verification_status": "draft_needs_primary_source_or_provider_validation",
       "shared_requirement_refs": [],
       "activity_specific_requirements": [],
-      "customer_questions": [],
-      "expert_escalation_rules": []
+      "customer_questions": [
+        "پیامک تبلیغاتی می‌خواهید یا اطلاع‌رسانی خدماتی؟",
+        "حجم ماهانه و جامعه مخاطب چقدر است؟",
+        "خط اختصاصی دارید؟"
+      ],
+      "expert_escalation_rules": [
+        "درخواست ارسال انبوه ناخواسته، محتوای ممنوع یا خط خدماتی بدون شرایط احراز"
+      ],
+      "what_is_it": "ارائه پنل ارسال پیامک اطلاع‌رسانی، خدماتی یا تبلیغاتی با مدیریت مخاطبان، الگوها و گزارش ارسال.",
+      "deliverables": [
+        "پنل فعال، راهنمای استفاده و الگوهای مجاز"
+      ],
+      "notes": "این محتوای پایه برای گفت‌وگوی تشخیصی و چک‌لیست اجرایی است؛ شروط حقوقی/سامانه‌ای، هزینه و زمان تا اتصال به منبع رسمی یا تأیید متخصص، قطعی اعلام نشود."
     },
     {
       "service_key": "internet-phone",
       "title": "تلفن اینترنتی کسب‌وکار",
       "knowledge_mode": "hybrid",
-      "status": "draft_needs_review",
-      "scope": null,
-      "eligibility": null,
-      "conditions": [],
-      "documents": [],
-      "steps": [],
-      "fees": null,
-      "issuance_time": null,
+      "status": "populated_draft_needs_source_review",
+      "scope": "کسب‌وکارهایی که به تلفن سازمانی یا مرکز تماس نیاز دارند.",
+      "eligibility": "کسب‌وکارهایی که به تلفن سازمانی یا مرکز تماس نیاز دارند.",
+      "conditions": [
+        "پوشش ارائه‌دهنده، کیفیت اینترنت و تجهیزات محل باید بررسی شود",
+        "ضوابط احراز هویت و تخصیص شماره به ارائه‌دهنده و نوع شماره وابسته است",
+        "ضبط مکالمه و نگهداری داده باید با اطلاع‌رسانی و قوانین حریم خصوصی هماهنگ باشد"
+      ],
+      "documents": [
+        "مدارک هویتی/ثبتی و نشانی",
+        "تعداد کاربران و داخلی‌های موردنیاز",
+        "اطلاعات اینترنت و تجهیزات شبکه"
+      ],
+      "steps": [
+        "نیازسنجی تعداد تماس و امکانات",
+        "بررسی پوشش و ارائه‌دهنده",
+        "ثبت درخواست و احراز هویت",
+        "تنظیم داخلی‌ها، انتقال تماس و پیام خوشامد",
+        "آزمون کیفیت و آموزش"
+      ],
+      "fees": {
+        "status": "not_published_without_current_provider_or_official_quote",
+        "amount": null
+      },
+      "issuance_time": {
+        "status": "case_and_authority_dependent_not_guaranteed",
+        "estimate": null
+      },
       "issuing_authority": null,
       "official_source": null,
       "source_url": null,
       "source_date": null,
       "verified_at": null,
-      "reviewed_at": null,
-      "verification_status": "unverified",
+      "reviewed_at": "2026-11-21",
+      "verification_status": "draft_needs_primary_source_or_provider_validation",
       "shared_requirement_refs": [],
       "activity_specific_requirements": [],
-      "customer_questions": [],
-      "expert_escalation_rules": []
+      "customer_questions": [
+        "چند داخلی نیاز دارید؟",
+        "تماس ورودی، خروجی یا مرکز تماس می‌خواهید؟",
+        "ضبط مکالمه و صف تماس لازم است؟"
+      ],
+      "expert_escalation_rules": [
+        "شماره‌های خاص، تماس اضطراری، ضبط داده حساس یا نیاز به SLA سازمانی"
+      ],
+      "what_is_it": "تأمین خط تلفن مبتنی بر اینترنت/VoIP و امکاناتی مانند داخلی، صف تماس، ضبط مکالمه و گزارش‌گیری.",
+      "deliverables": [
+        "خط/سامانه تلفنی فعال و تنظیمات توافق‌شده"
+      ],
+      "notes": "این محتوای پایه برای گفت‌وگوی تشخیصی و چک‌لیست اجرایی است؛ شروط حقوقی/سامانه‌ای، هزینه و زمان تا اتصال به منبع رسمی یا تأیید متخصص، قطعی اعلام نشود."
     }
   ],
   "data_quality_rules": [
@@ -168,5 +367,6 @@
       "تغییر هزینه یا زمان",
       "گزارش مغایرت از پرونده واقعی"
     ]
-  }
+  },
+  "content_policy": "هر خدمت تعریف، دامنه، شرایط، مدارک، مراحل، خروجی، پرسش‌های تشخیصی و موارد ارجاع دارد؛ هزینه و زمان تا تأیید روزآمد اعلام قطعی نمی‌شوند."
 }
