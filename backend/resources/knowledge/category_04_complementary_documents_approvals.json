@@ -3,9 +3,9 @@
   "category_key": "04-complementary-documents-approvals",
   "category_number": 4,
   "title": "مدارک و تأییدیه‌های مکمل",
-  "status": "partially_populated_needs_authority_review",
-  "reviewed_at": null,
-  "review_version": 1,
+  "status": "expanded_partial_needs_authority_review",
+  "reviewed_at": "2026-11-21",
+  "review_version": 2,
   "knowledge_mode": "local_with_activity_specific_rules",
   "scope": "الزامات عمومی مشترک از الزامات اختصاصی هر شغل جدا شوند. هر شرط باید دامنه شمول، مرجع، سند، تاریخ و وضعیت اعتبار داشته باشد.",
   "services": [
@@ -204,49 +204,121 @@
       "service_key": "national-standards-approval",
       "title": "تأییدیه‌ها و نشان استاندارد",
       "knowledge_mode": "hybrid",
-      "status": "draft_needs_review",
-      "scope": null,
-      "eligibility": null,
-      "conditions": [],
-      "documents": [],
-      "steps": [],
-      "fees": null,
-      "issuance_time": null,
-      "issuing_authority": null,
-      "official_source": null,
-      "source_url": null,
+      "status": "structured_needs_official_standard_lookup",
+      "scope": "تولیدکنندگان یا عرضه‌کنندگان کالا/خدمت که طبق قانون، استاندارد اجباری یا ضوابط فنی مربوط مشمول‌اند؛ شمول به نوع محصول، فعالیت و استاندارد مربوط وابسته است.",
+      "eligibility": "واحد تولیدی/عرضه‌کننده محصول یا خدمت مشمول؛ نوع شخصیت، محل تولید و گروه محصول باید تعیین شود.",
+      "conditions": [
+        "ابتدا مشخص شود استاندارد مربوط برای محصول/خدمت اجباری است یا اخذ نشان داوطلبانه مدنظر است.",
+        "استاندارد ملی مرتبط، دامنه محصول، ویژگی‌های فنی و آخرین ویرایش باید از سازمان ملی استاندارد بررسی شود.",
+        "زیرساخت تولید، کنترل کیفیت، آزمایشگاه و ارزیابی انطباق ممکن است حسب محصول لازم باشد.",
+        "هزینه آزمون، نمونه‌برداری، ممیزی و صدور تابع تعرفه و دامنه محصول است و بدون استعلام روز اعلام نشود."
+      ],
+      "documents": [
+        "مدارک هویتی/ثبتی و مجوز فعالیت تولیدی در صورت لزوم",
+        "مشخصات محصول، مدل، برند و محل تولید",
+        "مستندات فنی، روش تولید و کنترل کیفیت",
+        "سوابق آزمون و گواهی‌های آزمایشگاهی در صورت وجود"
+      ],
+      "steps": [
+        "شناسایی محصول و استاندارد ملی مربوط",
+        "بررسی اجباری/داوطلبانه بودن و دامنه شمول",
+        "آماده‌سازی مدارک فنی و کنترل کیفیت",
+        "ثبت درخواست در مسیر رسمی سازمان ملی استاندارد/مرجع ارزیابی",
+        "نمونه‌برداری، آزمون یا ممیزی حسب ضابطه",
+        "رفع عدم انطباق و پیگیری صدور/تمدید در صورت احراز شرایط"
+      ],
+      "fees": {
+        "status": "requires_current_standard_and_lab_tariff",
+        "amount": null
+      },
+      "issuance_time": {
+        "status": "product_and_assessment_dependent",
+        "estimate": null
+      },
+      "issuing_authority": "سازمان ملی استاندارد ایران یا مرجع ارزیابی صلاحیت‌دار طبق نظام ارزیابی انطباق مربوط.",
+      "official_source": "سازمان ملی استاندارد ایران؛ منبع رسمی جاری باید برای هر محصول/خدمت بازیابی شود.",
+      "source_url": "https://www.inso.gov.ir/",
       "source_date": null,
       "verified_at": null,
       "reviewed_at": null,
-      "verification_status": "unverified",
+      "verification_status": "unverified_needs_current_standard_and_scheme_lookup",
       "shared_requirement_refs": [],
-      "activity_specific_requirements": [],
-      "customer_questions": [],
-      "expert_escalation_rules": []
+      "activity_specific_requirements": [
+        "نوع محصول/خدمت",
+        "استاندارد ملی و ویرایش مربوط",
+        "اجباری یا داوطلبانه بودن",
+        "روش ارزیابی انطباق و آزمایش‌های لازم"
+      ],
+      "customer_questions": [
+        "چه محصول یا خدمتی تولید/عرضه می‌کنید؟",
+        "برند و محل تولید چیست؟",
+        "استاندارد اجباری مدنظر است یا نشان داوطلبانه؟"
+      ],
+      "expert_escalation_rules": [
+        "محصولات غذایی، دارویی، پزشکی، برقی یا پرریسک",
+        "ابهام درباره اجباری بودن استاندارد یا رد نمونه آزمایشگاهی"
+      ]
     },
     {
       "service_key": "other-regulatory-approvals",
       "title": "سایر تأییدیه‌های تخصصی",
       "knowledge_mode": "hybrid",
-      "status": "draft_needs_review",
-      "scope": null,
-      "eligibility": null,
-      "conditions": [],
-      "documents": [],
-      "steps": [],
-      "fees": null,
-      "issuance_time": null,
-      "issuing_authority": null,
-      "official_source": null,
-      "source_url": null,
+      "status": "structured_needs_case_specific_authority_review",
+      "scope": "تأییدیه‌های دستگاهی/تخصصی که بر اساس نوع فعالیت، محصول، محل، تجهیزات یا ریسک کسب‌وکار مطالبه می‌شوند.",
+      "eligibility": "فقط متقاضیان و فعالیت‌هایی که قانون، کاربرگ مجوز یا مرجع تخصصی ذی‌صلاح آن تأییدیه را لازم دانسته باشد.",
+      "conditions": [
+        "عنوان دقیق تأییدیه و مرجع صادرکننده باید قبل از ارائه خدمت شناسایی شود.",
+        "شرط یک فعالیت یا یک شهر به سایر فعالیت‌ها تعمیم داده نشود.",
+        "نسخه جاری مقرره، مدارک، هزینه و زمان از مرجع رسمی اخذ شود.",
+        "در صورت نبود مستند معتبر، وضعیت نیازمند بررسی اعلام شود و از وعده صدور قطعی خودداری شود."
+      ],
+      "documents": [
+        "عنوان فعالیت و مجوز پایه",
+        "مشخصات محل، محصول، تجهیزات یا فرایند مرتبط",
+        "مدارک هویتی/ثبتی متقاضی",
+        "مدارک تخصصی که مرجع مربوط در کاربرگ خود مطالبه می‌کند"
+      ],
+      "steps": [
+        "تشخیص نوع تأییدیه و علت مطالبه",
+        "شناسایی مرجع قانونی و مستند الزام",
+        "استخراج کاربرگ و چک‌لیست جاری",
+        "بررسی شکاف مدارک و شرایط مشتری",
+        "تکمیل و ثبت درخواست و هماهنگی بازدید/آزمون در صورت نیاز",
+        "پیگیری نتیجه و ثبت تاریخ اعتبار/تمدید"
+      ],
+      "fees": {
+        "status": "authority_and_activity_dependent",
+        "amount": null
+      },
+      "issuance_time": {
+        "status": "authority_and_activity_dependent",
+        "estimate": null
+      },
+      "issuing_authority": "بسته به نوع تأییدیه؛ باید از قانون یا کاربرگ رسمی همان فعالیت تعیین شود.",
+      "official_source": "مرجع تخصصی ذی‌صلاح و کاربرگ رسمی مجوز مربوط.",
+      "source_url": "https://mojavez.ir/",
       "source_date": null,
       "verified_at": null,
       "reviewed_at": null,
-      "verification_status": "unverified",
+      "verification_status": "unverified_until_specific_approval_identified",
       "shared_requirement_refs": [],
-      "activity_specific_requirements": [],
-      "customer_questions": [],
-      "expert_escalation_rules": []
+      "activity_specific_requirements": [
+        "نوع تأییدیه",
+        "فعالیت و محل مشمول",
+        "مرجع صادرکننده",
+        "مدارک و استاندارد فنی",
+        "مدت اعتبار و تمدید"
+      ],
+      "customer_questions": [
+        "چه تأییدیه‌ای از شما خواسته‌اند؟",
+        "برای کدام شغل و در کدام شهر؟",
+        "این شرط در کدام کاربرگ یا نامه آمده است؟"
+      ],
+      "expert_escalation_rules": [
+        "نامشخص بودن مرجع قانونی",
+        "تعارض بین مراجع",
+        "نیاز به تأییدیه ایمنی، محیط‌زیست، بهداشت یا تجهیزات تخصصی"
+      ]
     }
   ],
   "data_quality_rules": [
