@@ -12,11 +12,12 @@ Kargozar is a nationwide, primarily remote administrative-services platform. Thi
 ## Current implementation status
 
 - Laravel 13 and Sanctum foundation is committed under `backend/`.
-- Customer OTP, service catalog, customer request creation and customer-owned request retrieval are implemented.
-- Staff authentication, role-protected request queue, assignment, status events, service catalog management and audit logging are implemented.
-- OTP delivery remains disabled until an SMS provider is selected and configured.
-- Flutter API client supports secure token persistence and session restoration. Its sample UI is not yet connected to the live API.
-- No production host, database, SMS provider, customer document storage, payment provider or e-signature provider has been configured.
+- Staff authentication, role-protected request queue, assignment, status events, service catalog management and audit logging are implemented in the backend.
+- Backend customer OTP and request APIs remain available as future capabilities; the current v1 customer app intentionally does not expose or invoke customer login, OTP, online order creation or request history.
+- The current Flutter v1 app is a public service catalog: 10 main categories, 74 leaf services, 9 business companion modules, service information pages and direct phone contact.
+- Customer contact CTA uses `09365952800`; customer browsing does not require an account.
+- The v1 app includes About, Terms of Use and Privacy Policy pages. Public HTML copies and marketplace listing text are maintained under `docs/`.
+- No production customer-order workflow, customer document upload, payment provider or e-signature provider is enabled in v1.
 
 ## Developer entry points
 

@@ -237,26 +237,38 @@ class CompanionContentPage extends StatelessWidget {
                   clipBehavior: Clip.antiAlias,
                   child: InkWell(
                     onTap: () => onOpen(index),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                    child: Stack(
+                      fit: StackFit.expand,
                       children: [
-                        Expanded(
-                          child: AppContentImage(
-                            fileName: item.image,
-                            borderRadius: 0,
-                            fallbackIcon: item.icon,
-                          ),
+                        AppContentImage(
+                          fileName: item.image,
+                          borderRadius: 0,
+                          fallbackIcon: item.icon,
                         ),
-                        Padding(
-                          padding: const EdgeInsets.all(9),
-                          child: Text(
-                            item.title,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              fontSize: 11,
-                              fontWeight: FontWeight.w800,
-                              color: Color(0xFF1E293B),
+                        Align(
+                          alignment: Alignment.bottomCenter,
+                          child: Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.fromLTRB(8, 18, 8, 10),
+                            decoration: const BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                                colors: [Colors.transparent, Color(0xD9000000)],
+                              ),
+                            ),
+                            child: Text(
+                              item.title,
+                              maxLines: 2,
+                              textAlign: TextAlign.center,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 11,
+                                height: 1.35,
+                                fontWeight: FontWeight.w900,
+                                shadows: [Shadow(color: Colors.black54, blurRadius: 4)],
+                              ),
                             ),
                           ),
                         ),
@@ -282,13 +294,9 @@ class SupportContentPage extends StatelessWidget {
    AppBannerStrip(onNavigate:onNavigate,onConsultation:onConsultation),
    const SizedBox(height:12),
    Padding(padding:const EdgeInsets.symmetric(horizontal:12),child:Column(children:[
-     _SupportAction(icon:Icons.phone_in_talk_outlined,title:'تماس تلفنی',subtitle:'تماس مستقیم با کارشناسان کارگزار',onTap:()=>_launch(Uri(scheme:'tel',path:'09360952800'),context)),
+     _SupportAction(icon:Icons.phone_in_talk_outlined,title:'تماس تلفنی',subtitle:'تماس مستقیم با کارشناسان کارگزار',onTap:()=>_launch(Uri(scheme:'tel',path:'09365952800'),context)),
      const SizedBox(height:7),
      _SupportAction(icon:Icons.email_outlined,title:'ارتباط از طریق ایمیل',subtitle:'ارسال پیام به info@kargozarr.ir',onTap:()=>_launch(Uri(scheme:'mailto',path:'info@kargozarr.ir',queryParameters:{'subject':'ارتباط با پشتیبانی کارگزار'}),context)),
-     const SizedBox(height:7),
-     const _SupportAction(icon:Icons.confirmation_number_outlined,title:'ثبت و پیگیری تیکت',subtitle:'به‌زودی فعال می‌شود'),
-     const SizedBox(height:7),
-     const _SupportAction(icon:Icons.smart_toy_outlined,title:'دستیار هوشمند کارگزار',subtitle:'به‌زودی فعال می‌شود'),
    ])),
  ]);
 }

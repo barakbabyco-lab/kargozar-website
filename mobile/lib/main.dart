@@ -1,6 +1,8 @@
 import 'dart:async';
-import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'features/content/service_descriptions.dart';
+import 'features/content/legal_pages.dart';
 import 'core/network/kargozar_api_client.dart';
 import 'features/auth/customer_session.dart';
 import 'features/catalog/service_catalog_repository.dart';
@@ -24,9 +26,8 @@ class KargozarApp extends StatefulWidget {
 }
 class _KargozarAppState extends State<KargozarApp>{
  late final KargozarApiClient _api; late final CustomerSession _session; late final CustomerRequestRepository _requests;
- bool _loading=true,_signedIn=false;
- @override void initState(){super.initState();_api=widget.apiClient??KargozarApiClient();_session=CustomerSession(_api);_requests=CustomerRequestRepository(_api);_restore();}
- Future<void> _restore()async{try{final ok=await _session.restore();if(mounted)setState(()=>_signedIn=ok);}catch(_){}finally{if(mounted)setState(()=>_loading=false);}}
+ bool _loading=false,_signedIn=false;
+ @override void initState(){super.initState();_api=widget.apiClient??KargozarApiClient();_session=CustomerSession(_api);_requests=CustomerRequestRepository(_api);}
  final _navigatorKey=GlobalKey<NavigatorState>();
  Future<bool> _login()async{final dialogContext=_navigatorKey.currentContext;if(dialogContext==null)return false;final ok=await showDialog<bool>(context:dialogContext,barrierDismissible:false,builder:(_)=>OtpDialog(session:_session));final authenticated=ok==true&&_session.isAuthenticated;if(mounted)setState(()=>_signedIn=authenticated);return authenticated;}
  Future<void> _logout()async{try{await _session.signOut();}catch(_){}if(mounted)setState(()=>_signedIn=false);}
@@ -161,39 +162,12 @@ class _MainShellState extends State<MainShell> {
   @override
   void dispose() { _pageController.dispose(); super.dispose(); }
   Future<void> _request(ServiceItem service) async {
-    final id = service.apiId;
-    if (id == null || id.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('ثبت آنلاین این خدمت پس از اتصال کاتالوگ سرور فعال می‌شود.')));
-      return;
-    }
-    if (!widget.signedIn) {
-      final ok = await widget.onLogin();
-      if (!ok || !mounted) return;
-    }
-    final note = await showDialog<String>(context: context, builder: (ctx) {
-      final controller = TextEditingController();
-      return AlertDialog(
-        title: Text('درخواست ${service.title}'),
-        content: TextField(controller: controller, minLines: 2, maxLines: 4, decoration: const InputDecoration(labelText: 'توضیحات درخواست (اختیاری)')),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('انصراف')),
-          FilledButton(onPressed: () => Navigator.pop(ctx, controller.text.trim()), child: const Text('ادامه و ثبت درخواست')),
-        ],
+    final uri = Uri(scheme: 'tel', path: '09365952800');
+    final opened = await launchUrl(uri);
+    if (!opened && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('امکان باز کردن شماره‌گیر وجود ندارد.')),
       );
-    });
-    if (note == null || !mounted) return;
-    final key = '${DateTime.now().microsecondsSinceEpoch}-${Random.secure().nextInt(1 << 32)}';
-    try {
-      final result = await widget.requests.create(serviceId: id, customerNote: note, idempotencyKey: key);
-      if (!mounted) return;
-      setState(() => _revision++);
-      await showDialog<void>(context: context, builder: (ctx) => AlertDialog(
-        title: const Text('درخواست ثبت شد'),
-        content: Text('کد پیگیری: ${result.trackingCode}'),
-        actions: [TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('متوجه شدم'))],
-      ));
-    } catch (error) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(errorText(error))));
     }
   }
   Future<void> _showRequests() async {
@@ -253,72 +227,92 @@ class _MainShellState extends State<MainShell> {
       return;
     }
 
-    try {
-      final items = await ServiceCatalogRepository(widget.api).getServices(category: category.slug);
-      if (!mounted) return;
-      await showModalBottomSheet<void>(
-        context: context,
-        isScrollControlled: true,
-        backgroundColor: Colors.white,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
-        ),
-        builder: (sheetContext) => SafeArea(
-          child: SizedBox(
-            height: MediaQuery.sizeOf(sheetContext).height * .72,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 18, 16, 12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(category.name, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w900, color: _ink)),
-                  const SizedBox(height: 12),
-                  Expanded(
-                    child: items.isEmpty
-                        ? const EmptyState(
-                            icon: Icons.inbox_outlined,
-                            title: 'خدمتی در این بخش ثبت نشده است',
-                            subtitle: 'خدمات این دسته پس از تکمیل کاتالوگ نمایش داده می‌شوند.',
-                          )
-                        : ListView.separated(
-                            itemCount: items.length,
-                            separatorBuilder: (_, __) => const SizedBox(height: 8),
-                            itemBuilder: (_, index) => ServiceListTile(
-                              service: _serviceItemFromCatalog(items[index]),
-                              onRequest: _request,
-                            ),
-                          ),
+    final description = serviceDescriptions[category.slug] ??
+        'برای دریافت اطلاعات درباره این خدمت، شرایط و مدارک موردنیاز و بررسی مسیر مناسب، با کارشناسان کارگزار تماس بگیرید.';
+    if (!mounted) return;
+    await Navigator.of(context).push(MaterialPageRoute<void>(
+      builder: (_) => Directionality(
+        textDirection: TextDirection.rtl,
+        child: Scaffold(
+          appBar: AppBar(title: Text(category.name)),
+          body: SafeArea(
+            child: ListView(
+              padding: const EdgeInsets.fromLTRB(22, 24, 22, 32),
+              children: [
+                const Icon(Icons.description_outlined, color: _teal, size: 38),
+                const SizedBox(height: 18),
+                Text(category.name, style: const TextStyle(color: _ink, fontWeight: FontWeight.w900, fontSize: 20)),
+                const SizedBox(height: 14),
+                Text(description, style: const TextStyle(color: _muted, height: 2, fontSize: 14)),
+                const SizedBox(height: 24),
+                const Text('برای دریافت مشاوره و پیگیری این خدمت با کارگزار تماس بگیرید.', style: TextStyle(color: _ink, height: 1.8, fontWeight: FontWeight.w600)),
+                const SizedBox(height: 16),
+                SizedBox(
+                  width: double.infinity,
+                  child: FilledButton.icon(
+                    onPressed: () async {
+                      final opened = await launchUrl(Uri(scheme: 'tel', path: '09365952800'));
+                      if (!opened && context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('امکان باز کردن شماره‌گیر وجود ندارد.')));
+                      }
+                    },
+                    icon: const Icon(Icons.call_outlined),
+                    label: const Text('تماس با کارگزار'),
                   ),
-                ],
-              ),
+                ),
+                const SizedBox(height: 8),
+                const Center(child: Text('۰۹۳۶۵۹۵۲۸۰۰', style: TextStyle(color: _muted, fontSize: 13))),
+              ],
             ),
           ),
         ),
-      );
-    } catch (error) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(errorText(error))),
-        );
-      }
-    }
+      ),
+    ));
   }
 
   void _showConsultation() {
-    showDialog<void>(context: context, builder: (ctx) => AlertDialog(
-      title: const Text('مشاوره رایگان کارگزار'),
-      content: const Text('فرم ثبت درخواست مشاوره باید به سرویس ارتباط با کارشناسان متصل شود. تا زمان اتصال، این بخش درخواست ساختگی ثبت نمی‌کند.'),
-      actions: [TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('متوجه شدم'))],
-    ));
+    launchUrl(Uri(scheme: 'tel', path: '09365952800'));
   }
   void _openCompanion(int index) {
     final item = companionModules[index];
-    showDialog<void>(context: context, builder: (ctx) => AlertDialog(
-      title: Text(item.title),
-      content: Text('${item.subtitle}\n\nصفحه عملیاتی این ماژول در مرحله تکمیل و اتصال به سامانه است.'),
-      actions: [TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('بستن'))],
+    final description = companionDescriptions.length > index
+        ? companionDescriptions[index]
+        : item.subtitle;
+    Navigator.of(context).push(MaterialPageRoute<void>(
+      builder: (_) => Directionality(
+        textDirection: TextDirection.rtl,
+        child: Scaffold(
+          appBar: AppBar(title: Text(item.title)),
+          body: SafeArea(
+            child: ListView(
+              padding: const EdgeInsets.fromLTRB(22, 24, 22, 32),
+              children: [
+                Icon(item.icon, color: _teal, size: 38),
+                const SizedBox(height: 18),
+                Text(item.title, style: const TextStyle(color: _ink, fontWeight: FontWeight.w900, fontSize: 20)),
+                const SizedBox(height: 14),
+                Text(description, style: const TextStyle(color: _muted, height: 2, fontSize: 14)),
+                const SizedBox(height: 24),
+                const Text('برای دریافت اطلاعات و مشاوره با کارگزار تماس بگیرید.', style: TextStyle(color: _ink, height: 1.8, fontWeight: FontWeight.w600)),
+                const SizedBox(height: 16),
+                SizedBox(
+                  width: double.infinity,
+                  child: FilledButton.icon(
+                    onPressed: () => launchUrl(Uri(scheme: 'tel', path: '09365952800')),
+                    icon: const Icon(Icons.call_outlined),
+                    label: const Text('تماس با کارگزار'),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                const Center(child: Text('۰۹۳۶۵۹۵۲۸۰۰', style: TextStyle(color: _muted, fontSize: 13))),
+              ],
+            ),
+          ),
+        ),
+      ),
     ));
   }
+
   @override Widget build(BuildContext context) => Scaffold(
     body: SafeArea(child: Stack(children: [
       PageView(
@@ -549,8 +543,32 @@ class ServicesPage extends StatefulWidget {
 }
 
 class _ServicesPageState extends State<ServicesPage> {
+  String _query = '';
+
   @override
   Widget build(BuildContext context) {
+    final normalizedQuery = _query.trim().toLowerCase();
+    final searchableServices = <MapEntry<String, ServiceCategory>>[];
+    for (final parent in serviceTaxonomy) {
+      final leaves = parent.children.isEmpty
+          ? <ServiceCategory>[parent]
+          : parent.children;
+      for (final leaf in leaves) {
+        searchableServices.add(MapEntry(parent.name, leaf));
+      }
+    }
+
+    final matchingServices = searchableServices.where((entry) {
+      if (normalizedQuery.isEmpty) return true;
+      final description = serviceDescriptions[entry.value.slug] ?? '';
+      return entry.value.name.toLowerCase().contains(normalizedQuery) ||
+          entry.key.toLowerCase().contains(normalizedQuery) ||
+          description.toLowerCase().contains(normalizedQuery);
+    }).toList();
+    final visibleServices = normalizedQuery.isEmpty
+        ? matchingServices.take(4).toList()
+        : matchingServices;
+
     return ListView(
       padding: EdgeInsets.zero,
       children: [
@@ -559,6 +577,14 @@ class _ServicesPageState extends State<ServicesPage> {
           onConsultation: widget.onConsultation,
         ),
         const SizedBox(height: 12),
+        const Padding(
+          padding: EdgeInsets.fromLTRB(14, 2, 14, 10),
+          child: Text(
+            'دسته‌بندی خدمات',
+            textAlign: TextAlign.right,
+            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w900, color: _navy),
+          ),
+        ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12),
           child: GridView.builder(
@@ -567,39 +593,50 @@ class _ServicesPageState extends State<ServicesPage> {
             itemCount: serviceTaxonomy.length,
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
-              crossAxisSpacing: 8,
-              mainAxisSpacing: 8,
-              childAspectRatio: 1.15,
+              crossAxisSpacing: 9,
+              mainAxisSpacing: 9,
+              childAspectRatio: 1.05,
             ),
             itemBuilder: (context, index) {
               final category = serviceTaxonomy[index];
               return Material(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(15),
+                borderRadius: BorderRadius.circular(17),
                 clipBehavior: Clip.antiAlias,
                 child: InkWell(
                   onTap: () => widget.onOpenCategory(category),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                  child: Stack(
+                    fit: StackFit.expand,
                     children: [
-                      Expanded(
-                        child: AppContentImage(
-                          fileName: serviceCategoryImages[category.slug] ??
-                              'missing.png',
-                          fallbackIcon: Icons.category_outlined,
-                          borderRadius: 0,
-                        ),
+                      AppContentImage(
+                        fileName: serviceCategoryImages[category.slug] ?? 'missing.png',
+                        fallbackIcon: Icons.category_outlined,
+                        borderRadius: 0,
                       ),
-                      Padding(
-                        padding: const EdgeInsets.all(9),
-                        child: Text(
-                          category.name,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w800,
-                            color: _ink,
+                      Align(
+                        alignment: Alignment.bottomCenter,
+                        child: Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.fromLTRB(8, 20, 8, 11),
+                          decoration: const BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [Colors.transparent, Color(0xD9000000)],
+                            ),
+                          ),
+                          child: Text(
+                            category.name,
+                            maxLines: 2,
+                            textAlign: TextAlign.center,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 11,
+                              height: 1.35,
+                              fontWeight: FontWeight.w900,
+                              shadows: [Shadow(color: Colors.black54, blurRadius: 4)],
+                            ),
                           ),
                         ),
                       ),
@@ -610,7 +647,63 @@ class _ServicesPageState extends State<ServicesPage> {
             },
           ),
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: 18),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 14),
+          child: TextField(
+            textDirection: TextDirection.rtl,
+            onChanged: (value) => setState(() => _query = value),
+            decoration: InputDecoration(
+              hintText: 'جست‌وجوی خدمات...',
+              prefixIcon: const Icon(Icons.search_rounded),
+              filled: true,
+              fillColor: Colors.white,
+              contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(16),
+                borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(16),
+                borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+              ),
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 18, 16, 8),
+          child: Text(
+            normalizedQuery.isEmpty ? 'خدمات منتخب' : 'نتایج جست‌وجو',
+            textAlign: TextAlign.right,
+            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w900, color: _navy),
+          ),
+        ),
+        if (visibleServices.isEmpty)
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 18, vertical: 20),
+            child: Text('خدمتی با این عبارت پیدا نشد.', textAlign: TextAlign.center),
+          )
+        else
+          ...visibleServices.map(
+            (entry) => Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+              child: Material(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(13),
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(13),
+                  onTap: () => widget.onOpenCategory(entry.value),
+                  child: ListTile(
+                    leading: const Icon(Icons.description_outlined, color: _teal),
+                    title: Text(entry.value.name, style: const TextStyle(color: _ink, fontSize: 13, fontWeight: FontWeight.w700)),
+                    subtitle: Text(entry.key, style: const TextStyle(color: _muted, fontSize: 11)),
+                    trailing: const Icon(Icons.chevron_left_rounded, color: _muted),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        const SizedBox(height: 24),
       ],
     );
   }
@@ -670,13 +763,41 @@ class ProfilePage extends StatelessWidget {
  Widget build(BuildContext context)=>ListView(padding:EdgeInsets.zero,children:[
    AppBannerStrip(onNavigate:onNavigate,onConsultation:()=>onNavigate(3)),
    const SizedBox(height:12),
-   Padding(padding:const EdgeInsets.symmetric(horizontal:12),child:Column(children:[
-     _ProfileAction(icon:Icons.receipt_long_outlined,title:'درخواست‌های من',onTap:onShowRequests),
-     const SizedBox(height:7),
-     _ProfileAction(icon:signedIn?Icons.logout_rounded:Icons.login_rounded,title:signedIn?'خروج از حساب':'ورود / ثبت‌نام',onTap:signedIn?onLogout:onLogin),
-     const SizedBox(height:7),
-     _ProfileAction(icon:Icons.verified_user_outlined,title:'احراز هویت',onTap:()=>showDialog<void>(context:context,builder:(ctx)=>AlertDialog(title:const Text('احراز هویت'),content:const Text('در این بخش، دریافت و ارسال مدارک و احراز هویت تصویری به‌تدریج فعال می‌شود.'),actions:[TextButton(onPressed:()=>Navigator.pop(ctx),child:const Text('متوجه شدم'))]))),
-   ])),
+   Padding(
+     padding: const EdgeInsets.symmetric(horizontal: 16),
+     child: Column(
+       crossAxisAlignment: CrossAxisAlignment.stretch,
+       children: [
+         const Text('به کارگزار خوش آمدید', style: TextStyle(color:_ink,fontSize:18,fontWeight:FontWeight.w900)),
+         const SizedBox(height:8),
+         const Text('کارگزار، راهنمای شما برای دریافت خدمات اداری، ثبتی و توسعه کسب‌وکار است. برای مشاهده خدمات نیازی به ورود یا ثبت‌نام ندارید.', style: TextStyle(color:_muted,height:1.8,fontSize:13)),
+         const SizedBox(height:18),
+         _ProfileAction(icon:Icons.grid_view_rounded,title:'مشاهده خدمات کارگزار',onTap:()=>onNavigate(1)),
+         const SizedBox(height:7),
+         _ProfileAction(icon:Icons.support_agent_outlined,title:'تماس و پشتیبانی',onTap:()=>onNavigate(3)),
+         const SizedBox(height:7),
+         _ProfileAction(icon:Icons.call_outlined,title:'تماس مستقیم با کارگزار',onTap:()=>launchUrl(Uri(scheme:'tel',path:'09365952800'))),
+         const SizedBox(height:7),
+         _ProfileAction(
+           icon:Icons.info_outline_rounded,
+           title:'درباره کارگزار',
+           onTap:()=>Navigator.of(context).push(MaterialPageRoute<void>(builder:(_)=>const KargozarAboutPage())),
+         ),
+         const SizedBox(height:7),
+         _ProfileAction(
+           icon:Icons.policy_outlined,
+           title:'قوانین و شرایط استفاده',
+           onTap:()=>Navigator.of(context).push(MaterialPageRoute<void>(builder:(_)=>const KargozarTermsPage())),
+         ),
+         const SizedBox(height:7),
+         _ProfileAction(
+           icon:Icons.privacy_tip_outlined,
+           title:'سیاست حفظ حریم خصوصی',
+           onTap:()=>Navigator.of(context).push(MaterialPageRoute<void>(builder:(_)=>const KargozarPrivacyPage())),
+         ),
+       ],
+     ),
+   ),
  ]);
 }
 
@@ -694,33 +815,20 @@ class _ProfileAction extends StatelessWidget {
  );
 }
 
-class SupportChatLauncher extends StatefulWidget {
+class SupportChatLauncher extends StatelessWidget {
  const SupportChatLauncher({super.key,required this.api,required this.signedIn,required this.onLogin});
  final KargozarApiClient api; final bool signedIn; final Future<bool> Function() onLogin;
- @override State<SupportChatLauncher> createState()=>_SupportChatLauncherState();
-}
-class _SupportChatLauncherState extends State<SupportChatLauncher> {
- Timer? _inviteTimer; Timer? _dismissTimer; bool _showInvite=false; bool _opened=false;
- @override void initState(){super.initState();_inviteTimer=Timer(const Duration(seconds:25),(){
-   if(!mounted||_opened)return;setState(()=>_showInvite=true);
-   _dismissTimer=Timer(const Duration(seconds:9),(){if(mounted)setState(()=>_showInvite=false);});
- });}
- @override void dispose(){_inviteTimer?.cancel();_dismissTimer?.cancel();super.dispose();}
- Future<void> _openChat() async {
-   _opened=true;setState(()=>_showInvite=false);
-   var authenticated=widget.signedIn;
-   if(!authenticated)authenticated=await widget.onLogin();
-   if(!mounted||!authenticated)return;
-   await showModalBottomSheet<void>(context:context,isScrollControlled:true,backgroundColor:Colors.white,
-     shape:const RoundedRectangleBorder(borderRadius:BorderRadius.vertical(top:Radius.circular(20))),
-     builder:(ctx)=>SupportChatSheet(api:widget.api));
- }
- @override Widget build(BuildContext context)=>Column(mainAxisSize:MainAxisSize.min,crossAxisAlignment:CrossAxisAlignment.end,children:[
-   if(_showInvite)Container(constraints:const BoxConstraints(maxWidth:210),margin:const EdgeInsets.only(bottom:7),padding:const EdgeInsets.symmetric(horizontal:11,vertical:8),
-     decoration:BoxDecoration(color:Colors.white,borderRadius:BorderRadius.circular(13),border:Border.all(color:const Color(0xFFE7B4B4)),boxShadow:const [BoxShadow(color:Color(0x22000000),blurRadius:9,offset:Offset(0,3))]),
-     child:const Text('سؤالی دارید؟ برای راهنمایی در کنار شما هستیم.',style:TextStyle(color:_ink,fontSize:11,height:1.5))),
-   Material(color:_teal,shape:const CircleBorder(),elevation:4,child:InkWell(onTap:_openChat,customBorder:const CircleBorder(),child:const SizedBox(width:44,height:44,child:Icon(Icons.chat_bubble_outline_rounded,color:Colors.white,size:21)))),
- ]);
+ @override
+ Widget build(BuildContext context)=>Material(
+   color:_teal,
+   shape:const CircleBorder(),
+   elevation:4,
+   child:InkWell(
+     onTap:()=>launchUrl(Uri(scheme:'tel',path:'09365952800')),
+     customBorder:const CircleBorder(),
+     child:const SizedBox(width:44,height:44,child:Icon(Icons.call_rounded,color:Colors.white,size:21)),
+   ),
+ );
 }
 
 class SupportChatSheet extends StatefulWidget {
@@ -947,41 +1055,34 @@ class ProfileOption extends StatelessWidget {
   );
 }
 
-class _ServiceMetaRow extends StatelessWidget {
-  const _ServiceMetaRow({
-    required this.icon,
-    required this.label,
-    required this.value,
-  });
-
-  final IconData icon;
-  final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.only(bottom: 7),
-    child: Row(
-      children: [
-        Icon(icon, size: 17, color: _teal),
-        const SizedBox(width: 8),
-        Expanded(child: Text(label,
-            style: const TextStyle(color: _muted, fontSize: 12))),
-        Text(value, style: const TextStyle(
-            color: _ink, fontSize: 12, fontWeight: FontWeight.w700)),
-      ],
-    ),
-  );
-}
-
 void _showService(BuildContext context,ServiceItem service,Future<void> Function(ServiceItem service) onRequest){
- showModalBottomSheet<void>(context:context,isScrollControlled:true,backgroundColor:Colors.white,shape:const RoundedRectangleBorder(borderRadius:BorderRadius.vertical(top:Radius.circular(24))),builder:(sheet)=>Padding(padding:const EdgeInsets.fromLTRB(22,24,22,32),child:SingleChildScrollView(child:Column(mainAxisSize:MainAxisSize.min,crossAxisAlignment:CrossAxisAlignment.start,children:[
- Center(child:Container(width:42,height:4,decoration:BoxDecoration(color:const Color(0xFFCBD5E1),borderRadius:BorderRadius.circular(5)))),const SizedBox(height:22),Icon(service.icon,color:_teal,size:34),const SizedBox(height:14),
- Text(service.title,style:const TextStyle(color:_ink,fontWeight:FontWeight.w900,fontSize:20)),const SizedBox(height:8),Text(service.subtitle,style:const TextStyle(color:_muted,height:1.8)),
- if(service.estimatedDays!=null||service.basePrice!=null)...[const SizedBox(height:14),if(service.estimatedDays!=null)_ServiceMetaRow(icon:Icons.schedule_outlined,label:'زمان تخمینی انجام',value:'${service.estimatedDays} روز کاری'),if(service.basePrice!=null)_ServiceMetaRow(icon:Icons.payments_outlined,label:'مبلغ پایه ثبت‌شده (واحد نیازمند تأیید)',value:service.basePrice!.toString())],
- if(service.requirements.isNotEmpty)...[const SizedBox(height:16),const Text('مدارک و اطلاعات موردنیاز',style:TextStyle(color:_ink,fontWeight:FontWeight.w800)),const SizedBox(height:6),...service.requirements.map((item)=>Padding(padding:const EdgeInsets.only(bottom:5),child:Row(crossAxisAlignment:CrossAxisAlignment.start,children:[const Text('•  ',style:TextStyle(color:_teal)),Expanded(child:Text(item,style:const TextStyle(color:_muted,height:1.6)))])))],
- const SizedBox(height:20),SizedBox(width:double.infinity,child:FilledButton(onPressed:(){Navigator.pop(sheet);onRequest(service);},child:const Text('درخواست این خدمت'))),const SizedBox(height:8),const Text('برای ثبت درخواست واقعی، ورود و اتصال امن به سامانه لازم است.',textAlign:TextAlign.center,style:TextStyle(color:_muted,fontSize:10)),
- ]))));
+ showModalBottomSheet<void>(
+   context:context,isScrollControlled:true,backgroundColor:Colors.white,
+   shape:const RoundedRectangleBorder(borderRadius:BorderRadius.vertical(top:Radius.circular(24))),
+   builder:(sheet)=>Padding(
+     padding:const EdgeInsets.fromLTRB(22,24,22,32),
+     child:SingleChildScrollView(child:Column(
+       mainAxisSize:MainAxisSize.min,crossAxisAlignment:CrossAxisAlignment.start,
+       children:[
+         Center(child:Container(width:42,height:4,decoration:BoxDecoration(color:const Color(0xFFCBD5E1),borderRadius:BorderRadius.circular(5)))),
+         const SizedBox(height:22),
+         Icon(service.icon,color:_teal,size:34),
+         const SizedBox(height:14),
+         Text(service.title,style:const TextStyle(color:_ink,fontWeight:FontWeight.w900,fontSize:20)),
+         const SizedBox(height:8),
+         Text(service.subtitle,style:const TextStyle(color:_muted,height:1.8)),
+         const SizedBox(height:20),
+         SizedBox(width:double.infinity,child:FilledButton.icon(
+           onPressed:(){Navigator.pop(sheet);onRequest(service);},
+           icon:const Icon(Icons.call_outlined),
+           label:const Text('تماس برای دریافت خدمت'),
+         )),
+         const SizedBox(height:8),
+         const Center(child:Text('۰۹۳۶۵۹۵۲۸۰۰',style:TextStyle(color:_muted,fontSize:12))),
+       ],
+     )),
+   ),
+ );
 }
 
 String errorText(Object? error) => error is KargozarApiException
