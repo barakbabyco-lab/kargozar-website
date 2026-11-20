@@ -24,3 +24,16 @@ class SecureAccessTokenStore implements AccessTokenStore {
   @override
   Future<void> clear() => _storage.delete(key: _key);
 }
+
+
+/// A separate installation-scoped credential for anonymous support chat.
+class SecureGuestSupportTokenStore {
+  SecureGuestSupportTokenStore({FlutterSecureStorage? storage})
+      : _storage = storage ?? const FlutterSecureStorage();
+
+  static const _key = 'kargozar_guest_support_token';
+  final FlutterSecureStorage _storage;
+
+  Future<String?> read() => _storage.read(key: _key);
+  Future<void> write(String token) => _storage.write(key: _key, value: token);
+}
