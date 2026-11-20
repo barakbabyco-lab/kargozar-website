@@ -21,6 +21,7 @@ on:
           - storage
           - logo-export
           - logo-locate
+          - palette-locate
           - cache-clear
           - rollback
         default: health
@@ -111,6 +112,9 @@ jobs:
               ;;
             logo-locate)
               REMOTE_COMMAND='find /var/www /home /srv /opt /var/lib/sftpgo /var/lib -type f -name "Picsart_26-11-20_20-13-50-129.jpg" -print 2>/dev/null | head -20'
+              ;;
+            palette-locate)
+              REMOTE_COMMAND='find /var/www /home /srv /opt /var/lib/sftpgo /var/lib -type f -iname "Sazmani-kargozar*" -print 2>/dev/null | head -20'
               ;;
             logo-export)
               REMOTE_COMMAND='test -s /var/www/html/kargozar-assets/final/Picsart_26-11-20_20-13-50-129.jpg && file /var/www/html/kargozar-assets/final/Picsart_26-11-20_20-13-50-129.jpg && sha256sum /var/www/html/kargozar-assets/final/Picsart_26-11-20_20-13-50-129.jpg /var/www/html/kargozar-assets/Picsart_26-11-20_20-13-50-129.jpg'
