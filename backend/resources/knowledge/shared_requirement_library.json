@@ -2,8 +2,8 @@
   "schema_version": 1,
   "knowledge_key": "shared_requirement_library",
   "title": "کتابخانه الزامات عمومی و اختصاصی خدمات کارگزار",
-  "status": "draft_needs_legal_and_authority_review",
-  "reviewed_at": null,
+  "status": "expanded_draft_needs_primary_source_and_authority_review",
+  "reviewed_at": "2026-11-21",
   "applicability_model": {
     "layers": [
       "national_common",
@@ -102,10 +102,13 @@
     {
       "requirement_key": "trade_law_training",
       "title": "گواهی دوره احکام تجارت و کسب‌وکار",
-      "scope": "guild_license_if_required_by_worksheet",
-      "applicability": "در کاربرگ صنفی مربوط درج شده باشد؛ از جمله در متن منتشرشده راهنمای مجوز برخی واحدهای صنفی",
-      "verification_status": "needs_review",
-      "source_url": "https://hoghogh.ai/circulars/c-e8e5e44a"
+      "scope": "guild_license_applicant_or_director_if_required_by_current_worksheet",
+      "applicability": "دستورالعمل آموزشی ۱۴۰۳/۱۲/۲۰ دوره را پیش‌نیاز صدور و تمدید پروانه کسب تعریف می‌کند؛ برای هر پرونده باید کاربرگ جاری، وضعیت صاحب پروانه/مباشر و اعتبار گواهی قبلی کنترل شود. اعتبار گواهی پنج سال است و تغییر رسته یا جابه‌جایی واحد صنفی به‌تنهایی موجب تکرار دوره نیست.",
+      "verification_status": "needs_primary_source_and_current_worksheet_revalidation",
+      "source_url": "https://hoghogh.ai/circulars/c-b6d872f8",
+      "source_date": "1403-12-20",
+      "verified_at": null,
+      "notes": "حدنصاب نمره‌ای قدیمی را به دستورالعمل جدید تعمیم ندهید. اختلاف ۲۳ ساعت حداقل محاسباتی با اشاره ماده تعرفه به ۲۴ ساعت باید از مرجع مجری استعلام شود."
     }
   ],
   "police_approval": {
@@ -235,5 +238,50 @@
         }
       ]
     }
-  ]
+  ],
+  "guild_license_common_preflight": {
+    "title": "پیش‌بررسی الزامات عمومی متقاضیان پروانه کسب صنفی",
+    "policy": "این فهرست برای طراحی گفت‌وگو و کنترل پرونده است؛ هیچ موردی بدون تطبیق با کاربرگ جاری فعالیت و وضعیت شخص، الزام قطعی برای همه رسته‌ها تلقی نشود.",
+    "candidate_requirements": [
+      {
+        "key": "trade_law_training",
+        "title": "گواهی دوره احکام تجارت و کسب‌وکار",
+        "candidate_scope": "متقاضی/مباشر در پرونده‌های صنفی مشمول",
+        "current_status": "partially_sourced_needs_current_worksheet_validation",
+        "shared_ref": "trade_law_training"
+      },
+      {
+        "key": "tax_file_and_tracking",
+        "title": "تشکیل پرونده مالیاتی و شناسه/کد رهگیری مرتبط",
+        "candidate_scope": "پرونده‌های صنفی طبق قانون و کاربرگ جاری؛ عنوان دقیق شناسه و ترتیب انجام باید احراز شود",
+        "current_status": "needs_official_source_and_worksheet_validation"
+      },
+      {
+        "key": "police_public_places",
+        "title": "تأییدیه پلیس نظارت بر اماکن عمومی",
+        "candidate_scope": "فقط فعالیت‌هایی که کاربرگ جاری یا مرجع صلاحیت‌دار مقرر کند",
+        "current_status": "activity_dependent_needs_worksheet_validation"
+      },
+      {
+        "key": "military_service_status",
+        "title": "وضعیت خدمت وظیفه عمومی یا معافیت",
+        "candidate_scope": "متقاضیان مشمول طبق سن، جنسیت، وضعیت خدمتی، استثناها و کاربرگ جاری؛ نباید به همه اشخاص تعمیم داده شود",
+        "current_status": "applicant_specific_needs_legal_and_worksheet_validation"
+      },
+      {
+        "key": "identity_and_contact",
+        "title": "احراز هویت و اطلاعات تماس متقاضی",
+        "candidate_scope": "متقاضی اصلی/صاحب پروانه و حسب مورد مباشر یا شرکا",
+        "current_status": "needs_worksheet_validation"
+      }
+    ],
+    "customer_intake_questions": [
+      "عنوان دقیق فعالیت و شهر محل صدور مجوز چیست؟",
+      "درخواست صدور اولیه است یا تمدید؟",
+      "متقاضی صاحب پروانه است یا مباشر؟",
+      "سن و وضعیت نظام وظیفه متقاضی چیست؟ (فقط اگر در کاربرگ همان مجوز مؤثر باشد)",
+      "آیا گواهی احکام تجارت قبلی دارد و تاریخ صدور آن چیست؟",
+      "آیا پرونده مالیاتی فعال یا شناسه رهگیری مرتبط دارد؟"
+    ]
+  }
 }
