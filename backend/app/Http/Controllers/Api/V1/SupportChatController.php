@@ -216,13 +216,50 @@ class SupportChatController extends Controller
 
     private function appendAssistantReply(SupportConversation $conversation, string $customerMessage): void
     {
-        $answer = app(SupportAssistant::class)->reply($customerMessage);
+        $lastAssistant = $conversation->messages()
+            ->where('sender_type', 'assistant')
+            ->latest('id')
+            ->first();
+        $mobile = $this->extractIranianMobile($customerMessage);
+
+        if ($mobile !== null && $lastAssistant !== null && str_contains($lastAssistant->body, 'شماره تماس')) {
+            $conversation->update(['contact_mobile' => $mobile]);
+            $answer = 'شماره تماس شما با موفقیت دریافت شد. درخواست پیگیری انسانی در این گفت‌وگو ثبت شد و کارشناس می‌تواند از طریق همین اطلاعات با شما تماس بگیرد.';
+        } else {
+            $answer = app(SupportAssistant::class)->reply($customerMessage);
+        }
+
         $reply = $conversation->messages()->create([
             'sender_type' => 'assistant',
             'sender_id' => null,
             'body' => $answer,
         ]);
         $conversation->update(['last_message_at' => $reply->created_at]);
+    }
+
+    private function extractIranianMobile(string $message): ?string
+    {
+        $digits = strtr($message, [
+            '۰' => '0', '۱' => '1', '۲' => '2', '۳' => '3', '۴' => '4',
+            '۵' => '5', '۶' => '6', '۷' => '7', '۸' => '8', '۹' => '9',
+            '٠' => '0', '١' => '1', '٢' => '2', '٣' => '3', '٤' => '4',
+            '٥' => '5', '٦' => '6', '٧' => '7', '٨' => '8', '٩' => '9',
+        ]);
+
+        if (preg_match('/(?:\\+?98|0098|0)?9\\d{9}/', $digits, $matches) !== 1) {
+            return null;
+        }
+
+        $mobile = preg_replace('/\\D/', '', $matches[0]) ?? '';
+        if (str_starts_with($mobile, '0098')) {
+            $mobile = '0'.substr($mobile, 4);
+        } elseif (str_starts_with($mobile, '98')) {
+            $mobile = '0'.substr($mobile, 2);
+        } elseif (str_starts_with($mobile, '9')) {
+            $mobile = '0'.$mobile;
+        }
+
+        return preg_match('/^09\\d{9}$/', $mobile) === 1 ? $mobile : null;
     }
 
     private function findGuestConversation(Request $request, int $conversationId): ?SupportConversation
