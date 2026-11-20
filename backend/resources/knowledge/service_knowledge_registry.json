@@ -2,7 +2,7 @@
   "schema_version": 1,
   "registry_key": "kargozar_all_ten_service_categories",
   "title": "فهرست مادر بانک دانش ده دسته خدمات کارگزار",
-  "status": "all_ten_categories_registered_partial_source_review_and_live_worksheet_completion_pending",
+  "status": "version_one_service_bank_structured_human_escalation_policy_added_official_source_verification_pending",
   "policy": "برای هر دسته یک پرونده دانشی مستقل و برای هر خدمت یک رکورد مستقل ایجاد شود؛ شروط مشترک از کتابخانه مشترک ارجاع شوند و شروط اختصاصی فقط در دامنه همان خدمت اعمال شوند.",
   "category_count": 10,
   "categories": [
@@ -391,5 +391,17 @@
   "notes": [
     "دفتر ثبت منابع و وضعیت راستی‌آزمایی در source_review_register.json ایجاد شد؛ این دفتر منابع رسمی، منابع ثانویه، وضعیت دسترسی و صف پژوهش بعدی را نگهداری می‌کند.",
     "دسته اول از رکوردهای خالی به ساختار عملیاتی برای سه گروه صنفی، مشاغل خانگی و صنعتی/دستگاهی ارتقا یافت؛ کاربرگ‌های جاری هر فعالیت هنوز باید به‌صورت زنده استخراج شوند."
-  ]
+  ],
+  "version_one_operational_policy": {
+    "status": "approved_for_v1",
+    "answer_scope": "پرسش‌های متداول و اطلاعات پایه هر یک از ۴۶ خدمت ثبت‌شده در ده دسته اصلی",
+    "exceptions": "استثناها و وضعیت‌های خاص در نسخه اول به‌صورت جداگانه پوشش داده نمی‌شوند و به کارشناس انسانی ارجاع می‌شوند.",
+    "unknown_information": "اگر رکورد خدمت، منبع معتبر یا اطلاعات کافی وجود ندارد، پاسخ قطعی داده نشود و تماس کارشناس پیشنهاد شود.",
+    "variable_information": "هزینه، زمان و نتیجه نهایی فقط با منبع معتبر و تاریخ بررسی قابل اعلام است؛ در غیر این صورت ارجاع به کارشناس.",
+    "legal_outcome": "برای مجوزها و تأییدیه‌ها، تصمیم نهایی با مرجع صادرکننده است و کارگزار نتیجه را تضمین نمی‌کند.",
+    "customer_language": "پاسخ کوتاه و محاوره‌ایِ محترمانه؛ عنوان ساده مدارک؛ جزئیات فقط در صورت سؤال مشتری.",
+    "missing_requirement": "از شرح روش‌های اجرایی خودداری شود؛ عبارت اطمینان‌بخش مصوب نمایش داده شود و شماره تماس برای پیگیری انسانی دریافت گردد.",
+    "customer_assurance_policy_file": "customer_guidance_and_service_assurance.json",
+    "launch_readiness_report_file": "launch_readiness_report.json"
+  }
 }
