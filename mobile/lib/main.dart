@@ -379,7 +379,7 @@ class _MainShellState extends State<MainShell> {
           SupportContentPage(onConsultation: _showConsultation, onNavigate: _goToTab),
         ],
       ),
-      Positioned(right: 14, bottom: 8, child: SupportChatLauncher(api: widget.api, signedIn: widget.signedIn, onLogin: widget.onLogin)),
+      Positioned(right: 14, bottom: 8, child: SupportChatLauncher(api: widget.api)),
     ])),
     bottomNavigationBar: NavigationBar(
       height: 76,
@@ -774,8 +774,8 @@ class _ProfileAction extends StatelessWidget {
 }
 
 class SupportChatLauncher extends StatefulWidget {
- const SupportChatLauncher({super.key,required this.api,required this.signedIn,required this.onLogin});
- final KargozarApiClient api; final bool signedIn; final Future<bool> Function() onLogin;
+ const SupportChatLauncher({super.key,required this.api});
+ final KargozarApiClient api;
  @override State<SupportChatLauncher> createState()=>_SupportChatLauncherState();
 }
 class _SupportChatLauncherState extends State<SupportChatLauncher> {
@@ -787,9 +787,7 @@ class _SupportChatLauncherState extends State<SupportChatLauncher> {
  @override void dispose(){_inviteTimer?.cancel();_dismissTimer?.cancel();super.dispose();}
  Future<void> _openChat() async {
    _opened=true;setState(()=>_showInvite=false);
-   var authenticated=widget.signedIn;
-   if(!authenticated)authenticated=await widget.onLogin();
-   if(!mounted||!authenticated)return;
+   if(!mounted)return;
    await showModalBottomSheet<void>(context:context,isScrollControlled:true,backgroundColor:Colors.white,
      shape:const RoundedRectangleBorder(borderRadius:BorderRadius.vertical(top:Radius.circular(20))),
      builder:(ctx)=>SupportChatSheet(api:widget.api));
@@ -822,8 +820,8 @@ class _SupportChatSheetState extends State<SupportChatSheet> {
    setState(()=>_busy=true);_controller.clear();
    try{
      final response=_conversationId==null
-       ? await widget.api.startSupportConversation(body)
-       : await widget.api.sendSupportMessage(_conversationId!,body);
+       ? await widget.api.startGuestSupportConversation(body)
+       : await widget.api.sendGuestSupportMessage(_conversationId!,body);
      final data=response['data'];
      if(_conversationId==null&&data is Map<String,dynamic>){
        _conversationId=(data['id'] as num?)?.toInt();
@@ -843,7 +841,7 @@ class _SupportChatSheetState extends State<SupportChatSheet> {
  Future<void> _refresh() async {
    final id=_conversationId;if(id==null||!mounted)return;
    try{
-     final response=await widget.api.getSupportMessages(id);
+     final response=await widget.api.getGuestSupportMessages(id);
      final data=response['data'];
      if(data is List&&mounted){
        final next=data.whereType<Map>().map((e)=>Map<String,dynamic>.from(e)).toList();
