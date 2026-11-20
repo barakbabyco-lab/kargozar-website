@@ -5,8 +5,8 @@ namespace App\Services\Support;
 class SupportAssistant
 {
     /**
-     * Answer only from reviewed FAQ or structured service records.
-     * Unknown, sensitive or unverified variable questions are routed to a human.
+     * Prefer structured service knowledge and FAQs; search the public web for safe unknowns.
+     * Sensitive or legally consequential questions remain routed to a human.
      */
     public function reply(string $message): string
     {
@@ -92,7 +92,12 @@ class SupportAssistant
      */
     private function currentDateTimeReply(string $text): ?string
     {
-        $dateTimeTerms = ['ساعت', 'تاریخ', 'امروز', 'الان چه روز', 'امروز چندمه', 'چه روزیه', 'time now', 'current date'];
+        $dateTimeTerms = [
+            'ساعت چند', 'ساعت چنده', 'الان ساعت', 'الان چه ساعتی',
+            'تاریخ امروز', 'تاریخ و ساعت', 'امروز چندمه', 'امروز چه روز',
+            'امروز چند شنبه', 'چه روزیه', 'الان چندمه',
+            'time now', 'current date', 'what time is it',
+        ];
         $asksDateTime = false;
         foreach ($dateTimeTerms as $term) {
             if (str_contains($text, $term)) {
@@ -102,7 +107,6 @@ class SupportAssistant
         }
         if (! $asksDateTime) {
             return null;
-        }
         }
 
         $now = now((string) config('support_assistant.timezone', 'Asia/Tehran'));
