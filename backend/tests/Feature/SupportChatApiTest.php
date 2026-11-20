@@ -20,7 +20,9 @@ class SupportChatApiTest extends TestCase
             ->postJson('/api/v1/support-conversations', ['body' => 'برای دریافت جواز کسب راهنمایی می‌خواهم.'])
             ->assertCreated()
             ->assertJsonPath('data.status', 'open')
-            ->assertJsonPath('data.messages.0.sender_type', 'customer');
+            ->assertJsonPath('data.messages.0.sender_type', 'customer')
+            ->assertJsonPath('data.messages.1.sender_type', 'assistant')
+            ->assertJsonPath('data.messages.1.body', fn ($value) => str_contains($value, 'نوع شغل'));
 
         $id = $started->json('data.id');
 
@@ -32,7 +34,7 @@ class SupportChatApiTest extends TestCase
         $this->actingAs($customer, 'sanctum')
             ->getJson('/api/v1/me/support-conversations/'.$id.'/messages')
             ->assertOk()
-            ->assertJsonCount(2, 'data');
+            ->assertJsonCount(4, 'data');
     }
 
     public function test_guest_can_start_and_continue_support_without_customer_login(): void
