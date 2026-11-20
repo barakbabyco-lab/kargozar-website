@@ -135,6 +135,12 @@ class SupportAssistant
 
                 $matchedTokens = array_filter($tokens, fn ($token) => str_contains($text, $token));
                 $score = count($matchedTokens);
+                foreach ($tokens as $index => $token) {
+                    $next = $tokens[$index + 1] ?? null;
+                    if ($next !== null && str_contains($text, $token.' '.$next)) {
+                        $score += 2;
+                    }
+                }
 
                 // A single distinctive service name such as «اینماد» can identify a record.
                 if ($score === 1 && count($tokens) === 1 && mb_strlen($tokens[0], 'UTF-8') >= 4) {
