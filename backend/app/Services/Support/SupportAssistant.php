@@ -13,6 +13,12 @@ class SupportAssistant
     {
         $text = $this->normalize($message);
 
+        foreach (config('support_assistant.missing_requirement_phrases', []) as $phrase) {
+            if ($phrase !== '' && str_contains($text, $this->normalize($phrase))) {
+                return config('support_assistant.missing_requirement_response');
+            }
+        }
+
         foreach (config('support_assistant.escalation_terms', []) as $term) {
             if ($term !== '' && str_contains($text, $this->normalize($term))) {
                 return config('support_assistant.fallback');
