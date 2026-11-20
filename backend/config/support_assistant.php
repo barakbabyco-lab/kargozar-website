@@ -31,6 +31,43 @@ return [
     // This closing is used for ordinary service explanations, not missing-requirement cases.
     'service_assurance_closing' => 'کارگزار می‌تواند در بررسی شرایط، آماده‌سازی پرونده، ثبت درخواست و پیگیری مراحل خدمت همراه شما باشد؛ نتیجه نهایی تابع ضوابط و تصمیم مرجع صادرکننده است.',
 
+
+    // Owner-defined first-pass classifier for guild-license activities.
+    // Multiple specialist groups may match; official activity worksheets override this heuristic.
+    'guild_job_classification' => [
+        'common_preflight' => [
+            'identity_and_contact',
+            'military_service_status',
+            'tax_file_and_tracking',
+            'trade_law_training',
+            'public_places_police_approval',
+            'national_housing_postal_code_registration',
+        ],
+        'groups' => [
+            'food_health_hygiene' => [
+                'title' => 'مشاغل خوراکی، غذایی، بهداشتی و سلامت‌محور',
+                'keywords' => ['رستوران','آشپزخانه','آشپزخانه صنعتی','ساندویچی','فست فود','تهیه غذا','کترینگ','بسته بندی مواد غذایی','بسته بندی غذا','تولید مواد غذایی','فرآوری مواد غذایی','قنادی','شیرینی پزی','نانوایی','قصابی','سوپرمارکت','فروش مواد غذایی','آرایشگاه','پیرایش','سالن زیبایی','خدمات پوست','مواد آرایشی','مواد بهداشتی','بسته بندی آرایشی','تولید شوینده','محصول بهداشتی'],
+                'requirements' => ['health_card','environmental_health_approval'],
+            ],
+            'technical_vocational' => [
+                'title' => 'مشاغل فنی و مهارتی',
+                'keywords' => ['تعمیرات','تعمیرکار','برقکاری','برق کشی','تاسیسات','لوله کشی','جوشکاری','آهنگری','مکانیکی','تعمیر خودرو','تعمیر لوازم','نصب و راه اندازی','سرویس تجهیزات','تراشکاری','ماشینکاری','نجاری فنی','کابینت سازی','جوش و برش','تعمیر موبایل','تعمیرات الکترونیک'],
+                'requirements' => ['vocational_skill_certificate'],
+                'exclude_if_only' => ['تولید هنری','صنایع دستی','نقاشی هنری','آموزش عمومی'],
+            ],
+            'regulated_academic_profession' => [
+                'title' => 'مشاغل تخصصی نیازمند مدرک دانشگاهی مرتبط',
+                'keywords' => ['مهندسی','مهندس','خدمات مهندسی','مشاور مهندسی','نظام مهندسی','طراحی سازه','محاسبات سازه','نظارت ساختمان','معماری','خدمات معماری','کارشناس رسمی'],
+                'requirements' => ['related_academic_degree'],
+                'note' => 'کلیدواژه فقط سرنخ است؛ الزام مدرک دانشگاهی باید برای عنوان دقیق فعالیت احراز شود.',
+            ],
+        ],
+        'default_rule' => 'اگر هیچ گروه تخصصی با فعالیت تطبیق نداشت، فقط چک‌لیست پایه مشترک اعمال شود و مدرک تخصصی به‌صورت پیش‌فرض مطالبه نشود.',
+        'allow_multiple_groups' => true,
+        'require_clarification_when_ambiguous' => true,
+        'official_worksheet_overrides_classifier' => true,
+    ],
+
     'faqs' => [
         [
             'key' => 'greeting',
