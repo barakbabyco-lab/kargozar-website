@@ -74,7 +74,97 @@ class SupportAssistant
             return $answer;
         }
 
+        $dateTimeAnswer = $this->currentDateTimeReply($text);
+        if ($dateTimeAnswer !== null) {
+            return $dateTimeAnswer;
+        }
+
+        $webAnswer = $this->publicWebReply($message);
+        if ($webAnswer !== null) {
+            return $webAnswer;
+        }
+
         return (string) config('support_assistant.fallback');
+    }
+
+    /**
+     * Return the live Tehran date/time on demand, using the Persian calendar.
+     */
+    private function currentDateTimeReply(string $text): ?string
+    {
+        if (preg_match('/\b(ساعت|تاریخ|امروز|الان چه روز|امروز چندمه|چه روزیه|time now|current date)\b/u', $text) !== 1) {
+            return null;
+        }
+
+        $now = now((string) config('support_assistant.timezone', 'Asia/Tehran'));
+        $gy = (int) $now->format('Y');
+        $gm = (int) $now->format('n');
+        $gd = (int) $now->format('j');
+        $gdm = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];
+        $gy2 = $gm > 2 ? $gy + 1 : $gy;
+        $days = 355666 + (365 * $gy) + intdiv($gy2 + 3, 4) - intdiv($gy2 + 99, 100)
+            + intdiv($gy2 + 399, 400) + $gd + $gdm[$gm - 1];
+        $jy = -1595 + (33 * intdiv($days, 12053));
+        $days %= 12053;
+        $jy += 4 * intdiv($days, 1461);
+        $days %= 1461;
+        if ($days > 365) {
+            $jy += intdiv($days - 1, 365);
+            $days = ($days - 1) % 365;
+        }
+        if ($days < 186) {
+            $jm = 1 + intdiv($days, 31);
+            $jd = 1 + ($days % 31);
+        } else {
+            $jm = 7 + intdiv($days - 186, 30);
+            $jd = 1 + (($days - 186) % 30);
+        }
+
+        $months = [1 => 'فروردین', 'اردیبهشت', 'خرداد', 'تیر', 'مرداد', 'شهریور', 'مهر', 'آبان', 'آذر', 'دی', 'بهمن', 'اسفند'];
+        $weekdays = ['یکشنبه', 'دوشنبه', 'سه‌شنبه', 'چهارشنبه', 'پنجشنبه', 'جمعه', 'شنبه'];
+        $date = $weekdays[(int) $now->format('w')].'، '.$jd.' '.$months[$jm].' '.$jy;
+        $time = $now->format('H:i:s');
+        $digits = ['0' => '۰', '1' => '۱', '2' => '۲', '3' => '۳', '4' => '۴', '5' => '۵', '6' => '۶', '7' => '۷', '8' => '۸', '9' => '۹'];
+        $date = strtr($date, $digits);
+        $time = strtr($time, $digits);
+
+        return 'تاریخ و ساعت فعلی تهران: '.$date، ساعت '.$time.' (منطقه زمانی Asia/Tehran).';
+    }
+
+    /**
+     * Use public web search only after the internal service registry and FAQ miss.
+     * Sensitive questions are intercepted earlier and never reach this method.
+     */
+    private function publicWebReply(string $question): ?string
+    {
+        if (! (bool) config('support_assistant.web_search.enabled', true)) {
+            return null;
+        }
+
+        $result = app(WebSearchService::class)->search($question);
+        if (! is_array($result)) {
+            return (string) config('support_assistant.web_search.no_result', '') ?: null;
+        }
+
+        $answer = trim((string) ($result['answer'] ?? ''));
+        if ($answer === '') {
+            $answer = 'چند منبع مرتبط پیدا شد، اما خلاصه قابل اتکایی از آن‌ها به دست نیامد. لینک منابع را برای بررسی بیشتر می‌گذارم.';
+        }
+
+        $response = (string) config('support_assistant.web_search.fallback_intro', '')."\n\n".$answer;
+        $sources = $result['sources'] ?? [];
+        if (is_array($sources) && $sources !== []) {
+            $response .= "\n\nمنابع برای بررسی بیشتر:";
+            foreach ($sources as $index => $source) {
+                $title = trim((string) ($source['title'] ?? 'منبع وب'));
+                $url = trim((string) ($source['url'] ?? ''));
+                if ($url !== '') {
+                    $response .= "\n".($index + 1).'. '.$title.' — '.$url;
+                }
+            }
+        }
+
+        return $response;
     }
 
     /**
