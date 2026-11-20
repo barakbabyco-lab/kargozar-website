@@ -3683,17 +3683,17 @@
     "guild_license_titles_imported": 0,
     "guild_activity_catalog_pending": true,
     "total_unique_activity_records": 91,
-    "note": "۹۱ عنوان کاربرگ/خانواده صنفی (۸۷ کاربرگ پایه و ۴ الحاقی مندرج در متن تجمیعی مصوبه) و ۲۹ عنوان مجوز/فعالیت الحاقی از مصوبات بعدی ثبت شده‌اند. یک مورد تکراری خدمات فنی خودروهای گازسوز حذف شد. این تعداد، تعداد کل عناوین جزئی مجوز نیست. ۲۸۴۰ عنوان مجوز داخل کاربرگ‌های پایه هنوز به‌صورت تک‌تک استخراج نشده‌اند. طبقه‌بندی چهارگانه اولیه است و برای موارد چندوجهی باید با کاربرگ و ISIC تطبیق داده شود. علاوه بر آن، ۲۲ عنوان/کد تاریخی مرتبط با دو خانواده بزرگ خشکشویی و لوازم اداری از راهنمای قدیمی شاپرک (ویرایش ۱۳۹۴) در مخزن جداگانه و با وضعیت unverified ثبت شده‌اند؛ این کدها شناسه مجوز جاری نیستند و فقط برای کشف و تطبیق استفاده می‌شوند.",
+    "note": "۸۷ عنوان کاربرگ پایه مصوبه ۶۷ به‌علاوه ۴ عنوان الحاقی همان متن (در مجموع ۹۱ عنوان خانواده/کاربرگ) و ۳۰ عنوان مجوز یا فعالیت صنفی الحاقی از مصوبات بعدی ثبت شده‌اند. همچنین ۲۲ عنوان/کد تاریخی از راهنمای شاپرک و یک رویداد حذف مجوز ثبت شده است. این ۱۴۴ رکورد، تعداد ۲۸۴۰ عنوان جزئی مجوز داخل کاربرگ‌های پایه را پوشش نمی‌دهد؛ استخراج جزئیات رسمی هنوز در جریان است. نگاشت چهارگانه فعلی اولیه و نیازمند تطبیق با کد ISIC و کاربرگ جاری است.",
     "guild_worksheet_headings_imported": 91,
     "guild_worksheet_heading_source": "مصوبه شصت‌وهفتمین نشست هیأت مقررات‌زدایی؛ فهرست ۸۷ کاربرگ و الحاقات بعدی",
     "official_guild_worksheets_in_base_resolution": 87,
     "official_guild_license_titles_declared_in_base_resolution": 2840,
     "guild_worksheet_heading_records_imported": 91,
     "guild_records_by_category": {
-      "production": 15,
-      "technical_services": 7,
+      "services": 36,
       "distribution_retail": 33,
-      "services": 36
+      "production": 15,
+      "technical_services": 7
     },
     "guild_detail_license_titles_imported": 0,
     "guild_subsequent_official_additions_imported": 30,
@@ -3701,7 +3701,15 @@
     "total_guild_heading_and_amendment_records": 121,
     "legacy_shaparak_crosswalk_records_imported": 22,
     "total_guild_reference_records": 144,
-    "guild_license_status_changes_imported": 1
+    "guild_license_status_changes_imported": 1,
+    "guild_all_official_headings_and_additions_by_category": {
+      "services": 44,
+      "distribution_retail": 44,
+      "production": 20,
+      "technical_services": 13
+    },
+    "detail_extraction_status": "pending_official_portal_worksheet_data",
+    "detail_license_titles_imported": 0
   },
   "subsequent_guild_license_records": [
     {
