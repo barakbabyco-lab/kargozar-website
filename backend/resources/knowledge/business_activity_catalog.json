@@ -3696,11 +3696,11 @@
       "technical_services": 7
     },
     "guild_detail_license_titles_imported": 0,
-    "guild_subsequent_official_additions_imported": 30,
+    "guild_subsequent_official_additions_imported": 31,
     "guild_base_resolution": "مصوبه ۶۷: ۸۷ کاربرگ، شامل ۲۸۴۰ عنوان مجوز",
-    "total_guild_heading_and_amendment_records": 121,
+    "total_guild_heading_and_amendment_records": 122,
     "legacy_shaparak_crosswalk_records_imported": 22,
-    "total_guild_reference_records": 144,
+    "total_guild_reference_records": 145,
     "guild_license_status_changes_imported": 1,
     "guild_all_official_headings_and_additions_by_category": {
       "services": 44,
@@ -4817,6 +4817,41 @@
       "classification_status": "initial_mapping_needs_review",
       "notes": "کاربرگ جدید مصوبه ۹۲ برای سکوی معاملات برخط طلا و نقره؛ جایگزین عنوان قدیمی پروانه کسب سامانه معاملات برخط طلای آب‌شده و مصنوعات طلا و جواهر شده است. با مجوز مصوبه ۹۴ برای خرید و فروش برخط مصنوعات طلا، نقره و جواهر متفاوت است.",
       "contained_license_title_count": 1
+    },
+    {
+      "activity_id": "guild-add-074-16",
+      "official_title": "عمده‌فروشی گازهای طبی",
+      "common_names": [],
+      "search_aliases": [],
+      "parent_activity_id": null,
+      "activity_taxonomy_key": "wholesale_retail",
+      "license_tracks": [
+        "guild"
+      ],
+      "guild_category": "distribution_retail",
+      "official_activity_code": null,
+      "official_license_id": null,
+      "license_title": "عمده‌فروشی گازهای طبی",
+      "issuing_authority": "مرجع صنفی ذی‌ربط؛ باید از کاربرگ جاری درگاه ملی تأیید شود",
+      "license_nature": "unknown",
+      "requirements": [],
+      "documents": [],
+      "premises_requirements": [],
+      "professional_requirements": [],
+      "application_url": "https://mojavez.ir/",
+      "application_route": "درگاه ملی مجوزهای کشور",
+      "fees": null,
+      "issuance_time": null,
+      "kargozar_service_keys": [
+        "guild-business-license"
+      ],
+      "source_key": "resolution_74_guild_amendments",
+      "source_url": "https://hoghogh.ai/circulars/c-1f4aa6f7",
+      "verified_at": "2026-11-21",
+      "verification_status": "needs_review",
+      "record_type": "subsequent_official_guild_license_addition",
+      "classification_status": "initial_mapping_needs_review",
+      "notes": "عنوان در اصلاح راهنمای مجوزهای صنفی مصوبه ۷۴، در کنار خرده‌فروشی گازهای طبی و صنعتی ذکر شده است؛ شرایط و مرجع دقیق باید از کاربرگ رسمی جاری تطبیق شود."
     }
   ],
   "legacy_guild_crosswalk_records": [
