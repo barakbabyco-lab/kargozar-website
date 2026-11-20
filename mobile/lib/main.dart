@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'features/content/service_descriptions.dart';
+import 'features/content/legal_pages.dart';
 import 'core/network/kargozar_api_client.dart';
 import 'features/auth/customer_session.dart';
 import 'features/catalog/service_catalog_repository.dart';
@@ -677,6 +678,24 @@ class ProfilePage extends StatelessWidget {
          _ProfileAction(icon:Icons.support_agent_outlined,title:'تماس و پشتیبانی',onTap:()=>onNavigate(3)),
          const SizedBox(height:7),
          _ProfileAction(icon:Icons.call_outlined,title:'تماس مستقیم با کارگزار',onTap:()=>launchUrl(Uri(scheme:'tel',path:'09365952800'))),
+         const SizedBox(height:7),
+         _ProfileAction(
+           icon:Icons.info_outline_rounded,
+           title:'درباره کارگزار',
+           onTap:()=>Navigator.of(context).push(MaterialPageRoute<void>(builder:(_)=>const KargozarAboutPage())),
+         ),
+         const SizedBox(height:7),
+         _ProfileAction(
+           icon:Icons.policy_outlined,
+           title:'قوانین و شرایط استفاده',
+           onTap:()=>Navigator.of(context).push(MaterialPageRoute<void>(builder:(_)=>const KargozarTermsPage())),
+         ),
+         const SizedBox(height:7),
+         _ProfileAction(
+           icon:Icons.privacy_tip_outlined,
+           title:'سیاست حفظ حریم خصوصی',
+           onTap:()=>Navigator.of(context).push(MaterialPageRoute<void>(builder:(_)=>const KargozarPrivacyPage())),
+         ),
        ],
      ),
    ),
