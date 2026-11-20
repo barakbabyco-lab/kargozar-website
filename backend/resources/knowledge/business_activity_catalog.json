@@ -3659,7 +3659,7 @@
     "guild_license_titles_imported": 0,
     "guild_activity_catalog_pending": true,
     "total_unique_activity_records": 91,
-    "note": "۹۱ عنوان کاربرگ/خانواده صنفی (۸۷ کاربرگ پایه و ۴ الحاقی مندرج در متن تجمیعی مصوبه) و ۲۹ عنوان مجوز/فعالیت الحاقی از مصوبات بعدی ثبت شده‌اند. این تعداد، تعداد کل عناوین جزئی مجوز نیست. ۲۸۴۰ عنوان مجوز داخل کاربرگ‌های پایه هنوز به‌صورت تک‌تک استخراج نشده‌اند. طبقه‌بندی چهارگانه اولیه است و برای موارد چندوجهی باید با کاربرگ و ISIC تطبیق داده شود.",
+    "note": "۹۱ عنوان کاربرگ/خانواده صنفی (۸۷ کاربرگ پایه و ۴ الحاقی مندرج در متن تجمیعی مصوبه) و ۲۹ عنوان مجوز/فعالیت الحاقی از مصوبات بعدی ثبت شده‌اند. یک مورد تکراری خدمات فنی خودروهای گازسوز حذف شد. این تعداد، تعداد کل عناوین جزئی مجوز نیست. ۲۸۴۰ عنوان مجوز داخل کاربرگ‌های پایه هنوز به‌صورت تک‌تک استخراج نشده‌اند. طبقه‌بندی چهارگانه اولیه است و برای موارد چندوجهی باید با کاربرگ و ISIC تطبیق داده شود.",
     "guild_worksheet_headings_imported": 91,
     "guild_worksheet_heading_source": "مصوبه شصت‌وهفتمین نشست هیأت مقررات‌زدایی؛ فهرست ۸۷ کاربرگ و الحاقات بعدی",
     "official_guild_worksheets_in_base_resolution": 87,
@@ -3672,9 +3672,9 @@
       "services": 36
     },
     "guild_detail_license_titles_imported": 0,
-    "guild_subsequent_official_additions_imported": 30,
+    "guild_subsequent_official_additions_imported": 29,
     "guild_base_resolution": "مصوبه ۶۷: ۸۷ کاربرگ، شامل ۲۸۴۰ عنوان مجوز",
-    "total_guild_heading_and_amendment_records": 121
+    "total_guild_heading_and_amendment_records": 120
   },
   "subsequent_guild_license_records": [
     {
@@ -4286,41 +4286,6 @@
       "official_activity_code": null,
       "official_license_id": null,
       "license_title": "خرده‌فروشی گازهای طبی و صنعتی",
-      "issuing_authority": "هیأت عالی نظارت بر سازمان‌های صنفی کشور / اتحادیه یا مرجع صنفی ذی‌ربط؛ مرجع دقیق باید از کاربرگ رسمی استخراج شود",
-      "license_nature": "unknown",
-      "requirements": [],
-      "documents": [],
-      "premises_requirements": [],
-      "professional_requirements": [],
-      "application_url": "https://mojavez.ir/",
-      "application_route": "درگاه ملی مجوزهای کشور",
-      "fees": null,
-      "issuance_time": null,
-      "kargozar_service_keys": [
-        "guild-business-license"
-      ],
-      "source_key": "resolution_74_guild_amendments",
-      "source_url": "https://hoghogh.ai/circulars/c-1f4aa6f7",
-      "verified_at": "2026-11-21",
-      "verification_status": "needs_review",
-      "record_type": "subsequent_official_guild_license_addition",
-      "classification_status": "initial_mapping_needs_review",
-      "notes": "عنوان مجوز از مصوبه بعدی هیأت مقررات‌زدایی استخراج شده است. جزئیات کاربرگ، شناسه یکتا، مرجع دقیق صادرکننده و شرایط جاری باید در درگاه ملی مجوزها تطبیق شود."
-    },
-    {
-      "activity_id": "guild-add-074-15",
-      "official_title": "خدمات فنی خودروهای گازسوز (سه عنوان مجوز)",
-      "common_names": [],
-      "search_aliases": [],
-      "parent_activity_id": null,
-      "activity_taxonomy_key": "professional_technical",
-      "license_tracks": [
-        "guild"
-      ],
-      "guild_category": "technical_services",
-      "official_activity_code": null,
-      "official_license_id": null,
-      "license_title": "خدمات فنی خودروهای گازسوز (سه عنوان مجوز)",
       "issuing_authority": "هیأت عالی نظارت بر سازمان‌های صنفی کشور / اتحادیه یا مرجع صنفی ذی‌ربط؛ مرجع دقیق باید از کاربرگ رسمی استخراج شود",
       "license_nature": "unknown",
       "requirements": [],
