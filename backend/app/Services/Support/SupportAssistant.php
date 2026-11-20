@@ -71,6 +71,56 @@ class SupportAssistant
         return config('support_assistant.fallback');
     }
 
+    /**
+     * Classify a guild activity into one or more specialist requirement groups.
+     * This is a first-pass heuristic; the official worksheet for the exact activity
+     * remains authoritative and can add or override requirements.
+     *
+     * @return array{common_preflight: array, groups: array, requirements: array, needs_clarification: bool, default_only: bool}
+     */
+    public function classifyGuildActivity(string $activity): array
+    {
+        $text = $this->normalize($activity);
+        $rules = config('support_assistant.guild_job_classification', []);
+        $matchedGroups = [];
+        $requirements = [];
+
+        foreach (($rules['groups'] ?? []) as $groupKey => $group) {
+            $matchedKeywords = [];
+            foreach (($group['keywords'] ?? []) as $keyword) {
+                $needle = $this->normalize($keyword);
+                if ($needle !== '' && str_contains($text, $needle)) {
+                    $matchedKeywords[] = $keyword;
+                }
+            }
+
+            if ($matchedKeywords === []) {
+                continue;
+            }
+
+            $matchedGroups[] = [
+                'key' => $groupKey,
+                'title' => $group['title'] ?? $groupKey,
+                'matched_keywords' => $matchedKeywords,
+                'requirements' => $group['requirements'] ?? [],
+            ];
+            foreach (($group['requirements'] ?? []) as $requirement) {
+                if (! in_array($requirement, $requirements, true)) {
+                    $requirements[] = $requirement;
+                }
+            }
+        }
+
+        return [
+            'common_preflight' => $rules['common_preflight'] ?? [],
+            'groups' => $matchedGroups,
+            'requirements' => $requirements,
+            'needs_clarification' => $matchedGroups === [],
+            'default_only' => $matchedGroups === [],
+            'official_worksheet_overrides_classifier' => (bool) ($rules['official_worksheet_overrides_classifier'] ?? true),
+        ];
+    }
+
     private function normalize(string $value): string
     {
         $value = strtr(mb_strtolower($value, 'UTF-8'), [
