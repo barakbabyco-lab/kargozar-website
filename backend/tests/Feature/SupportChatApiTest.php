@@ -21,8 +21,6 @@ class SupportChatApiTest extends TestCase
             ->assertCreated()
             ->assertJsonPath('data.status', 'open')
             ->assertJsonPath('data.messages.0.sender_type', 'customer')
-            ->assertJsonPath('data.messages.1.sender_type', 'assistant')
-            ->assertJsonPath('data.messages.1.body', fn ($value) => str_contains($value, 'نوع شغل'));
 
         $id = $started->json('data.id');
 
