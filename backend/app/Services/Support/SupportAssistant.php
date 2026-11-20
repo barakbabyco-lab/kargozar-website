@@ -8,18 +8,20 @@ class SupportAssistant
      * Prefer structured service knowledge and FAQs; search the public web for safe unknowns.
      * Sensitive or legally consequential questions remain routed to a human.
      */
-    public function reply(string $message): string
+    public function reply(string $message, ?int $conversationId = null): string
     {
         $text = $this->normalize($message);
 
         foreach (config('support_assistant.missing_requirement_phrases', []) as $phrase) {
             if ($phrase !== '' && str_contains($text, $this->normalize($phrase))) {
+                app(UnansweredQuestionTracker::class)->record($message, 'human_escalation', $conversationId);
                 return (string) config('support_assistant.missing_requirement_response', config('support_assistant.fallback'));
             }
         }
 
         foreach (config('support_assistant.escalation_terms', []) as $term) {
             if ($term !== '' && str_contains($text, $this->normalize($term))) {
+                app(UnansweredQuestionTracker::class)->record($message, 'human_escalation', $conversationId);
                 return (string) config('support_assistant.fallback');
             }
         }
@@ -81,9 +83,15 @@ class SupportAssistant
 
         $webAnswer = $this->publicWebReply($message);
         if ($webAnswer !== null) {
+            $noResult = (string) config('support_assistant.web_search.no_result', '');
+            $outcome = $noResult !== '' && str_starts_with($webAnswer, $noResult)
+                ? 'web_no_result'
+                : (str_contains($webAnswer, 'منابع برای بررسی بیشتر:') ? 'web_answered' : 'no_answer');
+            app(UnansweredQuestionTracker::class)->record($message, $outcome, $conversationId);
             return $webAnswer;
         }
 
+        app(UnansweredQuestionTracker::class)->record($message, 'no_answer', $conversationId);
         return (string) config('support_assistant.fallback');
     }
 
