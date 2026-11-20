@@ -3,9 +3,9 @@
   "category_key": "05-banking-services",
   "category_number": 5,
   "title": "خدمات بانکی",
-  "status": "draft_needs_review",
-  "reviewed_at": null,
-  "review_version": 1,
+  "status": "populated_draft_needs_domain_and_source_review",
+  "reviewed_at": "2026-11-21",
+  "review_version": 2,
   "knowledge_mode": "local_with_bank_policy_verification",
   "scope": "راهنمای عمومی و چک‌لیست مدارک داخلی؛ ضوابط احراز هویت، اعتبارسنجی و سیاست هر بانک باید جاری و بانک‌محور بررسی شود.",
   "services": [
@@ -13,73 +13,176 @@
       "service_key": "business-account-opening",
       "title": "افتتاح حساب جاری و حساب تجاری",
       "knowledge_mode": "hybrid",
-      "status": "draft_needs_review",
-      "scope": null,
-      "eligibility": null,
-      "conditions": [],
-      "documents": [],
-      "steps": [],
-      "fees": null,
-      "issuance_time": null,
+      "status": "populated_draft_needs_source_review",
+      "scope": "اشخاص حقیقی دارای فعالیت اقتصادی و اشخاص حقوقی ثبت‌شده یا در شرف تأسیس، طبق مقررات بانک و نوع حساب.",
+      "eligibility": "اشخاص حقیقی دارای فعالیت اقتصادی و اشخاص حقوقی ثبت‌شده یا در شرف تأسیس، طبق مقررات بانک و نوع حساب.",
+      "conditions": [
+        "احراز هویت و شناسایی ذی‌نفع واقعی و صاحبان امضای مجاز",
+        "برای شخص حقوقی، احراز ثبت، شناسه ملی، اساسنامه و حدود اختیار امضاکنندگان",
+        "سیاست اعتباری و الزامات مبارزه با پولشویی بانک اعمال می‌شود",
+        "افتتاح حساب یا اعطای دسته‌چک تابع شرایط و تصمیم بانک است"
+      ],
+      "documents": [
+        "مدارک هویتی متقاضی و نماینده",
+        "برای شخص حقوقی: اساسنامه، آگهی تأسیس و آخرین تغییرات، شناسه ملی و مدارک صاحبان امضای مجاز",
+        "مدارک نشانی و اطلاعات مالیاتی/فعالیت در صورت مطالبه بانک",
+        "معرفی‌نامه یا وکالت‌نامه معتبر در صورت اقدام نماینده"
+      ],
+      "steps": [
+        "تشخیص نوع حساب و بانک هدف",
+        "کنترل وضعیت ثبتی و اختیار امضا",
+        "آماده‌سازی مدارک و فرم‌های KYC",
+        "ثبت درخواست و احراز هویت در بانک",
+        "پیگیری بررسی بانک و تکمیل موارد درخواستی"
+      ],
+      "fees": {
+        "status": "not_published_without_current_provider_or_official_quote",
+        "amount": null
+      },
+      "issuance_time": {
+        "status": "case_and_authority_dependent_not_guaranteed",
+        "estimate": null
+      },
       "issuing_authority": null,
       "official_source": null,
       "source_url": null,
       "source_date": null,
       "verified_at": null,
-      "reviewed_at": null,
-      "verification_status": "unverified",
+      "reviewed_at": "2026-11-21",
+      "verification_status": "draft_needs_primary_source_or_provider_validation",
       "shared_requirement_refs": [],
       "activity_specific_requirements": [],
-      "customer_questions": [],
-      "expert_escalation_rules": []
+      "customer_questions": [
+        "حساب برای شخص حقیقی است یا حقوقی؟",
+        "حساب جاری می‌خواهید یا حساب تجاری/سپرده؟",
+        "کدام بانک مدنظر است؟",
+        "آیا شرکت ثبت شده و صاحبان امضا مشخص‌اند؟"
+      ],
+      "expert_escalation_rules": [
+        "چک برگشتی/محدودیت بانکی، ابهام مالک واقعی، تحریم/ریسک AML، نماینده فاقد اختیار یا رد درخواست"
+      ],
+      "what_is_it": "کمک به انتخاب و پیگیری افتتاح حساب متناسب با ماهیت حقیقی/حقوقی و نوع استفاده؛ حساب تجاری، جاری و حساب دارای دسته‌چک ضوابط یکسانی ندارند.",
+      "deliverables": [
+        "چک‌لیست اختصاصی بانک و نوع حساب",
+        "آماده‌سازی پرونده و پیگیری درخواست"
+      ],
+      "notes": "این محتوای پایه برای گفت‌وگوی تشخیصی و چک‌لیست اجرایی است؛ شروط حقوقی/سامانه‌ای، هزینه و زمان تا اتصال به منبع رسمی یا تأیید متخصص، قطعی اعلام نشود."
     },
     {
       "service_key": "banking-facilities",
       "title": "پیگیری تسهیلات و خدمات بانکی",
       "knowledge_mode": "hybrid",
-      "status": "draft_needs_review",
-      "scope": null,
-      "eligibility": null,
-      "conditions": [],
-      "documents": [],
-      "steps": [],
-      "fees": null,
-      "issuance_time": null,
+      "status": "populated_draft_needs_source_review",
+      "scope": "متقاضی حقیقی یا حقوقی که به دنبال تسهیلات مشخص و واجد شرایط اولیه است.",
+      "eligibility": "متقاضی حقیقی یا حقوقی که به دنبال تسهیلات مشخص و واجد شرایط اولیه است.",
+      "conditions": [
+        "شرایط هر طرح، بانک، منبع اعتبار و دوره زمانی متفاوت است",
+        "اعتبارسنجی، توان بازپرداخت، بدهی‌ها و وثایق بر تصمیم بانک اثر دارد",
+        "هیچ مبلغ یا نرخ یا تضمین تصویب بدون بخشنامه جاری اعلام نمی‌شود"
+      ],
+      "documents": [
+        "مدارک هویتی و ثبتی",
+        "مدارک مالی و گردش حساب و اظهارنامه‌ها حسب نوع تسهیلات",
+        "طرح توجیهی/برنامه مصرف منابع در صورت مطالبه",
+        "مدارک وثیقه و ضامن در صورت مطالبه"
+      ],
+      "steps": [
+        "تعیین هدف و مبلغ تقریبی و توان بازپرداخت",
+        "شناسایی طرح‌های فعال و تطبیق شرایط",
+        "آماده‌سازی پرونده مالی و وثایق",
+        "ثبت درخواست و پیگیری ارزیابی بانک",
+        "پاسخ به نقص‌ها و پیگیری تا تصمیم بانک"
+      ],
+      "fees": {
+        "status": "not_published_without_current_provider_or_official_quote",
+        "amount": null
+      },
+      "issuance_time": {
+        "status": "case_and_authority_dependent_not_guaranteed",
+        "estimate": null
+      },
       "issuing_authority": null,
       "official_source": null,
       "source_url": null,
       "source_date": null,
       "verified_at": null,
-      "reviewed_at": null,
-      "verification_status": "unverified",
+      "reviewed_at": "2026-11-21",
+      "verification_status": "draft_needs_primary_source_or_provider_validation",
       "shared_requirement_refs": [],
       "activity_specific_requirements": [],
-      "customer_questions": [],
-      "expert_escalation_rules": []
+      "customer_questions": [
+        "تسهیلات برای چه هدفی است؟",
+        "مبلغ و بازه بازپرداخت موردنظر چقدر است؟",
+        "متقاضی حقیقی است یا شرکت؟",
+        "وثیقه یا ضامن قابل ارائه دارید؟"
+      ],
+      "expert_escalation_rules": [
+        "درخواست تضمین تصویب، بدهی معوق، وثیقه پیچیده، نیاز به مشاوره سرمایه‌گذاری یا تضمین مالی"
+      ],
+      "what_is_it": "نیازسنجی و پیگیری تسهیلات بانکی یا اعتباری بر اساس هدف، نوع متقاضی، طرح، وثیقه و ضوابط بانک/طرح حمایتی.",
+      "deliverables": [
+        "ارزیابی اولیه تناسب متقاضی و طرح",
+        "چک‌لیست مدارک و پرونده درخواست"
+      ],
+      "notes": "این محتوای پایه برای گفت‌وگوی تشخیصی و چک‌لیست اجرایی است؛ شروط حقوقی/سامانه‌ای، هزینه و زمان تا اتصال به منبع رسمی یا تأیید متخصص، قطعی اعلام نشود."
     },
     {
       "service_key": "bank-guarantees",
       "title": "ضمانت‌نامه و تعهدات بانکی",
       "knowledge_mode": "hybrid",
-      "status": "draft_needs_review",
-      "scope": null,
-      "eligibility": null,
-      "conditions": [],
-      "documents": [],
-      "steps": [],
-      "fees": null,
-      "issuance_time": null,
+      "status": "populated_draft_needs_source_review",
+      "scope": "اشخاص حقیقی/حقوقی واجد شرایط و دارای تعهد مشخص در برابر ذی‌نفع.",
+      "eligibility": "اشخاص حقیقی/حقوقی واجد شرایط و دارای تعهد مشخص در برابر ذی‌نفع.",
+      "conditions": [
+        "نوع ضمانت‌نامه، مبلغ، ذی‌نفع، تاریخ شروع و انقضا و شرایط مطالبه باید دقیق باشد",
+        "بانک اعتبارسنجی و وثایق/سپرده و کارمزد را طبق مقررات خود تعیین می‌کند",
+        "متن ضمانت‌نامه باید با قرارداد پایه و درخواست ذی‌نفع تطبیق داده شود"
+      ],
+      "documents": [
+        "درخواست رسمی و مشخصات متقاضی",
+        "قرارداد/اسناد مناقصه یا تعهد پایه",
+        "مدارک ثبتی و صاحبان امضای مجاز",
+        "مدارک مالی و وثایق مورد مطالبه بانک"
+      ],
+      "steps": [
+        "تشخیص نوع ضمانت‌نامه و متن مورد قبول ذی‌نفع",
+        "بررسی بانک‌های ارائه‌دهنده و شرایط اولیه",
+        "آماده‌سازی مدارک و وثایق",
+        "ثبت درخواست و اعتبارسنجی",
+        "کنترل متن نهایی، مبلغ و تاریخ‌ها و تحویل به ذی‌نفع"
+      ],
+      "fees": {
+        "status": "not_published_without_current_provider_or_official_quote",
+        "amount": null
+      },
+      "issuance_time": {
+        "status": "case_and_authority_dependent_not_guaranteed",
+        "estimate": null
+      },
       "issuing_authority": null,
       "official_source": null,
       "source_url": null,
       "source_date": null,
       "verified_at": null,
-      "reviewed_at": null,
-      "verification_status": "unverified",
+      "reviewed_at": "2026-11-21",
+      "verification_status": "draft_needs_primary_source_or_provider_validation",
       "shared_requirement_refs": [],
       "activity_specific_requirements": [],
-      "customer_questions": [],
-      "expert_escalation_rules": []
+      "customer_questions": [
+        "ضمانت‌نامه برای چه تعهدی است؟",
+        "ذی‌نفع و متن نمونه را دارید؟",
+        "مبلغ و مدت موردنیاز چیست؟",
+        "متقاضی حقیقی است یا حقوقی؟"
+      ],
+      "expert_escalation_rules": [
+        "ضمانت‌نامه عندالمطالبه، متن پرریسک، وثیقه غیرمتعارف یا اختلاف قراردادی"
+      ],
+      "what_is_it": "پیگیری صدور ضمانت‌نامه بانکی برای تعهد مشخص در برابر ذی‌نفع، مانند شرکت در مناقصه، حسن انجام کار یا پیش‌پرداخت، بر اساس متن و ضوابط بانک.",
+      "deliverables": [
+        "چک‌لیست و پرونده درخواست",
+        "بازبینی تطبیق اطلاعات ضمانت‌نامه با اسناد پایه"
+      ],
+      "notes": "این محتوای پایه برای گفت‌وگوی تشخیصی و چک‌لیست اجرایی است؛ شروط حقوقی/سامانه‌ای، هزینه و زمان تا اتصال به منبع رسمی یا تأیید متخصص، قطعی اعلام نشود."
     }
   ],
   "data_quality_rules": [
@@ -96,5 +199,6 @@
       "تغییر هزینه یا زمان",
       "گزارش مغایرت از پرونده واقعی"
     ]
-  }
+  },
+  "content_policy": "هر خدمت تعریف، دامنه، شرایط، مدارک، مراحل، خروجی، پرسش‌های تشخیصی و موارد ارجاع دارد؛ هزینه و زمان تا تأیید روزآمد اعلام قطعی نمی‌شوند."
 }
