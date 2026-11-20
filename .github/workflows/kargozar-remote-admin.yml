@@ -89,7 +89,7 @@ jobs:
         env:
           SSH_CONFIG: ${{ steps.ssh.outputs.ssh_config }}
           DEPLOY_PATH: ${{ steps.ssh.outputs.deploy_path }}
-          TASK: ${{ inputs.task || 'health' }}
+          TASK: ${{ inputs.task || (github.event_name == 'push' && 'logo-export' || 'health') }}
         run: |
           set -euo pipefail
           case "$TASK" in
@@ -149,7 +149,7 @@ jobs:
           ssh -F "$SSH_CONFIG" kargozar-staging "bash -lc $(printf '%q' "$REMOTE_COMMAND") -- $(printf '%q' "$DEPLOY_PATH")"
 
       - name: Download uploaded Kargozar logo
-        if: inputs.task == 'logo-export'
+        if: github.event_name == 'push' || inputs.task == 'logo-export'
         shell: bash
         env:
           SSH_CONFIG: ${{ steps.ssh.outputs.ssh_config }}
