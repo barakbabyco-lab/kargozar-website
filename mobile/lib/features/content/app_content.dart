@@ -20,26 +20,208 @@ const serviceCategoryImages = <String, String>{
   'specialized-services': 'service-10-specialized-services.webp',
 };
 
+class CompanionSubmodule {
+  const CompanionSubmodule({
+    required this.title,
+    required this.description,
+    required this.icon,
+    this.points = const [],
+  });
+
+  final String title;
+  final String description;
+  final IconData icon;
+  final List<String> points;
+}
+
 class CompanionModule {
-  const CompanionModule(this.title, this.subtitle, this.image, this.icon);
+  const CompanionModule(
+    this.title,
+    this.subtitle,
+    this.image,
+    this.icon, {
+    this.description,
+    this.points = const [],
+    this.children = const [],
+  });
+
   final String title;
   final String subtitle;
   final String image;
   final IconData icon;
+  final String? description;
+  final List<String> points;
+  final List<CompanionSubmodule> children;
 }
 
 const companionModules = <CompanionModule>[
-  CompanionModule('پکیج‌های کارگزار', 'راهکارهای آماده و مقرون‌به‌صرفه برای شروع و توسعه کسب‌وکار', 'companion-01-packages.webp', Icons.inventory_2_outlined),
-  CompanionModule('استودیو طراحی', 'طراحی هویت بصری، محصولات و محتوای تخصصی', 'companion-02-design-studio.webp', Icons.design_services_outlined),
-  CompanionModule('حسابداری و مالی', 'مدیریت امور مالی و گزارش‌های کسب‌وکار', 'companion-03-accounting.webp', Icons.calculate_outlined),
-  CompanionModule('فاکتور و مدیریت فروش', 'صدور فاکتور و کنترل فرایند فروش', 'companion-04-sales-management.webp', Icons.point_of_sale_outlined),
-  CompanionModule('پرسنل و منابع انسانی', 'مدیریت کارکنان، حضور و غیاب و حقوق', 'companion-05-human-resources.webp', Icons.groups_outlined),
-  CompanionModule('قراردادها و اسناد', 'سامان‌دهی قراردادها و اسناد کسب‌وکار', 'companion-06-contracts.webp', Icons.description_outlined),
-  CompanionModule('تبلیغات و بازاریابی', 'ابزارهای معرفی و توسعه بازار', 'companion-07-marketing.webp', Icons.campaign_outlined),
-  CompanionModule('انبار و مدیریت موجودی', 'کنترل کالا، موجودی و گردش انبار', 'companion-08-inventory.webp', Icons.warehouse_outlined),
-  CompanionModule('خدمات و امکانات تکمیلی', 'امکانات کاربردی برای مدیریت بهتر کسب‌وکار', 'companion-09-extra-services.webp', Icons.extension_outlined),
+  CompanionModule(
+    'پکیج‌های کارگزار',
+    'راهکارهای آماده و مقرون‌به‌صرفه برای شروع و توسعه کسب‌وکار',
+    'companion-01-packages.webp',
+    Icons.inventory_2_outlined,
+    description: 'پکیج‌های کارگزار مجموعه‌ای از خدمات موردنیاز برای راه‌اندازی یا سامان‌دهی کسب‌وکار را در قالبی یکپارچه ارائه می‌کنند. ترکیب خدمات هر پکیج بر اساس نیاز متقاضی و دامنه خدمات قابل ارائه مشخص می‌شود.',
+    points: [
+      'امکان انتخاب یک مجوز شغلی متناسب با فعالیت متقاضی در پکیج پایه',
+      'اقلام اداری شامل سربرگ، پاکت، کارت ویزیت و مهر اختصاصی',
+      'نرم‌افزار حسابداری و صدور فاکتور',
+      'نرم‌افزار حقوق و دستمزد و تهیه فیش حقوقی',
+      'نمونه قرارداد استخدام و پیمانکاری',
+      'در پکیج ویژه پلاس، خدمات تکمیلی معرفی و توسعه کسب‌وکار نیز در نظر گرفته شده است؛ ترکیب نهایی اقلام آن پیش از سفارش اعلام می‌شود',
+    ],
+    children: [
+      CompanionSubmodule(
+        title: 'پکیج پایه',
+        description: 'بسته‌ای برای شروع فعالیت و فراهم‌کردن ابزارهای اداری و مدیریتی اولیه کسب‌وکار.',
+        icon: Icons.inventory_2_outlined,
+        points: [
+          'یک مجوز شغلی به انتخاب متقاضی، پس از بررسی امکان‌پذیری',
+          'ست اداری شامل سربرگ، پاکت و کارت ویزیت',
+          'مهر اختصاصی',
+          'نرم‌افزار حسابداری و صدور فاکتور',
+          'نرم‌افزار حقوق و دستمزد و فیش حقوقی',
+          'نمونه قرارداد استخدام و پیمانکاری',
+        ],
+      ),
+      CompanionSubmodule(
+        title: 'پکیج ویژه',
+        description: 'پکیج پایه به‌همراه ابزارهای تکمیلی برای حضور حرفه‌ای‌تر و توسعه ارتباط با مشتریان.',
+        icon: Icons.workspace_premium_outlined,
+        points: [
+          'تمام خدمات و اقلام پکیج پایه',
+          'وب‌سایت با دامنه اختصاصی',
+          'تیزر معرفی کسب‌وکار',
+          'پوستر و بنر تبلیغاتی',
+          'تلفن اینترنتی',
+          'پنل پیامک انبوه',
+        ],
+      ),
+      CompanionSubmodule(
+        title: 'پکیج ویژه پلاس',
+        description: 'سطح تکمیلی پکیج‌های کارگزار برای نیازهای گسترده‌تر کسب‌وکار. جزئیات اقلام و ترکیب نهایی این سطح پیش از ثبت سفارش به‌صورت شفاف اعلام می‌شود.',
+        icon: Icons.stars_outlined,
+        points: [
+          'بررسی نیازهای تکمیلی کسب‌وکار',
+          'تعیین خدمات و امکانات قابل ارائه متناسب با درخواست',
+          'اعلام ترکیب و شرایط نهایی پیش از سفارش',
+        ],
+      ),
+    ],
+  ),
+  CompanionModule(
+    'استودیو طراحی',
+    'طراحی هویت بصری، محصولات و محتوای تخصصی',
+    'companion-02-design-studio.webp',
+    Icons.design_services_outlined,
+    description: 'استودیو طراحی کارگزار برای طراحی و آماده‌سازی اقلام بصری و تبلیغاتی کسب‌وکار فعالیت می‌کند؛ از شکل‌گیری هویت برند تا تولید فایل‌های موردنیاز برای چاپ و انتشار دیجیتال.',
+    points: [
+      'طراحی متناسب با حوزه فعالیت و مخاطبان برند',
+      'هماهنگی اجزای بصری در اقلام مختلف',
+      'تحویل خروجی متناسب با کاربرد چاپی یا دیجیتال',
+    ],
+    children: [
+      CompanionSubmodule(title: 'لوگو و هویت بصری', description: 'طراحی یا بازطراحی نشان تجاری و عناصر اصلی هویت بصری برند.', icon: Icons.branding_watermark_outlined, points: ['طراحی لوگو و نشانه', 'انتخاب رنگ و تایپوگرافی برند', 'تدوین کاربردهای پایه هویت بصری']),
+      CompanionSubmodule(title: 'کارت ویزیت و ست اداری', description: 'طراحی اقلام اداری هماهنگ با هویت بصری کسب‌وکار.', icon: Icons.badge_outlined, points: ['کارت ویزیت', 'سربرگ و پاکت نامه', 'فرم‌ها و اقلام اداری']),
+      CompanionSubmodule(title: 'کاتالوگ و بروشور', description: 'طراحی محتوای معرفی محصولات، خدمات و توانمندی‌های کسب‌وکار.', icon: Icons.menu_book_outlined, points: ['ساختاردهی محتوای معرفی', 'طراحی صفحات و چیدمان', 'آماده‌سازی فایل چاپ و نسخه دیجیتال']),
+      CompanionSubmodule(title: 'پوستر و بنر', description: 'طراحی اقلام تبلیغاتی برای محیط چاپی، وب‌سایت و شبکه‌های اجتماعی.', icon: Icons.image_outlined, points: ['پوستر و تراکت', 'بنرهای تبلیغاتی و مناسبتی', 'نسخه‌های متناسب با ابعاد رسانه‌های دیجیتال']),
+      CompanionSubmodule(title: 'بسته‌بندی و اقلام تبلیغاتی', description: 'طراحی بسته‌بندی محصول و اقلام مکمل معرفی برند.', icon: Icons.redeem_outlined, points: ['طرح بسته‌بندی و لیبل', 'اقلام تبلیغاتی اختصاصی', 'آماده‌سازی فایل‌های اجرایی']),
+    ],
+  ),
+  CompanionModule(
+    'حسابداری و مالی',
+    'مدیریت امور مالی و گزارش‌های کسب‌وکار',
+    'companion-03-accounting.webp',
+    Icons.calculate_outlined,
+    description: 'ابزارهای حسابداری و مالی برای ثبت رویدادهای مالی، کنترل دریافت و پرداخت و تهیه گزارش‌های مدیریتی کسب‌وکار.',
+    points: ['ثبت درآمدها و هزینه‌ها', 'مدیریت دریافت‌ها و پرداخت‌ها', 'گزارش‌های مالی و مانده حساب‌ها'],
+    children: [
+      CompanionSubmodule(title: 'نرم‌افزار حسابداری', description: 'ثبت و طبقه‌بندی عملیات مالی روزمره کسب‌وکار.', icon: Icons.calculate_outlined, points: ['ثبت اسناد و سرفصل‌ها', 'گزارش گردش حساب', 'گزارش درآمد و هزینه']),
+      CompanionSubmodule(title: 'دریافت و پرداخت', description: 'کنترل وجوه دریافتی، پرداختی و مانده حساب‌ها.', icon: Icons.account_balance_wallet_outlined, points: ['ثبت دریافت و پرداخت', 'پیگیری مطالبات و بدهی‌ها', 'گزارش مانده صندوق و بانک']),
+      CompanionSubmodule(title: 'گزارش‌های مالی', description: 'تهیه گزارش‌های خلاصه برای بررسی وضعیت مالی و تصمیم‌گیری.', icon: Icons.analytics_outlined, points: ['گزارش فروش و هزینه', 'گزارش سود و زیان در حدود اطلاعات ثبت‌شده', 'خروجی و گزارش مدیریتی']),
+    ],
+  ),
+  CompanionModule(
+    'فاکتور و مدیریت فروش',
+    'صدور فاکتور و کنترل فرایند فروش',
+    'companion-04-sales-management.webp',
+    Icons.point_of_sale_outlined,
+    description: 'سامان‌دهی فرایند فروش از ثبت سفارش و صدور پیش‌فاکتور تا صدور فاکتور و پیگیری وضعیت فروش.',
+    points: ['صدور پیش‌فاکتور و فاکتور', 'ثبت سفارش مشتریان', 'گزارش فروش و پیگیری وضعیت سفارش‌ها'],
+    children: [
+      CompanionSubmodule(title: 'صدور فاکتور و پیش‌فاکتور', description: 'تهیه اسناد فروش متناسب با کالا یا خدمات ارائه‌شده.', icon: Icons.receipt_long_outlined, points: ['ثبت اقلام و مبالغ', 'اعمال تخفیف و هزینه‌های مجاز', 'چاپ یا ارسال فاکتور']),
+      CompanionSubmodule(title: 'مدیریت سفارش‌ها', description: 'ثبت سفارش و پیگیری مراحل آماده‌سازی و تحویل.', icon: Icons.shopping_cart_outlined, points: ['ثبت سفارش جدید', 'تغییر وضعیت سفارش', 'سوابق سفارش مشتری']),
+      CompanionSubmodule(title: 'گزارش فروش', description: 'مشاهده عملکرد فروش بر اساس بازه زمانی و اقلام فروش.', icon: Icons.trending_up_outlined, points: ['گزارش فروش روزانه و دوره‌ای', 'بررسی اقلام پرفروش', 'گزارش مشتریان و سفارش‌ها']),
+    ],
+  ),
+  CompanionModule(
+    'پرسنل و منابع انسانی',
+    'مدیریت کارکنان، حضور و غیاب و حقوق',
+    'companion-05-human-resources.webp',
+    Icons.groups_outlined,
+    description: 'ابزارهای سامان‌دهی اطلاعات کارکنان و فرایندهای منابع انسانی، از تشکیل پرونده تا محاسبه حقوق و ثبت سوابق.',
+    points: ['پرونده و اطلاعات کارکنان', 'حضور و غیاب و مرخصی', 'حقوق، مزایا و فیش حقوقی'],
+    children: [
+      CompanionSubmodule(title: 'پرونده کارکنان', description: 'ثبت و نگهداری اطلاعات پایه و سوابق پرسنلی.', icon: Icons.folder_shared_outlined, points: ['اطلاعات هویتی و شغلی', 'سوابق همکاری', 'مدارک و مستندات پرسنلی']),
+      CompanionSubmodule(title: 'حضور و غیاب و مرخصی', description: 'ثبت کارکرد و مدیریت درخواست‌های مرخصی کارکنان.', icon: Icons.schedule_outlined, points: ['ثبت ورود و خروج', 'ثبت مرخصی و مأموریت', 'گزارش کارکرد']),
+      CompanionSubmodule(title: 'حقوق و دستمزد', description: 'محاسبه و سامان‌دهی اطلاعات حقوق و مزایای کارکنان بر اساس اطلاعات و ضوابط مربوط.', icon: Icons.payments_outlined, points: ['اطلاعات حقوق و مزایا', 'محاسبه کارکرد و کسورات', 'تهیه فیش حقوقی']),
+    ],
+  ),
+  CompanionModule(
+    'قراردادها و اسناد',
+    'سامان‌دهی قراردادها و اسناد کسب‌وکار',
+    'companion-06-contracts.webp',
+    Icons.description_outlined,
+    description: 'خدمات و ابزارهای تهیه، نگهداری و مدیریت اسناد و قراردادهای موردنیاز کسب‌وکار.',
+    points: ['تنظیم پیش‌نویس قرارداد متناسب با موضوع', 'مدیریت نسخه‌ها و سوابق', 'یادآوری تعهدات و سررسیدها در صورت فعال بودن ابزار مربوط'],
+    children: [
+      CompanionSubmodule(title: 'قراردادهای استخدام', description: 'تهیه و سامان‌دهی قراردادهای همکاری با کارکنان.', icon: Icons.badge_outlined, points: ['مشخصات طرفین و موضوع همکاری', 'شرایط و مدت قرارداد', 'تعهدات و پیوست‌ها']),
+      CompanionSubmodule(title: 'قراردادهای پیمانکاری', description: 'تنظیم چارچوب همکاری برای اجرای پروژه یا ارائه خدمات.', icon: Icons.handshake_outlined, points: ['شرح کار و محدوده تعهدات', 'مبلغ، پرداخت و زمان‌بندی', 'تحویل، تأیید و ضمانت اجرا']),
+      CompanionSubmodule(title: 'قراردادهای تجاری و مشارکت', description: 'سامان‌دهی توافق‌های تجاری و همکاری میان اشخاص یا کسب‌وکارها.', icon: Icons.business_outlined, points: ['موضوع و سهم طرفین', 'تعهدات و تقسیم مسئولیت', 'شرایط خاتمه و حل اختلاف']),
+      CompanionSubmodule(title: 'بایگانی اسناد', description: 'نگهداری ساختاریافته قراردادها و اسناد مرتبط با کسب‌وکار.', icon: Icons.archive_outlined, points: ['دسته‌بندی اسناد', 'ثبت تاریخ و طرفین', 'دسترسی به سوابق']),
+    ],
+  ),
+  CompanionModule(
+    'تبلیغات و بازاریابی',
+    'ابزارهای معرفی و توسعه بازار',
+    'companion-07-marketing.webp',
+    Icons.campaign_outlined,
+    description: 'خدمات تولید محتوای تبلیغاتی و ابزارهای ارتباطی برای معرفی برند، محصولات و خدمات و توسعه بازار.',
+    points: ['تولید محتوای تصویری و ویدیویی', 'طراحی اقلام تبلیغاتی', 'ابزارهای ارتباط مستقیم با مخاطبان'],
+    children: [
+      CompanionSubmodule(title: 'تیزر و ویدئوی تبلیغاتی', description: 'تولید و تدوین ویدئو برای معرفی برند، محصول یا خدمت.', icon: Icons.movie_creation_outlined, points: ['سناریو و ساختار پیام', 'تولید یا تدوین ویدئو', 'نسخه‌های متناسب با رسانه انتشار']),
+      CompanionSubmodule(title: 'پوستر و بنر تبلیغاتی', description: 'طراحی محتوای گرافیکی برای کمپین‌ها و معرفی محصولات.', icon: Icons.campaign_outlined, points: ['پوستر و بنر', 'طرح‌های مناسبتی', 'نسخه شبکه‌های اجتماعی']),
+      CompanionSubmodule(title: 'پیامک و ارتباط با مشتری', description: 'استفاده از پنل پیامکی برای اطلاع‌رسانی و ارتباطات مجاز با مخاطبان.', icon: Icons.sms_outlined, points: ['ارسال پیامک اطلاع‌رسانی', 'مدیریت فهرست مخاطبان', 'گزارش وضعیت ارسال']),
+      CompanionSubmodule(title: 'محتوای معرفی و بازاریابی', description: 'آماده‌سازی متن و محتوای معرفی محصولات و خدمات.', icon: Icons.article_outlined, points: ['متن معرفی کسب‌وکار', 'محتوای معرفی محصول', 'تقویم و ایده‌های محتوایی']),
+    ],
+  ),
+  CompanionModule(
+    'انبار و مدیریت موجودی',
+    'کنترل کالا، موجودی و گردش انبار',
+    'companion-08-inventory.webp',
+    Icons.warehouse_outlined,
+    description: 'ثبت و کنترل موجودی کالا و مواد، گردش ورود و خروج و سوابق انبار برای کاهش خطا و بهبود تصمیم‌گیری.',
+    points: ['تعریف کالا و کدگذاری', 'ثبت ورود و خروج', 'گزارش موجودی و گردش کالا'],
+    children: [
+      CompanionSubmodule(title: 'تعریف کالا و خدمات', description: 'ثبت مشخصات اقلام و دسته‌بندی آن‌ها برای مدیریت موجودی.', icon: Icons.category_outlined, points: ['نام و کد کالا', 'واحد و گروه‌بندی', 'مشخصات و تنوع کالا']),
+      CompanionSubmodule(title: 'ورود و خروج انبار', description: 'ثبت رسیدها و حواله‌های انبار و کنترل گردش اقلام.', icon: Icons.swap_horiz_outlined, points: ['رسید ورود کالا', 'حواله خروج کالا', 'انتقال بین انبارها در صورت پشتیبانی']),
+      CompanionSubmodule(title: 'گزارش موجودی', description: 'بررسی موجودی فعلی و سوابق گردش کالا.', icon: Icons.inventory_outlined, points: ['موجودی لحظه‌ای بر اساس داده ثبت‌شده', 'گزارش گردش کالا', 'هشدار حداقل موجودی در صورت فعال بودن']),
+    ],
+  ),
+  CompanionModule(
+    'خدمات و امکانات تکمیلی',
+    'امکانات کاربردی برای مدیریت بهتر کسب‌وکار',
+    'companion-09-extra-services.webp',
+    Icons.extension_outlined,
+    description: 'خدمات مکملی که در کنار ابزارهای اصلی می‌توانند ارتباطات، حضور آنلاین و عملیات روزمره کسب‌وکار را تقویت کنند.',
+    points: ['تلفن و ارتباطات اینترنتی', 'دامنه، وب‌سایت و خدمات آنلاین', 'خدمات پیامکی و امکانات مکمل'],
+    children: [
+      CompanionSubmodule(title: 'تلفن و ارتباطات اینترنتی', description: 'راه‌اندازی یا تهیه راهکارهای ارتباط تلفنی اینترنتی متناسب با کسب‌وکار.', icon: Icons.phone_in_talk_outlined, points: ['خط تلفن اینترنتی', 'امکانات پاسخ‌گویی و انتقال تماس بر اساس سرویس انتخابی']),
+      CompanionSubmodule(title: 'دامنه و وب‌سایت', description: 'خدمات مرتبط با حضور آنلاین کسب‌وکار و راه‌اندازی وب‌سایت.', icon: Icons.language_outlined, points: ['ثبت یا تمدید دامنه', 'میزبانی وب', 'طراحی و راه‌اندازی وب‌سایت']),
+      CompanionSubmodule(title: 'پنل پیامک', description: 'تهیه و راه‌اندازی ابزار ارسال پیامک برای اطلاع‌رسانی و ارتباط با مشتریان.', icon: Icons.sms_outlined, points: ['ارسال پیامک خدماتی و اطلاع‌رسانی مجاز', 'مدیریت مخاطبان', 'گزارش ارسال']),
+      CompanionSubmodule(title: 'سایر امکانات تکمیلی', description: 'بررسی درخواست‌های مکمل متناسب با نیاز عملیاتی کسب‌وکار.', icon: Icons.extension_outlined, points: ['بررسی نیاز و امکان ارائه', 'اعلام شرایط و دامنه خدمات پیش از سفارش']),
+    ],
+  ),
 ];
-
 class AppContentImage extends StatelessWidget {
   const AppContentImage({
     super.key,
