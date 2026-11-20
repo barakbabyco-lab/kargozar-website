@@ -107,6 +107,136 @@ class SupportChatController extends Controller
         return response()->json(['data' => $this->messagePayload($message)], 201);
     }
 
+    /**
+     * Start or continue an anonymous support conversation using an installation
+     * secret. Only its SHA-256 digest is persisted; the raw secret stays on-device.
+     */
+    public function guestStart(Request $request): JsonResponse
+    {
+        $token = $this->guestToken($request);
+        if ($token === null) {
+            return $this->guestUnauthorized();
+        }
+
+        $validator = Validator::make($request->all(), [
+            'body' => ['required', 'string', 'min:1', 'max:2000'],
+        ]);
+        if ($validator->fails()) {
+            return $this->validationError($validator->errors()->toArray());
+        }
+
+        $tokenHash = hash('sha256', $token);
+        $conversation = DB::transaction(function () use ($tokenHash, $validator) {
+            $conversation = SupportConversation::query()
+                ->whereNull('customer_id')
+                ->where('guest_token_hash', $tokenHash)
+                ->where('status', 'open')
+                ->latest('last_message_at')
+                ->lockForUpdate()
+                ->first();
+
+            if (! $conversation) {
+                $conversation = SupportConversation::create([
+                    'customer_id' => null,
+                    'guest_token_hash' => $tokenHash,
+                    'status' => 'open',
+                ]);
+            }
+
+            $message = $conversation->messages()->create([
+                'sender_type' => 'customer',
+                'sender_id' => null,
+                'body' => trim($validator->validated()['body']),
+            ]);
+            $conversation->update(['last_message_at' => $message->created_at]);
+
+            return $conversation->load('messages');
+        });
+
+        return response()->json(['data' => [
+            'id' => $conversation->id,
+            'status' => $conversation->status,
+            'guest' => true,
+            'last_message_at' => $conversation->last_message_at,
+            'messages' => $conversation->messages->map(fn ($message) => $this->messagePayload($message)),
+        ]], 201);
+    }
+
+    public function guestMessages(Request $request, int $conversationId): JsonResponse
+    {
+        $conversation = $this->findGuestConversation($request, $conversationId);
+        if (! $conversation) {
+            return $this->guestUnauthorized();
+        }
+
+        $messages = $conversation->messages()->orderBy('id')->get();
+        $conversation->messages()
+            ->where('sender_type', 'staff')
+            ->whereNull('read_at')
+            ->update(['read_at' => now()]);
+
+        return response()->json(['data' => $messages->map(fn ($message) => $this->messagePayload($message))]);
+    }
+
+    public function guestSend(Request $request, int $conversationId): JsonResponse
+    {
+        $conversation = $this->findGuestConversation($request, $conversationId);
+        if (! $conversation) {
+            return $this->guestUnauthorized();
+        }
+        if ($conversation->status !== 'open') {
+            return response()->json(['error' => ['code' => 'CONVERSATION_CLOSED', 'message' => 'این گفت‌وگو بسته شده است.']], 409);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'body' => ['required', 'string', 'min:1', 'max:2000'],
+        ]);
+        if ($validator->fails()) {
+            return $this->validationError($validator->errors()->toArray());
+        }
+
+        $message = DB::transaction(function () use ($conversation, $validator) {
+            $message = $conversation->messages()->create([
+                'sender_type' => 'customer',
+                'sender_id' => null,
+                'body' => trim($validator->validated()['body']),
+            ]);
+            $conversation->update(['last_message_at' => $message->created_at]);
+            return $message;
+        });
+
+        return response()->json(['data' => $this->messagePayload($message)], 201);
+    }
+
+    private function findGuestConversation(Request $request, int $conversationId): ?SupportConversation
+    {
+        $token = $this->guestToken($request);
+        if ($token === null) {
+            return null;
+        }
+
+        return SupportConversation::query()
+            ->whereNull('customer_id')
+            ->where('guest_token_hash', hash('sha256', $token))
+            ->find($conversationId);
+    }
+
+    private function guestToken(Request $request): ?string
+    {
+        $token = $request->header('X-Support-Guest-Token');
+        return is_string($token) && preg_match('/^[a-f0-9]{64}$/', $token) === 1
+            ? $token
+            : null;
+    }
+
+    private function guestUnauthorized(): JsonResponse
+    {
+        return response()->json(['error' => [
+            'code' => 'INVALID_GUEST_TOKEN',
+            'message' => 'شناسه امن گفت‌وگو معتبر نیست. لطفاً گفت‌وگوی جدیدی آغاز کنید.',
+        ]], 401);
+    }
+
     public function staffIndex(Request $request): JsonResponse
     {
         $query = SupportConversation::query()->with('customer')->withCount('messages')->latest('last_message_at');
