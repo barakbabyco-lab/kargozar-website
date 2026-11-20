@@ -1,0 +1,150 @@
+{
+  "schema_version": 1,
+  "catalog_key": "iran_business_activities_and_licenses",
+  "title": "بانک جامع فعالیت‌ها، مشاغل و مجوزهای کسب‌وکار ایران",
+  "purpose": "مرجع ساختاریافته برای پاسخ‌گویی دستیار هوشمند کارگزار و انتخاب فعالیت در فرایندهای بعدی اپلیکیشن",
+  "locale": "fa-IR",
+  "country": "IR",
+  "status": "taxonomy_seed_pending_official_import",
+  "data_policy": {
+    "official_source_first": true,
+    "never_infer_license_requirements": true,
+    "keep_home_and_guild_license_tracks_separate": true,
+    "allow_multiple_license_paths_per_activity": true,
+    "preserve_official_titles_and_identifiers": true,
+    "store_aliases_separately_from_official_titles": true,
+    "record_source_and_verification_date_for_each_record": true,
+    "mark_unverified_records_as_unverified": true
+  },
+  "source_registry": [
+    {
+      "source_key": "iran_national_license_portal",
+      "name": "درگاه ملی مجوزهای کشور",
+      "url": "https://mojavez.ir/",
+      "authority": "مرجع رسمی جست‌وجو و راهنمای مجوزهای کسب‌وکار",
+      "intended_data": ["official_license_title", "license_identifier", "requirements", "documents", "fees", "issuance_time", "issuing_authority", "application_route"],
+      "priority": 1
+    },
+    {
+      "source_key": "iran_isic_classification",
+      "name": "طبقه‌بندی فعالیت‌های اقتصادی ISIC",
+      "url": null,
+      "authority": "طبقه‌بندی مرجع فعالیت‌های اقتصادی؛ نسخه و مرجع ملی باید هنگام ورود داده مشخص شود",
+      "intended_data": ["economic_activity_code", "activity_title", "parent_activity_code"],
+      "priority": 2
+    },
+    {
+      "source_key": "home_business_authorities",
+      "name": "مراجع تخصصی مجوز مشاغل خانگی",
+      "url": null,
+      "authority": "وزارت تعاون، کار و رفاه اجتماعی و دستگاه تخصصی ذی‌ربط",
+      "intended_data": ["home_business_title", "home_license_type", "conditions", "documents", "supervising_authority"],
+      "priority": 3
+    },
+    {
+      "source_key": "guild_and_chamber_authorities",
+      "name": "مراجع صنفی و اتحادیه‌های ذی‌ربط",
+      "url": null,
+      "authority": "اتحادیه‌ها، اتاق‌های اصناف و مراجع قانونی صادرکننده",
+      "intended_data": ["guild_activity_title", "guild_rasteh_code", "guild_category", "issuing_authority"],
+      "priority": 4
+    }
+  ],
+  "license_tracks": [
+    {
+      "key": "guild",
+      "title": "مجوز صنفی",
+      "description": "فعالیت‌هایی که مسیر مجوز صنفی و رسته مربوط به آن‌ها باید از مرجع رسمی بررسی شود.",
+      "subcategories": [
+        {"key": "production", "title": "تولیدی"},
+        {"key": "technical_services", "title": "خدمات فنی"},
+        {"key": "distribution_retail", "title": "توزیعی و فروشگاهی"},
+        {"key": "services", "title": "خدماتی"}
+      ]
+    },
+    {
+      "key": "home_business",
+      "title": "مجوز مشاغل خانگی",
+      "description": "فعالیت‌های قابل انجام در محیط مسکونی؛ نوع مجوز، ثبت‌محور یا تأییدمحور بودن و مرجع تخصصی باید برای هر عنوان جداگانه ثبت شود.",
+      "subcategories": []
+    },
+    {
+      "key": "industrial",
+      "title": "مجوز فعالیت صنعتی",
+      "description": "فعالیت‌های تولید صنعتی و واحدهای صنعتی؛ مرجع، نوع مجوز و الزامات وابسته به فعالیت و محل است.",
+      "subcategories": []
+    },
+    {
+      "key": "other_device",
+      "title": "مجوزهای دستگاهی و تخصصی",
+      "description": "مجوزهایی که مرجع صادرکننده آن‌ها دستگاه اجرایی یا نهاد تخصصی است.",
+      "subcategories": []
+    }
+  ],
+  "activity_taxonomy": [
+    {"key": "agriculture_natural_resources", "title": "کشاورزی، دامپروری، شیلات و منابع طبیعی"},
+    {"key": "mining", "title": "معدن و صنایع معدنی"},
+    {"key": "industrial_manufacturing", "title": "تولید و ساخت صنعتی"},
+    {"key": "utilities_energy", "title": "انرژی، آب، برق، گاز و خدمات زیربنایی"},
+    {"key": "construction_installation", "title": "ساختمان، عمران، تأسیسات و تعمیرات"},
+    {"key": "wholesale_retail", "title": "عمده‌فروشی، خرده‌فروشی و توزیع"},
+    {"key": "transport_logistics", "title": "حمل‌ونقل، انبارداری و لجستیک"},
+    {"key": "food_hospitality", "title": "مواد غذایی، رستوران، پذیرایی و اقامت"},
+    {"key": "health_personal_care", "title": "سلامت، بهداشت و مراقبت شخصی"},
+    {"key": "professional_technical", "title": "خدمات علمی، فنی، مهندسی و حرفه‌ای"},
+    {"key": "administrative_support", "title": "خدمات اداری، پشتیبانی و کسب‌وکار"},
+    {"key": "education_training", "title": "آموزش، مهارت‌آموزی و پژوهش"},
+    {"key": "information_communications", "title": "فناوری اطلاعات، ارتباطات و خدمات دیجیتال"},
+    {"key": "finance_insurance", "title": "مالی، حسابداری، بانکی و بیمه"},
+    {"key": "real_estate", "title": "املاک، مستغلات و خدمات ملکی"},
+    {"key": "arts_culture_media", "title": "فرهنگ، هنر، رسانه و صنایع خلاق"},
+    {"key": "textile_apparel_handicrafts", "title": "نساجی، پوشاک، طراحی و صنایع‌دستی"},
+    {"key": "other_activities", "title": "سایر فعالیت‌ها"}
+  ],
+  "activity_record_schema": {
+    "activity_id": "شناسه داخلی پایدار",
+    "official_title": "عنوان رسمی فعالیت یا رسته",
+    "common_names": ["نام رایج یا مترادف"],
+    "search_aliases": ["عبارت‌های جست‌وجو و شکل‌های گفتاری"],
+    "parent_activity_id": "شناسه فعالیت والد؛ در صورت وجود",
+    "activity_taxonomy_key": "یکی از کلیدهای activity_taxonomy",
+    "license_tracks": ["guild | home_business | industrial | other_device"],
+    "official_activity_code": "کد رسمی فعالیت، در صورت وجود",
+    "official_license_id": "شناسه رسمی مجوز، در صورت وجود",
+    "license_title": "عنوان رسمی مجوز",
+    "issuing_authority": "مرجع صادرکننده یا ناظر",
+    "license_nature": "registration_based | approval_based | unknown",
+    "requirements": ["شرایط رسمی احراز"],
+    "documents": ["مدارک رسمی موردنیاز"],
+    "premises_requirements": ["شرایط محل فعالیت"],
+    "professional_requirements": ["شرایط مهارتی یا تخصصی"],
+    "application_url": "نشانی صفحه رسمی راهنمای همان مجوز",
+    "application_route": "درگاه ملی یا درگاه تخصصی مرتبط",
+    "fees": "هزینه رسمی یا null تا زمان تأیید",
+    "issuance_time": "زمان رسمی یا null تا زمان تأیید",
+    "kargozar_service_keys": ["کلید خدمت مرتبط در کارگزار"],
+    "source_key": "کلید منبع در source_registry",
+    "source_url": "نشانی دقیق صفحه یا سند منبع",
+    "verified_at": "تاریخ آخرین راستی‌آزمایی به صورت ISO-8601",
+    "verification_status": "verified | needs_review | unverified",
+    "notes": "یادداشت تکمیلی"
+  },
+  "initial_records": [],
+  "import_plan": [
+    "استخراج عناوین و کاربرگ‌های رسمی مجوزهای صنفی از درگاه ملی مجوزها",
+    "استخراج عناوین و کاربرگ‌های رسمی مشاغل خانگی از درگاه ملی و مراجع تخصصی",
+    "استخراج فعالیت‌ها و مجوزهای صنعتی و دستگاهی از مراجع رسمی مربوط",
+    "نگاشت هر عنوان به طبقه‌بندی فعالیت و دسته‌بندی خدمات کارگزار",
+    "افزودن مترادف‌ها و عبارت‌های محاوره‌ای بدون جایگزین‌کردن عنوان رسمی",
+    "ثبت شرایط، مدارک، هزینه و زمان فقط با منبع رسمی و تاریخ راستی‌آزمایی",
+    "تشخیص موارد تکراری، چندمجوزی و فعالیت‌هایی که بسته به محل یا شیوه اجرا مسیر متفاوت دارند"
+  ],
+  "assistant_rules": [
+    "ابتدا نوع محل فعالیت را روشن کن: خانگی، واحد صنفی، کارگاه یا واحد صنعتی، یا سایر محل‌ها.",
+    "برای فعالیت‌های صنفی، رسته و زیرگروه صنفی را جداگانه تشخیص بده.",
+    "برای فعالیت خانگی، عنوان دقیق رشته مشاغل خانگی را مستقل جست‌وجو کن و آن را خودکار معادل جواز صنفی ندان.",
+    "اگر یک فعالیت چند مسیر مجوز دارد، پیش از راهنمایی نهایی درباره محصول یا خدمت، محل، مقیاس و شیوه ارائه سؤال تکمیلی بپرس.",
+    "در نبود منبع معتبر یا اطلاعات به‌روز، شرایط، مدارک، هزینه یا زمان را حدس نزن و درخواست بررسی کارشناس ثبت کن.",
+    "نام‌های رایج فقط برای یافتن عنوان رسمی استفاده شوند؛ پاسخ نهایی باید عنوان رسمی و مرجع مربوط را نیز نشان دهد."
+  ]
+}
