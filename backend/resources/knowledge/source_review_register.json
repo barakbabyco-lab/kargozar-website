@@ -1,0 +1,213 @@
+{
+  "schema_version": 1,
+  "register_key": "kargozar_official_source_review_register",
+  "title": "دفتر ثبت منابع و وضعیت راستی‌آزمایی بانک دانش کارگزار",
+  "reviewed_at": "2026-11-21",
+  "status": "active_research_register_partial_not_all_services_verified",
+  "policy": [
+    "منبع رسمی و کاربرگ جاری بر هر منبع ثانویه یا راهنمای قدیمی اولویت دارد.",
+    "وجود URL یا یافتن متن بازنشرشده به‌تنهایی به معنی راستی‌آزمایی کامل محتوای جاری نیست.",
+    "هزینه، مهلت، مدت اعتبار و جزئیات سامانه‌ای باید در زمان استفاده دوباره بررسی و تاریخ‌گذاری شوند.",
+    "هیچ پیش‌نیاز اختصاصی نباید به همه فعالیت‌ها تعمیم داده شود.",
+    "در صورت عدم دسترسی به منبع رسمی، وضعیت needs_review ثبت شود و پاسخ قطعی تولید نشود."
+  ],
+  "sources": [
+    {
+      "key": "national_business_licenses",
+      "category": 1,
+      "title": "درگاه ملی مجوزهای کشور",
+      "authority": "درگاه ملی مجوزهای کشور / هیأت مقررات‌زدایی و دستگاه صادرکننده",
+      "url": "https://mojavez.ir/",
+      "source_type": "official_live_registry",
+      "status": "official_portal_identified_live_access_timed_out_current_worksheets_not_retrieved",
+      "use": "عنوان مجوز، کاربرگ، شرایط، مدارک، پیش‌نیاز، هزینه و زمان هر فعالیت"
+    },
+    {
+      "key": "company_registry",
+      "category": 2,
+      "title": "درگاه یکپارچه خدمات الکترونیکی سازمان ثبت اسناد و املاک کشور",
+      "authority": "سازمان ثبت اسناد و املاک کشور",
+      "url": "https://my.ssaa.ir/portal/company",
+      "source_type": "official_service_portal",
+      "status": "portal_route_identified_via_help_document_live_access_unavailable",
+      "use": "ثبت تأسیس، تغییرات، رهگیری و انحلال؛ فرم‌ها باید در زمان اقدام بررسی شوند"
+    },
+    {
+      "key": "industrial_property_law",
+      "category": 3,
+      "title": "قانون حمایت از مالکیت صنعتی ۲۰۲۴",
+      "authority": "مجلس شورای اسلامی / سازمان ثبت اسناد و املاک کشور",
+      "url": "https://www.wipo.int/wipolex/en/legislation/details/23341",
+      "source_type": "WIPO official legal catalogue referencing Iranian law text",
+      "status": "law_catalog_verified_implementation_and_live_procedure_review_required",
+      "source_date": "2024-06-12",
+      "use": "علامت تجاری، طرح صنعتی، اختراع، نام تجاری و حقوق مرتبط"
+    },
+    {
+      "key": "standard_procedure",
+      "category": 4,
+      "title": "پورتال سازمان ملی استاندارد ایران",
+      "authority": "سازمان ملی استاندارد ایران",
+      "url": "https://www.inso.gov.ir/",
+      "source_type": "official_portal",
+      "status": "official_portal_opened_and_quality_assessment_links_verified",
+      "use": "دستورالعمل‌ها، فهرست استانداردهای اجباری، خدمات ارزیابی کیفیت و پروانه کاربرد علامت استاندارد"
+    },
+    {
+      "key": "standard_procedure_copy",
+      "category": 4,
+      "title": "روش اجرایی فرایند گواهی کردن پروانه کاربرد علامت استاندارد",
+      "authority": "سازمان ملی استاندارد ایران",
+      "url": "https://hoghogh.ai/circulars/c-08aa67bd",
+      "source_type": "secondary_republication_of_procedure",
+      "status": "procedure_text_found_latest_revision_must_be_compared_with_official_portal",
+      "source_date": "1404-10-01",
+      "use": "فرایند صدور، اصلاح، تجدید، تعلیق و ابطال پروانه استاندارد"
+    },
+    {
+      "key": "banking_current_account",
+      "category": 5,
+      "title": "دستورالعمل حساب جاری ۱۴۰۴",
+      "authority": "هیأت عالی بانک مرکزی جمهوری اسلامی ایران",
+      "url": "https://hoghogh.ai/circulars/c-cb6aea0a",
+      "source_type": "secondary_republication_of_central_bank_circular",
+      "status": "text_found_primary_cbi_circular_retrieval_required",
+      "source_date": "1404-07-06",
+      "use": "افتتاح حساب جاری و شرایط شخص حقیقی/حقوقی؛ دسته‌چک جداگانه بررسی شود"
+    },
+    {
+      "key": "labor_law",
+      "category": 6,
+      "title": "قانون کار جمهوری اسلامی ایران",
+      "authority": "مجلس شورای اسلامی / وزارت تعاون، کار و رفاه اجتماعی",
+      "url": "https://irandataportal.syr.edu/labor-law",
+      "source_type": "academic_law_text_mirror",
+      "status": "relevant_articles_found_official_gazette_and_amendments_revalidation_required",
+      "use": "قرارداد کار، مواد ۷، ۸ و ۱۰ و حقوق آمره کارگر"
+    },
+    {
+      "key": "enamad",
+      "category": 7,
+      "title": "سامانه نماد اعتماد الکترونیکی",
+      "authority": "مرکز توسعه تجارت الکترونیکی وزارت صمت",
+      "url": "https://enamad.ir/",
+      "source_type": "official_service_portal",
+      "status": "official_portal_identified_live_access_timed_out",
+      "use": "اعطا، تمدید، شکایت، نظارت و احراز کسب‌وکار اینترنتی"
+    },
+    {
+      "key": "enamad_directive",
+      "category": 7,
+      "title": "دستورالعمل اعطای نماد اعتماد الکترونیکی و نظارت بر فعالیت کسب‌وکارهای اینترنتی",
+      "authority": "مرکز توسعه تجارت الکترونیکی",
+      "url": "https://hoghogh.ai/case-law/تخصصی-صنایع-و-بازرگانی-دستورالعمل-اعطای-نماد-الکترونیکی-و-نظارت-بر-140531390000563943",
+      "source_type": "directive_republication_in_judicial_decision",
+      "status": "text_found_current_amendments_and_live_flow_review_required",
+      "source_date": "1400-12",
+      "use": "چارچوب نماد اعتماد و پیوند آن با ابزار پذیرش مجازی"
+    },
+    {
+      "key": "tax_portal",
+      "category": 7,
+      "title": "درگاه ملی خدمات الکترونیک سازمان امور مالیاتی",
+      "authority": "سازمان امور مالیاتی کشور",
+      "url": "https://my.tax.gov.ir/",
+      "source_type": "official_service_portal",
+      "status": "portal_identified_live_access_timed_out",
+      "use": "پرونده‌های مالیاتی، درخواست‌ها و خدمات الکترونیک؛ جزئیات از منوی جاری سامانه"
+    },
+    {
+      "key": "lease_system",
+      "category": 8,
+      "title": "سامانه خودنویس",
+      "authority": "وزارت راه و شهرسازی",
+      "url": "https://khodnevis.mrud.ir/",
+      "source_type": "official_service_portal",
+      "status": "official_portal_identified_live_access_timed_out",
+      "use": "ثبت قراردادهای اجاره و شناسه رهگیری در مسیر مجاز جاری"
+    },
+    {
+      "key": "lease_legal_guidance",
+      "category": 8,
+      "title": "نظریه مشورتی ۷/۱۴۰۴/۲۰۷ درباره خودنویس و کاتب",
+      "authority": "اداره کل حقوقی قوه قضاییه",
+      "url": "https://hoghogh.ai/advisory-opinions/a-fec71d32",
+      "source_type": "secondary_republication_of_advisory_opinion",
+      "status": "recent_guidance_found_official_original_retrieval_required",
+      "source_date": "1404-08-28",
+      "use": "تفسیر مسیر ثبت قرارداد اجاره و شناسه رهگیری"
+    },
+    {
+      "key": "business_development_vendor_evidence",
+      "category": 9,
+      "title": "مدارک رسمی عرضه‌کنندگان نرم‌افزار و سرویس‌دهندگان",
+      "authority": "عرضه‌کننده محصول و مراجع تنظیم‌گر حسب موضوع",
+      "url": null,
+      "source_type": "vendor_specific_evidence",
+      "status": "vendor_by_vendor_research_required",
+      "use": "قابلیت، نسخه، امنیت، پشتیبانی، مالکیت داده، سازگاری مالیاتی و قیمت تاریخ‌دار"
+    },
+    {
+      "key": "specialized_service_project_evidence",
+      "category": 10,
+      "title": "اسناد پروژه و شواهد تخصصی هر خدمت",
+      "authority": "کارشناس/مجری واجد صلاحیت و مرجع تخصصی مرتبط",
+      "url": null,
+      "source_type": "project_specific_evidence",
+      "status": "domain_expert_review_required",
+      "use": "دامنه کار، خروجی، معیار پذیرش، روش، فرضیات، صلاحیت مجری و قیمت‌گذاری"
+    }
+  ],
+  "categories_status": [
+    {
+      "category": 1,
+      "status": "structured_draft_with_official_live_source_dependency"
+    },
+    {
+      "category": 2,
+      "status": "official_registry_portal_identified_live_review_required"
+    },
+    {
+      "category": 3,
+      "status": "law_catalog_verified_implementation_review_required"
+    },
+    {
+      "category": 4,
+      "status": "official_standard_portal_verified_partial_health_and_police_review_required"
+    },
+    {
+      "category": 5,
+      "status": "current_1404_directive_text_found_primary_source_pending"
+    },
+    {
+      "category": 6,
+      "status": "labor_law_text_found_official_source_revalidation_pending"
+    },
+    {
+      "category": 7,
+      "status": "enamad_and_tax_portals_identified_live_workflow_pending"
+    },
+    {
+      "category": 8,
+      "status": "current_lease_system_and_legal_guidance_identified_live_workflow_pending"
+    },
+    {
+      "category": 9,
+      "status": "vendor_evidence_schema_added_vendor_research_pending"
+    },
+    {
+      "category": 10,
+      "status": "project_deliverable_evidence_schema_added_expert_review_pending"
+    }
+  ],
+  "next_research_queue": [
+    "بازیابی کاربرگ‌های زنده درگاه ملی مجوزها برای رسته‌های پرتکرار و ایجاد رکورد فعالیت‌محور",
+    "دریافت نسخه اولیه بخشنامه‌های بانک مرکزی از دامنه cbi.ir",
+    "تطبیق قانون کار و اصلاحات آن با روزنامه رسمی/مجلس",
+    "تطبیق آیین‌نامه اجرایی قانون حمایت از مالکیت صنعتی ۱۴۰۳ با قانون جدید",
+    "استخراج الزامات روز سامانه اینماد، مالیات و ابزارهای پرداخت",
+    "بررسی مسیر جاری ثبت اجاره در خودنویس و کاتب",
+    "راستی‌آزمایی کاربرگ‌های پلیس اماکن، بهداشت و دوره احکام تجارت برای هر فعالیت",
+    "تکمیل فهرست محصولات نرم‌افزاری و تأمین‌کنندگان با مستندات رسمی و قیمت تاریخ‌دار"
+  ]
+}
