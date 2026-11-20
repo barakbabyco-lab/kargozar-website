@@ -3,9 +3,9 @@
   "category_key": "02-company-registration",
   "category_number": 2,
   "title": "ثبت شرکت",
-  "status": "draft_needs_review",
-  "reviewed_at": null,
-  "review_version": 1,
+  "status": "populated_draft_needs_domain_and_source_review",
+  "reviewed_at": "2026-11-21",
+  "review_version": 2,
   "knowledge_mode": "local_with_official_verification",
   "scope": "قالب‌های ثبتی، ارکان، شرکا، سرمایه، مدارک و مراحل به‌صورت بانک دانشی ساختاریافته نگهداری و با آخرین مقررات رسمی بازبینی شوند.",
   "services": [
@@ -13,73 +13,182 @@
       "service_key": "company-registration",
       "title": "ثبت شرکت و انتخاب قالب حقوقی",
       "knowledge_mode": "local",
-      "status": "draft_needs_review",
-      "scope": null,
-      "eligibility": null,
-      "conditions": [],
-      "documents": [],
-      "steps": [],
-      "fees": null,
-      "issuance_time": null,
+      "status": "populated_draft_needs_source_review",
+      "scope": "اشخاصی که قصد فعالیت در قالب شخصیت حقوقی دارند؛ ثبت شرکت به‌تنهایی جایگزین مجوزهای تخصصی فعالیت نیست.",
+      "eligibility": "اشخاصی که قصد فعالیت در قالب شخصیت حقوقی دارند؛ ثبت شرکت به‌تنهایی جایگزین مجوزهای تخصصی فعالیت نیست.",
+      "conditions": [
+        "تعیین قالب حقوقی متناسب با هدف و ریسک شرکا",
+        "تعیین شرکا/سهامداران، سرمایه، سهم یا سهم‌الشرکه و سمت‌ها",
+        "تعیین موضوع فعالیت دقیق و بررسی اینکه موضوع نیازمند مجوز قبلی یا موافقت مرجع تخصصی هست یا خیر",
+        "تعیین نشانی و کدپستی قابل پذیرش و صاحبان امضای مجاز"
+      ],
+      "documents": [
+        "مدارک هویتی شرکا، سهامداران و مدیران",
+        "اطلاعات نشانی و کدپستی مرکز اصلی",
+        "موضوع فعالیت و اطلاعات سرمایه و سهم هر شریک",
+        "مجوز یا موافقت مرجع ذی‌صلاح، در صورت مجوزی بودن موضوع",
+        "مدارک و امضاهای الکترونیکی/وکالت‌نامه در صورت اقدام توسط نماینده"
+      ],
+      "steps": [
+        "نیازسنجی و مقایسه قالب‌های حقوقی",
+        "دریافت اطلاعات شرکا، سرمایه، سمت‌ها، نشانی و موضوع فعالیت",
+        "بررسی نام‌های پیشنهادی و محدودیت‌های قانونی",
+        "تهیه اسناد تأسیس و ثبت درخواست در سامانه رسمی",
+        "رفع نقص احتمالی، پرداخت هزینه‌های قانونی و امضای لازم",
+        "دریافت آگهی/شناسه‌های ثبتی و انجام اقدامات پس از ثبت مثل تشکیل پرونده مالیاتی و تکالیف قانونی"
+      ],
+      "fees": {
+        "status": "not_published_without_current_provider_or_official_quote",
+        "amount": null
+      },
+      "issuance_time": {
+        "status": "case_and_authority_dependent_not_guaranteed",
+        "estimate": null
+      },
       "issuing_authority": null,
       "official_source": null,
       "source_url": null,
       "source_date": null,
       "verified_at": null,
-      "reviewed_at": null,
-      "verification_status": "unverified",
+      "reviewed_at": "2026-11-21",
+      "verification_status": "draft_needs_primary_source_or_provider_validation",
       "shared_requirement_refs": [],
       "activity_specific_requirements": [],
-      "customer_questions": [],
-      "expert_escalation_rules": []
+      "customer_questions": [
+        "چند شریک یا سهامدار دارید؟",
+        "فعالیت اصلی شرکت چیست و در چه محدوده‌ای انجام می‌شود؟",
+        "مسئولیت شرکا تا چه حد باید محدود باشد؟",
+        "چه کسی مدیر و صاحب امضای مجاز باشد؟",
+        "آیا موضوع فعالیت مجوز تخصصی می‌خواهد؟"
+      ],
+      "expert_escalation_rules": [
+        "وجود شریک خارجی، سهامدار حقوقی، موضوعات مالی/بانکی/بیمه‌ای/آموزشی یا مجوزمحور",
+        "اختلاف شرکا درباره سهم، مدیریت، حق امضا یا آورده غیرنقدی"
+      ],
+      "what_is_it": "فرایند ایجاد شخصیت حقوقی و ثبت مشخصات شرکت در مرجع ثبت؛ انتخاب قالب حقوقی باید بر اساس تعداد شرکا، مسئولیت، شیوه اداره، مالیات، سرمایه و هدف فعالیت انجام شود.",
+      "deliverables": [
+        "پیشنهاد قالب حقوقی با ذکر مزایا و محدودیت‌ها",
+        "پیش‌نویس اسناد تأسیس و اطلاعات ثبت",
+        "پرونده ثبت و نتیجه/آگهی رسمی در صورت پذیرش مرجع"
+      ],
+      "notes": "این محتوای پایه برای گفت‌وگوی تشخیصی و چک‌لیست اجرایی است؛ شروط حقوقی/سامانه‌ای، هزینه و زمان تا اتصال به منبع رسمی یا تأیید متخصص، قطعی اعلام نشود."
     },
     {
       "service_key": "company-changes",
       "title": "ثبت تغییرات شرکت",
       "knowledge_mode": "hybrid",
-      "status": "draft_needs_review",
-      "scope": null,
-      "eligibility": null,
-      "conditions": [],
-      "documents": [],
-      "steps": [],
-      "fees": null,
-      "issuance_time": null,
+      "status": "populated_draft_needs_source_review",
+      "scope": "شرکت ثبت‌شده‌ای که تصمیم معتبر و قابل ثبت برای تغییرات دارد.",
+      "eligibility": "شرکت ثبت‌شده‌ای که تصمیم معتبر و قابل ثبت برای تغییرات دارد.",
+      "conditions": [
+        "تصمیم باید توسط مرجع صلاحیت‌دار شرکت و با نصاب مقرر در قانون و اساسنامه اتخاذ شده باشد",
+        "نوع صورتجلسه و مرجع تصمیم‌گیرنده به نوع تغییر و قالب شرکت وابسته است",
+        "تغییر موضوع فعالیت ممکن است به مجوز یا موافقت مرجع تخصصی نیاز داشته باشد"
+      ],
+      "documents": [
+        "آخرین اساسنامه و آگهی‌های ثبتی و آخرین وضعیت مدیران",
+        "مشخصات هویتی حاضرین و امضاکنندگان",
+        "صورتجلسه صحیح با تاریخ، دستور جلسه، تصمیم و امضاها",
+        "مدارک انتقال سهم/سهام یا مجوزها در صورت ارتباط با تغییر"
+      ],
+      "steps": [
+        "دریافت آخرین پرونده ثبتی و تشخیص نوع تغییر",
+        "تعیین مرجع تصمیم‌گیر و نصاب قانونی",
+        "تنظیم صورتجلسه و مستندات",
+        "ثبت درخواست در سامانه رسمی و پرداخت هزینه‌های مقرر",
+        "رفع نقص، پیگیری ثبت و انتشار آگهی تغییرات"
+      ],
+      "fees": {
+        "status": "not_published_without_current_provider_or_official_quote",
+        "amount": null
+      },
+      "issuance_time": {
+        "status": "case_and_authority_dependent_not_guaranteed",
+        "estimate": null
+      },
       "issuing_authority": null,
       "official_source": null,
       "source_url": null,
       "source_date": null,
       "verified_at": null,
-      "reviewed_at": null,
-      "verification_status": "unverified",
+      "reviewed_at": "2026-11-21",
+      "verification_status": "draft_needs_primary_source_or_provider_validation",
       "shared_requirement_refs": [],
       "activity_specific_requirements": [],
-      "customer_questions": [],
-      "expert_escalation_rules": []
+      "customer_questions": [
+        "چه تغییری می‌خواهید ثبت کنید؟",
+        "نوع شرکت چیست؟",
+        "آخرین آگهی و اساسنامه را دارید؟",
+        "چه کسانی حاضر و امضاکننده خواهند بود؟"
+      ],
+      "expert_escalation_rules": [
+        "اختلاف شرکا، فوت یا حجر شریک، توقیف سهام، انتقال پیچیده، تغییرات سرمایه یا تغییرات نیازمند مجوز"
+      ],
+      "what_is_it": "ثبت رسمی تصمیم‌ها و تغییرات بعد از تأسیس شرکت؛ مانند تغییر مدیران، نشانی، موضوع، سرمایه، شرکا/سهامداران، دارندگان امضا یا مفاد اساسنامه.",
+      "deliverables": [
+        "صورتجلسه و مستندات تنظیم‌شده",
+        "ثبت درخواست و پیگیری تا نتیجه مرجع"
+      ],
+      "notes": "این محتوای پایه برای گفت‌وگوی تشخیصی و چک‌لیست اجرایی است؛ شروط حقوقی/سامانه‌ای، هزینه و زمان تا اتصال به منبع رسمی یا تأیید متخصص، قطعی اعلام نشود."
     },
     {
       "service_key": "company-dissolution",
       "title": "انحلال و تصفیه شرکت",
       "knowledge_mode": "hybrid",
-      "status": "draft_needs_review",
-      "scope": null,
-      "eligibility": null,
-      "conditions": [],
-      "documents": [],
-      "steps": [],
-      "fees": null,
-      "issuance_time": null,
+      "status": "populated_draft_needs_source_review",
+      "scope": "شرکت‌هایی که سبب قانونی انحلال دارند یا شرکا/سهامداران قصد انحلال معتبر دارند.",
+      "eligibility": "شرکت‌هایی که سبب قانونی انحلال دارند یا شرکا/سهامداران قصد انحلال معتبر دارند.",
+      "conditions": [
+        "وجود سبب انحلال قانونی یا تصمیم مرجع صلاحیت‌دار",
+        "تعیین مدیر/مدیران تصفیه و نشانی محل تصفیه",
+        "رعایت حقوق طلبکاران، کارکنان، شرکا و مراجع مالیاتی و بیمه‌ای"
+      ],
+      "documents": [
+        "آخرین اساسنامه و آگهی‌ها",
+        "مدارک هویتی و اطلاعات تصمیم‌گیرندگان",
+        "صورتجلسه انحلال یا مستند سبب قانونی",
+        "اطلاعات دارایی‌ها، بدهی‌ها، قراردادها، کارکنان و پرونده‌های مالیاتی/بیمه‌ای"
+      ],
+      "steps": [
+        "بررسی وضعیت ثبتی و بدهی‌ها/تعهدات",
+        "تعیین مسیر و مرجع تصویب انحلال",
+        "تنظیم و ثبت صورتجلسه و معرفی مدیر تصفیه",
+        "انجام آگهی‌ها و تشریفات اطلاع‌رسانی مقرر",
+        "وصول مطالبات، پرداخت بدهی‌ها، تعیین تکلیف دارایی‌ها و کارکنان",
+        "ارائه حساب تصفیه و ثبت ختم تصفیه طبق مقررات"
+      ],
+      "fees": {
+        "status": "not_published_without_current_provider_or_official_quote",
+        "amount": null
+      },
+      "issuance_time": {
+        "status": "case_and_authority_dependent_not_guaranteed",
+        "estimate": null
+      },
       "issuing_authority": null,
       "official_source": null,
       "source_url": null,
       "source_date": null,
       "verified_at": null,
-      "reviewed_at": null,
-      "verification_status": "unverified",
+      "reviewed_at": "2026-11-21",
+      "verification_status": "draft_needs_primary_source_or_provider_validation",
       "shared_requirement_refs": [],
       "activity_specific_requirements": [],
-      "customer_questions": [],
-      "expert_escalation_rules": []
+      "customer_questions": [
+        "نوع شرکت و علت انحلال چیست؟",
+        "شرکت بدهی مالیاتی، بیمه‌ای، بانکی یا قراردادی دارد؟",
+        "کارمند یا قرارداد فعال دارد؟",
+        "مدیر تصفیه پیشنهادی چه کسی است؟"
+      ],
+      "expert_escalation_rules": [
+        "ورشکستگی، دعوای قضایی، بدهی سنگین، اختلاف شرکا یا دارایی/طلبکار خارجی"
+      ],
+      "what_is_it": "پایان دادن قانونی به فعالیت شخصیت حقوقی از طریق تصمیم یا سبب قانونی انحلال و سپس انجام تشریفات تصفیه و تعیین تکلیف دارایی‌ها و بدهی‌ها.",
+      "deliverables": [
+        "اسناد و صورتجلسات انحلال/تصفیه",
+        "پیگیری ثبت مراحل و چک‌لیست تعیین تکلیف تعهدات"
+      ],
+      "notes": "این محتوای پایه برای گفت‌وگوی تشخیصی و چک‌لیست اجرایی است؛ شروط حقوقی/سامانه‌ای، هزینه و زمان تا اتصال به منبع رسمی یا تأیید متخصص، قطعی اعلام نشود."
     }
   ],
   "data_quality_rules": [
@@ -96,5 +205,6 @@
       "تغییر هزینه یا زمان",
       "گزارش مغایرت از پرونده واقعی"
     ]
-  }
+  },
+  "content_policy": "هر خدمت تعریف، دامنه، شرایط، مدارک، مراحل، خروجی، پرسش‌های تشخیصی و موارد ارجاع دارد؛ هزینه و زمان تا تأیید روزآمد اعلام قطعی نمی‌شوند."
 }
