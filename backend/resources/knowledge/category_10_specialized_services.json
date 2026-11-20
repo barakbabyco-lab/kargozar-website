@@ -3,7 +3,7 @@
   "category_key": "10-specialized-services",
   "category_number": 10,
   "title": "سایر خدمات تخصصی",
-  "status": "populated_draft_needs_domain_expert_review",
+  "status": "populated_draft_project_evidence_and_deliverable_schema_added",
   "reviewed_at": "2026-11-21",
   "review_version": 2,
   "knowledge_mode": "local_or_hybrid_by_service",
@@ -48,7 +48,7 @@
       "source_date": null,
       "verified_at": null,
       "reviewed_at": "2026-11-21",
-      "verification_status": "draft_needs_domain_expert_review",
+      "verification_status": "needs_domain_expert_and_project_template_review",
       "shared_requirement_refs": [],
       "activity_specific_requirements": [],
       "customer_questions": [
@@ -63,7 +63,9 @@
       "deliverables": [
         "خروجی مکتوب/اجرایی متناسب با شرح خدمات و قرارداد"
       ],
-      "notes": "اطلاعات پایه خدمت برای مکالمه و تعیین دامنه کار است؛ نرخ و زمان پس از دریافت شرح پروژه و بررسی تأمین‌کننده اعلام شود."
+      "notes": "اطلاعات پایه خدمت برای مکالمه و تعیین دامنه کار است؛ نرخ و زمان پس از دریافت شرح پروژه و بررسی تأمین‌کننده اعلام شود.",
+      "project_scope_required": true,
+      "pricing_policy": "quote_after_scope_definition_with_date"
     },
     {
       "service_key": "feasibility-study",
@@ -107,7 +109,7 @@
       "source_date": null,
       "verified_at": null,
       "reviewed_at": "2026-11-21",
-      "verification_status": "draft_needs_domain_expert_review",
+      "verification_status": "needs_domain_expert_and_project_template_review",
       "shared_requirement_refs": [],
       "activity_specific_requirements": [],
       "customer_questions": [
@@ -122,7 +124,9 @@
       "deliverables": [
         "خروجی مکتوب/اجرایی متناسب با شرح خدمات و قرارداد"
       ],
-      "notes": "اطلاعات پایه خدمت برای مکالمه و تعیین دامنه کار است؛ نرخ و زمان پس از دریافت شرح پروژه و بررسی تأمین‌کننده اعلام شود."
+      "notes": "اطلاعات پایه خدمت برای مکالمه و تعیین دامنه کار است؛ نرخ و زمان پس از دریافت شرح پروژه و بررسی تأمین‌کننده اعلام شود.",
+      "project_scope_required": true,
+      "pricing_policy": "quote_after_scope_definition_with_date"
     },
     {
       "service_key": "business-plan",
@@ -166,7 +170,7 @@
       "source_date": null,
       "verified_at": null,
       "reviewed_at": "2026-11-21",
-      "verification_status": "draft_needs_domain_expert_review",
+      "verification_status": "needs_domain_expert_and_project_template_review",
       "shared_requirement_refs": [],
       "activity_specific_requirements": [],
       "customer_questions": [
@@ -181,7 +185,9 @@
       "deliverables": [
         "خروجی مکتوب/اجرایی متناسب با شرح خدمات و قرارداد"
       ],
-      "notes": "اطلاعات پایه خدمت برای مکالمه و تعیین دامنه کار است؛ نرخ و زمان پس از دریافت شرح پروژه و بررسی تأمین‌کننده اعلام شود."
+      "notes": "اطلاعات پایه خدمت برای مکالمه و تعیین دامنه کار است؛ نرخ و زمان پس از دریافت شرح پروژه و بررسی تأمین‌کننده اعلام شود.",
+      "project_scope_required": true,
+      "pricing_policy": "quote_after_scope_definition_with_date"
     },
     {
       "service_key": "business-valuation",
@@ -223,7 +229,7 @@
       "source_date": null,
       "verified_at": null,
       "reviewed_at": "2026-11-21",
-      "verification_status": "draft_needs_domain_expert_review",
+      "verification_status": "needs_domain_expert_and_project_template_review",
       "shared_requirement_refs": [],
       "activity_specific_requirements": [],
       "customer_questions": [
@@ -238,7 +244,9 @@
       "deliverables": [
         "خروجی مکتوب/اجرایی متناسب با شرح خدمات و قرارداد"
       ],
-      "notes": "اطلاعات پایه خدمت برای مکالمه و تعیین دامنه کار است؛ نرخ و زمان پس از دریافت شرح پروژه و بررسی تأمین‌کننده اعلام شود."
+      "notes": "اطلاعات پایه خدمت برای مکالمه و تعیین دامنه کار است؛ نرخ و زمان پس از دریافت شرح پروژه و بررسی تأمین‌کننده اعلام شود.",
+      "project_scope_required": true,
+      "pricing_policy": "quote_after_scope_definition_with_date"
     },
     {
       "service_key": "fundraising",
@@ -281,7 +289,7 @@
       "source_date": null,
       "verified_at": null,
       "reviewed_at": "2026-11-21",
-      "verification_status": "draft_needs_domain_expert_review",
+      "verification_status": "needs_domain_expert_and_project_template_review",
       "shared_requirement_refs": [],
       "activity_specific_requirements": [],
       "customer_questions": [
@@ -296,7 +304,9 @@
       "deliverables": [
         "خروجی مکتوب/اجرایی متناسب با شرح خدمات و قرارداد"
       ],
-      "notes": "اطلاعات پایه خدمت برای مکالمه و تعیین دامنه کار است؛ نرخ و زمان پس از دریافت شرح پروژه و بررسی تأمین‌کننده اعلام شود."
+      "notes": "اطلاعات پایه خدمت برای مکالمه و تعیین دامنه کار است؛ نرخ و زمان پس از دریافت شرح پروژه و بررسی تأمین‌کننده اعلام شود.",
+      "project_scope_required": true,
+      "pricing_policy": "quote_after_scope_definition_with_date"
     },
     {
       "service_key": "advertising-video",
@@ -339,7 +349,7 @@
       "source_date": null,
       "verified_at": null,
       "reviewed_at": "2026-11-21",
-      "verification_status": "draft_needs_domain_expert_review",
+      "verification_status": "needs_domain_expert_and_project_template_review",
       "shared_requirement_refs": [],
       "activity_specific_requirements": [],
       "customer_questions": [
@@ -354,7 +364,9 @@
       "deliverables": [
         "خروجی مکتوب/اجرایی متناسب با شرح خدمات و قرارداد"
       ],
-      "notes": "اطلاعات پایه خدمت برای مکالمه و تعیین دامنه کار است؛ نرخ و زمان پس از دریافت شرح پروژه و بررسی تأمین‌کننده اعلام شود."
+      "notes": "اطلاعات پایه خدمت برای مکالمه و تعیین دامنه کار است؛ نرخ و زمان پس از دریافت شرح پروژه و بررسی تأمین‌کننده اعلام شود.",
+      "project_scope_required": true,
+      "pricing_policy": "quote_after_scope_definition_with_date"
     },
     {
       "service_key": "business-branding",
@@ -398,7 +410,7 @@
       "source_date": null,
       "verified_at": null,
       "reviewed_at": "2026-11-21",
-      "verification_status": "draft_needs_domain_expert_review",
+      "verification_status": "needs_domain_expert_and_project_template_review",
       "shared_requirement_refs": [],
       "activity_specific_requirements": [],
       "customer_questions": [
@@ -413,7 +425,9 @@
       "deliverables": [
         "خروجی مکتوب/اجرایی متناسب با شرح خدمات و قرارداد"
       ],
-      "notes": "اطلاعات پایه خدمت برای مکالمه و تعیین دامنه کار است؛ نرخ و زمان پس از دریافت شرح پروژه و بررسی تأمین‌کننده اعلام شود."
+      "notes": "اطلاعات پایه خدمت برای مکالمه و تعیین دامنه کار است؛ نرخ و زمان پس از دریافت شرح پروژه و بررسی تأمین‌کننده اعلام شود.",
+      "project_scope_required": true,
+      "pricing_policy": "quote_after_scope_definition_with_date"
     }
   ],
   "data_quality_rules": [
@@ -430,5 +444,30 @@
       "تغییر هزینه یا زمان",
       "گزارش مغایرت از پرونده واقعی"
     ]
+  },
+  "source_review_notes": {
+    "knowledge_class": "professional_service_and_project_deliverables",
+    "source_policy": "این خدمات عموماً یک سامانه صادرکننده یا کاربرگ واحد ندارند؛ دانش داخلی باید دامنه کار، روش، ورودی‌ها، خروجی قابل تحویل، معیار پذیرش، صلاحیت مجری و محدودیت مسئولیت را مشخص کند. هر ادعای تخصصی یا عدد مالی باید با منبع متناسب با صنعت و تاریخ ثبت شود.",
+    "mandatory_project_fields": [
+      "شرح مسئله و هدف مشتری",
+      "دامنه کار و موارد خارج از دامنه",
+      "داده‌ها و مدارک ورودی",
+      "روش و فرضیات",
+      "خروجی‌ها و قالب تحویل",
+      "معیار پذیرش و شاخص سنجش",
+      "صلاحیت و سابقه مجری",
+      "زمان‌بندی و وابستگی‌ها",
+      "هزینه و تاریخ پیشنهاد",
+      "محدودیت‌ها و ریسک‌ها"
+    ],
+    "service_specific_evidence": {
+      "feasibility_study": "داده بازار، ظرفیت، فناوری، سرمایه‌گذاری، هزینه‌های بهره‌برداری، جریان نقدی، سناریو و حساسیت‌سنجی؛ منبع هر فرض بازار/فنی درج شود.",
+      "business_plan": "مدل کسب‌وکار، بازار هدف، رقبا، راهبرد فروش، عملیات، تیم، سرمایه و پیش‌بینی مالی؛ فرضیات از داده واقعی تفکیک شوند.",
+      "valuation": "هدف ارزش‌گذاری، تاریخ مبنا، استاندارد/روش انتخابی، داده‌های مالی تعدیل‌شده و مفروضات؛ ارزش‌گذاری با قیمت قطعی معامله یکی نیست.",
+      "fundraising": "نوع سرمایه، ساختار حقوقی، آمادگی مالی/حقوقی، مواد ارائه سرمایه‌گذار و بررسی صلاحیت سرمایه‌گذار؛ بازده یا جذب قطعی تضمین نشود.",
+      "advertising_video": "بریف، مخاطب، سناریو، مدت، نسبت تصویر، حقوق موسیقی/تصویر، اصلاحات و فایل‌های تحویلی.",
+      "branding": "تحقیق بازار، جایگاه‌یابی، هویت کلامی/بصری، راهبرد کانال و شاخص‌های ارزیابی."
+    },
+    "pricing_policy": "پس از تعریف دامنه و برآورد منابع، پیشنهاد قیمت تاریخ‌دار ارائه شود؛ تعرفه عمومی ساختگی درج نشود."
   }
 }
