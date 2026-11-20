@@ -34,7 +34,7 @@ class SupportChatApiTest extends TestCase
         $this->actingAs($customer, 'sanctum')
             ->getJson('/api/v1/me/support-conversations/'.$id.'/messages')
             ->assertOk()
-            ->assertJsonCount(4, 'data');
+            ->assertJsonCount(2, 'data');
     }
 
     public function test_guest_can_start_and_continue_support_without_customer_login(): void
@@ -45,7 +45,9 @@ class SupportChatApiTest extends TestCase
             ->postJson('/api/v1/guest/support-conversations', ['body' => 'برای دریافت جواز کسب راهنمایی می‌خواهم.'])
             ->assertCreated()
             ->assertJsonPath('data.guest', true)
-            ->assertJsonPath('data.messages.0.sender_type', 'customer');
+            ->assertJsonPath('data.messages.0.sender_type', 'customer')
+            ->assertJsonPath('data.messages.1.sender_type', 'assistant')
+            ->assertJsonPath('data.messages.1.body', fn ($value) => str_contains($value, 'نوع شغل'));
 
         $id = $started->json('data.id');
         $conversation = SupportConversation::findOrFail($id);
@@ -61,7 +63,7 @@ class SupportChatApiTest extends TestCase
         $this->withHeader('X-Support-Guest-Token', $guestToken)
             ->getJson('/api/v1/guest/support-conversations/'.$id.'/messages')
             ->assertOk()
-            ->assertJsonCount(2, 'data');
+            ->assertJsonCount(4, 'data');
 
         $this->withHeader('X-Support-Guest-Token', str_repeat('b2', 32))
             ->getJson('/api/v1/guest/support-conversations/'.$id.'/messages')
