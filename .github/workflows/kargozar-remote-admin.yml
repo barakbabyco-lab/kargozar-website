@@ -20,6 +20,7 @@ on:
           - migrations
           - storage
           - logo-export
+          - logo-locate
           - cache-clear
           - rollback
         default: health
@@ -89,7 +90,7 @@ jobs:
         env:
           SSH_CONFIG: ${{ steps.ssh.outputs.ssh_config }}
           DEPLOY_PATH: ${{ steps.ssh.outputs.deploy_path }}
-          TASK: ${{ inputs.task || (github.event_name == 'push' && 'logo-export' || 'health') }}
+          TASK: ${{ inputs.task || (github.event_name == 'push' && 'logo-locate' || 'health') }}
         run: |
           set -euo pipefail
           case "$TASK" in
@@ -104,6 +105,9 @@ jobs:
               ;;
             migrations)
               REMOTE_COMMAND='cd "$1/current" && php artisan migrate:status'
+              ;;
+            logo-locate)
+              REMOTE_COMMAND='find /var/www /home /srv /opt /var/lib/sftpgo /var/lib -type f -name "Picsart_26-11-20_20-13-50-129.jpg" -print 2>/dev/null | head -20'
               ;;
             logo-export)
               REMOTE_COMMAND='test -s /var/www/html/kargozar-assets/Final/Picsart_26-11-20_20-13-50-129.jpg && file /var/www/html/kargozar-assets/Final/Picsart_26-11-20_20-13-50-129.jpg && sha256sum /var/www/html/kargozar-assets/Final/Picsart_26-11-20_20-13-50-129.jpg'
@@ -149,7 +153,7 @@ jobs:
           ssh -F "$SSH_CONFIG" kargozar-staging "bash -lc $(printf '%q' "$REMOTE_COMMAND") -- $(printf '%q' "$DEPLOY_PATH")"
 
       - name: Download uploaded Kargozar logo
-        if: github.event_name == 'push' || inputs.task == 'logo-export'
+        if: inputs.task == 'logo-export'
         shell: bash
         env:
           SSH_CONFIG: ${{ steps.ssh.outputs.ssh_config }}
