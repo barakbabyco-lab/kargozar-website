@@ -3,7 +3,7 @@
   "category_key": "08-property-and-leases",
   "category_number": 8,
   "title": "خدمات ملکی و قراردادها",
-  "status": "populated_draft_lease_law_source_added_live_workflow_review_required",
+  "status": "populated_draft_recent_lease_system_sources_added_live_workflow_review_required",
   "reviewed_at": "2026-11-21",
   "review_version": 2,
   "knowledge_mode": "hybrid",
@@ -33,7 +33,8 @@
         "کنترل اطلاعات ملک و طرفین",
         "تنظیم مفاد قرارداد با توافق طرفین",
         "ثبت در سامانه رسمی مجاز و اخذ تأییدهای لازم",
-        "دریافت و بایگانی شناسه رهگیری و نسخه قرارداد"
+        "دریافت و بایگانی شناسه رهگیری و نسخه قرارداد",
+        "در زمان اقدام، مسیر مجاز ثبت و دریافت شناسه را بین سامانه خودنویس وزارت راه و شهرسازی و سامانه ثبت الکترونیک اسناد تطبیق دهید؛ مسیر قدیمی سامانه‌ها را بدون کنترل روزانه استفاده نکنید."
       ],
       "fees": {
         "status": "not_published_without_current_provider_or_official_quote",
@@ -204,7 +205,20 @@
       "relevant_rule": "اصلاح ماده ۲ قانون روابط موجر و مستأجر ۱۳۷۶؛ ثبت مدت و مبلغ اجاره و مبلغ قرض‌الحسنه در سامانه‌های مقرر و اخذ شناسه رهگیری پس از تأیید طرفین و شهود طبق متن قانون.",
       "source_url": "https://ibahoosham.ir/divanlaw/law/law-2980561",
       "source_type": "متن بازنشرشده قانون؛ متن نهایی باید با روزنامه رسمی/مجلس تطبیق شود",
-      "verification_status": "secondary_law_text_found_official_publication_and_current_system_workflow_review_required"
+      "verification_status": "secondary_law_text_found_official_publication_and_current_system_workflow_review_required",
+      "official_systems": [
+        "https://khodnevis.mrud.ir/",
+        "https://my.ssaa.ir/"
+      ],
+      "recent_legal_interpretation": {
+        "title": "نظریه مشورتی اداره کل حقوقی قوه قضاییه درباره ثبت قرارداد اجاره در سامانه خودنویس و کاتب",
+        "number": "7/1404/207",
+        "date": "1404-08-28",
+        "source_url": "https://hoghogh.ai/advisory-opinions/a-fec71d32",
+        "source_type": "نظریه مشورتی بازنشرشده؛ برای استفاده قطعی باید نسخه رسمی مرجع قضایی/روزنامه رسمی تطبیق شود",
+        "extracted_fact": "در متن نظریه، اصلاح ماده ۲ قانون روابط موجر و مستأجر و ثبت قراردادهای اجاره در سامانه ثبت الکترونیک اسناد یا سامانه ثبت معاملات املاک و مستغلات و اخذ شناسه رهگیری توضیح داده شده است.",
+        "verification_status": "recent_secondary_legal_guidance_found_official_system_flow_review_required"
+      }
     },
     "system_policy": "مسیر ثبت قرارداد، هویت اشخاص مجاز به ثبت، استثناها و کارکرد سامانه‌ها باید در زمان ارائه خدمت از درگاه رسمی وزارت راه و شهرسازی/سازمان ثبت احراز شود."
   }
