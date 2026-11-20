@@ -857,6 +857,7 @@ class _SupportChatSheetState extends State<SupportChatSheet> {
    child:Padding(padding:EdgeInsets.fromLTRB(16,16,16,MediaQuery.viewInsetsOf(context).bottom+12),
      child:Column(children:[
        const Row(children:[Icon(Icons.support_agent,color:_brandRed),SizedBox(width:8),Text('پشتیبانی آنلاین کارگزار',style:TextStyle(fontSize:16,fontWeight:FontWeight.w800)),Spacer(),Text('گفت‌وگو',style:TextStyle(fontSize:11,color:_muted))]),
+       const Align(alignment:Alignment.centerRight,child:Text('بدون نیاز به ورود یا ثبت‌نام',style:TextStyle(color:_muted,fontSize:11))),
        const Divider(height:22),
        Expanded(child:_messages.isEmpty?const Center(child:Text('پیام خود را بنویسید تا گفت‌وگو با کارشناس آغاز شود.',textAlign:TextAlign.center,style:TextStyle(color:_muted,height:1.8))):ListView.builder(controller:_scroll,itemCount:_messages.length,itemBuilder:(context,index){
          final message=_messages[index];final mine=message['sender_type']=='customer';
