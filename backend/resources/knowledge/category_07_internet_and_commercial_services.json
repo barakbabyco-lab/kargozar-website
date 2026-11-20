@@ -139,7 +139,8 @@
       "conditions": [
         "احراز هویت پذیرنده و تطبیق مالکیت حساب/درگاه طبق ضوابط ارائه‌دهنده",
         "نماد یا مجوزهای لازم در صورت مطالبه برای مدل فعالیت",
-        "اطلاعات تسویه، نشانی سایت، کالا/خدمات و سیاست بازپرداخت باید روشن باشد"
+        "اطلاعات تسویه، نشانی سایت، کالا/خدمات و سیاست بازپرداخت باید روشن باشد",
+        "اینماد، پرونده مالیاتی و شرایط پذیرندگی را یک الزام واحد فرض نکنید؛ هر کدام از مرجع مربوط و متناسب با نوع ابزار پرداخت بررسی شود."
       ],
       "documents": [
         "مدارک هویتی/ثبتی و اطلاعات صاحبان امضا",
@@ -163,12 +164,12 @@
         "estimate": null
       },
       "issuing_authority": null,
-      "official_source": "بانک مرکزی و شاپرک/پرداخت‌یار منتخب؛ الزامات پذیرندگی و پرونده مالیاتی باید جاری کنترل شود",
-      "source_url": "https://my.tax.gov.ir/",
+      "official_source": "بانک مرکزی، شاپرک و ارائه‌دهنده مجاز ابزار پذیرش؛ الزامات مالیاتی از سازمان امور مالیاتی جداگانه بررسی شود",
+      "source_url": null,
       "source_date": null,
       "verified_at": null,
       "reviewed_at": "2026-11-21",
-      "verification_status": "needs_live_tax_and_payment_provider_requirement_review",
+      "verification_status": "needs_current_payment_provider_and_shaparak_terms_review",
       "shared_requirement_refs": [],
       "activity_specific_requirements": [],
       "customer_questions": [
@@ -388,7 +389,8 @@
       "authority": "سازمان امور مالیاتی کشور",
       "portal": "https://my.tax.gov.ir/",
       "source_type": "official portal URL; exact menus and workflow must be checked in live portal",
-      "verification_status": "official_portal_identified_live_workflow_review_required"
+      "verification_status": "official_portal_identified_live_workflow_review_required",
+      "workflow_note": "درگاه my.tax.gov.ir برای امور مالیاتی است و به‌تنهایی منبع شرایط فنی یا قراردادی درگاه پرداخت محسوب نمی‌شود."
     }
   }
 }
