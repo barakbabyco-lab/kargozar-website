@@ -2,7 +2,7 @@
   "schema_version": 1,
   "knowledge_key": "shared_requirement_library",
   "title": "کتابخانه الزامات عمومی و اختصاصی خدمات کارگزار",
-  "status": "owner_defined_guild_preflight_and_three_group_classifier_draft",
+  "status": "owner_defined_guild_preflight_and_specialist_group_rules_added",
   "reviewed_at": "2026-11-21",
   "applicability_model": {
     "layers": [
@@ -86,7 +86,7 @@
     {
       "requirement_key": "health_card",
       "title": "کارت بهداشت / گواهی سلامت شاغلان",
-      "scope": "food_and_health_related_activity",
+      "scope": "food_health_hygiene_group_only",
       "applicability": "برای مشاغل و کارکنانی که طبق ضوابط بهداشتی مشمول‌اند؛ گروه شغلی، مدارک، مرجع و مدت اعتبار باید از ضابطه جاری وزارت بهداشت/دانشگاه علوم پزشکی احراز شود",
       "verification_status": "needs_review",
       "source_url": "https://www.irancodify.com/b/آیین_نامه_مقررات_بهداشتی_مصوب_1347-11-01"
@@ -94,7 +94,7 @@
     {
       "requirement_key": "environmental_health_approval",
       "title": "تأییدیه بهداشت محیط",
-      "scope": "health_related_activity_and_premises",
+      "scope": "food_health_hygiene_group_only_activity_and_premises_specific",
       "applicability": "بر اساس نوع فعالیت، محل، فرایند تولید/عرضه و کاربرگ جاری؛ چک‌لیست فنی نباید بین فعالیت‌های متفاوت یکسان فرض شود",
       "verification_status": "needs_review",
       "source_url": "https://mojavez.ir/"
@@ -147,6 +147,30 @@
       "source_date": null,
       "verified_at": null,
       "verification_status": "owner_supplied_common_intake_rule_official_scope_and_live_workflow_review_required"
+    },
+    {
+      "requirement_key": "vocational_skill_certificate",
+      "title": "گواهینامه مهارت فنی‌وحرفه‌ای",
+      "scope": "technical_and_skill_based_guild_activities_only",
+      "applicability": "در طبقه‌بندی داخلی کارگزار برای مشاغلی که هسته فعالیت آن‌ها فنی و مهارتی است بررسی شود؛ الزام دقیق رشته، سطح و مرجع تأیید باید با کاربرگ همان رسته و ضوابط سازمان آموزش فنی‌وحرفه‌ای تطبیق داده شود. تولید هنری، صنایع‌دستی یا آموزش عمومی صرفاً به دلیل تولیدی بودن مشمول فرض نشود.",
+      "evidence_or_document": "گواهینامه مهارت معتبر در حرفه مرتبط، در صورت مطالبه ضابطه فعالیت.",
+      "issuing_or_verifying_authority": "سازمان آموزش فنی‌وحرفه‌ای کشور یا مرجع صلاحیت‌دار درج‌شده در کاربرگ",
+      "source_url": "https://www.irantvto.ir/",
+      "source_date": null,
+      "verified_at": null,
+      "verification_status": "owner_defined_group_rule_official_scope_and_trade_mapping_review_required"
+    },
+    {
+      "requirement_key": "related_academic_degree",
+      "title": "مدرک تحصیلی دانشگاهی مرتبط",
+      "scope": "regulated_professional_activities_requiring_related_education",
+      "applicability": "فقط برای مشاغل تخصصی/حرفه‌ای که قانون، مرجع صادرکننده یا کاربرگ جاری مدرک دانشگاهی مرتبط را شرط کرده باشد؛ رشته، مقطع و مرجع تأیید دقیقاً برای همان فعالیت تعیین شود.",
+      "evidence_or_document": "مدرک تحصیلی معتبر در رشته مرتبط و حسب مورد تأییدیه اصالت/عضویت یا صلاحیت حرفه‌ای.",
+      "issuing_or_verifying_authority": "مرجع صادرکننده مجوز حرفه‌ای و مرجع تأیید مدرک حسب فعالیت",
+      "source_url": null,
+      "source_date": null,
+      "verified_at": null,
+      "verification_status": "owner_defined_group_rule_activity_specific_legal_review_required"
     }
   ],
   "police_approval": {
