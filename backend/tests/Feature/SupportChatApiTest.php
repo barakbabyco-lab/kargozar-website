@@ -20,7 +20,7 @@ class SupportChatApiTest extends TestCase
             ->postJson('/api/v1/support-conversations', ['body' => 'برای دریافت جواز کسب راهنمایی می‌خواهم.'])
             ->assertCreated()
             ->assertJsonPath('data.status', 'open')
-            ->assertJsonPath('data.messages.0.sender_type', 'customer')
+            ->assertJsonPath('data.messages.0.sender_type', 'customer');
 
         $id = $started->json('data.id');
 
