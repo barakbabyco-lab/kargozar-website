@@ -79,6 +79,42 @@ class SupportAssistantTest extends TestCase
         );
     }
 
+    public function test_unknown_question_uses_public_web_search_when_configured(): void
+    {
+        Config::set('support_assistant.missing_requirement_phrases', []);
+        Config::set('support_assistant.escalation_terms', []);
+        Config::set('support_assistant.faqs', []);
+        Config::set('support_assistant.web_search.enabled', true);
+        Config::set('support_assistant.web_search.api_key', 'test-key');
+        Config::set('support_assistant.web_search.endpoint', 'https://api.tavily.com/search');
+        Http::fake([
+            'api.tavily.com/search' => Http::response([
+                'answer' => 'این یک پاسخ عمومی آزمایشی است.',
+                'results' => [[
+                    'title' => 'منبع آزمایشی',
+                    'url' => 'https://example.com/reference',
+                    'content' => 'خلاصه منبع',
+                ]],
+            ], 200),
+        ]);
+
+        $reply = app(SupportAssistant::class)->reply('یک پرسش عمومی ناشناخته درباره موضوعی خارج از خدمات');
+
+        $this->assertStringContainsString('پاسخ عمومی آزمایشی', $reply);
+        $this->assertStringContainsString('https://example.com/reference', $reply);
+    }
+
+    public function test_current_date_and_time_is_reported_in_tehran_jalali_calendar(): void
+    {
+        Config::set('support_assistant.timezone', 'Asia/Tehran');
+
+        $reply = app(SupportAssistant::class)->reply('الان تاریخ و ساعت چنده؟');
+
+        $this->assertStringContainsString('تاریخ و ساعت فعلی تهران:', $reply);
+        $this->assertStringContainsString('Asia/Tehran', $reply);
+        $this->assertMatchesRegularExpression('/\\d{4}/u', $reply);
+    }
+
     public function test_guild_activity_classifier_supports_multiple_specialist_groups(): void
     {
         Config::set('support_assistant.guild_job_classification', [
