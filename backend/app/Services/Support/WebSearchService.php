@@ -30,18 +30,31 @@ class WebSearchService
 
         return Cache::remember($cacheKey, now()->addMinutes(10), function () use ($apiKey, $endpoint, $query) {
             try {
+                $payload = [
+                    'api_key' => $apiKey,
+                    'query' => $query,
+                    'search_depth' => 'basic',
+                    'include_answer' => 'advanced',
+                    'max_results' => (int) config('support_assistant.web_search.max_results', 5),
+                    'include_raw_content' => false,
+                ];
+
+                $officialContext = false;
+                foreach ((array) config('support_assistant.web_search.official_context_terms', []) as $term) {
+                    if (is_string($term) && $term !== '' && str_contains($query, $term)) {
+                        $officialContext = true;
+                        break;
+                    }
+                }
+                if ($officialContext) {
+                    $payload['include_domains'] = (array) config('support_assistant.web_search.official_domains', []);
+                }
+
                 $response = Http::acceptJson()
                     ->asJson()
                     ->timeout((int) config('support_assistant.web_search.timeout', 8))
                     ->retry(1, 200)
-                    ->post($endpoint, [
-                        'api_key' => $apiKey,
-                        'query' => $query,
-                        'search_depth' => 'basic',
-                        'include_answer' => 'advanced',
-                        'max_results' => 5,
-                        'include_raw_content' => false,
-                    ]);
+                    ->post($endpoint, $payload);
 
                 if (! $response->successful()) {
                     return null;
