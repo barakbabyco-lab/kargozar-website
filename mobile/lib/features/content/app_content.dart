@@ -7,6 +7,34 @@ const kargozarAssetsBaseUrl = String.fromEnvironment(
   defaultValue: '',
 );
 
+/// Resolve a public app-content image only from a valid HTTPS asset directory.
+/// Invalid configuration or filenames use the local placeholder instead.
+Uri? resolveAppContentImageUri(String fileName, {String? baseUrl}) {
+  if (fileName.isEmpty ||
+      fileName == '.' ||
+      fileName == '..' ||
+      RegExp(r'[^A-Za-z0-9._-]').hasMatch(fileName)) {
+    return null;
+  }
+
+  var configured = (baseUrl ?? kargozarAssetsBaseUrl).trim();
+  while (configured.endsWith('/')) {
+    configured = configured.substring(0, configured.length - 1);
+  }
+  if (configured.isEmpty) return null;
+
+  final base = Uri.tryParse(configured);
+  if (base == null ||
+      base.scheme != 'https' ||
+      base.host.isEmpty ||
+      base.userInfo.isNotEmpty ||
+      base.hasQuery ||
+      base.hasFragment) {
+    return null;
+  }
+
+  return Uri.parse('$configured/').resolve(fileName);
+}
 const serviceCategoryImages = <String, String>{
   'business-licenses': 'service-01-business-permits.webp',
   'trademark-intellectual-property': 'service-02-brand-registration.webp',
@@ -60,8 +88,7 @@ class AppContentImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final base = kargozarAssetsBaseUrl.trim().replaceFirst(RegExp(r'/+$'), '');
-    final url = base.isEmpty ? null : Uri.tryParse('$base/$fileName');
+    final url = resolveAppContentImageUri(fileName);
     return ClipRRect(
       borderRadius: BorderRadius.circular(borderRadius),
       child: SizedBox(
