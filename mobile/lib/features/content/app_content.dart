@@ -314,10 +314,47 @@ class _AppBannerStripState extends State<AppBannerStrip> {
   }
 
   @override
-  Widget build(BuildContext context) => SizedBox(
-        height: 142,
-        width: double.infinity,
-        child: PageView.builder(
+  Widget build(BuildContext context) => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 18, 16, 6),
+            child: SizedBox(
+              height: 38,
+              child: Row(
+                children: [
+                  const Text(
+                    'کارگزار',
+                    textDirection: TextDirection.rtl,
+                    style: TextStyle(
+                      color: Color(0xFF4B0082),
+                      fontSize: 20,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: -0.4,
+                    ),
+                  ),
+                  const Spacer(),
+                  Container(
+                    width: 34,
+                    height: 34,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFE30613),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: const Icon(
+                      Icons.business_center_rounded,
+                      color: Colors.white,
+                      size: 20,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          SizedBox(
+            height: 142,
+            width: double.infinity,
+            child: PageView.builder(
           controller: _pageController,
           itemCount: AppBannerStrip.banners.length,
           onPageChanged: (index) => setState(() => _currentPage = index),
@@ -365,6 +402,8 @@ class _AppBannerStripState extends State<AppBannerStrip> {
             );
           },
         ),
+          ),
+        ],
       );
 }
 
