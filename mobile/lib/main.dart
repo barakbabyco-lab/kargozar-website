@@ -375,7 +375,7 @@ class _MainShellState extends State<MainShell> {
         children: [
           ProfilePage(signedIn: widget.signedIn, onLogin: widget.onLogin, onLogout: widget.onLogout, onShowRequests: _showRequests, onNavigate: _goToTab),
           ServicesPage(onRequest: _request, onOpenCategoryDetails: _openCategoryDetail, onExpandCategory: _showCategoryChildren, onNavigate: (tab) { if (tab == 4) { _goToTab(2); _openCompanionDetail(companionModules[0]); } else { _goToTab(tab); } }, onConsultation: _showConsultation),
-          CompanionContentPage(onOpenDetails: _openCompanionDetail, onExpand: _expandCompanion, onNavigate: (tab) { if (tab == 4) { _goToTab(2); _openCompanion(0); } else { _goToTab(tab); } }, onConsultation: _showConsultation),
+          CompanionContentPage(onOpenDetails: _openCompanionDetail, onExpand: _expandCompanion, onNavigate: (tab) { if (tab == 4) { _goToTab(2); _openCompanionDetail(companionModules[0]); } else { _goToTab(tab); } }, onConsultation: _showConsultation),
           SupportContentPage(onConsultation: _showConsultation, onNavigate: _goToTab),
         ],
       ),
