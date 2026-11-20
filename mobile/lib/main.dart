@@ -230,52 +230,44 @@ class _MainShellState extends State<MainShell> {
     final description = serviceDescriptions[category.slug] ??
         'برای دریافت اطلاعات درباره این خدمت، شرایط و مدارک موردنیاز و بررسی مسیر مناسب، با کارشناسان کارگزار تماس بگیرید.';
     if (!mounted) return;
-    await showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      builder: (sheetContext) => SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(22, 24, 22, 24),
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
+    await Navigator.of(context).push(MaterialPageRoute<void>(
+      builder: (_) => Directionality(
+        textDirection: TextDirection.rtl,
+        child: Scaffold(
+          appBar: AppBar(title: Text(category.name)),
+          body: SafeArea(
+            child: ListView(
+              padding: const EdgeInsets.fromLTRB(22, 24, 22, 32),
               children: [
-                Center(child: Container(width: 42, height: 4, decoration: BoxDecoration(color: const Color(0xFFCBD5E1), borderRadius: BorderRadius.circular(5)))),
-                const SizedBox(height: 22),
-                const Icon(Icons.description_outlined, color: _teal, size: 34),
+                const Icon(Icons.description_outlined, color: _teal, size: 38),
+                const SizedBox(height: 18),
+                Text(category.name, style: const TextStyle(color: _ink, fontWeight: FontWeight.w900, fontSize: 20)),
                 const SizedBox(height: 14),
-                Text(category.name, style: const TextStyle(color: _ink, fontWeight: FontWeight.w900, fontSize: 19)),
-                const SizedBox(height: 12),
-                Text(description, style: const TextStyle(color: _muted, height: 1.9, fontSize: 13)),
-                const SizedBox(height: 20),
-                const Text('برای دریافت مشاوره و پیگیری این خدمت با کارگزار تماس بگیرید.', style: TextStyle(color: _ink, height: 1.7, fontWeight: FontWeight.w600)),
-                const SizedBox(height: 14),
+                Text(description, style: const TextStyle(color: _muted, height: 2, fontSize: 14)),
+                const SizedBox(height: 24),
+                const Text('برای دریافت مشاوره و پیگیری این خدمت با کارگزار تماس بگیرید.', style: TextStyle(color: _ink, height: 1.8, fontWeight: FontWeight.w600)),
+                const SizedBox(height: 16),
                 SizedBox(
                   width: double.infinity,
                   child: FilledButton.icon(
                     onPressed: () async {
                       final opened = await launchUrl(Uri(scheme: 'tel', path: '09365952800'));
-                      if (!opened && sheetContext.mounted) {
-                        ScaffoldMessenger.of(sheetContext).showSnackBar(const SnackBar(content: Text('امکان باز کردن شماره‌گیر وجود ندارد.')));
+                      if (!opened && context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('امکان باز کردن شماره‌گیر وجود ندارد.')));
                       }
                     },
                     icon: const Icon(Icons.call_outlined),
                     label: const Text('تماس با کارگزار'),
                   ),
                 ),
-                const SizedBox(height: 6),
-                const Center(child: Text('۰۹۳۶۵۹۵۲۸۰۰', style: TextStyle(color: _muted, fontSize: 12))),
+                const SizedBox(height: 8),
+                const Center(child: Text('۰۹۳۶۵۹۵۲۸۰۰', style: TextStyle(color: _muted, fontSize: 13))),
               ],
             ),
           ),
         ),
       ),
-    );
+    ));
   }
 
   void _showConsultation() {
@@ -286,46 +278,41 @@ class _MainShellState extends State<MainShell> {
     final description = companionDescriptions.length > index
         ? companionDescriptions[index]
         : item.subtitle;
-    showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      builder: (sheetContext) => SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(22, 24, 22, 24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(child: Container(width: 42, height: 4, decoration: BoxDecoration(color: const Color(0xFFCBD5E1), borderRadius: BorderRadius.circular(5)))),
-              const SizedBox(height: 22),
-              Icon(item.icon, color: _teal, size: 34),
-              const SizedBox(height: 14),
-              Text(item.title, style: const TextStyle(color: _ink, fontWeight: FontWeight.w900, fontSize: 19)),
-              const SizedBox(height: 12),
-              Text(description, style: const TextStyle(color: _muted, height: 1.9, fontSize: 13)),
-              const SizedBox(height: 18),
-              const Text('برای دریافت اطلاعات و مشاوره با کارگزار تماس بگیرید.', style: TextStyle(color: _ink, fontWeight: FontWeight.w600)),
-              const SizedBox(height: 14),
-              SizedBox(
-                width: double.infinity,
-                child: FilledButton.icon(
-                  onPressed: () => launchUrl(Uri(scheme: 'tel', path: '09365952800')),
-                  icon: const Icon(Icons.call_outlined),
-                  label: const Text('تماس با کارگزار'),
+    Navigator.of(context).push(MaterialPageRoute<void>(
+      builder: (_) => Directionality(
+        textDirection: TextDirection.rtl,
+        child: Scaffold(
+          appBar: AppBar(title: Text(item.title)),
+          body: SafeArea(
+            child: ListView(
+              padding: const EdgeInsets.fromLTRB(22, 24, 22, 32),
+              children: [
+                Icon(item.icon, color: _teal, size: 38),
+                const SizedBox(height: 18),
+                Text(item.title, style: const TextStyle(color: _ink, fontWeight: FontWeight.w900, fontSize: 20)),
+                const SizedBox(height: 14),
+                Text(description, style: const TextStyle(color: _muted, height: 2, fontSize: 14)),
+                const SizedBox(height: 24),
+                const Text('برای دریافت اطلاعات و مشاوره با کارگزار تماس بگیرید.', style: TextStyle(color: _ink, height: 1.8, fontWeight: FontWeight.w600)),
+                const SizedBox(height: 16),
+                SizedBox(
+                  width: double.infinity,
+                  child: FilledButton.icon(
+                    onPressed: () => launchUrl(Uri(scheme: 'tel', path: '09365952800')),
+                    icon: const Icon(Icons.call_outlined),
+                    label: const Text('تماس با کارگزار'),
+                  ),
                 ),
-              ),
-              const SizedBox(height: 6),
-              const Center(child: Text('۰۹۳۶۵۹۵۲۸۰۰', style: TextStyle(color: _muted, fontSize: 12))),
-            ],
+                const SizedBox(height: 8),
+                const Center(child: Text('۰۹۳۶۵۹۵۲۸۰۰', style: TextStyle(color: _muted, fontSize: 13))),
+              ],
+            ),
           ),
         ),
       ),
-    );
+    ));
   }
+
   @override Widget build(BuildContext context) => Scaffold(
     body: SafeArea(child: Stack(children: [
       PageView(
