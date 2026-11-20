@@ -58,8 +58,21 @@ jobs:
           chmod 600 "$RUNNER_TEMP/kargozar-ssh/id_ed25519" "$RUNNER_TEMP/kargozar-ssh/known_hosts"
           known_hosts_target="$DEPLOY_HOST"
           if [[ "$DEPLOY_PORT" != "22" ]]; then known_hosts_target="[$DEPLOY_HOST]:$DEPLOY_PORT"; fi
-          if ! ssh-keygen -F "$known_hosts_target" -f "$RUNNER_TEMP/kargozar-ssh/known_hosts" >/dev/null; then
+          matched_keys="$(ssh-keygen -F "$known_hosts_target" -f "$RUNNER_TEMP/kargozar-ssh/known_hosts" | awk '!/^#/ && NF >= 3 {print $2}' | sort -u)"
+          if [[ -z "$matched_keys" ]]; then
             echo "::error::No matching pre-verified host key in DEPLOY_KNOWN_HOSTS."
+            exit 1
+          fi
+          # Offer only algorithms represented by the pre-verified known_hosts entries.
+          host_key_algorithms=""
+          while IFS= read -r key_type; do
+            case "$key_type" in
+              ssh-ed25519|ecdsa-sha2-*|sk-ssh-ed25519@openssh.com|sk-ecdsa-sha2-*) host_key_algorithms="${host_key_algorithms:+$host_key_algorithms,}$key_type" ;;
+              ssh-rsa) host_key_algorithms="${host_key_algorithms:+$host_key_algorithms,}rsa-sha2-512,rsa-sha2-256,ssh-rsa" ;;
+            esac
+          done <<< "$matched_keys"
+          if [[ -z "$host_key_algorithms" ]]; then
+            echo "::error::DEPLOY_KNOWN_HOSTS contains no supported SSH host-key algorithm."
             exit 1
           fi
           cat > "$RUNNER_TEMP/kargozar-ssh/config" <<EOF
@@ -71,6 +84,7 @@ jobs:
             IdentitiesOnly yes
             BatchMode yes
             StrictHostKeyChecking yes
+            HostKeyAlgorithms $host_key_algorithms
             UserKnownHostsFile $RUNNER_TEMP/kargozar-ssh/known_hosts
             ConnectTimeout 15
           EOF
