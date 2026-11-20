@@ -3,7 +3,7 @@
   "category_key": "03-intellectual-property",
   "category_number": 3,
   "title": "ثبت برند و مالکیت فکری",
-  "status": "populated_draft_needs_1403_law_and_implementing_rules_review",
+  "status": "populated_draft_law_source_catalogued_implementation_review_required",
   "reviewed_at": "2026-11-21",
   "review_version": 2,
   "knowledge_mode": "hybrid",
@@ -46,12 +46,12 @@
         "estimate": null
       },
       "issuing_authority": null,
-      "official_source": "قانون حمایت از مالکیت صنعتی مصوب ۱۴۰۳/۰۳/۰۱ مجلس شورای اسلامی؛ مواد و آیین‌نامه‌های اجرایی مرتبط باید برای موضوع دقیق خدمت تطبیق داده شوند.",
-      "source_url": "https://rc.majlis.ir/fa/law/print_version/1809131",
-      "source_date": "1403-03-01",
+      "official_source": "قانون حمایت از مالکیت صنعتی ۲۰۲۴؛ مرجع ثبت مالکیت صنعتی سازمان ثبت اسناد و املاک کشور",
+      "source_url": "https://www.wipo.int/wipolex/en/legislation/details/23341",
+      "source_date": "2024-06-12",
       "verified_at": null,
       "reviewed_at": "2026-11-21",
-      "verification_status": "draft_based_on_1403_industrial_property_law_needs_current_implementing_rules_and_portal_review",
+      "verification_status": "law_catalog_verified_implementation_and_live_procedure_review_required",
       "shared_requirement_refs": [],
       "activity_specific_requirements": [],
       "customer_questions": [
@@ -69,7 +69,8 @@
         "پیشنهاد طبقات و متن فهرست کالا/خدمات",
         "اظهارنامه و پیگیری پرونده"
       ],
-      "notes": "قانون حمایت از مالکیت صنعتی مصوب ۱۴۰۳ قانون سال ۱۳۸۶ ثبت اختراعات، طرح‌های صنعتی و علائم تجاری را از تاریخ لازم‌الاجرا شدن نسخ کرده است؛ آیین‌نامه قبلی فقط تا حدی که با قانون جدید مغایر نباشد قابل اعمال است. جزئیات اجرایی، هزینه و مسیر سامانه باید روزآمد بررسی شود."
+      "notes": "قانون حمایت از مالکیت صنعتی مصوب ۱۴۰۳ قانون سال ۱۳۸۶ ثبت اختراعات، طرح‌های صنعتی و علائم تجاری را از تاریخ لازم‌الاجرا شدن نسخ کرده است؛ آیین‌نامه قبلی فقط تا حدی که با قانون جدید مغایر نباشد قابل اعمال است. جزئیات اجرایی، هزینه و مسیر سامانه باید روزآمد بررسی شود.",
+      "source_date_note": "تاریخ تصویب درج‌شده در WIPO Lex؛ تاریخ ابلاغ/لازم‌الاجرا شدن و مقررات اجرایی باید جداگانه کنترل شود"
     },
     {
       "service_key": "logo-registration",
@@ -105,12 +106,12 @@
         "estimate": null
       },
       "issuing_authority": null,
-      "official_source": "قانون حمایت از مالکیت صنعتی مصوب ۱۴۰۳/۰۳/۰۱ مجلس شورای اسلامی؛ مواد و آیین‌نامه‌های اجرایی مرتبط باید برای موضوع دقیق خدمت تطبیق داده شوند.",
-      "source_url": "https://rc.majlis.ir/fa/law/print_version/1809131",
-      "source_date": "1403-03-01",
+      "official_source": "قانون حمایت از مالکیت صنعتی ۲۰۲۴؛ مرجع ثبت مالکیت صنعتی سازمان ثبت اسناد و املاک کشور",
+      "source_url": "https://www.wipo.int/wipolex/en/legislation/details/23341",
+      "source_date": "2024-06-12",
       "verified_at": null,
       "reviewed_at": "2026-11-21",
-      "verification_status": "draft_based_on_1403_industrial_property_law_needs_current_implementing_rules_and_portal_review",
+      "verification_status": "law_catalog_verified_implementation_and_live_procedure_review_required",
       "shared_requirement_refs": [],
       "activity_specific_requirements": [],
       "customer_questions": [
@@ -127,7 +128,8 @@
         "ارزیابی مقدماتی قابلیت ثبت",
         "پرونده اظهارنامه و پیگیری"
       ],
-      "notes": "قانون حمایت از مالکیت صنعتی مصوب ۱۴۰۳ قانون سال ۱۳۸۶ ثبت اختراعات، طرح‌های صنعتی و علائم تجاری را از تاریخ لازم‌الاجرا شدن نسخ کرده است؛ آیین‌نامه قبلی فقط تا حدی که با قانون جدید مغایر نباشد قابل اعمال است. جزئیات اجرایی، هزینه و مسیر سامانه باید روزآمد بررسی شود."
+      "notes": "قانون حمایت از مالکیت صنعتی مصوب ۱۴۰۳ قانون سال ۱۳۸۶ ثبت اختراعات، طرح‌های صنعتی و علائم تجاری را از تاریخ لازم‌الاجرا شدن نسخ کرده است؛ آیین‌نامه قبلی فقط تا حدی که با قانون جدید مغایر نباشد قابل اعمال است. جزئیات اجرایی، هزینه و مسیر سامانه باید روزآمد بررسی شود.",
+      "source_date_note": "تاریخ تصویب درج‌شده در WIPO Lex؛ تاریخ ابلاغ/لازم‌الاجرا شدن و مقررات اجرایی باید جداگانه کنترل شود"
     },
     {
       "service_key": "industrial-design-registration",
@@ -163,12 +165,12 @@
         "estimate": null
       },
       "issuing_authority": null,
-      "official_source": "قانون حمایت از مالکیت صنعتی مصوب ۱۴۰۳/۰۳/۰۱ مجلس شورای اسلامی؛ مواد و آیین‌نامه‌های اجرایی مرتبط باید برای موضوع دقیق خدمت تطبیق داده شوند.",
-      "source_url": "https://rc.majlis.ir/fa/law/print_version/1809131",
-      "source_date": "1403-03-01",
+      "official_source": "قانون حمایت از مالکیت صنعتی ۲۰۲۴؛ مرجع ثبت مالکیت صنعتی سازمان ثبت اسناد و املاک کشور",
+      "source_url": "https://www.wipo.int/wipolex/en/legislation/details/23341",
+      "source_date": "2024-06-12",
       "verified_at": null,
       "reviewed_at": "2026-11-21",
-      "verification_status": "draft_based_on_1403_industrial_property_law_needs_current_implementing_rules_and_portal_review",
+      "verification_status": "law_catalog_verified_implementation_and_live_procedure_review_required",
       "shared_requirement_refs": [],
       "activity_specific_requirements": [],
       "customer_questions": [
@@ -184,7 +186,8 @@
         "آماده‌سازی تصاویر و توصیف",
         "اظهارنامه و پیگیری پرونده"
       ],
-      "notes": "قانون حمایت از مالکیت صنعتی مصوب ۱۴۰۳ قانون سال ۱۳۸۶ ثبت اختراعات، طرح‌های صنعتی و علائم تجاری را از تاریخ لازم‌الاجرا شدن نسخ کرده است؛ آیین‌نامه قبلی فقط تا حدی که با قانون جدید مغایر نباشد قابل اعمال است. جزئیات اجرایی، هزینه و مسیر سامانه باید روزآمد بررسی شود."
+      "notes": "قانون حمایت از مالکیت صنعتی مصوب ۱۴۰۳ قانون سال ۱۳۸۶ ثبت اختراعات، طرح‌های صنعتی و علائم تجاری را از تاریخ لازم‌الاجرا شدن نسخ کرده است؛ آیین‌نامه قبلی فقط تا حدی که با قانون جدید مغایر نباشد قابل اعمال است. جزئیات اجرایی، هزینه و مسیر سامانه باید روزآمد بررسی شود.",
+      "source_date_note": "تاریخ تصویب درج‌شده در WIPO Lex؛ تاریخ ابلاغ/لازم‌الاجرا شدن و مقررات اجرایی باید جداگانه کنترل شود"
     },
     {
       "service_key": "invention-registration",
@@ -220,12 +223,12 @@
         "estimate": null
       },
       "issuing_authority": null,
-      "official_source": "قانون حمایت از مالکیت صنعتی مصوب ۱۴۰۳/۰۳/۰۱ مجلس شورای اسلامی؛ مواد و آیین‌نامه‌های اجرایی مرتبط باید برای موضوع دقیق خدمت تطبیق داده شوند.",
-      "source_url": "https://rc.majlis.ir/fa/law/print_version/1809131",
-      "source_date": "1403-03-01",
+      "official_source": "قانون حمایت از مالکیت صنعتی ۲۰۲۴؛ مرجع ثبت مالکیت صنعتی سازمان ثبت اسناد و املاک کشور",
+      "source_url": "https://www.wipo.int/wipolex/en/legislation/details/23341",
+      "source_date": "2024-06-12",
       "verified_at": null,
       "reviewed_at": "2026-11-21",
-      "verification_status": "draft_based_on_1403_industrial_property_law_needs_current_implementing_rules_and_portal_review",
+      "verification_status": "law_catalog_verified_implementation_and_live_procedure_review_required",
       "shared_requirement_refs": [],
       "activity_specific_requirements": [],
       "customer_questions": [
@@ -242,7 +245,8 @@
         "گزارش اولیه قابلیت حمایت و ریسک",
         "پیش‌نویس مستندات فنی و اظهارنامه"
       ],
-      "notes": "قانون حمایت از مالکیت صنعتی مصوب ۱۴۰۳ قانون سال ۱۳۸۶ ثبت اختراعات، طرح‌های صنعتی و علائم تجاری را از تاریخ لازم‌الاجرا شدن نسخ کرده است؛ آیین‌نامه قبلی فقط تا حدی که با قانون جدید مغایر نباشد قابل اعمال است. جزئیات اجرایی، هزینه و مسیر سامانه باید روزآمد بررسی شود."
+      "notes": "قانون حمایت از مالکیت صنعتی مصوب ۱۴۰۳ قانون سال ۱۳۸۶ ثبت اختراعات، طرح‌های صنعتی و علائم تجاری را از تاریخ لازم‌الاجرا شدن نسخ کرده است؛ آیین‌نامه قبلی فقط تا حدی که با قانون جدید مغایر نباشد قابل اعمال است. جزئیات اجرایی، هزینه و مسیر سامانه باید روزآمد بررسی شود.",
+      "source_date_note": "تاریخ تصویب درج‌شده در WIPO Lex؛ تاریخ ابلاغ/لازم‌الاجرا شدن و مقررات اجرایی باید جداگانه کنترل شود"
     }
   ],
   "data_quality_rules": [
@@ -260,5 +264,14 @@
       "گزارش مغایرت از پرونده واقعی"
     ]
   },
-  "content_policy": "هر خدمت تعریف، دامنه، شرایط، مدارک، مراحل، خروجی، پرسش‌های تشخیصی و موارد ارجاع دارد؛ هزینه و زمان تا تأیید روزآمد اعلام قطعی نمی‌شوند."
+  "content_policy": "هر خدمت تعریف، دامنه، شرایط، مدارک، مراحل، خروجی، پرسش‌های تشخیصی و موارد ارجاع دارد؛ هزینه و زمان تا تأیید روزآمد اعلام قطعی نمی‌شوند.",
+  "source_review_notes": {
+    "primary_law": "قانون حمایت از مالکیت صنعتی ۲۰۲۴",
+    "primary_source": "WIPO Lex، نمایه رسمی قانون ملی",
+    "source_url": "https://www.wipo.int/wipolex/en/legislation/details/23341",
+    "source_date": "2024-06-12",
+    "legal_effect": "قانون جدید، قانون ثبت اختراعات، طرح‌های صنعتی و علائم تجاری ۱۳۸۶ را نسخ کرده است؛ آیین‌نامه سابق فقط در حدود عدم مغایرت با قانون جدید قابل استناد است.",
+    "verification_status": "international_official_law_catalog_verified_text_and_implementation_rules_still_need_iranian_primary_source_review",
+    "note": "متن رسمی فارسی قانون از پیوند منبع قانون‌گذاری مجلس در صفحه WIPO قابل دسترسی است. شروط و مدارک جزئی هر پرونده، به‌ویژه طبقات علامت و ادله فعالیت، باید با آیین‌نامه اجرایی جدید و سامانه روز تطبیق داده شود."
+  }
 }
