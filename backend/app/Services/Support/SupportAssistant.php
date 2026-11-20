@@ -128,7 +128,7 @@ class SupportAssistant
         $date = strtr($date, $digits);
         $time = strtr($time, $digits);
 
-        return 'تاریخ و ساعت فعلی تهران: '.$date، ساعت '.$time.' (منطقه زمانی Asia/Tehran).';
+        return 'تاریخ و ساعت فعلی تهران: '.$date.'، ساعت '.$time.' (منطقه زمانی Asia/Tehran).';
     }
 
     /**
@@ -138,6 +138,10 @@ class SupportAssistant
     private function publicWebReply(string $question): ?string
     {
         if (! (bool) config('support_assistant.web_search.enabled', true)) {
+            return null;
+        }
+
+        if ((string) config('support_assistant.web_search.api_key', '') === '') {
             return null;
         }
 
