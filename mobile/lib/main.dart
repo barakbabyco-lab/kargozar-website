@@ -547,12 +547,23 @@ class _ServicesPageState extends State<ServicesPage> {
 
   @override
   Widget build(BuildContext context) {
-    final normalizedQuery = _query.trim();
-    final matchingServices = services.where((service) {
+    final normalizedQuery = _query.trim().toLowerCase();
+    final searchableServices = <MapEntry<String, ServiceCategory>>[];
+    for (final parent in serviceTaxonomy) {
+      final leaves = parent.children.isEmpty
+          ? <ServiceCategory>[parent]
+          : parent.children;
+      for (final leaf in leaves) {
+        searchableServices.add(MapEntry(parent.name, leaf));
+      }
+    }
+
+    final matchingServices = searchableServices.where((entry) {
       if (normalizedQuery.isEmpty) return true;
-      return service.title.contains(normalizedQuery) ||
-          service.category.contains(normalizedQuery) ||
-          service.subtitle.contains(normalizedQuery);
+      final description = serviceDescriptions[entry.value.slug] ?? '';
+      return entry.value.name.toLowerCase().contains(normalizedQuery) ||
+          entry.key.toLowerCase().contains(normalizedQuery) ||
+          description.toLowerCase().contains(normalizedQuery);
     }).toList();
     final visibleServices = normalizedQuery.isEmpty
         ? matchingServices.take(4).toList()
@@ -662,7 +673,7 @@ class _ServicesPageState extends State<ServicesPage> {
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 18, 16, 8),
           child: Text(
-            normalizedQuery.isEmpty ? 'خدمات پرکاربرد' : 'نتایج جست‌وجو',
+            normalizedQuery.isEmpty ? 'خدمات منتخب' : 'نتایج جست‌وجو',
             textAlign: TextAlign.right,
             style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w900, color: _navy),
           ),
@@ -674,9 +685,22 @@ class _ServicesPageState extends State<ServicesPage> {
           )
         else
           ...visibleServices.map(
-            (service) => Padding(
+            (entry) => Padding(
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
-              child: ServiceListTile(service: service, onRequest: widget.onRequest),
+              child: Material(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(13),
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(13),
+                  onTap: () => widget.onOpenCategory(entry.value),
+                  child: ListTile(
+                    leading: const Icon(Icons.description_outlined, color: _teal),
+                    title: Text(entry.value.name, style: const TextStyle(color: _ink, fontSize: 13, fontWeight: FontWeight.w700)),
+                    subtitle: Text(entry.key, style: const TextStyle(color: _muted, fontSize: 11)),
+                    trailing: const Icon(Icons.chevron_left_rounded, color: _muted),
+                  ),
+                ),
+              ),
             ),
           ),
         const SizedBox(height: 24),
