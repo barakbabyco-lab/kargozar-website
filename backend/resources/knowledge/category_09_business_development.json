@@ -3,9 +3,9 @@
   "category_key": "09-business-development",
   "category_number": 9,
   "title": "خدمات توسعه کسب‌وکار",
-  "status": "draft_needs_review",
-  "reviewed_at": null,
-  "review_version": 1,
+  "status": "populated_draft_needs_domain_and_source_review",
+  "reviewed_at": "2026-11-21",
+  "review_version": 2,
   "knowledge_mode": "local_with_vendor_verification",
   "scope": "بانک راهنما و نیازسنجی داخلی؛ امکانات، قیمت، پشتیبانی و سازگاری محصولات هنگام پیشنهاد به‌روز بررسی شود.",
   "services": [
@@ -13,169 +13,390 @@
       "service_key": "accounting-software",
       "title": "نرم‌افزار حسابداری و مالی",
       "knowledge_mode": "local",
-      "status": "draft_needs_review",
-      "scope": null,
-      "eligibility": null,
-      "conditions": [],
-      "documents": [],
-      "steps": [],
-      "fees": null,
-      "issuance_time": null,
+      "status": "populated_draft_needs_source_review",
+      "scope": "کسب‌وکارهای کوچک و متوسط یا واحدهای دارای نیاز مالی مشخص.",
+      "eligibility": "کسب‌وکارهای کوچک و متوسط یا واحدهای دارای نیاز مالی مشخص.",
+      "conditions": [
+        "نیازسنجی تعداد کاربران، شعب، کالا/خدمت و روش فروش",
+        "سازگاری نرم‌افزار با تکالیف مالیاتی و صورتحساب الکترونیکی باید روزآمد بررسی شود",
+        "مالکیت داده، پشتیبان‌گیری، سطح دسترسی و آموزش باید در قرارداد روشن باشد"
+      ],
+      "documents": [
+        "اطلاعات کسب‌وکار و ساختار حساب‌ها",
+        "فهرست کالا/خدمات و مشتریان/تأمین‌کنندگان",
+        "مانده‌های اول دوره و داده‌های انتقالی در صورت وجود"
+      ],
+      "steps": [
+        "نیازسنجی و مقایسه گزینه‌ها",
+        "انتخاب نسخه و مجوز استفاده",
+        "تعریف شرکت، کاربران، حساب‌ها و کالاها",
+        "انتقال داده و آزمون گردش‌ها",
+        "آموزش و تحویل گزارش‌ها"
+      ],
+      "fees": {
+        "status": "not_published_without_current_provider_or_official_quote",
+        "amount": null
+      },
+      "issuance_time": {
+        "status": "case_and_authority_dependent_not_guaranteed",
+        "estimate": null
+      },
       "issuing_authority": null,
       "official_source": null,
       "source_url": null,
       "source_date": null,
       "verified_at": null,
-      "reviewed_at": null,
-      "verification_status": "unverified",
+      "reviewed_at": "2026-11-21",
+      "verification_status": "draft_needs_primary_source_or_provider_validation",
       "shared_requirement_refs": [],
       "activity_specific_requirements": [],
-      "customer_questions": [],
-      "expert_escalation_rules": []
+      "customer_questions": [
+        "نوع فعالیت و حجم اسناد ماهانه چیست؟",
+        "چند کاربر و شعبه دارید؟",
+        "انبار و فروش آنلاین دارید؟",
+        "صورتحساب الکترونیکی یا اتصال مالیاتی لازم دارید؟"
+      ],
+      "expert_escalation_rules": [
+        "حسابداری چندشرکتی، تولید، ارزی، انبار پیچیده یا نیاز به مشاور مالیاتی"
+      ],
+      "what_is_it": "انتخاب، راه‌اندازی و پیکربندی نرم‌افزار حسابداری متناسب با اندازه کسب‌وکار، نوع فروش، انبار، مالیات و سطح گزارش‌گیری.",
+      "deliverables": [
+        "نرم‌افزار پیکربندی‌شده، داده اولیه و آموزش"
+      ],
+      "notes": "این محتوای پایه برای گفت‌وگوی تشخیصی و چک‌لیست اجرایی است؛ شروط حقوقی/سامانه‌ای، هزینه و زمان تا اتصال به منبع رسمی یا تأیید متخصص، قطعی اعلام نشود."
     },
     {
       "service_key": "sales-invoicing",
       "title": "صدور فاکتور و مدیریت فروش",
       "knowledge_mode": "local",
-      "status": "draft_needs_review",
-      "scope": null,
-      "eligibility": null,
-      "conditions": [],
-      "documents": [],
-      "steps": [],
-      "fees": null,
-      "issuance_time": null,
+      "status": "populated_draft_needs_source_review",
+      "scope": "فروشگاه‌ها، تولیدکنندگان، عمده‌فروشان و ارائه‌دهندگان خدمات.",
+      "eligibility": "فروشگاه‌ها، تولیدکنندگان، عمده‌فروشان و ارائه‌دهندگان خدمات.",
+      "conditions": [
+        "چرخه فروش و سطوح قیمت/تخفیف باید مشخص شود",
+        "قالب فاکتور و اتصال به سامانه مؤدیان حسب تکلیف قانونی و نرم‌افزار بررسی شود",
+        "کنترل مرجوعی، ابطال و دسترسی کاربران لازم است"
+      ],
+      "documents": [
+        "فهرست کالا/خدمات و قیمت‌ها",
+        "اطلاعات مشتریان و روش‌های پرداخت",
+        "قواعد تخفیف، مرجوعی و تسویه"
+      ],
+      "steps": [
+        "نقشه‌برداری چرخه فروش",
+        "تعریف کالاها، قیمت‌ها و کاربران",
+        "راه‌اندازی فاکتور و دریافت‌ها",
+        "اتصال ابزارهای لازم و آزمون",
+        "آموزش و گزارش‌گیری"
+      ],
+      "fees": {
+        "status": "not_published_without_current_provider_or_official_quote",
+        "amount": null
+      },
+      "issuance_time": {
+        "status": "case_and_authority_dependent_not_guaranteed",
+        "estimate": null
+      },
       "issuing_authority": null,
       "official_source": null,
       "source_url": null,
       "source_date": null,
       "verified_at": null,
-      "reviewed_at": null,
-      "verification_status": "unverified",
+      "reviewed_at": "2026-11-21",
+      "verification_status": "draft_needs_primary_source_or_provider_validation",
       "shared_requirement_refs": [],
       "activity_specific_requirements": [],
-      "customer_questions": [],
-      "expert_escalation_rules": []
+      "customer_questions": [
+        "فروش حضوری است یا آنلاین/عمده؟",
+        "چند نوع قیمت و تخفیف دارید؟",
+        "فاکتور رسمی/الکترونیکی نیاز دارید؟"
+      ],
+      "expert_escalation_rules": [
+        "صورتحساب‌های پیچیده مالیاتی، فروش چندارزی یا اتصال بین چند سامانه"
+      ],
+      "what_is_it": "سامانه ثبت سفارش، پیش‌فاکتور، فاکتور، دریافت وجه، مرجوعی و گزارش فروش.",
+      "deliverables": [
+        "فرایند فروش و صدور فاکتور پیکربندی‌شده"
+      ],
+      "notes": "این محتوای پایه برای گفت‌وگوی تشخیصی و چک‌لیست اجرایی است؛ شروط حقوقی/سامانه‌ای، هزینه و زمان تا اتصال به منبع رسمی یا تأیید متخصص، قطعی اعلام نشود."
     },
     {
       "service_key": "payroll-hr",
       "title": "حقوق و دستمزد و مدیریت پرسنل",
       "knowledge_mode": "local",
-      "status": "draft_needs_review",
-      "scope": null,
-      "eligibility": null,
-      "conditions": [],
-      "documents": [],
-      "steps": [],
-      "fees": null,
-      "issuance_time": null,
+      "status": "populated_draft_needs_source_review",
+      "scope": "کارفرمایان دارای نیروی انسانی و پرداخت‌های منظم.",
+      "eligibility": "کارفرمایان دارای نیروی انسانی و پرداخت‌های منظم.",
+      "conditions": [
+        "اطلاعات قرارداد، کارکرد و مزایا باید کامل باشد",
+        "قواعد سالانه حداقل مزد، بیمه و مالیات حقوق باید برای دوره مربوط به‌روز شود",
+        "محاسبه نهایی حقوق نیازمند تأیید کارفرما و کنترل متخصص مربوط است"
+      ],
+      "documents": [
+        "قرارداد و مشخصات کارکنان",
+        "اطلاعات کارکرد، مرخصی، اضافه‌کاری و مزایا",
+        "اطلاعات بیمه و مالیات حقوق",
+        "اطلاعات حساب پرداخت"
+      ],
+      "steps": [
+        "جمع‌آوری اطلاعات پرسنلی و قراردادها",
+        "تعریف اجزای حقوق و قواعد محاسبه",
+        "ثبت کارکرد و کسورات",
+        "محاسبه و کنترل فیش‌ها",
+        "تهیه خروجی پرداخت و گزارش‌های قانونی طبق نیاز"
+      ],
+      "fees": {
+        "status": "not_published_without_current_provider_or_official_quote",
+        "amount": null
+      },
+      "issuance_time": {
+        "status": "case_and_authority_dependent_not_guaranteed",
+        "estimate": null
+      },
       "issuing_authority": null,
       "official_source": null,
       "source_url": null,
       "source_date": null,
       "verified_at": null,
-      "reviewed_at": null,
-      "verification_status": "unverified",
+      "reviewed_at": "2026-11-21",
+      "verification_status": "draft_needs_primary_source_or_provider_validation",
       "shared_requirement_refs": [],
       "activity_specific_requirements": [],
-      "customer_questions": [],
-      "expert_escalation_rules": []
+      "customer_questions": [
+        "چند نفر پرسنل دارید؟",
+        "حقوق ماهانه، ساعتی یا شیفتی است؟",
+        "نرم‌افزار فعلی دارید؟",
+        "ارسال لیست بیمه و مالیات حقوق هم نیاز دارید؟"
+      ],
+      "expert_escalation_rules": [
+        "اختلاف کارگری، محاسبه سنوات/بازخرید پیچیده، دعاوی یا مغایرت لیست بیمه"
+      ],
+      "what_is_it": "محاسبه و مدیریت حقوق و مزایا، کسورات، کارکرد، مرخصی، اضافه‌کاری و خروجی‌های پرداخت/بیمه/مالیات حقوق.",
+      "deliverables": [
+        "ساختار حقوق و دستمزد و فیش‌های محاسباتی",
+        "گزارش‌های قابل کنترل"
+      ],
+      "notes": "این محتوای پایه برای گفت‌وگوی تشخیصی و چک‌لیست اجرایی است؛ شروط حقوقی/سامانه‌ای، هزینه و زمان تا اتصال به منبع رسمی یا تأیید متخصص، قطعی اعلام نشود."
     },
     {
       "service_key": "human-resources",
       "title": "مدیریت منابع انسانی",
       "knowledge_mode": "local",
-      "status": "draft_needs_review",
-      "scope": null,
-      "eligibility": null,
-      "conditions": [],
-      "documents": [],
-      "steps": [],
-      "fees": null,
-      "issuance_time": null,
+      "status": "populated_draft_needs_source_review",
+      "scope": "کسب‌وکارهایی که می‌خواهند مدیریت کارکنان را استاندارد کنند.",
+      "eligibility": "کسب‌وکارهایی که می‌خواهند مدیریت کارکنان را استاندارد کنند.",
+      "conditions": [
+        "ساختار سازمانی و نقش‌ها باید روشن شود",
+        "داده کارکنان با رعایت محرمانگی و حداقل دسترسی نگهداری شود",
+        "فرایندها با قانون کار و سیاست‌های داخلی سازگار باشند"
+      ],
+      "documents": [
+        "چارت سازمانی و شرح شغل‌ها",
+        "فرم‌ها و رویه‌های فعلی",
+        "اطلاعات کلی تعداد و گروه کارکنان"
+      ],
+      "steps": [
+        "نیازسنجی و ترسیم وضعیت فعلی",
+        "طراحی نقش‌ها و فرایندهای کلیدی",
+        "ساخت فرم‌ها و شاخص‌ها",
+        "پیاده‌سازی ابزار و آموزش مدیران",
+        "بازبینی و بهبود دوره‌ای"
+      ],
+      "fees": {
+        "status": "not_published_without_current_provider_or_official_quote",
+        "amount": null
+      },
+      "issuance_time": {
+        "status": "case_and_authority_dependent_not_guaranteed",
+        "estimate": null
+      },
       "issuing_authority": null,
       "official_source": null,
       "source_url": null,
       "source_date": null,
       "verified_at": null,
-      "reviewed_at": null,
-      "verification_status": "unverified",
+      "reviewed_at": "2026-11-21",
+      "verification_status": "draft_needs_primary_source_or_provider_validation",
       "shared_requirement_refs": [],
       "activity_specific_requirements": [],
-      "customer_questions": [],
-      "expert_escalation_rules": []
+      "customer_questions": [
+        "چند نفر و چند واحد دارید؟",
+        "بزرگ‌ترین مشکل منابع انسانی چیست؟",
+        "جذب، حضورغیاب یا ارزیابی عملکرد کدام اولویت دارد؟"
+      ],
+      "expert_escalation_rules": [
+        "اخراج/تنبیه، تبعیض، شکایت کارکنان یا پردازش داده حساس"
+      ],
+      "what_is_it": "طراحی فرایندهای جذب، پرونده پرسنلی، حضور و غیاب، ارزیابی عملکرد، آموزش و نگهداشت نیروی انسانی.",
+      "deliverables": [
+        "فرایندها، فرم‌ها، شرح شغل و شاخص‌های پیشنهادی"
+      ],
+      "notes": "این محتوای پایه برای گفت‌وگوی تشخیصی و چک‌لیست اجرایی است؛ شروط حقوقی/سامانه‌ای، هزینه و زمان تا اتصال به منبع رسمی یا تأیید متخصص، قطعی اعلام نشود."
     },
     {
       "service_key": "contract-management",
       "title": "مدیریت قراردادها",
       "knowledge_mode": "local",
-      "status": "draft_needs_review",
-      "scope": null,
-      "eligibility": null,
-      "conditions": [],
-      "documents": [],
-      "steps": [],
-      "fees": null,
-      "issuance_time": null,
+      "status": "populated_draft_needs_source_review",
+      "scope": "کسب‌وکارهایی با قراردادهای متعدد یا تعهدات زمان‌دار.",
+      "eligibility": "کسب‌وکارهایی با قراردادهای متعدد یا تعهدات زمان‌دار.",
+      "conditions": [
+        "انواع قرارداد، گردش تأیید و نقش کاربران باید مشخص باشد",
+        "سطح دسترسی، نسخه‌بندی و ثبت رویدادها اهمیت دارد",
+        "امضای الکترونیکی فقط در حدود اعتبار و بستر قانونی مورد استفاده قرار گیرد"
+      ],
+      "documents": [
+        "نمونه قراردادها و پیوست‌ها",
+        "فهرست طرف‌ها و صاحبان امضا",
+        "فرایندهای تأیید و تقویم تعهدات"
+      ],
+      "steps": [
+        "طبقه‌بندی قراردادها",
+        "طراحی قالب و گردش تأیید",
+        "تعریف هشدارها و تعهدات",
+        "انتقال قراردادهای موجود",
+        "آموزش و پایش تمدید/خاتمه"
+      ],
+      "fees": {
+        "status": "not_published_without_current_provider_or_official_quote",
+        "amount": null
+      },
+      "issuance_time": {
+        "status": "case_and_authority_dependent_not_guaranteed",
+        "estimate": null
+      },
       "issuing_authority": null,
       "official_source": null,
       "source_url": null,
       "source_date": null,
       "verified_at": null,
-      "reviewed_at": null,
-      "verification_status": "unverified",
+      "reviewed_at": "2026-11-21",
+      "verification_status": "draft_needs_primary_source_or_provider_validation",
       "shared_requirement_refs": [],
       "activity_specific_requirements": [],
-      "customer_questions": [],
-      "expert_escalation_rules": []
+      "customer_questions": [
+        "چند قرارداد فعال دارید؟",
+        "چه کسانی باید تأیید کنند؟",
+        "هشدار تمدید و تعهدات لازم است؟"
+      ],
+      "expert_escalation_rules": [
+        "اختلاف حقوقی، امضای الکترونیکی خاص، آرشیو اسناد محرمانه یا یکپارچه‌سازی سازمانی"
+      ],
+      "what_is_it": "سامانه یا فرایند کنترل چرخه قرارداد از درخواست و پیش‌نویس تا تأیید، امضا، تعهدات، تمدید و خاتمه.",
+      "deliverables": [
+        "ساختار مدیریت قرارداد و قالب‌ها/هشدارها"
+      ],
+      "notes": "این محتوای پایه برای گفت‌وگوی تشخیصی و چک‌لیست اجرایی است؛ شروط حقوقی/سامانه‌ای، هزینه و زمان تا اتصال به منبع رسمی یا تأیید متخصص، قطعی اعلام نشود."
     },
     {
       "service_key": "crm",
       "title": "مدیریت ارتباط با مشتریان (CRM)",
       "knowledge_mode": "local",
-      "status": "draft_needs_review",
-      "scope": null,
-      "eligibility": null,
-      "conditions": [],
-      "documents": [],
-      "steps": [],
-      "fees": null,
-      "issuance_time": null,
+      "status": "populated_draft_needs_source_review",
+      "scope": "کسب‌وکارهایی که مشتریان بالقوه و فعلی و پیگیری فروش دارند.",
+      "eligibility": "کسب‌وکارهایی که مشتریان بالقوه و فعلی و پیگیری فروش دارند.",
+      "conditions": [
+        "مراحل فروش و شاخص‌های موفقیت باید تعریف شود",
+        "منابع ورود سرنخ و مسئول هر پیگیری مشخص شود",
+        "حریم خصوصی، رضایت تماس و سطح دسترسی رعایت شود"
+      ],
+      "documents": [
+        "فهرست مشتریان و سرنخ‌ها",
+        "مراحل فروش و دسته‌بندی محصولات/خدمات",
+        "قواعد پیگیری و پیام‌ها"
+      ],
+      "steps": [
+        "تحلیل چرخه جذب تا فروش",
+        "طراحی قیف فروش و فیلدها",
+        "انتقال داده و تعریف کاربران",
+        "تنظیم یادآوری و گزارش‌ها",
+        "آموزش و پایش نرخ تبدیل"
+      ],
+      "fees": {
+        "status": "not_published_without_current_provider_or_official_quote",
+        "amount": null
+      },
+      "issuance_time": {
+        "status": "case_and_authority_dependent_not_guaranteed",
+        "estimate": null
+      },
       "issuing_authority": null,
       "official_source": null,
       "source_url": null,
       "source_date": null,
       "verified_at": null,
-      "reviewed_at": null,
-      "verification_status": "unverified",
+      "reviewed_at": "2026-11-21",
+      "verification_status": "draft_needs_primary_source_or_provider_validation",
       "shared_requirement_refs": [],
       "activity_specific_requirements": [],
-      "customer_questions": [],
-      "expert_escalation_rules": []
+      "customer_questions": [
+        "مشتری از چه کانال‌هایی وارد می‌شود؟",
+        "چند نفر فروشنده/پشتیبان دارید؟",
+        "مهم‌ترین گزارش موردنیاز چیست؟"
+      ],
+      "expert_escalation_rules": [
+        "انتقال داده حجیم، اتصال چندکاناله یا پردازش داده شخصی حساس"
+      ],
+      "what_is_it": "مدیریت سرنخ، مشتری، فرصت فروش، پیگیری‌ها، ارتباطات و خدمات پس از فروش در یک فرایند متمرکز.",
+      "deliverables": [
+        "CRM پیکربندی‌شده و فرایند پیگیری مشتری"
+      ],
+      "notes": "این محتوای پایه برای گفت‌وگوی تشخیصی و چک‌لیست اجرایی است؛ شروط حقوقی/سامانه‌ای، هزینه و زمان تا اتصال به منبع رسمی یا تأیید متخصص، قطعی اعلام نشود."
     },
     {
       "service_key": "inventory-management",
       "title": "مدیریت انبار و موجودی",
       "knowledge_mode": "local",
-      "status": "draft_needs_review",
-      "scope": null,
-      "eligibility": null,
-      "conditions": [],
-      "documents": [],
-      "steps": [],
-      "fees": null,
-      "issuance_time": null,
+      "status": "populated_draft_needs_source_review",
+      "scope": "فروشگاه‌ها، توزیع‌کنندگان و تولیدکنندگان دارای موجودی فیزیکی.",
+      "eligibility": "فروشگاه‌ها، توزیع‌کنندگان و تولیدکنندگان دارای موجودی فیزیکی.",
+      "conditions": [
+        "واحد سنجش، کد کالا و ساختار انبار باید یکسان‌سازی شود",
+        "روش ارزش‌گذاری و ردیابی کالا با حسابداری و نیاز قانونی هماهنگ شود",
+        "برای کالاهای تاریخ‌دار/سریالی، ردیابی مناسب تعریف شود"
+      ],
+      "documents": [
+        "فهرست کالا و کدها",
+        "موجودی اول دوره و مکان انبارها",
+        "اسناد خرید، فروش، انتقال و ضایعات"
+      ],
+      "steps": [
+        "طراحی ساختار کدینگ و انبار",
+        "ثبت موجودی اولیه و اسناد",
+        "تعریف نقش‌ها و مجوزها",
+        "آزمون گردش‌ها و شمارش فیزیکی",
+        "آموزش و گزارش مغایرت/نقطه سفارش"
+      ],
+      "fees": {
+        "status": "not_published_without_current_provider_or_official_quote",
+        "amount": null
+      },
+      "issuance_time": {
+        "status": "case_and_authority_dependent_not_guaranteed",
+        "estimate": null
+      },
       "issuing_authority": null,
       "official_source": null,
       "source_url": null,
       "source_date": null,
       "verified_at": null,
-      "reviewed_at": null,
-      "verification_status": "unverified",
+      "reviewed_at": "2026-11-21",
+      "verification_status": "draft_needs_primary_source_or_provider_validation",
       "shared_requirement_refs": [],
       "activity_specific_requirements": [],
-      "customer_questions": [],
-      "expert_escalation_rules": []
+      "customer_questions": [
+        "چند انبار دارید؟",
+        "کالاها سریالی، رنگ/سایز یا تاریخ انقضا دارند؟",
+        "تولید هم دارید یا فقط خریدوفروش؟"
+      ],
+      "expert_escalation_rules": [
+        "انبار تولیدی پیچیده، ردیابی سری/بچ قانونی یا مغایرت مالی قابل‌توجه"
+      ],
+      "what_is_it": "کنترل ورود، خروج، موجودی، انبارها، سری/بچ، نقطه سفارش، ضایعات و مغایرت کالا.",
+      "deliverables": [
+        "ساختار انبار و نرم‌افزار/فرایند کنترل موجودی"
+      ],
+      "notes": "این محتوای پایه برای گفت‌وگوی تشخیصی و چک‌لیست اجرایی است؛ شروط حقوقی/سامانه‌ای، هزینه و زمان تا اتصال به منبع رسمی یا تأیید متخصص، قطعی اعلام نشود."
     }
   ],
   "data_quality_rules": [
@@ -192,5 +413,6 @@
       "تغییر هزینه یا زمان",
       "گزارش مغایرت از پرونده واقعی"
     ]
-  }
+  },
+  "content_policy": "هر خدمت تعریف، دامنه، شرایط، مدارک، مراحل، خروجی، پرسش‌های تشخیصی و موارد ارجاع دارد؛ هزینه و زمان تا تأیید روزآمد اعلام قطعی نمی‌شوند."
 }
