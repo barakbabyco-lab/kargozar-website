@@ -2,8 +2,10 @@
 
 namespace App\Services\Knowledge;
 
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\File;
 use RuntimeException;
+use Throwable;
 
 class KnowledgeDocumentRepository
 {
@@ -47,6 +49,27 @@ class KnowledgeDocumentRepository
                 'usable' => false,
                 'reason' => 'review_date_missing',
             ];
+        }
+
+        if (! empty($document['reviewed_at'])) {
+            try {
+                $reviewedAt = Carbon::parse($document['reviewed_at']);
+            } catch (Throwable) {
+                return [
+                    'document' => $document,
+                    'usable' => false,
+                    'reason' => 'review_date_invalid',
+                ];
+            }
+
+            $reviewInterval = (int) ($document['change_control']['review_interval_days'] ?? 90);
+            if ($reviewInterval < 1 || $reviewedAt->copy()->addDays($reviewInterval)->isPast()) {
+                return [
+                    'document' => $document,
+                    'usable' => false,
+                    'reason' => 'document_review_expired',
+                ];
+            }
         }
 
         return [
