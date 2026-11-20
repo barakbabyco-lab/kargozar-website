@@ -253,6 +253,18 @@ class _MainShellState extends State<MainShell> {
       return;
     }
 
+    await Navigator.of(context).push(MaterialPageRoute<void>(
+      builder: (_) => Directionality(
+        textDirection: TextDirection.rtl,
+        child: ServiceCategoryDetailPage(
+          category: category,
+          onBrowseServices: () => _showCategoryServices(category),
+        ),
+      ),
+    ));
+  }
+
+  Future<void> _showCategoryServices(ServiceCategory category) async {
     try {
       final items = await ServiceCatalogRepository(widget.api).getServices(category: category.slug);
       if (!mounted) return;
@@ -302,6 +314,7 @@ class _MainShellState extends State<MainShell> {
         );
       }
     }
+
   }
 
   void _showConsultation() {
@@ -1046,3 +1059,146 @@ void _showInfo(BuildContext context) {
     ),
   );
 }
+
+
+class ServiceCategoryDetailPage extends StatelessWidget {
+  const ServiceCategoryDetailPage({
+    super.key,
+    required this.category,
+    required this.onBrowseServices,
+  });
+
+  final ServiceCategory category;
+  final VoidCallback onBrowseServices;
+
+  String get _intro {
+    final name = category.name;
+    if (category.slug.startsWith('guild-')) {
+      return 'این بخش برای متقاضیان دریافت جواز کسب صنفی در گروه «$name» طراحی شده است. نوع فعالیت، محل کسب و شرایط اختصاصی رسته پس از بررسی اولیه مشخص می‌شود.';
+    }
+    if (category.slug == 'home-business-license') {
+      return 'این خدمت برای بررسی شرایط و پیگیری مجوز فعالیت‌های واجد شرایط در محیط مسکونی ارائه می‌شود. امکان صدور و شرایط دقیق، به نوع فعالیت و ضوابط مرجع صادرکننده بستگی دارد.';
+    }
+    if (category.slug == 'institutional-business-license') {
+      return 'این خدمت مربوط به بررسی و پیگیری مجوز فعالیت‌های صنعتی است. نوع مجوز و مرجع ذی‌صلاح بر اساس ماهیت فعالیت، ظرفیت، محل استقرار و الزامات قانونی تعیین می‌شود.';
+    }
+    if (category.slug.startsWith('commercial-card') || category.slug == 'chamber-membership') {
+      return 'این خدمت برای بررسی شرایط و پیگیری امور مرتبط با کارت بازرگانی یا عضویت اتاق بازرگانی ارائه می‌شود. مدارک و شرایط اشخاص حقیقی و حقوقی متفاوت است.';
+    }
+    if (category.slug.startsWith('company-') || category.slug.contains('company') || category.slug.contains('branch') || category.slug == 'legal-books' || category.slug == 'non-commercial-institutions') {
+      return 'کارگزار مراحل اداری و ثبتی مربوط به «$name» را بررسی و پیگیری می‌کند. نوع شخصیت حقوقی، آخرین وضعیت ثبتی و مدارک پرونده در تعیین مسیر انجام کار مؤثر است.';
+    }
+    if (category.slug.contains('trademark') || category.slug.contains('industrial-design') || category.slug.contains('patent') || category.slug.contains('copyright') || category.slug.contains('-ip')) {
+      return 'این خدمت در حوزه ثبت و حمایت از دارایی‌های فکری ارائه می‌شود. امکان ثبت، مدارک و مراحل رسیدگی با توجه به ماهیت اثر، علامت یا اختراع و سوابق مشابه بررسی می‌شود.';
+    }
+    if (category.slug.contains('health') || category.slug.contains('standard') || category.slug.contains('certificate') || category.slug.contains('tax') || category.slug.contains('police') || category.slug.contains('sib-salamat') || category.slug.contains('trade-rulings')) {
+      return 'این خدمت برای بررسی الزامات و پیگیری دریافت مدرک یا تأییدیه «$name» ارائه می‌شود. شرایط دقیق بر اساس نوع فعالیت، محل و ضوابط مرجع مربوط تعیین خواهد شد.';
+    }
+    return 'کارگزار درخواست «$name» را بررسی می‌کند، مدارک و مسیر انجام را به شما اعلام می‌کند و پیگیری مراحل اداری را تا حصول نتیجه بر عهده می‌گیرد.';
+  }
+
+  List<String> get _examples {
+    if (category.slug == 'guild-production') return const ['تولید پوشاک و منسوجات', 'تولید محصولات غذایی و خوراکی', 'تولید مصنوعات چوبی و فلزی', 'تولید محصولات هنری', 'صنایع‌دستی', 'تولید محصولات چرمی', 'تولید محصولات پلاستیکی', 'تولید لوازم و تجهیزات', 'تولید محصولات تزئینی', 'سایر فعالیت‌های تولیدی مجاز'];
+    if (category.slug == 'guild-technical-services') return const ['تعمیر لوازم خانگی', 'تعمیر تجهیزات الکترونیکی', 'خدمات برق‌کاری', 'تأسیسات ساختمان', 'تعمیر خودرو', 'تعمیر موتورسیکلت', 'خدمات رایانه و شبکه', 'تعمیر تجهیزات صنعتی', 'خدمات فنی ساختمان', 'سایر خدمات فنی مجاز'];
+    if (category.slug == 'guild-distribution-retail') return const ['فروشگاه پوشاک', 'فروشگاه مواد غذایی', 'فروشگاه لوازم خانگی', 'فروشگاه لوازم آرایشی و بهداشتی', 'فروشگاه ابزار و یراق', 'فروشگاه لوازم الکترونیکی', 'فروشگاه محصولات فرهنگی', 'عمده‌فروشی کالا', 'خرده‌فروشی کالا', 'سایر فعالیت‌های توزیعی مجاز'];
+    if (category.slug == 'guild-services') return const ['خدمات آموزشی', 'خدمات نظافتی', 'خدمات آرایشی و پیرایشی', 'خدمات پذیرایی', 'خدمات رایانه‌ای', 'خدمات تبلیغاتی', 'خدمات طراحی', 'خدمات مشاوره‌ای', 'خدمات نگهداری', 'سایر فعالیت‌های خدماتی مجاز'];
+    if (category.slug == 'company-incorporation') return const ['شرکت با مسئولیت محدود', 'شرکت سهامی خاص', 'شرکت سهامی عام', 'شرکت تضامنی', 'شرکت نسبی', 'شرکت مختلط سهامی', 'شرکت مختلط غیرسهامی', 'شرکت تعاونی'];
+    return const [];
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('معرفی خدمت')),
+      body: ListView(
+        padding: const EdgeInsets.fromLTRB(18, 12, 18, 28),
+        children: [
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: const Color(0xFFF8F3F8),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: const Color(0xFFE8DDE9)),
+            ),
+            child: Column(
+              children: [
+                const Icon(Icons.assignment_turned_in_outlined, color: _navy, size: 42),
+                const SizedBox(height: 12),
+                Text(category.name, textAlign: TextAlign.center,
+                  style: const TextStyle(fontSize: 19, fontWeight: FontWeight.w900, color: _ink)),
+                const SizedBox(height: 10),
+                const Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                  Icon(Icons.devices_outlined, size: 17, color: Color(0xFF16834A)),
+                  SizedBox(width: 6),
+                  Text('پیگیری غیرحضوری توسط کارگزار',
+                    style: TextStyle(color: Color(0xFF16834A), fontSize: 12, fontWeight: FontWeight.w800)),
+                ]),
+              ],
+            ),
+          ),
+          const SizedBox(height: 20),
+          _detailHeading('درباره این خدمت'),
+          Text(_intro, style: const TextStyle(color: _muted, height: 1.9, fontSize: 13)),
+          if (_examples.isNotEmpty) ...[
+            const SizedBox(height: 18),
+            _detailHeading('نمونه فعالیت‌های مرتبط'),
+            const Text('نمونه‌های زیر برای آشنایی هستند و عنوان رسمی رسته یا مجوز محسوب نمی‌شوند:',
+              style: TextStyle(color: _muted, fontSize: 11, height: 1.7)),
+            const SizedBox(height: 7),
+            ..._examples.map((item) => _detailBullet(item)),
+          ],
+          const SizedBox(height: 18),
+          _detailHeading('نحوه انجام غیرحضوری'),
+          const _detailBullet('ثبت درخواست و ارسال اطلاعات اولیه به‌صورت آنلاین'),
+          const _detailBullet('بررسی شرایط و اعلام مدارک متناسب با پرونده'),
+          const _detailBullet('تکمیل پرونده و پیگیری مراحل اداری توسط کارگزار'),
+          const _detailBullet('اطلاع‌رسانی وضعیت و نتیجه پیگیری به متقاضی'),
+          const SizedBox(height: 18),
+          _detailHeading('مدارک و اطلاعات موردنیاز'),
+          const Text('فهرست دقیق مدارک پس از بررسی نوع خدمت، مشخصات متقاضی و ضوابط مرجع مربوط اعلام می‌شود. کارگزار در آماده‌سازی، تکمیل و پیگیری مدارک قابل ارائه کمک می‌کند؛ مواردی که ارائه یا تأیید آن‌ها فقط از سوی متقاضی ممکن باشد، از ابتدا شفاف اعلام خواهد شد.',
+            style: TextStyle(color: _muted, height: 1.9, fontSize: 13)),
+          const SizedBox(height: 18),
+          _detailHeading('مدت زمان انجام'),
+          const Text('مدت زمان پس از بررسی پرونده و مشخص شدن مسیر قانونی اعلام می‌شود و به کامل بودن مدارک، استعلام‌ها و زمان پاسخ مرجع صادرکننده بستگی دارد. از اعلام زمان قطعی پیش از بررسی پرونده خودداری می‌شود.',
+            style: TextStyle(color: _muted, height: 1.9, fontSize: 13)),
+          const SizedBox(height: 18),
+          Container(
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              color: const Color(0xFFF0F8F3),
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: const Color(0xFFD6EBDD)),
+            ),
+            child: const Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Icon(Icons.home_work_outlined, color: Color(0xFF16834A), size: 22),
+              SizedBox(width: 10),
+              Expanded(child: Text('بدون مراجعه به دفتر کارگزار؛ دریافت اطلاعات، هماهنگی و پیگیری پرونده به‌صورت غیرحضوری انجام می‌شود. در صورت وجود الزام قانونی برای اقدام شخص متقاضی، پیش از شروع کار اطلاع داده خواهد شد.',
+                style: TextStyle(color: _ink, fontSize: 12, height: 1.8))),
+            ]),
+          ),
+          const SizedBox(height: 22),
+          SizedBox(width: double.infinity, child: FilledButton(
+            onPressed: onBrowseServices,
+            child: const Text('ثبت درخواست / مشاهده خدمات این بخش'),
+          )),
+          const SizedBox(height: 8),
+          const Text('ثبت نهایی درخواست زمانی انجام می‌شود که خدمت به کاتالوگ و سامانه درخواست متصل باشد.',
+            textAlign: TextAlign.center, style: TextStyle(color: _muted, fontSize: 10, height: 1.6)),
+        ],
+      ),
+    );
+  }
+}
+
+Widget _detailHeading(String title) => Padding(
+  padding: const EdgeInsets.only(bottom: 8),
+  child: Text(title, style: const TextStyle(color: _ink, fontSize: 15, fontWeight: FontWeight.w900)),
+);
+
+Widget _detailBullet(String value) => Padding(
+  padding: const EdgeInsets.only(bottom: 6),
+  child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+    const Text('•  ', style: TextStyle(color: _teal, fontWeight: FontWeight.w900)),
+    Expanded(child: Text(value, style: const TextStyle(color: _muted, fontSize: 12, height: 1.7))),
+  ]),
+);
