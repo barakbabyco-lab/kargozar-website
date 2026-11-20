@@ -22,6 +22,7 @@ on:
           - logo-export
           - logo-locate
           - palette-locate
+          - palette-export
           - cache-clear
           - rollback
         default: health
@@ -116,6 +117,9 @@ jobs:
             palette-locate)
               REMOTE_COMMAND='find /var/www /home /srv /opt /var/lib/sftpgo /var/lib -type f -iname "Sazmani-kargozar*" -print 2>/dev/null | head -20'
               ;;
+            palette-export)
+              REMOTE_COMMAND='find /var/www /home /srv /opt /var/lib/sftpgo /var/lib -type f -iname "Sazmani-kargozar*" -print -quit 2>/dev/null'
+              ;;
             logo-export)
               REMOTE_COMMAND='test -s /var/www/html/kargozar-assets/final/Picsart_26-11-20_20-13-50-129.jpg && file /var/www/html/kargozar-assets/final/Picsart_26-11-20_20-13-50-129.jpg && sha256sum /var/www/html/kargozar-assets/final/Picsart_26-11-20_20-13-50-129.jpg /var/www/html/kargozar-assets/Picsart_26-11-20_20-13-50-129.jpg'
               ;;
@@ -201,5 +205,32 @@ jobs:
             mobile/assets/brand/app-icon-master-1024.png
             mobile/assets/brand/android-adaptive-foreground.png
             mobile/assets/brand/android-adaptive-monochrome.png
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Download corporate color guide
+        if: inputs.task == 'palette-export'
+        shell: bash
+        env:
+          SSH_CONFIG: ${{ steps.ssh.outputs.ssh_config }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/kargozar-palette"
+          remote_path="$(ssh -F "$SSH_CONFIG" kargozar-staging 'find /var/www /home /srv /opt /var/lib/sftpgo /var/lib -type f -iname "Sazmani-kargozar*" -print -quit 2>/dev/null')"
+          if [[ -z "$remote_path" ]]; then
+            echo "::error::Sazmani-kargozar file was not found on the server"
+            exit 1
+          fi
+          printf 'Found corporate guide: %s\n' "$remote_path"
+          scp -F "$SSH_CONFIG" "kargozar-staging:$remote_path" "$RUNNER_TEMP/kargozar-palette/Sazmani-kargozar"
+          test -s "$RUNNER_TEMP/kargozar-palette/Sazmani-kargozar"
+          file "$RUNNER_TEMP/kargozar-palette/Sazmani-kargozar"
+
+      - name: Upload corporate color guide artifact
+        if: inputs.task == 'palette-export'
+        uses: actions/upload-artifact@v4
+        with:
+          name: kargozar-corporate-color-guide
+          path: ${{ runner.temp }}/kargozar-palette/Sazmani-kargozar
           if-no-files-found: error
           retention-days: 7
