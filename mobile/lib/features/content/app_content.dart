@@ -282,13 +282,13 @@ class SupportContentPage extends StatelessWidget {
    AppBannerStrip(onNavigate:onNavigate,onConsultation:onConsultation),
    const SizedBox(height:12),
    Padding(padding:const EdgeInsets.symmetric(horizontal:12),child:Column(children:[
-     _SupportAction(icon:Icons.phone_in_talk_outlined,title:'تماس تلفنی',subtitle:'تماس مستقیم با کارشناسان کارگزار',onTap:()=>_launch(Uri(scheme:'tel',path:'09360952800'),context)),
+     _SupportAction(icon:Icons.phone_in_talk_outlined,title:'تماس تلفنی',subtitle:'تماس مستقیم با کارشناسان کارگزار',onTap:()=>_launch(Uri(scheme:'tel',path:'09365952800'),context)),
      const SizedBox(height:7),
      _SupportAction(icon:Icons.email_outlined,title:'ارتباط از طریق ایمیل',subtitle:'ارسال پیام به info@kargozarr.ir',onTap:()=>_launch(Uri(scheme:'mailto',path:'info@kargozarr.ir',queryParameters:{'subject':'ارتباط با پشتیبانی کارگزار'}),context)),
      const SizedBox(height:7),
-     const _SupportAction(icon:Icons.confirmation_number_outlined,title:'ثبت و پیگیری تیکت',subtitle:'به‌زودی فعال می‌شود'),
+     const _SupportAction(icon:Icons.confirmation_number_outlined,title:'تماس با کارشناس',subtitle:'دریافت راهنمایی درباره خدمات کارگزار',onTap:()=>_launch(Uri(scheme:'tel',path:'09365952800'),context)),
      const SizedBox(height:7),
-     const _SupportAction(icon:Icons.smart_toy_outlined,title:'دستیار هوشمند کارگزار',subtitle:'به‌زودی فعال می‌شود'),
+     const _SupportAction(icon:Icons.smart_toy_outlined,title:'ارتباط با پشتیبانی',subtitle:'تماس مستقیم با کارشناسان کارگزار',onTap:()=>_launch(Uri(scheme:'tel',path:'09365952800'),context)),
    ])),
  ]);
 }
