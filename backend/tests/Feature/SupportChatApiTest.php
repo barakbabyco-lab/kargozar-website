@@ -32,7 +32,7 @@ class SupportChatApiTest extends TestCase
         $this->actingAs($customer, 'sanctum')
             ->getJson('/api/v1/me/support-conversations/'.$id.'/messages')
             ->assertOk()
-            ->assertJsonCount(2, 'data');
+            ->assertJsonCount(4, 'data');
     }
 
     public function test_guest_can_start_and_continue_support_without_customer_login(): void
@@ -88,6 +88,31 @@ class SupportChatApiTest extends TestCase
 
         $this->withHeader('X-Support-Guest-Token', $guestToken)
             ->getJson('/api/v1/guest/support-conversations/'.$id.'/messages')
+            ->assertOk()
+            ->assertJsonCount(4, 'data')
+            ->assertJsonPath('data.3.sender_type', 'assistant');
+    }
+
+    public function test_signed_in_customer_can_submit_a_callback_mobile_after_requesting_a_human_agent(): void
+    {
+        $customer = Customer::create(['mobile' => '09120000115', 'status' => 'active']);
+
+        $started = $this->actingAs($customer, 'sanctum')
+            ->postJson('/api/v1/support-conversations', ['body' => 'تماس کارشناس'])
+            ->assertCreated()
+            ->assertJsonPath('data.messages.1.sender_type', 'assistant')
+            ->assertJsonPath('data.messages.1.body', fn ($value) => str_contains($value, 'شماره تماس'));
+
+        $id = $started->json('data.id');
+
+        $this->actingAs($customer, 'sanctum')
+            ->postJson('/api/v1/me/support-conversations/'.$id.'/messages', ['body' => '۰۹۱۲۳۴۵۶۷۸۸'])
+            ->assertCreated();
+
+        $this->assertSame('09123456788', SupportConversation::findOrFail($id)->contact_mobile);
+
+        $this->actingAs($customer, 'sanctum')
+            ->getJson('/api/v1/me/support-conversations/'.$id.'/messages')
             ->assertOk()
             ->assertJsonCount(4, 'data')
             ->assertJsonPath('data.3.sender_type', 'assistant');
