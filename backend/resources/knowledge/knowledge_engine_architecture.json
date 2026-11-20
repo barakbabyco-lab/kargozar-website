@@ -2,7 +2,7 @@
   "schema_version": 1,
   "feature_key": "shared_knowledge_and_live_retrieval_engine",
   "title": "موتور مشترک دانش داخلی و جست‌وجوی زنده کارگزار",
-  "status": "architecture_and_initial_backend_services_added",
+  "status": "all_ten_category_banks_scaffolded_shared_requirements_library_added",
   "principles": [
     "یک موتور مکالمه‌ای مرکزی، چند منبع دانشی مستقل",
     "اطلاعات محدود و نسبتاً پایدار در بانک دانش داخلی نسخه‌بندی‌شده",
@@ -30,11 +30,43 @@
     "هر پاسخ بازیابی‌شده باید منبع، زمان مشاهده و وضعیت اعتبار داشته باشد"
   ],
   "next_implementation_steps": [
-    "تکمیل و بازبینی حقوقی بانک ثبت شرکت و مالکیت صنعتی",
-    "شناسایی مسیر واقعی جست‌وجو و ساختار نتایج در هر سامانه رسمی",
-    "پیاده‌سازی adapter مستقل برای هر سامانه",
-    "افزودن cache با زمان انقضا و ثبت منبع و زمان مشاهده",
-    "اتصال retrieval service به پشتیبانی مکالمه‌ای و پنل کارشناسان",
-    "افزودن تست‌های منبع محلی تأییدشده، سند منقضی، منبع زنده در دسترس و خطای سامانه"
-  ]
+    "تکمیل محتوای هر ده بانک با استخراج منبع‌محور خدمت‌به‌خدمت",
+    "بازبینی حقوقی و تخصصی مدارک، شرایط و مراحل پیش از تغییر وضعیت اسناد به approved",
+    "تکمیل بانک تأییدیه‌های اماکن، بهداشت، کارت بهداشت و آموزش احکام تجارت با تفکیک الزامات عمومی و اختصاصی",
+    "شناسایی مسیر واقعی سامانه‌های رسمی و پیاده‌سازی adapterهای مستقل",
+    "افزودن آزمون یکپارچه برای تمام کلیدهای خدمت و بازیابی بانک مشترک",
+    "اتصال موتور بازیابی به مکالمه پشتیبانی و پنل کارشناسان"
+  ],
+  "category_registry": "service_knowledge_registry.json",
+  "shared_requirement_library": "shared_requirement_library.json",
+  "category_banks": [
+    "category_01_business_licenses.json",
+    "category_02_company_registration.json",
+    "category_03_intellectual_property.json",
+    "category_04_complementary_documents_approvals.json",
+    "category_05_banking_services.json",
+    "category_06_legal_and_contractual.json",
+    "category_07_internet_and_commercial_services.json",
+    "category_08_property_and_leases.json",
+    "category_09_business_development.json",
+    "category_10_specialized_services.json"
+  ],
+  "requirement_model": {
+    "layers": [
+      "national_common",
+      "service_category_common",
+      "activity_specific",
+      "applicant_specific",
+      "premises_specific",
+      "local_authority_specific"
+    ],
+    "rule": "هر الزام فقط در دامنه شمول ثبت‌شده اعمال می‌شود؛ شرط یک فعالیت به همه فعالیت‌ها تعمیم داده نمی‌شود.",
+    "evidence_required": [
+      "source_url",
+      "source_date",
+      "verified_at",
+      "verification_status",
+      "scope"
+    ]
+  }
 }
