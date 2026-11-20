@@ -856,16 +856,16 @@ class _SupportChatSheetState extends State<SupportChatSheet> {
    height:MediaQuery.sizeOf(context).height*.68,
    child:Padding(padding:EdgeInsets.fromLTRB(16,16,16,MediaQuery.viewInsetsOf(context).bottom+12),
      child:Column(children:[
-       const Row(children:[Icon(Icons.support_agent,color:_brandRed),SizedBox(width:8),Text('پشتیبانی آنلاین کارگزار',style:TextStyle(fontSize:16,fontWeight:FontWeight.w800)),Spacer(),Text('گفت‌وگو',style:TextStyle(fontSize:11,color:_muted))]),
-       const Align(alignment:Alignment.centerRight,child:Text('بدون نیاز به ورود یا ثبت‌نام',style:TextStyle(color:_muted,fontSize:11))),
+       const Row(children:[Icon(Icons.smart_toy_outlined,color:_brandRed),SizedBox(width:8),Text('دستیار هوشمند کارگزار',style:TextStyle(fontSize:16,fontWeight:FontWeight.w800)),Spacer(),Text('پشتیبانی',style:TextStyle(fontSize:11,color:_muted))]),
+       const Align(alignment:Alignment.centerRight,child:Text('پاسخ‌گویی خودکار؛ در صورت نیاز ارجاع به کارشناس',style:TextStyle(color:_muted,fontSize:11))),
        const Divider(height:22),
-       Expanded(child:_messages.isEmpty?const Center(child:Text('پیام خود را بنویسید تا گفت‌وگو با کارشناس آغاز شود.',textAlign:TextAlign.center,style:TextStyle(color:_muted,height:1.8))):ListView.builder(controller:_scroll,itemCount:_messages.length,itemBuilder:(context,index){
-         final message=_messages[index];final mine=message['sender_type']=='customer';
+       Expanded(child:_messages.isEmpty?const Center(child:Text('سؤال خود را بنویسید تا دستیار هوشمند کارگزار راهنمایی‌تان کند.',textAlign:TextAlign.center,style:TextStyle(color:_muted,height:1.8))):ListView.builder(controller:_scroll,itemCount:_messages.length,itemBuilder:(context,index){
+         final message=_messages[index];final mine=message['sender_type']=='customer';final assistant=message['sender_type']=='assistant';
          return Align(alignment:mine?Alignment.centerRight:Alignment.centerLeft,child:Container(
            constraints:BoxConstraints(maxWidth:MediaQuery.sizeOf(context).width*.76),
            margin:const EdgeInsets.only(bottom:8),padding:const EdgeInsets.symmetric(horizontal:12,vertical:9),
-           decoration:BoxDecoration(color:mine?const Color(0xFFFCE8E8):const Color(0xFFF1F5F9),borderRadius:BorderRadius.circular(13)),
-           child:Text(message['body']?.toString()??'',style:const TextStyle(fontSize:12,height:1.6)),
+           decoration:BoxDecoration(color:mine?const Color(0xFFFCE8E8):assistant?const Color(0xFFF4EEFA):const Color(0xFFF1F5F9),borderRadius:BorderRadius.circular(13)),
+           child:Text('${assistant?'دستیار هوشمند کارگزار\\n':''}${message['body']?.toString()??''}',style:const TextStyle(fontSize:12,height:1.6)),
          ));
        })),
        if(_error!=null)Padding(padding:const EdgeInsets.only(bottom:8),child:Text(_error!,style:const TextStyle(color:Colors.red,fontSize:11))),
