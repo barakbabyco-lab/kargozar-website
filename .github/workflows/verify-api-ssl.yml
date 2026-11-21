@@ -79,8 +79,17 @@ jobs:
             if [[ -f "$APP/storage/logs/laravel.log" ]]; then
               sudo -n tail -n 120 "$APP/storage/logs/laravel.log" | grep -E 'ERROR|CRITICAL|production\.' | tail -n 35 | sed -E 's/((password|token|authorization|secret|api[_-]?key)[^:=]*[:=][[:space:]]*)[^ ,;]+/\1[REDACTED]/Ig' || true
             fi
+            echo "=== Blade cache path and permissions ==="
+            cd "$APP"
+            printf 'APP=%s\n' "$APP"
+            ls -ld "$APP/storage" "$APP/storage/framework" "$APP/storage/framework/views" "$APP/bootstrap/cache" 2>&1 || true
+            readlink -f "$APP/storage" || true
+            grep -E '^(VIEW_COMPILED_PATH|APP_ENV|APP_DEBUG)=' "$APP/.env" | sed -E 's/=.*/=[configured]/' || true
+            php artisan tinker --execute="dump(config('view.compiled')); dump(is_dir(config('view.compiled'))); dump(is_writable(config('view.compiled')));" 2>&1 || true
+            echo "=== Laravel log tail ==="
+            sudo -n tail -n 220 "$APP/storage/logs/laravel.log" 2>/dev/null | tail -n 160 | sed -E 's/((password|token|authorization|secret|api[_-]?key)[^:=]*[:=][[:space:]]*)[^ ,;]+/\1[REDACTED]/Ig' || true
             echo "=== Recent PHP-FPM errors ==="
-            sudo -n journalctl -u php8.3-fpm --no-pager -n 30 2>/dev/null || true
+            sudo -n journalctl -u php8.3-fpm --no-pager -n 50 2>/dev/null || true
           fi
           REMOTE
       - name: External HTTPS checks
