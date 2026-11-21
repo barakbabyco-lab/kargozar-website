@@ -96,3 +96,17 @@
 ## وضعیت فعلی
 
 بک‌اند Laravel 13 و تست‌های CI در مخزن آماده‌اند. پشتیبانی هاست نبود SSH/Terminal را تأیید کرده، اما مسیر PHP CLI 8.3، فعال بودن افزونه‌ها، امکان Cron Job و Document Root سفارشی را اعلام کرده است. برای جبران نبود Composer روی هاست، workflow ساخت بسته production اضافه و با موفقیت اجرا شده است؛ artifact آماده شامل vendor در اجرای 43843123781 تولید شده است. نسخه MySQL هاست هنوز تأیید نشده و هیچ نصب عملیاتی یا مهاجرت دیتابیس production انجام نشده است.
+
+## اتصال بک‌اند cPanel به جست‌وجوی SearXNG روی VPS
+
+SearXNG کارگزار روی VPS نصب و برای بک‌اند Staging همان VPS فعال شده است. آدرس loopback آن `http://127.0.0.1:8888/search` فقط از همان VPS قابل استفاده است و نباید در `.env` هاست cPanel استفاده شود.
+
+برای اتصال cPanel، یک gateway مستقل HTTPS با Bearer Token روی زیردامنه‌ای که مالکیت و DNS آن تأیید شده باشد لازم است. راهنمای فنی و کنترل‌های امنیتی در [searxng-production-bridge.md](searxng-production-bridge.md) آمده است.
+
+تا پیش از تعیین دامنه و رکورد DNS، تأیید پورت‌های 80/443 و صدور TLS معتبر:
+- پورت 8888 را عمومی نکنید.
+- `SEARXNG_URL` را در cPanel روی loopback نگذارید.
+- `SEARXNG_API_TOKEN` را در GitHub یا فایل عمومی قرار ندهید.
+- جست‌وجوی زنده در cPanel را فعال‌شده تلقی نکنید.
+
+کد Laravel برای endpoint راه‌دور HTTPS به همراه Bearer Token آماده شده است؛ این ویژگی در محیط cPanel فقط پس از ایجاد gateway و تنظیم امن دو متغیر `SEARXNG_URL` و `SEARXNG_API_TOKEN` قابل فعال‌سازی است.
