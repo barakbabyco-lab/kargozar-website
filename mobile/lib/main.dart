@@ -479,11 +479,7 @@ class _HomePageState extends State<HomePage> {
         Container(
           padding: const EdgeInsets.all(22),
           decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [_navy, Color(0xFF254D70)],
-              begin: Alignment.topRight,
-              end: Alignment.bottomLeft,
-            ),
+            color: _navy,
             borderRadius: BorderRadius.circular(24),
           ),
           child: Column(
