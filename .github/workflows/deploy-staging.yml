@@ -185,11 +185,41 @@ jobs:
           cd "$release"
           composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
 
+          # Provision the staging app directly from the root-only Nginx token map.
+          # The secret never leaves the VPS and is never printed to Actions logs.
+          token_map="/etc/nginx/searxng/token.map"
+          env_file="$deploy_root/shared/.env"
+          if [[ ! -r "$token_map" ]]; then
+            echo "ERROR: Protected SearXNG token map is unavailable to the deployment user."
+            exit 1
+          fi
+          token_line="$(cat "$token_map")"
+          if [[ ! "$token_line" =~ ^\"Bearer[[:space:]]([a-f0-9]{64})\"[[:space:]]1\;$ ]]; then
+            unset token_line
+            echo "ERROR: Protected SearXNG token map has an unexpected format."
+            exit 1
+          fi
+          searxng_token="${BASH_REMATCH[1]}"
+          unset token_line
+          tmp_env="$(mktemp "$deploy_root/shared/.env.searxng.XXXXXX")"
+          umask 077
+          awk '!(/^SEARXNG_URL=/ || /^SEARXNG_API_TOKEN=/ || /^SUPPORT_WEB_SEARCH_ENABLED=/)' "$env_file" > "$tmp_env"
+          printf '%s\\n' \
+            'SUPPORT_WEB_SEARCH_ENABLED=true' \
+            'SEARXNG_URL=https://search.barakmod.ir/search' \
+            "SEARXNG_API_TOKEN=$searxng_token" >> "$tmp_env"
+          unset searxng_token
+          chown --reference="$env_file" "$tmp_env"
+          chmod --reference="$env_file" "$tmp_env"
+          mv -f "$tmp_env" "$env_file"
+          php artisan config:clear
+          php artisan config:cache
+
           if [[ "$run_migrations" == "true" ]]; then
             php artisan migrate --force
           fi
 
-          echo "=== Verify Laravel to SearXNG integration before activation ==="
+          echo "=== Verify Laravel to SearXNG HTTPS integration before activation ==="
           CACHE_STORE=array php <<'PHP'
           <?php
           $base = getcwd();
@@ -198,7 +228,7 @@ jobs:
           $app->make(\Illuminate\Contracts\Console\Kernel::class)->bootstrap();
           $result = $app->make(\App\Services\Support\WebSearchService::class)->search('kargozar connectivity test');
           if (! is_array($result) || empty($result['sources'])) {
-              fwrite(STDERR, "Laravel could not retrieve HTTPS sources from local SearXNG.\n");
+              fwrite(STDERR, "Laravel could not retrieve HTTPS sources from the authenticated SearXNG gateway.\n");
               exit(1);
           }
           echo 'Laravel to SearXNG integration: OK; HTTPS sources='.count($result['sources']).PHP_EOL;
