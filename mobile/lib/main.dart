@@ -34,7 +34,7 @@ class _KargozarAppState extends State<KargozarApp>{
  @override Widget build(BuildContext context)=>MaterialApp(
  navigatorKey:_navigatorKey,
  debugShowCheckedModeBanner:false,title:'کارگزار',
- theme:ThemeData(useMaterial3:true,scaffoldBackgroundColor:_canvas,colorScheme:ColorScheme.fromSeed(seedColor:_brandRed,primary:_brandRed,secondary:_navy,surface:Colors.white),fontFamily:'Roboto',
+ theme:ThemeData(useMaterial3:true,scaffoldBackgroundColor:_canvas,colorScheme:ColorScheme.fromSeed(seedColor:_navy,primary:_navy,secondary:_brandRed,surface:Colors.white),fontFamily:'Roboto',
  appBarTheme:const AppBarTheme(backgroundColor:_canvas,foregroundColor:_ink,centerTitle:false,elevation:0),
  inputDecorationTheme:InputDecorationTheme(filled:true,fillColor:Colors.white,border:OutlineInputBorder(borderRadius:BorderRadius.circular(14),borderSide:const BorderSide(color:Color(0xFFE2E8F0))),enabledBorder:OutlineInputBorder(borderRadius:BorderRadius.circular(14),borderSide:const BorderSide(color:Color(0xFFE2E8F0))))),
  home:Directionality(textDirection:TextDirection.rtl,child:_loading?const Scaffold(body:Center(child:CircularProgressIndicator())):MainShell(api:_api,requests:_requests,signedIn:_signedIn,onLogin:_login,onLogout:_logout)),
