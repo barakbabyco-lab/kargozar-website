@@ -878,7 +878,7 @@ class _SupportChatSheetState extends State<SupportChatSheet> {
      if(error.statusCode==401){
        await widget.api.clearGuestSupportConversation();
        _pollTimer?.cancel();
-       if(mounted)setState(()=>{
+       if(mounted)setState(() {
          _conversationId=null;
          _messages=[];
          _error='گفت‌وگوی قبلی در دسترس نیست. پیام تازه‌ای ارسال کنید.';
