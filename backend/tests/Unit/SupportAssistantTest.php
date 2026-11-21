@@ -73,6 +73,7 @@ class SupportAssistantTest extends TestCase
         Config::set('support_assistant.escalation_terms', []);
         Config::set('support_assistant.faqs', []);
         Config::set('support_assistant.fallback', 'برای بررسی دقیق‌تر با کارشناس تماس بگیرید.');
+        Config::set('support_assistant.web_search.enabled', false);
 
         $this->assertSame(
             'برای بررسی دقیق‌تر با کارشناس تماس بگیرید.',
@@ -80,28 +81,26 @@ class SupportAssistantTest extends TestCase
         );
     }
 
-    public function test_unknown_question_uses_public_web_search_when_configured(): void
+    public function test_unknown_question_uses_self_hosted_searxng_when_configured(): void
     {
         Config::set('support_assistant.missing_requirement_phrases', []);
         Config::set('support_assistant.escalation_terms', []);
         Config::set('support_assistant.faqs', []);
         Config::set('support_assistant.web_search.enabled', true);
-        Config::set('support_assistant.web_search.api_key', 'test-key');
-        Config::set('support_assistant.web_search.endpoint', 'https://api.tavily.com/search');
+        Config::set('support_assistant.web_search.endpoint', 'http://127.0.0.1:8888/search');
         Http::fake([
-            'api.tavily.com/search' => Http::response([
-                'answer' => 'این یک پاسخ عمومی آزمایشی است.',
+            '127.0.0.1:8888/search*' => Http::response([
                 'results' => [[
                     'title' => 'منبع آزمایشی',
                     'url' => 'https://example.com/reference',
-                    'content' => 'خلاصه منبع',
+                    'content' => 'خلاصه منبع معتبر آزمایشی',
                 ]],
             ], 200),
         ]);
 
         $reply = app(SupportAssistant::class)->reply('یک پرسش عمومی ناشناخته درباره موضوعی خارج از خدمات');
 
-        $this->assertStringContainsString('پاسخ عمومی آزمایشی', $reply);
+        $this->assertStringContainsString('خلاصه منبع معتبر آزمایشی', $reply);
         $this->assertStringContainsString('https://example.com/reference', $reply);
     }
 
