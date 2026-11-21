@@ -813,8 +813,24 @@ class _SupportChatSheetState extends State<SupportChatSheet> {
  int? _conversationId;
  bool _busy=false;
  String? _error;
- @override void initState(){super.initState();}
+ @override void initState(){super.initState();_restoreConversation();}
  @override void dispose(){_pollTimer?.cancel();_controller.dispose();_scroll.dispose();super.dispose();}
+ Future<void> _restoreConversation() async {
+   try {
+     final savedId=await widget.api.restoreGuestSupportConversationId();
+     if(savedId==null||!mounted)return;
+     _conversationId=savedId;
+     await _refresh();
+     if(mounted&&_conversationId!=null)_startPolling();
+   } on KargozarApiException catch(error) {
+     if(error.statusCode==401) {
+       await widget.api.clearGuestSupportConversation();
+       if(mounted)setState(()=>_error='گفت‌وگوی قبلی در دسترس نیست. پیام تازه‌ای ارسال کنید.');
+     } else if(mounted) {
+       setState(()=>_error=error.message);
+     }
+   } catch (_) {}
+ }
  Future<void> _send() async {
    final body=_controller.text.trim();if(body.isEmpty||_busy)return;
    setState(()=>_busy=true);_controller.clear();
@@ -830,8 +846,17 @@ class _SupportChatSheetState extends State<SupportChatSheet> {
        _startPolling();
      }else if(data is Map<String,dynamic>){_messages.add(Map<String,dynamic>.from(data));}
      if(mounted)setState(()=>_error=null);
+     if(_conversationId!=null)await _refresh();
      _scrollToEnd();
-   }catch(error){if(mounted){_controller.text=body;setState(()=>_error=errorText(error));}}
+   }catch(error){
+     if(error is KargozarApiException&&(error.statusCode==401||error.code=='CONVERSATION_CLOSED')){
+       await widget.api.clearGuestSupportConversation();
+       _pollTimer?.cancel();
+       _conversationId=null;
+       _messages=[];
+     }
+     if(mounted){_controller.text=body;setState(()=>_error=errorText(error));}
+   }
    finally{if(mounted)setState(()=>_busy=false);}
  }
  void _startPolling(){
@@ -849,7 +874,17 @@ class _SupportChatSheetState extends State<SupportChatSheet> {
          setState(()=>_messages=next);_scrollToEnd();
        }
      }
-   }catch(_){}
+   } on KargozarApiException catch(error) {
+     if(error.statusCode==401){
+       await widget.api.clearGuestSupportConversation();
+       _pollTimer?.cancel();
+       if(mounted)setState(()=>{
+         _conversationId=null;
+         _messages=[];
+         _error='گفت‌وگوی قبلی در دسترس نیست. پیام تازه‌ای ارسال کنید.';
+       });
+     }
+   } catch(_){}
  }
  void _scrollToEnd(){WidgetsBinding.instance.addPostFrameCallback((_){if(_scroll.hasClients)_scroll.animateTo(_scroll.position.maxScrollExtent,duration:const Duration(milliseconds:180),curve:Curves.easeOut);});}
  @override Widget build(BuildContext context)=>SizedBox(
