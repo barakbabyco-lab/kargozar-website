@@ -198,11 +198,11 @@ jobs:
           $app->make('Illuminate\\Contracts\\Console\\Kernel')->bootstrap();
           $id = (int) getenv('CONVERSATION_ID');
           $hash = hash('sha256', (string) getenv('TOKEN'));
-          \Illuminate\\Support\\Facades\\DB::table('support_messages')->where('conversation_id', $id)->delete();
-          if (\Illuminate\\Support\\Facades\\Schema::hasTable('support_unanswered_question_events')) {
-              \Illuminate\\Support\\Facades\\DB::table('support_unanswered_question_events')->where('conversation_id', $id)->delete();
+          Illuminate\Support\Facades\DB::table('support_messages')->where('conversation_id', $id)->delete();
+          if (Illuminate\Support\Facades\Schema::hasTable('support_unanswered_question_events')) {
+              Illuminate\Support\Facades\DB::table('support_unanswered_question_events')->where('conversation_id', $id)->delete();
           }
-          \Illuminate\\Support\\Facades\\DB::table('support_conversations')->where('id', $id)->where('guest_token_hash', $hash)->delete();
+          Illuminate\Support\Facades\DB::table('support_conversations')->where('id', $id)->where('guest_token_hash', $hash)->delete();
           echo "Temporary guest conversation cleaned up".PHP_EOL;
           PHP
           echo "Guest support chat API: CREATE / READ / SEND / REFRESH all passed; messages=$final_count"
