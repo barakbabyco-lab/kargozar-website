@@ -203,7 +203,16 @@ jobs:
           unset token_line
           tmp_env="$(mktemp "$deploy_root/shared/.env.searxng.XXXXXX")"
           umask 077
-          awk '!(/^SEARXNG_URL=/ || /^SEARXNG_API_TOKEN=/ || /^SUPPORT_WEB_SEARCH_ENABLED=/)' "$env_file" > "$tmp_env"
+          awk '
+          {
+            marker = index($0, "SUPPORT_WEB_SEARCH_ENABLED=true\\nSEARXNG_URL=");
+            if (marker > 0) {
+              $0 = substr($0, 1, marker - 1);
+              if ($0 == "") next;
+            }
+            if ($0 ~ /^SEARXNG_URL=/ || $0 ~ /^SEARXNG_API_TOKEN=/ || $0 ~ /^SUPPORT_WEB_SEARCH_ENABLED=/) next;
+            print;
+          }' "$env_file" > "$tmp_env"
           printf '%s\n' \
             'SUPPORT_WEB_SEARCH_ENABLED=true' \
             'SEARXNG_URL=https://search.barakmod.ir/search' \
