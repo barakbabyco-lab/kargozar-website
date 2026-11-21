@@ -401,7 +401,8 @@ class _MainShellState extends State<MainShell> {
           SupportContentPage(onConsultation: _showConsultation, onNavigate: _goToTab),
         ],
       ),
-    ]))),
+    ])),
+    ])),
     bottomNavigationBar: NavigationBar(
       height: 61,
       backgroundColor: _brandRed,
