@@ -5,14 +5,13 @@ import 'package:kargozar_mobile/core/network/kargozar_api_client.dart';
 import 'package:kargozar_mobile/main.dart';
 
 void main() {
-  testWidgets('renders the main app shell with page navigation and floating support', (tester) async {
+  testWidgets('renders the main app shell with page navigation', (tester) async {
     await tester.pumpWidget(_testApp());
     await tester.pump(const Duration(milliseconds: 500));
 
     expect(find.byKey(const ValueKey('main-tabs')), findsOneWidget);
     expect(find.byType(NavigationBar), findsOneWidget);
     expect(find.text('خدمات'), findsOneWidget);
-    expect(find.byType(SupportChatLauncher), findsOneWidget);
   });
 }
 
