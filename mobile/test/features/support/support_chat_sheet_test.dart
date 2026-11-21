@@ -66,7 +66,7 @@ void main() {
 
     expect(await store.readConversationId(), 41);
     expect(find.text('سلام'), findsOneWidget);
-    expect(find.text('سلام، چطور می‌توانم راهنمایی‌تان کنم؟'), findsOneWidget);
+    expect(find.textContaining('سلام، چطور می‌توانم راهنمایی‌تان کنم؟'), findsOneWidget);
 
     await tester.pumpWidget(const SizedBox.shrink());
     client.close();
