@@ -183,6 +183,42 @@ void main() {
       client.close();
     });
 
+    test('persists and reuses the installation guest token for support chat', () async {
+      final guestTokenStore = FakeGuestSupportTokenStore();
+      final requests = <http.Request>[];
+      final client = KargozarApiClient(
+        baseUrl: 'https://api.example.test/api/v1',
+        guestTokenStore: guestTokenStore,
+        httpClient: MockClient((request) async {
+          requests.add(request);
+          final payload = request.method == 'GET'
+              ? {'data': <dynamic>[]}
+              : request.url.path.endsWith('/guest/support-conversations')
+                  ? {'data': {'id': 41, 'messages': <dynamic>[]}}
+                  : {'data': {'id': 42, 'sender_type': 'customer', 'body': 'پیام دوم'}};
+          return http.Response(
+            jsonEncode(payload),
+            request.method == 'GET' ? 200 : 201,
+            headers: {'content-type': 'application/json; charset=utf-8'},
+          );
+        }),
+      );
+
+      await client.startGuestSupportConversation('سلام');
+      await client.sendGuestSupportMessage(41, 'پیام دوم');
+      await client.getGuestSupportMessages(41);
+
+      expect(guestTokenStore.value, matches(RegExp(r'^[a-f0-9]{64}$')));
+      expect(requests, hasLength(3));
+      expect(requests[0].url.path, '/api/v1/guest/support-conversations');
+      expect(requests[1].url.path, '/api/v1/guest/support-conversations/41/messages');
+      expect(requests[2].url.path, '/api/v1/guest/support-conversations/41/messages');
+      for (final request in requests) {
+        expect(request.headers['X-Support-Guest-Token'], guestTokenStore.value);
+      }
+      client.close();
+    });
+
     test('restores a saved token and clears it after logout', () async {
       final tokenStore = FakeAccessTokenStore()..value = 'saved-token';
       late http.Request logoutRequest;
@@ -219,5 +255,17 @@ class FakeAccessTokenStore implements AccessTokenStore {
   @override
   Future<void> clear() async {
     value = null;
+  }
+}
+
+class FakeGuestSupportTokenStore extends SecureGuestSupportTokenStore {
+  String? value;
+
+  @override
+  Future<String?> read() async => value;
+
+  @override
+  Future<void> write(String token) async {
+    value = token;
   }
 }
