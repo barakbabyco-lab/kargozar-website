@@ -84,7 +84,7 @@ class WebSearchServiceTest extends TestCase
 
             return ! str_contains($searched, '09123456789')
                 && ! str_contains($searched, 'user@example.com')
-                && str_contains($searched, 'قانون ثبت کسب و کار');
+                && str_contains($searched, 'قانون ثبت کسب‌وکار، تماس');
         });
     }
 
