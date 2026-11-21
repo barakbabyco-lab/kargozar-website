@@ -136,7 +136,7 @@ jobs:
         run: |
           set -euo pipefail
           case "$TASK" in
-            diagnose|diagnose-proxy|install|test) ;;
+            diagnose|diagnose-proxy|install|test|secure-proxy) ;;
             *) echo "::error::Unsupported task."; exit 1 ;;
           esac
           ssh -F "$SSH_CONFIG" kargozar-staging "bash -s -- '$TASK'" <<'REMOTE'
