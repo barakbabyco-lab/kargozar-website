@@ -15,8 +15,9 @@ class WebSearchService
     public function search(string $question): ?array
     {
         $endpoint = trim((string) config('support_assistant.web_search.endpoint', 'http://127.0.0.1:8888/search'));
+        $token = trim((string) config('support_assistant.web_search.token', ''));
 
-        if (! $this->isAllowedEndpoint($endpoint)) {
+        if (! $this->isAllowedEndpoint($endpoint, $token)) {
             return null;
         }
 
@@ -46,12 +47,17 @@ class WebSearchService
 
         $cacheKey = 'support-web-search:'.hash('sha256', mb_strtolower($query, 'UTF-8'));
 
-        return Cache::remember($cacheKey, now()->addMinutes(10), function () use ($endpoint, $query) {
+        return Cache::remember($cacheKey, now()->addMinutes(10), function () use ($endpoint, $query, $token) {
             try {
-                $response = Http::acceptJson()
+                $request = Http::acceptJson()
                     ->timeout((int) config('support_assistant.web_search.timeout', 8))
-                    ->retry(1, 200)
-                    ->get($endpoint, [
+                    ->retry(1, 200);
+
+                if ($token !== '') {
+                    $request = $request->withToken($token);
+                }
+
+                $response = $request->get($endpoint, [
                         'q' => $query,
                         'format' => 'json',
                         'language' => 'fa-IR',
@@ -104,7 +110,7 @@ class WebSearchService
      * Allow HTTPS endpoints, or the exact loopback endpoint used by the
      * co-located staging Laravel application. Never permit arbitrary HTTP hosts.
      */
-    private function isAllowedEndpoint(string $endpoint): bool
+    private function isAllowedEndpoint(string $endpoint, string $token): bool
     {
         if (! filter_var($endpoint, FILTER_VALIDATE_URL)) {
             return false;
@@ -116,7 +122,8 @@ class WebSearchService
         }
 
         if (($parts['scheme'] ?? '') === 'https') {
-            return isset($parts['host']);
+            // Remote endpoints are permitted only when protected by a bearer token.
+            return isset($parts['host']) && $token !== '';
         }
 
         return ($parts['scheme'] ?? '') === 'http'
