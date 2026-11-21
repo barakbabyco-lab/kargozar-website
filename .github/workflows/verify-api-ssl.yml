@@ -64,6 +64,10 @@ jobs:
           ssh -F "$SSH_CONFIG" staging 'bash -s' <<'REMOTE'
           set -u
           APP="$(readlink -f /var/www/kargozar-staging/current)"
+          echo "=== Certbot process and certificate diagnostics ==="
+          ps -eo pid,etime,stat,args | grep -E '[c]ertbot|[a]pt-get' || true
+          sudo -n certbot certificates 2>&1 || true
+          echo | openssl s_client -connect 127.0.0.1:443 -servername api.barakmod.ir 2>/dev/null | openssl x509 -noout -subject -issuer -dates -ext subjectAltName 2>&1 || true
           echo "=== /up ==="
           UP="$(curl --max-time 15 -sS -o /tmp/kg-up.txt -w '%{http_code}' -H 'Host: api.barakmod.ir' http://127.0.0.1/up || true)"
           echo "HTTP_STATUS=$UP"
