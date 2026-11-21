@@ -600,8 +600,66 @@ class SupportContentPage extends StatelessWidget {
      const _SupportAction(icon:Icons.confirmation_number_outlined,title:'ثبت و پیگیری تیکت',subtitle:'به‌زودی فعال می‌شود'),
      const SizedBox(height:7),
      const _SupportAction(icon:Icons.smart_toy_outlined,title:'دستیار هوشمند کارگزار',subtitle:'به‌زودی فعال می‌شود'),
+     const SizedBox(height:7),
+     _SupportAction(icon:Icons.privacy_tip_outlined,title:'سیاست حفظ حریم خصوصی',subtitle:'مطالعه قوانین و نحوه حفاظت از اطلاعات',onTap:()=>Navigator.of(context).push(MaterialPageRoute<void>(builder:(_)=>const PrivacyPolicyPage()))),
    ])),
  ]);
+}
+
+class PrivacyPolicyPage extends StatelessWidget {
+ const PrivacyPolicyPage({super.key});
+ static const _heading=TextStyle(color:Color(0xFF1E293B),fontSize:15,fontWeight:FontWeight.w900);
+ static const _body=TextStyle(color:Color(0xFF64748B),fontSize:13,height:1.9);
+ @override Widget build(BuildContext context)=>Scaffold(
+   appBar:AppBar(title:const Text('سیاست حفظ حریم خصوصی')),
+   body:ListView(padding:const EdgeInsets.fromLTRB(18,16,18,32),children:[
+     const Text('کارگزار به حریم خصوصی و حفاظت از اطلاعات کاربران خود متعهد است. اطلاعاتی که در این اپلیکیشن دریافت می‌شود، صرفاً برای ارائه خدمات، مدیریت درخواست‌ها و بهبود کیفیت پشتیبانی مورد استفاده قرار می‌گیرد.',style:_body),
+     const SizedBox(height:22),
+     const Text('۱. اطلاعاتی که از کاربران دریافت می‌شود',style:_heading),
+     const SizedBox(height:7),
+     const Text('برای استفاده از امکانات کارگزار ممکن است اطلاعاتی مانند شماره تلفن همراه، نام و نام خانوادگی، اطلاعات تماس و اطلاعاتی که کاربر هنگام ثبت درخواست یا ارسال مدارک وارد می‌کند، دریافت شود.',style:_body),
+     const SizedBox(height:18),
+     const Text('۲. نحوه استفاده از اطلاعات',style:_heading),
+     const SizedBox(height:7),
+     const Text('اطلاعات کاربران با اهداف زیر استفاده می‌شود:',style:_body),
+     const SizedBox(height:5),
+     const _PrivacyBullet(text:'ایجاد و مدیریت حساب کاربری و احراز شماره همراه'),
+     const _PrivacyBullet(text:'ثبت، بررسی و پیگیری درخواست‌های خدمات'),
+     const _PrivacyBullet(text:'برقراری ارتباط با کاربر و ارائه پشتیبانی'),
+     const _PrivacyBullet(text:'اطلاع‌رسانی درباره وضعیت درخواست‌ها'),
+     const _PrivacyBullet(text:'حفظ امنیت سامانه و رعایت الزامات قانونی'),
+     const SizedBox(height:18),
+     const Text('۳. حفاظت و اشتراک‌گذاری اطلاعات',style:_heading),
+     const SizedBox(height:7),
+     const Text('کارگزار متعهد است از اطلاعات کاربران در برابر دسترسی غیرمجاز محافظت کند و دسترسی به این اطلاعات را به موارد ضروری محدود سازد.',style:_body),
+     const SizedBox(height:7),
+     const Text('اطلاعات شخصی کاربران بدون رضایت آن‌ها در اختیار اشخاص یا مجموعه‌های غیرمرتبط قرار نمی‌گیرد؛ مگر در مواردی که برای ارائه خدمت ضروری باشد یا ارائه آن به موجب قانون و دستور مراجع ذی‌صلاح الزامی شود.',style:_body),
+     const SizedBox(height:7),
+     const Text('اطلاعات کاربران به اشخاص ثالث فروخته یا برای اهداف نامرتبط با ارائه خدمات استفاده نخواهد شد.',style:_body),
+     const SizedBox(height:18),
+     const Text('۴. حقوق کاربران و درخواست حذف اطلاعات',style:_heading),
+     const SizedBox(height:7),
+     const Text('کاربران می‌توانند برای اصلاح اطلاعات شخصی، پیگیری نحوه استفاده از اطلاعات یا درخواست حذف حساب کاربری و اطلاعات مرتبط، از طریق بخش «تماس و پشتیبانی» در اپلیکیشن با کارگزار ارتباط برقرار کنند.',style:_body),
+     const SizedBox(height:7),
+     const Text('در مواردی که نگهداری برخی اطلاعات به موجب قوانین و مقررات الزامی باشد، حذف آن اطلاعات تا پایان مدت قانونی امکان‌پذیر نخواهد بود.',style:_body),
+     const SizedBox(height:22),
+     const Divider(),
+     const Text('برای طرح پرسش‌ها یا درخواست‌های مرتبط با حریم خصوصی، از بخش تماس و پشتیبانی اپلیکیشن استفاده کنید.',style:_body),
+     const SizedBox(height:12),
+     const Text('آخرین به‌روزرسانی: آذر ۱۴۰۵',style:TextStyle(color:Color(0xFF64748B),fontSize:11)),
+   ]),
+ );
+}
+class _PrivacyBullet extends StatelessWidget {
+ const _PrivacyBullet({required this.text});
+ final String text;
+ @override Widget build(BuildContext context)=>Padding(
+   padding:const EdgeInsets.only(bottom:5),
+   child:Row(crossAxisAlignment:CrossAxisAlignment.start,children:[
+     const Text('•  ',style:TextStyle(color:Color(0xFFE30613),fontSize:14,fontWeight:FontWeight.w900)),
+     Expanded(child:Text(text,style:PrivacyPolicyPage._body)),
+   ]),
+ );
 }
 class _SupportAction extends StatelessWidget {
  const _SupportAction({required this.icon,required this.title,required this.subtitle,this.onTap});
