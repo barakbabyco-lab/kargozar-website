@@ -250,11 +250,11 @@ jobs:
               echo "ERROR: SearXNG loopback health check failed; refusing changes."
               exit 1
             fi
-            if ! ss -lnt 2>/dev/null | grep -Eq '(^|[[:space:]])0\\.0\\.0\\.0:80|\\*:80|\\[::\\]:80'; then
+            if ! ss -lnt 2>/dev/null | grep -Eq '(^|[[:space:]])0\.0\.0\.0:80|\\*:80|\\[::\\]:80'; then
               echo "ERROR: No public HTTP listener detected on port 80."
               exit 1
             fi
-            if ss -lnt 2>/dev/null | grep -Eq '0\\.0\\.0\\.0:443|\\*:443|\\[::\\]:443'; then
+            if ss -lnt 2>/dev/null | grep -Eq '0\.0\.0\.0:443|\\*:443|\\[::\\]:443'; then
               echo "ERROR: Port 443 already has a listener; refusing to alter an existing TLS service."
               exit 1
             fi
@@ -262,7 +262,7 @@ jobs:
               echo "ERROR: A search.barakmod.ir Nginx site already exists; refusing to overwrite it."
               exit 1
             fi
-            if nginx -T 2>/dev/null | grep -qE 'server_name[[:space:]]+[^;]*search\\.barakmod\\.ir'; then
+            if nginx -T 2>/dev/null | grep -qE 'server_name[[:space:]]+[^;]*search\.barakmod\.ir'; then
               echo "ERROR: An existing Nginx server block already claims search.barakmod.ir."
               exit 1
             fi
@@ -372,7 +372,7 @@ jobs:
           fi
           $SUDO docker compose version >/dev/null
           if [[ "$task" == "install" ]]; then
-            if $SUDO ss -lnt 2>/dev/null | grep -Eq '127\\.0\\.0\\.1:8888|0\\.0\\.0\\.0:8888|\\*:8888'; then
+            if $SUDO ss -lnt 2>/dev/null | grep -Eq '127\.0\.0\.1:8888|0\.0\.0\.0:8888|\\*:8888'; then
               if ! $SUDO docker ps --format '{{.Names}} {{.Ports}}' | grep -q 'kargozar-searxng'; then
                 echo "ERROR: Host port 8888 is already in use by another service; refusing to continue."
                 exit 1
