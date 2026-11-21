@@ -25,7 +25,7 @@ jobs:
           install -d -m 700 "$RUNNER_TEMP/kargozar-ssh"
           key="$RUNNER_TEMP/kargozar-ssh/id_key"
           if [[ "$DEPLOY_SSH_KEY" == *"-----BEGIN OPENSSH PRIVATE KEY-----"* || "$DEPLOY_SSH_KEY" == *"-----BEGIN RSA PRIVATE KEY-----"* || "$DEPLOY_SSH_KEY" == *"-----BEGIN EC PRIVATE KEY-----"* ]]; then
-            printf '%s\\n' "$DEPLOY_SSH_KEY" | tr -d '\\r' > "$key"
+            printf '%s\n' "$DEPLOY_SSH_KEY" | tr -d '\r' > "$key"
           else
             printf '%s' "$DEPLOY_SSH_KEY" | tr -d '[:space:]' | base64 --decode > "$key"
           fi
@@ -35,7 +35,7 @@ jobs:
             SHA256:yZ0PY2OlUFSszk6GcX9R9DxA/ZWVFBQ8ecRpFBJz4NA|SHA256:5UUGhIltNpKwHnvln4NThvqhHUQ6O3ntmMuvS1Uiun4|SHA256:uT3cxt86sX2DOP7sI7Ku67r39Qsrwlx5SylBxoaW9Hw|SHA256:ZufQ/zpxkVWSj1pNE77vnLATiWfvyAT+1ZSzruClE48) ;;
             *) echo "::error::Unapproved SSH key"; exit 1 ;;
           esac
-          printf '%s\\n' "$DEPLOY_KNOWN_HOSTS" > "$RUNNER_TEMP/kargozar-ssh/known_hosts"
+          printf '%s\n' "$DEPLOY_KNOWN_HOSTS" > "$RUNNER_TEMP/kargozar-ssh/known_hosts"
           chmod 600 "$RUNNER_TEMP/kargozar-ssh/known_hosts"
           hostkey="$DEPLOY_HOST"; [[ "$DEPLOY_PORT" == 22 ]] || hostkey="[$DEPLOY_HOST]:$DEPLOY_PORT"
           ssh-keygen -F "$hostkey" -f "$RUNNER_TEMP/kargozar-ssh/known_hosts" >/dev/null
