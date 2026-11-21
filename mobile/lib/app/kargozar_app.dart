@@ -4,7 +4,6 @@ import 'package:kargozar_mobile/core/network/kargozar_api_client.dart';
 import 'package:kargozar_mobile/features/auth/customer_session.dart';
 import 'package:kargozar_mobile/features/catalog/service_catalog_repository.dart';
 import 'package:kargozar_mobile/features/requests/customer_request_repository.dart';
-import 'package:kargozar_mobile/features/support/support_chat_page.dart';
 
 const navy = Color(0xFF142B4A), teal = Color(0xFF168C83), muted = Color(0xFF64748B);
 class KargozarApp extends StatefulWidget {
@@ -34,7 +33,7 @@ class _AppState extends State<KargozarApp> {
   @override Widget build(BuildContext context) => MaterialApp(debugShowCheckedModeBanner: false, title: 'کارگزار',
     theme: ThemeData(useMaterial3: true, scaffoldBackgroundColor: const Color(0xFFF5F7FA), colorScheme: ColorScheme.fromSeed(seedColor: navy, primary: navy, secondary: teal)),
     home: Directionality(textDirection: TextDirection.rtl, child: loading ? const Scaffold(body: Center(child: CircularProgressIndicator())) :
-      MainShell(api: api, catalog: catalog, requests: requests, signedIn: signedIn, onLogin: login, onLogout: logout)));
+      MainShell(catalog: catalog, requests: requests, signedIn: signedIn, onLogin: login, onLogout: logout)));
 }
 class OtpDialog extends StatefulWidget {
   const OtpDialog({super.key, required this.session}); final CustomerSession session;
@@ -65,8 +64,8 @@ class _OtpState extends State<OtpDialog> {
       FilledButton(onPressed: busy ? null : submit, child: busy ? const CircularProgressIndicator() : Text(requested ? 'تأیید و ورود' : 'دریافت کد'))]);
 }
 class MainShell extends StatefulWidget {
-  const MainShell({super.key, required this.api, required this.catalog, required this.requests, required this.signedIn, required this.onLogin, required this.onLogout});
-  final KargozarApiClient api; final ServiceCatalogRepository catalog; final CustomerRequestRepository requests; final bool signedIn; final VoidCallback onLogin, onLogout;
+  const MainShell({super.key, required this.catalog, required this.requests, required this.signedIn, required this.onLogin, required this.onLogout});
+  final ServiceCatalogRepository catalog; final CustomerRequestRepository requests; final bool signedIn; final VoidCallback onLogin, onLogout;
   @override State<MainShell> createState() => _ShellState();
 }
 class _ShellState extends State<MainShell> {
@@ -76,7 +75,7 @@ class _ShellState extends State<MainShell> {
       HomePage(catalog: widget.catalog, browse: () => setState(() => index = 1)),
       ServicesPage(catalog: widget.catalog, requests: widget.requests, signedIn: widget.signedIn, login: widget.onLogin),
       RequestsPage(repository: widget.requests, signedIn: widget.signedIn, login: widget.onLogin),
-      ProfilePage(api: widget.api, signedIn: widget.signedIn, login: widget.onLogin, logout: widget.onLogout),
+      ProfilePage(signedIn: widget.signedIn, login: widget.onLogin, logout: widget.onLogout),
     ];
     return Scaffold(body: SafeArea(child: pages[index]), bottomNavigationBar: NavigationBar(selectedIndex: index, onDestinationSelected: (v) => setState(() => index = v),
       destinations: const [NavigationDestination(icon: Icon(Icons.home_outlined), label: 'خانه'), NavigationDestination(icon: Icon(Icons.grid_view_outlined), label: 'خدمات'), NavigationDestination(icon: Icon(Icons.receipt_long_outlined), label: 'درخواست‌ها'), NavigationDestination(icon: Icon(Icons.person_outline), label: 'حساب من')]));
@@ -420,25 +419,12 @@ class _RequestsState extends State<RequestsPage> {
   ]);
 }
 class ProfilePage extends StatelessWidget {
-  const ProfilePage({super.key, required this.api, required this.signedIn, required this.login, required this.logout});
-  final KargozarApiClient api;
-  final bool signedIn;
-  final VoidCallback login, logout;
-
-  @override
-  Widget build(BuildContext context) => ListView(padding: const EdgeInsets.all(20), children: [
+  const ProfilePage({super.key, required this.signedIn, required this.login, required this.logout}); final bool signedIn; final VoidCallback login, logout;
+  @override Widget build(BuildContext context) => ListView(padding: const EdgeInsets.all(20), children: [
     const Text('حساب کاربری', style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900)),
     ListTile(leading: const Icon(Icons.person), title: Text(signedIn ? 'حساب شما فعال است' : 'مهمان')),
     ListTile(leading: Icon(signedIn ? Icons.logout : Icons.login), title: Text(signedIn ? 'خروج از حساب' : 'ورود / ثبت‌نام'), onTap: signedIn ? logout : login),
-    ListTile(
-      leading: const Icon(Icons.support_agent),
-      title: const Text('گفت‌وگوی آنلاین با پشتیبانی'),
-      subtitle: const Text('پیام خود را ارسال کنید و پاسخ را در همین صفحه دریافت کنید.'),
-      trailing: const Icon(Icons.chevron_left),
-      onTap: () => Navigator.of(context).push(MaterialPageRoute(
-        builder: (_) => SupportChatPage(api: api),
-      )),
-    ),
+    const ListTile(leading: Icon(Icons.support_agent), title: Text('پشتیبانی و تماس با ما')),
   ]);
 }
 class ErrorPanel extends StatelessWidget {
