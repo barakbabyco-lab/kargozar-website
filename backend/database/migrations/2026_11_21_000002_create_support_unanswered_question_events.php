@@ -8,6 +8,11 @@ return new class extends Migration
 {
     public function up(): void
     {
+        // A staging table may predate the migration record; never fail or overwrite existing data.
+        if (Schema::hasTable('support_unanswered_question_events')) {
+            return;
+        }
+
         Schema::create('support_unanswered_question_events', function (Blueprint $table) {
             $table->id();
             $table->char('question_hash', 64)->index();
