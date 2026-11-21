@@ -189,6 +189,20 @@ jobs:
             php artisan migrate --force
           fi
 
+          echo "=== Verify Laravel to SearXNG integration before activation ==="
+          CACHE_STORE=array php <<'PHP'
+          <?php
+          require __DIR__.'/vendor/autoload.php';
+          $app = require __DIR__.'/bootstrap/app.php';
+          $app->make(\\Illuminate\\Contracts\\Console\\Kernel::class)->bootstrap();
+          $result = $app->make(\\App\\Services\\Support\\WebSearchService::class)->search('kargozar connectivity test');
+          if (! is_array($result) || empty($result['sources'])) {
+              fwrite(STDERR, "Laravel could not retrieve HTTPS sources from local SearXNG.\\n");
+              exit(1);
+          }
+          echo 'Laravel to SearXNG integration: OK; HTTPS sources='.count($result['sources']).PHP_EOL;
+          PHP
+
           previous_target="$(readlink "$deploy_root/current" || true)"
           ln -sfn "$release" "$deploy_root/current.next"
           mv -Tf "$deploy_root/current.next" "$deploy_root/current"
