@@ -90,23 +90,8 @@ jobs:
           cat > "$probe" <<'PHP'
           <?php
           header('Content-Type: text/plain; charset=utf-8');
-          echo 'FILE='.__FILE__.PHP_EOL;
-          echo 'REALPATH='.realpath(__DIR__).PHP_EOL;
-          echo 'PHP='.PHP_VERSION.PHP_EOL;
-          echo 'OPCACHE_VALIDATE='.ini_get('opcache.validate_timestamps').PHP_EOL;
-          try {
-              require dirname(__DIR__).'/vendor/autoload.php';
-              $app = require dirname(__DIR__).'/bootstrap/app.php';
-              $kernelClass = 'Illuminate\\Contracts\\Console\\Kernel';
-              $app->make($kernelClass)->bootstrap();
-              echo 'VIEW_COMPILED='.var_export(config('view.compiled'), true).PHP_EOL;
-              echo 'VIEW_DIR='.(is_dir(config('view.compiled')) ? 'yes' : 'no').PHP_EOL;
-              echo 'VIEW_WRITABLE='.(is_writable(config('view.compiled')) ? 'yes' : 'no').PHP_EOL;
-          } catch (\Throwable $e) {
-              http_response_code(500);
-              echo 'BOOTSTRAP_ERROR='.get_class($e).': '.$e->getMessage().PHP_EOL;
-              echo $e->getFile().':'.$e->getLine().PHP_EOL;
-          }
+          echo "PHP-FPM-OK\\n";
+          echo __FILE__."\\n";
           PHP
           curl --resolve api.barakmod.ir:443:127.0.0.1 --max-time 15 -sS -D - https://api.barakmod.ir/__kg_probe.php || true
           rm -f "$probe"
