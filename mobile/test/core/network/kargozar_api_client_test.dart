@@ -283,4 +283,10 @@ class FakeGuestSupportTokenStore extends SecureGuestSupportTokenStore {
   Future<void> clearConversationId() async {
     conversationId = null;
   }
+
+  @override
+  Future<void> clear() async {
+    value = null;
+    conversationId = null;
+  }
 }
