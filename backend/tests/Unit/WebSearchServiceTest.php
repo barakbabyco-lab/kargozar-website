@@ -112,6 +112,39 @@ class WebSearchServiceTest extends TestCase
         });
     }
 
+    public function test_remote_https_endpoint_requires_a_bearer_token(): void
+    {
+        config(['support_assistant.web_search.endpoint' => 'https://search.example.com/search']);
+        config(['support_assistant.web_search.token' => '']);
+        Http::fake();
+
+        $this->assertNull(app(WebSearchService::class)->search('پرسش عمومی'));
+        Http::assertNothingSent();
+    }
+
+    public function test_remote_https_endpoint_sends_the_configured_bearer_token(): void
+    {
+        config(['support_assistant.web_search.endpoint' => 'https://search.example.com/search']);
+        config(['support_assistant.web_search.token' => 'test-secret-token']);
+        Http::fake([
+            'search.example.com/search*' => Http::response([
+                'results' => [[
+                    'title' => 'نتیجه',
+                    'url' => 'https://example.com/result',
+                    'content' => 'محتوا',
+                ]],
+            ], 200),
+        ]);
+
+        $result = app(WebSearchService::class)->search('پرسش عمومی');
+
+        $this->assertCount(1, $result['sources']);
+        Http::assertSent(fn (Request $request): bool =>
+            $request->url() === 'https://search.example.com/search?q=%D9%BE%D8%B1%D8%B3%D8%B4+%D8%B9%D9%85%D9%88%D9%85%DB%8C&format=json&language=fa-IR&safesearch=1'
+            && $request->hasHeader('Authorization', 'Bearer test-secret-token')
+        );
+    }
+
     public function test_it_rejects_non_https_remote_endpoints(): void
     {
         config(['support_assistant.web_search.endpoint' => 'http://search.example.com/search']);
