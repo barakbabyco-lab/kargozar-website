@@ -100,7 +100,24 @@ jobs:
           set -euo pipefail
           case "$TASK" in
             health)
-              REMOTE_COMMAND='cd "$1/current" && php artisan about --only=environment && printf "\\n=== MIGRATION STATUS ===\\n" && php artisan migrate:status && printf "\\n=== SUPPORT API ROUTES ===\\n" && php artisan route:list --path=api/v1 && printf "\\n=== STAFF PORTAL ROUTES ===\\n" && php artisan route:list --path=staff/portal'
+              REMOTE_COMMAND='
+              set -eu
+              cd "$1/current"
+              php artisan about --only=environment
+              printf "\\n=== MIGRATION STATUS ===\\n"
+              php artisan migrate:status
+              printf "\\n=== SUPPORT API ROUTES ===\\n"
+              php artisan route:list --path=api/v1
+              printf "\\n=== STAFF PORTAL ROUTES ===\\n"
+              php artisan route:list --path=staff/portal
+              printf "\\n=== API VHOST CONFIGURATION ===\\n"
+              if sudo -n nginx -T 2>/dev/null | grep -nE "server_name[^;]*api\\.barakmod\\.ir|ssl_certificate|root /var/www/kargozar-staging/current/public"; then :; else echo "No readable matching API vhost found (or nginx config is not readable)."; fi
+              printf "\\n=== CERTBOT AVAILABILITY ===\\n"
+              if command -v certbot >/dev/null 2>&1; then sudo -n certbot certificates 2>&1 || echo "Cannot read certbot certificates without elevated access."; else echo "certbot is not installed."; fi
+              printf "\\n=== LOCAL API ROUTE ===\\n"
+              curl --silent --show-error --max-time 10 -H "Host: api.barakmod.ir" -o /tmp/kargozar-api-local-check.txt -w "HTTP %{http_code}\\n" http://127.0.0.1/api/v1/services || true
+              head -c 500 /tmp/kargozar-api-local-check.txt 2>/dev/null || true
+              '
               ;;
             system)
               REMOTE_COMMAND='printf "HOST: "; hostname; printf "\\nUPTIME: "; uptime; printf "\\nMEMORY:\\n"; free -h; printf "\\nDISK:\\n"; df -h "$1"; printf "\\nSERVICES:\\n"; for svc in nginx mysql php8.3-fpm; do state="$(systemctl is-active "$svc" 2>/dev/null || true)"; printf "%-12s %s\\n" "$svc" "${state:-unknown}"; done; printf "\\nCURRENT RELEASE: "; readlink "$1/current"'
