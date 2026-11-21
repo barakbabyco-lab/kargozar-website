@@ -102,7 +102,7 @@ jobs:
               echo 'VIEW_COMPILED='.var_export(config('view.compiled'), true).PHP_EOL;
               echo 'VIEW_DIR='.(is_dir(config('view.compiled')) ? 'yes' : 'no').PHP_EOL;
               echo 'VIEW_WRITABLE='.(is_writable(config('view.compiled')) ? 'yes' : 'no').PHP_EOL;
-          } catch (\\Throwable $e) {
+          } catch (\Throwable $e) {
               http_response_code(500);
               echo 'BOOTSTRAP_ERROR='.get_class($e).': '.$e->getMessage().PHP_EOL;
               echo $e->getFile().':'.$e->getLine().PHP_EOL;
