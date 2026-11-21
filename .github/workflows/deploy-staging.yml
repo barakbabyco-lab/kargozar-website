@@ -261,3 +261,22 @@ jobs:
             exit 0
           fi
           curl --fail --silent --show-error --retry 5 --retry-delay 3 --retry-connrefused "$HEALTHCHECK_URL"
+
+      - name: Verify API health and services directly on the VPS
+        shell: bash
+        env:
+          SSH_CONFIG: ${{ steps.ssh.outputs.ssh_config }}
+        run: |
+          set -euo pipefail
+          ssh -F "$SSH_CONFIG" kargozar-staging 'bash -s' <<'REMOTE'
+          set -euo pipefail
+          for endpoint in /up /api/v1/services; do
+            output="$(mktemp)"
+            status="$(curl --max-time 20 -sS -o "$output" -w '%{http_code}' -H 'Host: api.barakmod.ir' "http://127.0.0.1$endpoint")"
+            echo "Endpoint $endpoint returned HTTP $status"
+            head -c 1000 "$output"
+            echo
+            rm -f "$output"
+            test "$status" = "200"
+          done
+          REMOTE
