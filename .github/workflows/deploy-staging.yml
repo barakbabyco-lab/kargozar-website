@@ -163,7 +163,7 @@ jobs:
           SSH_CONFIG: ${{ steps.ssh.outputs.ssh_config }}
           DEPLOY_PATH: ${{ steps.ssh.outputs.deploy_path }}
           RELEASE_SHA: ${{ github.sha }}
-          RUN_MIGRATIONS: ${{ github.event_name == 'push' && 'true' || inputs.run_migrations }}
+          RUN_MIGRATIONS: ${{ github.event_name == 'workflow_dispatch' && inputs.run_migrations || 'false' }}
         run: |
           set -euo pipefail
           ssh -F "$SSH_CONFIG" kargozar-staging "bash -s -- '$DEPLOY_PATH' '$RELEASE_SHA' '$RUN_MIGRATIONS'" <<'REMOTE'
@@ -177,7 +177,7 @@ jobs:
           grep -Fxq 'APP_ENV=staging' "$deploy_root/shared/.env"
 
           ln -sfn "$deploy_root/shared/.env" "$release/.env"
-          mkdir -p "$deploy_root/shared/storage" "$release/bootstrap/cache"
+          mkdir -p "$deploy_root/shared/storage/framework/views" "$release/bootstrap/cache"
           rm -rf "$release/storage"
           ln -s "$deploy_root/shared/storage" "$release/storage"
           chmod -R ug+rwX "$deploy_root/shared/storage" "$release/bootstrap/cache"
