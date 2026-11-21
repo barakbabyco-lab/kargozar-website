@@ -1,6 +1,10 @@
 name: Inspect API Nginx and SSL readiness
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/inspect-api-ssl.yml"
   workflow_dispatch:
 
 permissions:
