@@ -257,7 +257,11 @@ jobs:
           ln -sfn "$release" "$deploy_root/current.next"
           mv -Tf "$deploy_root/current.next" "$deploy_root/current"
           printf '%s\n' "$previous_target" > "$deploy_root/shared/.previous-release"
-          printf 'Activated release %s\n' "$release_sha"
+          # PHP-FPM may have OPcache entries pinned to the previous release path.
+          # Restart workers after switching the current symlink so requests load
+          # the new release's configuration and compiled view directory.
+          sudo -n systemctl restart php8.3-fpm
+          printf 'Activated release %s and restarted PHP-FPM\n' "$release_sha"
           REMOTE
 
       - name: Optional staging health check
