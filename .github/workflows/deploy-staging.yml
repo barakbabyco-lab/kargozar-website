@@ -257,11 +257,18 @@ jobs:
           ln -sfn "$release" "$deploy_root/current.next"
           mv -Tf "$deploy_root/current.next" "$deploy_root/current"
           printf '%s\n' "$previous_target" > "$deploy_root/shared/.previous-release"
-          # PHP-FPM may have OPcache entries pinned to the previous release path.
-          # Restart workers after switching the current symlink so requests load
-          # the new release's configuration and compiled view directory.
+          # Point Nginx at this immutable release path (not the mutable current
+          # symlink) so FastCGI cannot retain a stale realpath across deployments.
+          nginx_site="/etc/nginx/sites-available/api.barakmod.ir"
+          if sudo -n test -f "$nginx_site"; then
+            sudo -n cp -a "$nginx_site" "$nginx_site.pre-$release_sha"
+            sudo -n sed -i "s#root /var/www/kargozar-staging/current/public;#root $release/public;#" "$nginx_site"
+            sudo -n nginx -t
+            sudo -n systemctl reload nginx
+          fi
+          # Clear PHP-FPM OPcache and realpath state after the Nginx root switch.
           sudo -n systemctl restart php8.3-fpm
-          printf 'Activated release %s and restarted PHP-FPM\n' "$release_sha"
+          printf 'Activated release %s, updated Nginx root, and restarted PHP-FPM\n' "$release_sha"
           REMOTE
 
       - name: Optional staging health check
