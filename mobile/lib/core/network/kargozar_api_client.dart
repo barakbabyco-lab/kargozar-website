@@ -16,7 +16,7 @@ class KargozarApiClient {
   })  : _tokenStore = tokenStore ?? SecureAccessTokenStore(),
         _guestTokenStore = guestTokenStore ?? SecureGuestSupportTokenStore(),
         _baseUri = Uri.parse(
-          (baseUrl ?? const String.fromEnvironment('API_BASE_URL')).trim(),
+          (baseUrl ?? const String.fromEnvironment('API_BASE_URL', defaultValue: 'https://api.barakmod.ir/api/v1')).trim(),
         ),
         _http = httpClient ?? http.Client(),
         _accessToken = accessToken;
