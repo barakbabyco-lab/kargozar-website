@@ -14,12 +14,10 @@ return [
 
     'fallback' => 'برای اینکه پاسخ اشتباه یا ناقص به شما ندهم، این سؤال نیاز به بررسی دقیق‌تر دارد. لطفاً کمی بیشتر توضیح دهید یا اگر مایل هستید عبارت «تماس کارشناس» را ارسال کنید تا درخواست شما برای پیگیری انسانی مشخص شود. در حال حاضر پاسخ خودکار برای این موضوع ندارم.',
 
-    // Public-web fallback is used only after internal knowledge and FAQs miss.
-    // Configure TAVILY_API_KEY in the server environment to enable live search.
+    // Self-hosted SearXNG is used only after internal knowledge and FAQs miss.
     'web_search' => [
         'enabled' => (bool) env('SUPPORT_WEB_SEARCH_ENABLED', true),
-        'api_key' => env('TAVILY_API_KEY', ''),
-        'endpoint' => env('TAVILY_API_URL', 'https://api.tavily.com/search'),
+        'endpoint' => env('SEARXNG_URL', 'http://127.0.0.1:8888/search'),
         'timeout' => 8,
         'max_results' => 5,
         'official_context_terms' => ['قانون', 'مجوز', 'مالیات', 'ثبت شرکت', 'ثبت برند', 'اینماد', 'جواز کسب', 'پروانه کسب', 'استاندارد', 'کارت بهداشت', 'اجاره نامه', 'قرارداد', 'حساب جاری'],
