@@ -689,7 +689,7 @@ class _ServiceCategoryAction extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 13),
             child: Row(children: [
-              Icon(icon, color: const Color(0xFFE30613), size: 22),
+              Icon(icon, color: const Color(0xFFC62828), size: 22),
               const SizedBox(width: 12),
               Expanded(child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
