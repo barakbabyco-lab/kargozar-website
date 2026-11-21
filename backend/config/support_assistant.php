@@ -18,6 +18,7 @@ return [
     'web_search' => [
         'enabled' => (bool) env('SUPPORT_WEB_SEARCH_ENABLED', true),
         'endpoint' => env('SEARXNG_URL', 'http://127.0.0.1:8888/search'),
+        'token' => env('SEARXNG_API_TOKEN', ''),
         'timeout' => 8,
         'max_results' => 5,
         'official_context_terms' => ['قانون', 'مجوز', 'مالیات', 'ثبت شرکت', 'ثبت برند', 'اینماد', 'جواز کسب', 'پروانه کسب', 'استاندارد', 'کارت بهداشت', 'اجاره نامه', 'قرارداد', 'حساب جاری'],
