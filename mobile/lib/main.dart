@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'core/network/kargozar_api_client.dart';
@@ -142,11 +141,6 @@ const services = <ServiceItem>[
 
 const String _centralContactNumber = '09365952800';
 
-Future<void> _openCentralDialer() async {
-  final opened = await launchUrl(Uri(scheme: 'tel', path: _centralContactNumber));
-  if (!opened) throw Exception('امکان باز کردن شماره‌گیر تلفن وجود ندارد.');
-}
-
 class MainShell extends StatefulWidget {
   const MainShell({super.key, required this.api, required this.requests, required this.signedIn, required this.onLogin, required this.onLogout});
   final KargozarApiClient api;
@@ -168,6 +162,17 @@ class _MainShellState extends State<MainShell> {
   }
   @override
   void dispose() { _pageController.dispose(); super.dispose(); }
+
+  Future<void> _openCentralDialer() async {
+    try {
+      final opened = await launchUrl(Uri(scheme: 'tel', path: _centralContactNumber));
+      if (!opened && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('امکان باز کردن شماره‌گیر تلفن وجود ندارد.')));
+      }
+    } catch (_) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('امکان باز کردن شماره‌گیر تلفن وجود ندارد.')));
+    }
+  }
   Future<void> _request(ServiceItem service) => _openCentralDialer();
 
   Future<void> _showRequests() async {
