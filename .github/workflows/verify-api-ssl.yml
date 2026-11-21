@@ -77,6 +77,11 @@ jobs:
           echo "=== Current release resolution ==="
           readlink -f /var/www/kargozar-staging/current
           readlink -f /var/www/kargozar-staging/current/public/index.php
+          echo "=== PHP-FPM and OPcache configuration ==="
+          sudo -n systemctl show php8.3-fpm -p MainPID -p ActiveEnterTimestamp
+          sudo -n grep -R -n -E 'opcache\\.(file_cache|validate_timestamps|revalidate_freq)|realpath_cache_ttl' /etc/php/8.3/fpm 2>/dev/null || true
+          sudo -n grep -n -E 'SCRIPT_FILENAME|DOCUMENT_ROOT' /etc/nginx/snippets/fastcgi-php.conf || true
+          php -i | grep -E '^opcache.file_cache|^opcache.validate_timestamps|^realpath_cache_ttl' || true
           sudo -n certbot certificates 2>&1 || true
           echo | openssl s_client -connect 127.0.0.1:443 -servername api.barakmod.ir 2>/dev/null | openssl x509 -noout -subject -issuer -dates -ext subjectAltName 2>&1 || true
           echo "=== /up ==="
