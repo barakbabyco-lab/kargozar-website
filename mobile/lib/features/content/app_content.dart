@@ -320,34 +320,28 @@ class _AppBannerStripState extends State<AppBannerStrip> {
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 18, 16, 6),
             child: SizedBox(
-              height: 38,
-              child: Row(
-                children: [
-                  const Text(
-                    'کارگزار',
-                    textDirection: TextDirection.rtl,
+              height: 27,
+              child: Center(
+                child: RichText(
+                  textDirection: TextDirection.rtl,
+                  text: const TextSpan(
                     style: TextStyle(
-                      color: Color(0xFF4B0082),
-                      fontSize: 20,
+                      fontSize: 21,
                       fontWeight: FontWeight.w900,
-                      letterSpacing: -0.4,
+                      letterSpacing: -0.7,
                     ),
+                    children: [
+                      TextSpan(
+                        text: 'کار',
+                        style: TextStyle(color: Color(0xFFE30613)),
+                      ),
+                      TextSpan(
+                        text: 'گزار',
+                        style: TextStyle(color: Color(0xFF4B0082)),
+                      ),
+                    ],
                   ),
-                  const Spacer(),
-                  Container(
-                    width: 34,
-                    height: 34,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFE30613),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: const Icon(
-                      Icons.business_center_rounded,
-                      color: Colors.white,
-                      size: 20,
-                    ),
-                  ),
-                ],
+                ),
               ),
             ),
           ),
