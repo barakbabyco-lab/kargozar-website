@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'core/network/kargozar_api_client.dart';
 import 'features/auth/customer_session.dart';
 import 'features/catalog/service_catalog_repository.dart';
@@ -12,8 +13,8 @@ void main() {
   runApp(const KargozarApp());
 }
 
-const _navy = Color(0xFF4B0082); // برند مکمل: بادمجانی تیره
-const _brandRed = Color(0xFFE30613); // رنگ اصلی برند: قرمز
+const _navy = Color(0xFF49334F); // بادمجانی سازمانی
+const _brandRed = Color(0xFFC62828); // قرمز سازمانی
 const _ink = Color(0xFF1E293B);
 const _muted = Color(0xFF64748B);
 const _canvas = Color(0xFFFFFFFF);
@@ -251,10 +252,29 @@ class _MainShellState extends State<MainShell> {
         textDirection: TextDirection.rtl,
         child: ServiceCategoryDetailPage(
           category: category,
-          onBrowseServices: () => _showCategoryServices(category),
+          onBrowseServices: () {
+            if (category.children.isNotEmpty) {
+              _showCategoryChildren(category);
+            } else {
+              _showCategoryServices(category);
+            }
+          },
+          onCall: _callSupport,
         ),
       ),
     ));
+  }
+
+  Future<void> _callSupport() async {
+    final launched = await launchUrl(
+      Uri(scheme: 'tel', path: '09360952800'),
+      mode: LaunchMode.externalApplication,
+    );
+    if (!launched && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('امکان باز کردن شماره‌گیر گوشی وجود ندارد.')),
+      );
+    }
   }
 
   Future<void> _showCategoryServices(ServiceCategory category) async {
@@ -382,17 +402,17 @@ class _MainShellState extends State<MainShell> {
       Positioned(right: 14, bottom: 8, child: SupportChatLauncher(api: widget.api)),
     ])),
     bottomNavigationBar: NavigationBar(
-      height: 76,
+      height: 58,
       backgroundColor: _brandRed,
       indicatorColor: Colors.transparent,
       labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
       labelTextStyle: const WidgetStatePropertyAll(
-        TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w700),
+        TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.w700),
       ),
       selectedIndex: _index,
       onDestinationSelected: _goToTab,
       destinations: const [
-        NavigationDestination(icon: Icon(Icons.person_outline_rounded, color: Colors.white, size: 20), selectedIcon: Icon(Icons.person_rounded, color: Colors.white, size: 20), label: 'حساب کاربری من'),
+        NavigationDestination(icon: Icon(Icons.person_outline_rounded, color: Colors.white, size: 18), selectedIcon: Icon(Icons.person_rounded, color: Colors.white, size: 20), label: 'حساب کاربری من'),
         NavigationDestination(icon: Icon(Icons.grid_view_outlined, color: Colors.white, size: 20), selectedIcon: Icon(Icons.grid_view_rounded, color: Colors.white, size: 20), label: 'خدمات'),
         NavigationDestination(icon: Icon(Icons.business_center_outlined, color: Colors.white, size: 20), selectedIcon: Icon(Icons.business_center_rounded, color: Colors.white, size: 20), label: 'همراه کسب‌وکار'),
         NavigationDestination(icon: Icon(Icons.support_agent_outlined, color: Colors.white, size: 20), selectedIcon: Icon(Icons.support_agent_rounded, color: Colors.white, size: 20), label: 'تماس و پشتیبانی'),
@@ -669,7 +689,7 @@ class _ServiceCategoryAction extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 13),
             child: Row(children: [
-              Icon(icon, color: const Color(0xFFE30613), size: 22),
+              Icon(icon, color: const Color(0xFFC62828), size: 22),
               const SizedBox(width: 12),
               Expanded(child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -1089,10 +1109,12 @@ class ServiceCategoryDetailPage extends StatelessWidget {
     super.key,
     required this.category,
     required this.onBrowseServices,
+    required this.onCall,
   });
 
   final ServiceCategory category;
   final VoidCallback onBrowseServices;
+  final VoidCallback onCall;
 
   String get _intro {
     final name = category.name;
@@ -1159,7 +1181,7 @@ class ServiceCategoryDetailPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('معرفی خدمت')),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(18, 12, 18, 28),
+        padding: const EdgeInsets.fromLTRB(18, 12, 18, 20),
         children: [
           Container(
             padding: const EdgeInsets.all(20),
@@ -1234,15 +1256,43 @@ class ServiceCategoryDetailPage extends StatelessWidget {
                 style: TextStyle(color: _ink, fontSize: 12, height: 1.8))),
             ]),
           ),
-          const SizedBox(height: 22),
-          SizedBox(width: double.infinity, child: FilledButton(
-            onPressed: onBrowseServices,
-            child: const Text('ثبت درخواست / مشاهده خدمات این بخش'),
-          )),
-          const SizedBox(height: 8),
-          const Text('ثبت نهایی درخواست زمانی انجام می‌شود که خدمت به کاتالوگ و سامانه درخواست متصل باشد.',
-            textAlign: TextAlign.center, style: TextStyle(color: _muted, fontSize: 10, height: 1.6)),
+          const SizedBox(height: 18),
         ],
+      ),
+      bottomNavigationBar: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(14, 8, 14, 10),
+          child: Row(
+            children: [
+              Expanded(
+                child: FilledButton.icon(
+                  onPressed: onCall,
+                  icon: const Icon(Icons.call_outlined, size: 18),
+                  label: const Text('ثبت درخواست'),
+                  style: FilledButton.styleFrom(
+                    backgroundColor: _brandRed,
+                    foregroundColor: Colors.white,
+                    minimumSize: const Size.fromHeight(46),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: onBrowseServices,
+                  icon: const Icon(Icons.list_alt_rounded, size: 18),
+                  label: const Text('مشاهده خدمات این بخش'),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: _navy,
+                    side: const BorderSide(color: _navy),
+                    minimumSize: const Size.fromHeight(46),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

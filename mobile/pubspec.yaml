@@ -23,6 +23,7 @@ flutter:
   uses-material-design: true
   assets:
     - assets/kargozar/
+    - assets/brand/
 
 flutter_launcher_icons:
   android: true
