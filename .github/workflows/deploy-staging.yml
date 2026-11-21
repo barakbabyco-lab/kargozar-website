@@ -194,10 +194,10 @@ jobs:
           <?php
           require __DIR__.'/vendor/autoload.php';
           $app = require __DIR__.'/bootstrap/app.php';
-          $app->make(\\Illuminate\\Contracts\\Console\\Kernel::class)->bootstrap();
-          $result = $app->make(\\App\\Services\\Support\\WebSearchService::class)->search('kargozar connectivity test');
+          $app->make(\Illuminate\Contracts\Console\Kernel::class)->bootstrap();
+          $result = $app->make(\App\Services\Support\WebSearchService::class)->search('kargozar connectivity test');
           if (! is_array($result) || empty($result['sources'])) {
-              fwrite(STDERR, "Laravel could not retrieve HTTPS sources from local SearXNG.\\n");
+              fwrite(STDERR, "Laravel could not retrieve HTTPS sources from local SearXNG.\n");
               exit(1);
           }
           echo 'Laravel to SearXNG integration: OK; HTTPS sources='.count($result['sources']).PHP_EOL;
