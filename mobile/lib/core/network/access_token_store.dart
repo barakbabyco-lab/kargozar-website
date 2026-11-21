@@ -48,4 +48,9 @@ class SecureGuestSupportTokenStore {
 
   Future<void> clearConversationId() =>
       _storage.delete(key: _conversationKey);
+
+  Future<void> clear() async {
+    await _storage.delete(key: _key);
+    await _storage.delete(key: _conversationKey);
+  }
 }
