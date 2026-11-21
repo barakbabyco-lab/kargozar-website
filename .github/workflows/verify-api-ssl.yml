@@ -90,8 +90,19 @@ jobs:
           cat > "$probe" <<'PHP'
           <?php
           header('Content-Type: text/plain; charset=utf-8');
-          echo "PHP-FPM-OK\\n";
-          echo __FILE__."\\n";
+          try {
+              require dirname(__DIR__).'/vendor/autoload.php';
+              $app = require dirname(__DIR__).'/bootstrap/app.php';
+              $app->make('Illuminate\Contracts\Console\Kernel')->bootstrap();
+              echo 'BOOTSTRAP=OK'.PHP_EOL;
+              echo 'VIEW_COMPILED='.var_export(config('view.compiled'), true).PHP_EOL;
+              echo 'VIEW_DIR='.(is_dir(config('view.compiled')) ? 'yes' : 'no').PHP_EOL;
+              echo 'VIEW_WRITABLE='.(is_writable(config('view.compiled')) ? 'yes' : 'no').PHP_EOL;
+          } catch (Throwable $e) {
+              http_response_code(500);
+              echo 'BOOTSTRAP_ERROR='.get_class($e).': '.$e->getMessage().PHP_EOL;
+              echo $e->getFile().':'.$e->getLine().PHP_EOL;
+          }
           PHP
           curl --resolve api.barakmod.ir:443:127.0.0.1 --max-time 15 -sS -D - https://api.barakmod.ir/__kg_probe.php || true
           rm -f "$probe"
