@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('outcome', 24)->index();
             $table->foreignId('conversation_id')->nullable()->constrained('support_conversations')->nullOnDelete();
             $table->timestamp('created_at')->useCurrent()->index();
-            $table->index(['question_hash', 'created_at']);
+            $table->index(['question_hash', 'created_at'], 'sqe_hash_created_idx');
         });
     }
 
