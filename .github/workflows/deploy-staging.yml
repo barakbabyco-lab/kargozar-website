@@ -268,7 +268,7 @@ jobs:
           nginx_site="/etc/nginx/sites-available/api.barakmod.ir"
           if sudo -n test -f "$nginx_site"; then
             sudo -n cp -a "$nginx_site" "$nginx_site.pre-$release_sha"
-            sudo -n sed -i "s#root /var/www/kargozar-staging/current/public;#root $release/public;#" "$nginx_site"
+            sudo -n sed -i -E "s#root /var/www/kargozar-staging/(current|releases/[^/]+)/public;#root $release/public;#" "$nginx_site"
             sudo -n nginx -t
             sudo -n systemctl reload nginx
           fi
