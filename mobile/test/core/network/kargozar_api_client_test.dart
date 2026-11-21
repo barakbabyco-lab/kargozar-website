@@ -205,6 +205,7 @@ void main() {
       );
 
       await client.startGuestSupportConversation('سلام');
+      expect(await client.restoreGuestSupportConversationId(), 41);
       await client.sendGuestSupportMessage(41, 'پیام دوم');
       await client.getGuestSupportMessages(41);
 
@@ -260,6 +261,7 @@ class FakeAccessTokenStore implements AccessTokenStore {
 
 class FakeGuestSupportTokenStore extends SecureGuestSupportTokenStore {
   String? value;
+  int? conversationId;
 
   @override
   Future<String?> read() async => value;
@@ -267,5 +269,18 @@ class FakeGuestSupportTokenStore extends SecureGuestSupportTokenStore {
   @override
   Future<void> write(String token) async {
     value = token;
+  }
+
+  @override
+  Future<int?> readConversationId() async => conversationId;
+
+  @override
+  Future<void> writeConversationId(int id) async {
+    conversationId = id;
+  }
+
+  @override
+  Future<void> clearConversationId() async {
+    conversationId = null;
   }
 }
