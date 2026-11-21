@@ -228,10 +228,16 @@ jobs:
           chown --reference="$env_file" "$tmp_env"
           chmod --reference="$env_file" "$tmp_env"
           mv -f "$tmp_env" "$env_file"
+          # The temporary .env was created under umask 077; reset the mask
+          # before generating Laravel cache files so PHP-FPM (www-data) can read
+          # bootstrap/cache/config.php while the .env itself stays restrictive.
+          umask 022
           php artisan config:clear
           php artisan view:clear
           test -d "$deploy_root/shared/storage/framework/views"
           php artisan config:cache
+          chmod 644 "$release/bootstrap/cache/config.php"
+          test -r "$release/bootstrap/cache/config.php"
           php artisan tinker --execute="if (! is_dir(config('view.compiled'))) { throw new RuntimeException('Blade compiled view path is invalid: '.config('view.compiled')); }"
 
           if [[ "$run_migrations" == "true" ]]; then
