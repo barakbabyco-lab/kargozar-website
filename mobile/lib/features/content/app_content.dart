@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 const kargozarAssetsBaseUrl = String.fromEnvironment(
@@ -317,34 +318,6 @@ class _AppBannerStripState extends State<AppBannerStrip> {
   Widget build(BuildContext context) => Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 18, 16, 6),
-            child: SizedBox(
-              height: 27,
-              child: Center(
-                child: RichText(
-                  textDirection: TextDirection.rtl,
-                  text: const TextSpan(
-                    style: TextStyle(
-                      fontSize: 21,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: -0.7,
-                    ),
-                    children: [
-                      TextSpan(
-                        text: 'کار',
-                        style: TextStyle(color: Color(0xFFE30613)),
-                      ),
-                      TextSpan(
-                        text: 'گزار',
-                        style: TextStyle(color: Color(0xFF4B0082)),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
           SizedBox(
             height: 142,
             width: double.infinity,
