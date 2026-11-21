@@ -97,7 +97,8 @@ jobs:
           try {
               require dirname(__DIR__).'/vendor/autoload.php';
               $app = require dirname(__DIR__).'/bootstrap/app.php';
-              $app->make(\\Illuminate\\Contracts\\Console\\Kernel::class)->bootstrap();
+              $kernelClass = 'Illuminate\\Contracts\\Console\\Kernel';
+              $app->make($kernelClass)->bootstrap();
               echo 'VIEW_COMPILED='.var_export(config('view.compiled'), true).PHP_EOL;
               echo 'VIEW_DIR='.(is_dir(config('view.compiled')) ? 'yes' : 'no').PHP_EOL;
               echo 'VIEW_WRITABLE='.(is_writable(config('view.compiled')) ? 'yes' : 'no').PHP_EOL;
