@@ -109,7 +109,11 @@ jobs:
             echo "=== Laravel log tail ==="
             sudo -n tail -n 220 "$APP/storage/logs/laravel.log" 2>/dev/null | tail -n 160 | sed -E 's/((password|token|authorization|secret|api[_-]?key)[^:=]*[:=][[:space:]]*)[^ ,;]+/\1[REDACTED]/Ig' || true
             echo "=== Recent PHP-FPM errors ==="
-            sudo -n journalctl -u php8.3-fpm --no-pager -n 50 2>/dev/null || true
+            sudo -n journalctl -u php8.3-fpm --no-pager -n 80 2>/dev/null || true
+            echo "=== Nginx API error log ==="
+            sudo -n tail -n 100 /var/log/nginx/api.barakmod.ir.error.log 2>/dev/null || true
+            echo "=== Active Nginx root and FastCGI script path ==="
+            sudo -n nginx -T 2>/dev/null | grep -E -n 'server_name api.barakmod.ir|root /var/www/kargozar-staging|SCRIPT_FILENAME|fastcgi_pass' | tail -n 40 || true
           fi
           REMOTE
       - name: External HTTPS checks
