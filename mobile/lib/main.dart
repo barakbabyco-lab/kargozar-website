@@ -250,7 +250,17 @@ class _MainShellState extends State<MainShell> {
         textDirection: TextDirection.rtl,
         child: ServiceCategoryDetailPage(
           category: category,
-          onBrowseServices: () => _showCategoryServices(category),
+          onContact: () {
+            Navigator.of(context).pop();
+            _goToTab(3);
+          },
+          onBrowseServices: () {
+            if (category.children.isNotEmpty) {
+              _showCategoryChildren(category);
+            } else {
+              _showCategoryServices(category);
+            }
+          },
         ),
       ),
     ));
@@ -979,10 +989,12 @@ class ServiceCategoryDetailPage extends StatelessWidget {
   const ServiceCategoryDetailPage({
     super.key,
     required this.category,
+    required this.onContact,
     required this.onBrowseServices,
   });
 
   final ServiceCategory category;
+  final VoidCallback onContact;
   final VoidCallback onBrowseServices;
 
   String get _intro {
@@ -1126,12 +1138,35 @@ class ServiceCategoryDetailPage extends StatelessWidget {
             ]),
           ),
           const SizedBox(height: 22),
-          SizedBox(width: double.infinity, child: FilledButton(
-            onPressed: onBrowseServices,
-            child: const Text('ثبت درخواست / مشاهده خدمات این بخش'),
-          )),
+          Row(
+            children: [
+              Expanded(
+                child: FilledButton.icon(
+                  onPressed: onContact,
+                  icon: const Icon(Icons.phone_in_talk_outlined, size: 18),
+                  label: const Text('ثبت درخواست'),
+                  style: FilledButton.styleFrom(
+                    backgroundColor: const Color(0xFFE30613),
+                    foregroundColor: Colors.white,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: onBrowseServices,
+                  icon: const Icon(Icons.account_tree_outlined, size: 18),
+                  label: const Text('نمایش زیرشاخه‌ها'),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: const Color(0xFF4B0082),
+                    side: const BorderSide(color: Color(0xFF4B0082)),
+                  ),
+                ),
+              ),
+            ],
+          ),
           const SizedBox(height: 8),
-          const Text('ثبت نهایی درخواست زمانی انجام می‌شود که خدمت به کاتالوگ و سامانه درخواست متصل باشد.',
+          const Text('برای ثبت درخواست، از صفحه تماس با کارگزار با شماره ۰۹۳۶۰۹۵۲۸۰۰ ارتباط بگیرید.',
             textAlign: TextAlign.center, style: TextStyle(color: _muted, fontSize: 10, height: 1.6)),
         ],
       ),
