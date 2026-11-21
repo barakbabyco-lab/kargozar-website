@@ -66,6 +66,8 @@ jobs:
           APP="$(readlink -f /var/www/kargozar-staging/current)"
           echo "=== Certbot process and certificate diagnostics ==="
           ps -eo pid,etime,stat,args | grep -E '[c]ertbot|[a]pt-get' || true
+          orphan_pids="$(ps -eo pid=,args= | awk '$0 ~ /\/usr\/bin\/python3 \/usr\/bin\/certbot renew --dry-run$/ {print $1}')"
+          if [[ -n "$orphan_pids" ]]; then sudo -n kill $orphan_pids || true; fi
           echo "=== API Nginx virtual host ==="
           sudo -n cat /etc/nginx/sites-enabled/api.barakmod.ir 2>&1 || true
           echo "=== Nginx API server blocks ==="
