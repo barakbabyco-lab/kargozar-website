@@ -192,8 +192,9 @@ jobs:
           echo "=== Verify Laravel to SearXNG integration before activation ==="
           CACHE_STORE=array php <<'PHP'
           <?php
-          require __DIR__.'/vendor/autoload.php';
-          $app = require __DIR__.'/bootstrap/app.php';
+          $base = getcwd();
+          require $base.'/vendor/autoload.php';
+          $app = require $base.'/bootstrap/app.php';
           $app->make(\Illuminate\Contracts\Console\Kernel::class)->bootstrap();
           $result = $app->make(\App\Services\Support\WebSearchService::class)->search('kargozar connectivity test');
           if (! is_array($result) || empty($result['sources'])) {
