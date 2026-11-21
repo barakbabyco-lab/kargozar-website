@@ -252,8 +252,10 @@ class KargozarApiClient {
   Future<int?> restoreGuestSupportConversationId() =>
       _guestTokenStore.readConversationId();
 
-  Future<void> clearGuestSupportConversation() =>
-      _guestTokenStore.clearConversationId();
+  Future<void> clearGuestSupportConversation() async {
+    _guestSupportToken = null;
+    await _guestTokenStore.clear();
+  }
 
   Future<Map<String, dynamic>> startGuestSupportConversation(String body) async {
     final token = await _ensureGuestSupportToken();
