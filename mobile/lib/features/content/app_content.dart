@@ -323,7 +323,7 @@ class _AppBannerStripState extends State<AppBannerStrip> {
               height: 38,
               child: Row(
                 children: [
-                  const RichText(
+                  RichText(
                     textDirection: TextDirection.rtl,
                     text: TextSpan(
                       children: [
