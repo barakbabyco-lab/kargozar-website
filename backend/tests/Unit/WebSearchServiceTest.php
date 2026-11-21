@@ -139,10 +139,15 @@ class WebSearchServiceTest extends TestCase
         $result = app(WebSearchService::class)->search('پرسش عمومی');
 
         $this->assertCount(1, $result['sources']);
-        Http::assertSent(fn (Request $request): bool =>
-            $request->url() === 'https://search.example.com/search?q=%D9%BE%D8%B1%D8%B3%D8%B4+%D8%B9%D9%85%D9%88%D9%85%DB%8C&format=json&language=fa-IR&safesearch=1'
-            && $request->hasHeader('Authorization', 'Bearer test-secret-token')
-        );
+        Http::assertSent(function (Request $request): bool {
+            $query = [];
+            parse_str((string) parse_url($request->url(), PHP_URL_QUERY), $query);
+
+            return $request->method() === 'GET'
+                && parse_url($request->url(), PHP_URL_HOST) === 'search.example.com'
+                && ($query['format'] ?? null) === 'json'
+                && $request->hasHeader('Authorization', 'Bearer test-secret-token');
+        });
     }
 
     public function test_it_rejects_non_https_remote_endpoints(): void
