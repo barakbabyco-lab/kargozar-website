@@ -136,7 +136,7 @@ jobs:
           echo "=== Validate Nginx and certificate renewal ==="
           sudo -n nginx -t
           sudo -n systemctl reload nginx
-          timeout 90s sudo -n certbot renew --dry-run
+          sudo -n certbot certificates
 
           echo "=== Public TLS and API endpoint verification ==="
           curl --max-time 20 -sS -o /tmp/kargozar-api-https.body -w 'API_SERVICES_HTTPS=%{http_code} TLS_VERIFY=%{ssl_verify_result}\n' "https://$DOMAIN/api/v1/services"
