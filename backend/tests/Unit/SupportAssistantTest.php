@@ -4,11 +4,14 @@ namespace Tests\Unit;
 
 use App\Services\Support\SupportAssistant;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
 class SupportAssistantTest extends TestCase
 {
+    use RefreshDatabase;
+
     public function test_missing_requirement_is_routed_to_human_without_explaining_workarounds(): void
     {
         Config::set('support_assistant.missing_requirement_phrases', ['مغازه ندارم']);
