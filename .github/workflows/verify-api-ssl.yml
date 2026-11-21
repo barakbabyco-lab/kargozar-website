@@ -73,53 +73,6 @@ jobs:
           echo "=== Current release resolution ==="
           readlink -f /var/www/kargozar-staging/current
           readlink -f /var/www/kargozar-staging/current/public/index.php
-          echo "=== Stop orphaned renewal dry-run only ==="
-          pids="$(pgrep -f '^/usr/bin/python3 /usr/bin/certbot renew --dry-run
-          sudo -n certbot certificates 2>&1 || true
-          echo | openssl s_client -connect 127.0.0.1:443 -servername api.barakmod.ir 2>/dev/null | openssl x509 -noout -subject -issuer -dates -ext subjectAltName 2>&1 || true
-          echo "=== /up ==="
-          UP="$(curl --max-time 15 -sS -o /tmp/kg-up.txt -w '%{http_code}' -H 'Host: api.barakmod.ir' http://127.0.0.1/up || true)"
-          echo "HTTP_STATUS=$UP"
-          cat /tmp/kg-up.txt 2>/dev/null || true
-          echo
-          echo "=== /api/v1/services ==="
-          SV="$(curl --max-time 20 -sS -o /tmp/kg-services.txt -w '%{http_code}' -H 'Host: api.barakmod.ir' http://127.0.0.1/api/v1/services || true)"
-          echo "HTTP_STATUS=$SV"
-          head -c 1200 /tmp/kg-services.txt 2>/dev/null || true
-          echo
-          if [[ "$UP" != "200" || "$SV" != "200" ]]; then
-            echo "=== Recent sanitized Laravel errors ==="
-            if [[ -f "$APP/storage/logs/laravel.log" ]]; then
-              sudo -n tail -n 120 "$APP/storage/logs/laravel.log" | grep -E 'ERROR|CRITICAL|production\.' | tail -n 35 | sed -E 's/((password|token|authorization|secret|api[_-]?key)[^:=]*[:=][[:space:]]*)[^ ,;]+/\1[REDACTED]/Ig' || true
-            fi
-            echo "=== Blade cache path and permissions ==="
-            cd "$APP"
-            printf 'APP=%s\n' "$APP"
-            ls -ld "$APP/storage" "$APP/storage/framework" "$APP/storage/framework/views" "$APP/bootstrap/cache" 2>&1 || true
-            readlink -f "$APP/storage" || true
-            grep -E '^(VIEW_COMPILED_PATH|APP_ENV|APP_DEBUG)=' "$APP/.env" | sed -E 's/=.*/=[configured]/' || true
-            php artisan tinker --execute="dump(config('view.compiled')); dump(is_dir(config('view.compiled'))); dump(is_writable(config('view.compiled')));" 2>&1 || true
-            echo "=== Laravel log tail ==="
-            sudo -n tail -n 220 "$APP/storage/logs/laravel.log" 2>/dev/null | tail -n 160 | sed -E 's/((password|token|authorization|secret|api[_-]?key)[^:=]*[:=][[:space:]]*)[^ ,;]+/\1[REDACTED]/Ig' || true
-            echo "=== Recent PHP-FPM errors ==="
-            sudo -n journalctl -u php8.3-fpm --no-pager -n 50 2>/dev/null || true
-          fi
-          REMOTE
-      - name: External HTTPS checks
-        shell: bash
-        run: |
-          set +e
-          for endpoint in https://api.barakmod.ir/up https://api.barakmod.ir/api/v1/services; do
-            echo "=== $endpoint ==="
-            curl --connect-timeout 10 --max-time 25 -sS -D /tmp/kg-headers -o /tmp/kg-body -w 'HTTP_STATUS=%{http_code}\nSSL_VERIFY=%{ssl_verify_result}\n' "$endpoint"
-            rc=$?
-            echo "CURL_EXIT=$rc"
-            sed -n '1,12p' /tmp/kg-headers
-            head -c 1200 /tmp/kg-body
-            echo
-          done
- || true)"
-          if [[ -n "$pids" ]]; then sudo -n kill $pids; fi
           sudo -n certbot certificates 2>&1 || true
           echo | openssl s_client -connect 127.0.0.1:443 -servername api.barakmod.ir 2>/dev/null | openssl x509 -noout -subject -issuer -dates -ext subjectAltName 2>&1 || true
           echo "=== /up ==="
