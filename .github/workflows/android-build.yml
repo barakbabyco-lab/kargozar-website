@@ -1,7 +1,12 @@
 name: Build KarGozar Android app
 
 on:
-  # APK/AAB builds are manual only. Mobile source changes run mobile-ci.yml.
+  # Build installable Android artifacts whenever the mobile app or this workflow changes.
+  push:
+    branches: [main]
+    paths:
+      - "mobile/**"
+      - ".github/workflows/android-build.yml"
   workflow_dispatch:
 
 permissions:
