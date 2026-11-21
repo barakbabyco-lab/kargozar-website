@@ -204,7 +204,7 @@ jobs:
           tmp_env="$(mktemp "$deploy_root/shared/.env.searxng.XXXXXX")"
           umask 077
           awk '!(/^SEARXNG_URL=/ || /^SEARXNG_API_TOKEN=/ || /^SUPPORT_WEB_SEARCH_ENABLED=/)' "$env_file" > "$tmp_env"
-          printf '%s\\n' \
+          printf '%s\n' \
             'SUPPORT_WEB_SEARCH_ENABLED=true' \
             'SEARXNG_URL=https://search.barakmod.ir/search' \
             "SEARXNG_API_TOKEN=$searxng_token" >> "$tmp_env"
