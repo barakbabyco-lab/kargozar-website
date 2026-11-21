@@ -145,17 +145,16 @@ jobs:
       - name: External HTTPS checks
         shell: bash
         run: |
-          set +e
+          set -euo pipefail
           for endpoint in https://api.barakmod.ir/up https://api.barakmod.ir/api/v1/services; do
-            echo "=== $endpoint ==="
-            curl --connect-timeout 10 --max-time 25 -sS -D /tmp/kg-headers -o /tmp/kg-body -w 'HTTP_STATUS=%{http_code}\nSSL_VERIFY=%{ssl_verify_result}\n' "$endpoint"
-            rc=$?
-            echo "CURL_EXIT=$rc"
-            sed -n '1,12p' /tmp/kg-headers
-            head -c 1200 /tmp/kg-body
-            echo
+            body="$(mktemp)"
+            result="$(curl --connect-timeout 10 --max-time 25 -sS -o "$body" -w '%{http_code} %{ssl_verify_result}' "$endpoint")"
+            read -r status tls_verify <<< "$result"
+            echo "$endpoint HTTP=$status TLS_VERIFY=$tls_verify"
+            test "$status" = "200"
+            test "$tls_verify" = "0"
+            rm -f "$body"
           done
-
       - name: Test guest support chat API end to end
         shell: bash
         env:
