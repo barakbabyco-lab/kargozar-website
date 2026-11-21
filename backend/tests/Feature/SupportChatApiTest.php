@@ -5,7 +5,6 @@ namespace Tests\Feature;
 use App\Models\Customer;
 use App\Models\StaffUser;
 use App\Models\SupportConversation;
-use App\Models\SupportUnansweredQuestionEvent;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
