@@ -85,7 +85,17 @@ jobs:
           HEALTH="$(curl --max-time 15 -sS -o /tmp/kargozar-health.out -w '%{http_code}' -H 'Host: api.barakmod.ir' http://127.0.0.1/up)"
           echo "HTTP_STATUS=$HEALTH"
           cat /tmp/kargozar-health.out
-          [[ "$HEALTH" == "200" ]]
+          if [[ "$HEALTH" != "200" ]]; then
+            echo "=== Sanitized Laravel error entries (latest 40) ==="
+            if [[ -f "$APP/storage/logs/laravel.log" ]]; then
+              sudo -n grep -E 'production\.ERROR|local\.ERROR|ERROR:' "$APP/storage/logs/laravel.log" | tail -n 40 | sed -E 's/((password|token|authorization|secret|api[_-]?key)[^:=]*[:=][[:space:]]*)[^ ,;]+/\1[REDACTED]/Ig' || true
+            else
+              echo "Laravel log file not found at expected path."
+            fi
+            echo "=== Recent PHP-FPM errors ==="
+            sudo -n journalctl -u php8.3-fpm --no-pager -n 35 2>/dev/null | tail -n 35 || true
+            exit 1
+          fi
           echo
           echo "=== API services endpoint ==="
           API="$(curl --max-time 20 -sS -o /tmp/kargozar-services.out -w '%{http_code}' -H 'Host: api.barakmod.ir' http://127.0.0.1/api/v1/services)"
