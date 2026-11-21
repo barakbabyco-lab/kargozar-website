@@ -163,10 +163,6 @@ class SupportAssistant
             return null;
         }
 
-        if ((string) config('support_assistant.web_search.api_key', '') === '') {
-            return null;
-        }
-
         $result = app(WebSearchService::class)->search($question);
         if (! is_array($result)) {
             return (string) config('support_assistant.web_search.no_result', '') ?: null;
@@ -185,7 +181,11 @@ class SupportAssistant
                 $title = trim((string) ($source['title'] ?? 'منبع وب'));
                 $url = trim((string) ($source['url'] ?? ''));
                 if ($url !== '') {
+                    $snippet = trim((string) ($source['snippet'] ?? ''));
                     $response .= "\n".($index + 1).'. '.$title.' — '.$url;
+                    if ($snippet !== '') {
+                        $response .= "\n   ".$snippet;
+                    }
                 }
             }
         }
