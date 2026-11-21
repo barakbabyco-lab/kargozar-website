@@ -249,14 +249,26 @@ class KargozarApiClient {
         },
       );
 
+  Future<int?> restoreGuestSupportConversationId() =>
+      _guestTokenStore.readConversationId();
+
+  Future<void> clearGuestSupportConversation() =>
+      _guestTokenStore.clearConversationId();
+
   Future<Map<String, dynamic>> startGuestSupportConversation(String body) async {
     final token = await _ensureGuestSupportToken();
-    return _send(
+    final response = await _send(
       'POST',
       'guest/support-conversations',
       guestSupportToken: token,
       body: {'body': body},
     );
+    final data = response['data'];
+    final id = data is Map<String, dynamic>
+        ? int.tryParse(data['id']?.toString() ?? '')
+        : null;
+    if (id != null) await _guestTokenStore.writeConversationId(id);
+    return response;
   }
 
   Future<Map<String, dynamic>> getGuestSupportMessages(int conversationId) async {
