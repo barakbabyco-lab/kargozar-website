@@ -59,7 +59,16 @@ jobs:
         env:
           KARGOZAR_API_BASE_URL: ${{ vars.KARGOZAR_API_BASE_URL }}
           KARGOZAR_ASSETS_BASE_URL: ${{ vars.KARGOZAR_ASSETS_BASE_URL }}
-        run: flutter build apk --debug --dart-define=API_BASE_URL="$KARGOZAR_API_BASE_URL" --dart-define=KARGOZAR_ASSETS_BASE_URL="$KARGOZAR_ASSETS_BASE_URL"
+        run: |
+          API_BASE_URL="${KARGOZAR_API_BASE_URL:-https://api.barakmod.ir/api/v1}"
+          if [[ "$GITHUB_EVENT_NAME" != "pull_request" ]]; then
+            echo "Checking the configured Kargozar API before building a distributable APK..."
+            curl --fail --silent --show-error --max-time 20 "$API_BASE_URL/services" -o /tmp/kargozar-api-health.json
+            python3 -c 'import json; d=json.load(open("/tmp/kargozar-api-health.json")); assert isinstance(d, dict) and "data" in d, "API health response is not valid Kargozar JSON"'
+          else
+            echo "Pull request validation only: live API preflight is deferred until the server is ready."
+          fi
+          flutter build apk --debug --dart-define=API_BASE_URL="$API_BASE_URL" --dart-define=KARGOZAR_ASSETS_BASE_URL="$KARGOZAR_ASSETS_BASE_URL"
 
       - name: Upload Myket store listing icon
         uses: actions/upload-artifact@v4
@@ -96,13 +105,16 @@ jobs:
           echo "release_ready=true" >> "$GITHUB_OUTPUT"
 
       - name: Build signed release APK and App Bundle
-        if: steps.signing.outputs.release_ready == 'true'
+        if: steps.signing.outputs.release_ready == 'true' && github.event_name != 'pull_request'
         env:
           KARGOZAR_API_BASE_URL: ${{ vars.KARGOZAR_API_BASE_URL }}
           KARGOZAR_ASSETS_BASE_URL: ${{ vars.KARGOZAR_ASSETS_BASE_URL }}
         run: |
-          flutter build apk --release --dart-define=API_BASE_URL="$KARGOZAR_API_BASE_URL" --dart-define=KARGOZAR_ASSETS_BASE_URL="$KARGOZAR_ASSETS_BASE_URL"
-          flutter build appbundle --release --dart-define=API_BASE_URL="$KARGOZAR_API_BASE_URL" --dart-define=KARGOZAR_ASSETS_BASE_URL="$KARGOZAR_ASSETS_BASE_URL"
+          API_BASE_URL="${KARGOZAR_API_BASE_URL:-https://api.barakmod.ir/api/v1}"
+          curl --fail --silent --show-error --max-time 20 "$API_BASE_URL/services" -o /tmp/kargozar-api-health.json
+          python3 -c 'import json; d=json.load(open("/tmp/kargozar-api-health.json")); assert isinstance(d, dict) and "data" in d, "API health response is not valid Kargozar JSON"'
+          flutter build apk --release --dart-define=API_BASE_URL="$API_BASE_URL" --dart-define=KARGOZAR_ASSETS_BASE_URL="$KARGOZAR_ASSETS_BASE_URL"
+          flutter build appbundle --release --dart-define=API_BASE_URL="$API_BASE_URL" --dart-define=KARGOZAR_ASSETS_BASE_URL="$KARGOZAR_ASSETS_BASE_URL"
 
       - name: Verify signed APK and package identity
         if: steps.signing.outputs.release_ready == 'true'

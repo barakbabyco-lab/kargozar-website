@@ -1,6 +1,6 @@
 import 'dart:async';
-import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'core/network/kargozar_api_client.dart';
 import 'features/auth/customer_session.dart';
 import 'features/catalog/service_catalog_repository.dart';
@@ -34,7 +34,7 @@ class _KargozarAppState extends State<KargozarApp>{
  @override Widget build(BuildContext context)=>MaterialApp(
  navigatorKey:_navigatorKey,
  debugShowCheckedModeBanner:false,title:'کارگزار',
- theme:ThemeData(useMaterial3:true,scaffoldBackgroundColor:_canvas,colorScheme:ColorScheme.fromSeed(seedColor:_brandRed,primary:_brandRed,secondary:_navy,surface:Colors.white),fontFamily:'Roboto',
+ theme:ThemeData(useMaterial3:true,scaffoldBackgroundColor:_canvas,colorScheme:ColorScheme.fromSeed(seedColor:_navy,primary:_navy,secondary:_brandRed,surface:Colors.white),fontFamily:'Roboto',
  appBarTheme:const AppBarTheme(backgroundColor:_canvas,foregroundColor:_ink,centerTitle:false,elevation:0),
  inputDecorationTheme:InputDecorationTheme(filled:true,fillColor:Colors.white,border:OutlineInputBorder(borderRadius:BorderRadius.circular(14),borderSide:const BorderSide(color:Color(0xFFE2E8F0))),enabledBorder:OutlineInputBorder(borderRadius:BorderRadius.circular(14),borderSide:const BorderSide(color:Color(0xFFE2E8F0))))),
  home:Directionality(textDirection:TextDirection.rtl,child:_loading?const Scaffold(body:Center(child:CircularProgressIndicator())):MainShell(api:_api,requests:_requests,signedIn:_signedIn,onLogin:_login,onLogout:_logout)),
@@ -139,6 +139,8 @@ const services = <ServiceItem>[
   ),
 ];
 
+const String _centralContactNumber = '09365952800';
+
 class MainShell extends StatefulWidget {
   const MainShell({super.key, required this.api, required this.requests, required this.signedIn, required this.onLogin, required this.onLogout});
   final KargozarApiClient api;
@@ -160,42 +162,19 @@ class _MainShellState extends State<MainShell> {
   }
   @override
   void dispose() { _pageController.dispose(); super.dispose(); }
-  Future<void> _request(ServiceItem service) async {
-    final id = service.apiId;
-    if (id == null || id.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('ثبت آنلاین این خدمت پس از اتصال کاتالوگ سرور فعال می‌شود.')));
-      return;
-    }
-    if (!widget.signedIn) {
-      final ok = await widget.onLogin();
-      if (!ok || !mounted) return;
-    }
-    final note = await showDialog<String>(context: context, builder: (ctx) {
-      final controller = TextEditingController();
-      return AlertDialog(
-        title: Text('درخواست ${service.title}'),
-        content: TextField(controller: controller, minLines: 2, maxLines: 4, decoration: const InputDecoration(labelText: 'توضیحات درخواست (اختیاری)')),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('انصراف')),
-          FilledButton(onPressed: () => Navigator.pop(ctx, controller.text.trim()), child: const Text('ادامه و ثبت درخواست')),
-        ],
-      );
-    });
-    if (note == null || !mounted) return;
-    final key = '${DateTime.now().microsecondsSinceEpoch}-${Random.secure().nextInt(1 << 32)}';
+
+  Future<void> _openCentralDialer() async {
     try {
-      final result = await widget.requests.create(serviceId: id, customerNote: note, idempotencyKey: key);
-      if (!mounted) return;
-      setState(() => _revision++);
-      await showDialog<void>(context: context, builder: (ctx) => AlertDialog(
-        title: const Text('درخواست ثبت شد'),
-        content: Text('کد پیگیری: ${result.trackingCode}'),
-        actions: [TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('متوجه شدم'))],
-      ));
-    } catch (error) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(errorText(error))));
+      final opened = await launchUrl(Uri(scheme: 'tel', path: _centralContactNumber));
+      if (!opened && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('امکان باز کردن شماره‌گیر تلفن وجود ندارد.')));
+      }
+    } catch (_) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('امکان باز کردن شماره‌گیر تلفن وجود ندارد.')));
     }
   }
+  Future<void> _request(ServiceItem service) => _openCentralDialer();
+
   Future<void> _showRequests() async {
     final authenticated = widget.signedIn || await widget.onLogin();
     if (!authenticated || !mounted) return;
@@ -251,6 +230,7 @@ class _MainShellState extends State<MainShell> {
         textDirection: TextDirection.rtl,
         child: ServiceCategoryDetailPage(
           category: category,
+          onRequestCall: _openCentralDialer,
           onBrowseServices: () => _showCategoryServices(category),
         ),
       ),
@@ -258,6 +238,10 @@ class _MainShellState extends State<MainShell> {
   }
 
   Future<void> _showCategoryServices(ServiceCategory category) async {
+    if (category.children.isNotEmpty) {
+      await _showCategoryChildren(category);
+      return;
+    }
     try {
       final items = await ServiceCatalogRepository(widget.api).getServices(category: category.slug);
       if (!mounted) return;
@@ -366,38 +350,34 @@ class _MainShellState extends State<MainShell> {
   }
 
   @override Widget build(BuildContext context) => Scaffold(
-    body: SafeArea(child: Stack(children: [
-      PageView(
-        key: const ValueKey('main-tabs'),
-        controller: _pageController,
-        physics: const PageScrollPhysics(),
-        onPageChanged: (value) => setState(() => _index = value),
-        children: [
+    body: SafeArea(child: Column(children: [
+      Padding(padding: const EdgeInsetsDirectional.fromSTEB(16, 5, 16, 5), child: SizedBox(height: 58, child: Row(children: [
+        Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.start, children: [
+          RichText(text: TextSpan(children: [TextSpan(text: 'کار', style: TextStyle(color: _navy, fontSize: 22, fontWeight: FontWeight.w900, height: 1.1)), TextSpan(text: 'گزار', style: TextStyle(color: _brandRed, fontSize: 22, fontWeight: FontWeight.w900, height: 1.1))])),
+          Text('همراه مطمئن کسب‌وکار شما', style: TextStyle(color: _muted, fontSize: 9, fontWeight: FontWeight.w600)),
+        ]), const Spacer(),
+        IconButton(onPressed: () => _showInfo(context), tooltip: 'اعلان‌ها', icon: const Icon(Icons.notifications_none_rounded, color: _navy)), const SizedBox(width: 7),
+        Image.asset('assets/brand/kargozar-logo-original.jpg', width: 68, height: 48, fit: BoxFit.contain, errorBuilder: (_, __, ___) => const Icon(Icons.verified_outlined, color: _navy, size: 34)),
+      ]))),
+      Expanded(child: Stack(children: [
+        PageView(key: const ValueKey('main-tabs'), controller: _pageController, physics: const PageScrollPhysics(), onPageChanged: (value) => setState(() => _index = value), children: [
           ProfilePage(signedIn: widget.signedIn, onLogin: widget.onLogin, onLogout: widget.onLogout, onShowRequests: _showRequests, onNavigate: _goToTab),
           ServicesPage(onRequest: _request, onOpenCategoryDetails: _openCategoryDetail, onExpandCategory: _showCategoryChildren, onNavigate: (tab) { if (tab == 4) { _goToTab(2); _openCompanionDetail(companionModules[0]); } else { _goToTab(tab); } }, onConsultation: _showConsultation),
           CompanionContentPage(onOpenDetails: _openCompanionDetail, onExpand: _expandCompanion, onNavigate: (tab) { if (tab == 4) { _goToTab(2); _openCompanionDetail(companionModules[0]); } else { _goToTab(tab); } }, onConsultation: _showConsultation),
           SupportContentPage(onConsultation: _showConsultation, onNavigate: _goToTab),
-        ],
-      ),
-      Positioned(right: 14, bottom: 8, child: SupportChatLauncher(api: widget.api)),
+        ]), Positioned(right: 14, bottom: 8, child: SupportChatLauncher(api: widget.api)),
+      ])),
     ])),
-    bottomNavigationBar: NavigationBar(
-      height: 76,
-      backgroundColor: _brandRed,
-      indicatorColor: Colors.transparent,
-      labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-      labelTextStyle: const WidgetStatePropertyAll(
-        TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w700),
-      ),
-      selectedIndex: _index,
-      onDestinationSelected: _goToTab,
+    bottomNavigationBar: Container(decoration: const BoxDecoration(border: Border(top: BorderSide(color: _brandRed, width: 1.5))), child: NavigationBar(
+      height: 56, backgroundColor: Colors.white, indicatorColor: const Color(0xFFF4EEFA), labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+      labelTextStyle: WidgetStateProperty.resolveWith<TextStyle>((states) => TextStyle(color: states.contains(WidgetState.selected) ? _brandRed : _navy, fontSize: 9, fontWeight: FontWeight.w700)), selectedIndex: _index, onDestinationSelected: _goToTab,
       destinations: const [
-        NavigationDestination(icon: Icon(Icons.person_outline_rounded, color: Colors.white, size: 20), selectedIcon: Icon(Icons.person_rounded, color: Colors.white, size: 20), label: 'حساب کاربری من'),
-        NavigationDestination(icon: Icon(Icons.grid_view_outlined, color: Colors.white, size: 20), selectedIcon: Icon(Icons.grid_view_rounded, color: Colors.white, size: 20), label: 'خدمات'),
-        NavigationDestination(icon: Icon(Icons.business_center_outlined, color: Colors.white, size: 20), selectedIcon: Icon(Icons.business_center_rounded, color: Colors.white, size: 20), label: 'همراه کسب‌وکار'),
-        NavigationDestination(icon: Icon(Icons.support_agent_outlined, color: Colors.white, size: 20), selectedIcon: Icon(Icons.support_agent_rounded, color: Colors.white, size: 20), label: 'تماس و پشتیبانی'),
+        NavigationDestination(icon: Icon(Icons.person_outline_rounded, color: _navy, size: 18), selectedIcon: Icon(Icons.person_rounded, color: _brandRed, size: 18), label: 'حساب کاربری من'),
+        NavigationDestination(icon: Icon(Icons.grid_view_outlined, color: _navy, size: 18), selectedIcon: Icon(Icons.grid_view_rounded, color: _brandRed, size: 18), label: 'خدمات'),
+        NavigationDestination(icon: Icon(Icons.business_center_outlined, color: _navy, size: 18), selectedIcon: Icon(Icons.business_center_rounded, color: _brandRed, size: 18), label: 'همراه کسب‌وکار'),
+        NavigationDestination(icon: Icon(Icons.support_agent_outlined, color: _navy, size: 18), selectedIcon: Icon(Icons.support_agent_rounded, color: _brandRed, size: 18), label: 'تماس و پشتیبانی'),
       ],
-    ),
+    )),
   );
 }
 
@@ -421,7 +401,7 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     _api = KargozarApiClient();
     _catalog = ServiceCatalogRepository(_api);
-    _apiConfigured = const String.fromEnvironment('API_BASE_URL').trim().isNotEmpty;
+    _apiConfigured = const String.fromEnvironment('API_BASE_URL', defaultValue: 'https://api.barakmod.ir/api/v1').trim().isNotEmpty;
     _popularServices = _apiConfigured
         ? _catalog.getServices()
         : Future.value(const <CatalogService>[]);
@@ -438,45 +418,12 @@ class _HomePageState extends State<HomePage> {
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 18, 20, 28),
       children: [
-        Row(
-          children: [
-            Container(
-              width: 46,
-              height: 46,
-              decoration: BoxDecoration(
-                color: _navy,
-                borderRadius: BorderRadius.circular(15),
-              ),
-              child: const Icon(Icons.handshake_outlined,
-                  color: Colors.white, size: 26),
-            ),
-            const SizedBox(width: 12),
-            const Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('کارگزار', style: TextStyle(
-                  fontSize: 21, fontWeight: FontWeight.w900, color: _navy)),
-                Text('همراه مطمئن کسب‌وکار شما',
-                    style: TextStyle(fontSize: 11, color: _muted)),
-              ],
-            ),
-            const Spacer(),
-            IconButton(
-              onPressed: () => _showInfo(context),
-              icon: const Icon(Icons.notifications_none_rounded),
-              tooltip: 'اعلان‌ها',
-            ),
-          ],
-        ),
-        const SizedBox(height: 24),
+        const SizedBox(height: 10),
+
         Container(
           padding: const EdgeInsets.all(22),
           decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [_navy, Color(0xFF254D70)],
-              begin: Alignment.topRight,
-              end: Alignment.bottomLeft,
-            ),
+            color: _navy,
             borderRadius: BorderRadius.circular(24),
           ),
           child: Column(
@@ -1088,10 +1035,12 @@ class ServiceCategoryDetailPage extends StatelessWidget {
   const ServiceCategoryDetailPage({
     super.key,
     required this.category,
+    required this.onRequestCall,
     required this.onBrowseServices,
   });
 
   final ServiceCategory category;
+  final VoidCallback onRequestCall;
   final VoidCallback onBrowseServices;
 
   String get _intro {
@@ -1235,13 +1184,13 @@ class ServiceCategoryDetailPage extends StatelessWidget {
             ]),
           ),
           const SizedBox(height: 22),
-          SizedBox(width: double.infinity, child: FilledButton(
-            onPressed: onBrowseServices,
-            child: const Text('ثبت درخواست / مشاهده خدمات این بخش'),
-          )),
+          Row(children: [
+            Expanded(child: FilledButton(onPressed: onRequestCall, style: FilledButton.styleFrom(backgroundColor: _navy, foregroundColor: Colors.white, minimumSize: const Size.fromHeight(46), padding: const EdgeInsets.symmetric(horizontal: 5)), child: const Text('ثبت درخواست', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800)))),
+            const SizedBox(width: 9),
+            Expanded(child: OutlinedButton(onPressed: onBrowseServices, style: OutlinedButton.styleFrom(foregroundColor: _navy, side: const BorderSide(color: _navy, width: 1.2), minimumSize: const Size.fromHeight(46), padding: const EdgeInsets.symmetric(horizontal: 5)), child: const Text('مشاهده خدمات این بخش', textAlign: TextAlign.center, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800)))),
+          ]),
           const SizedBox(height: 8),
-          const Text('ثبت نهایی درخواست زمانی انجام می‌شود که خدمت به کاتالوگ و سامانه درخواست متصل باشد.',
-            textAlign: TextAlign.center, style: TextStyle(color: _muted, fontSize: 10, height: 1.6)),
+          const Text('برای ثبت درخواست، شماره تماس کارگزار باز می‌شود.', textAlign: TextAlign.center, style: TextStyle(color: _muted, fontSize: 10, height: 1.6)),
         ],
       ),
     );
