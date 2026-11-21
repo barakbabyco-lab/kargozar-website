@@ -1,5 +1,8 @@
 name: Configure KarGozar API Nginx and SSL
 on:
+  push:
+    paths:
+      - '.github/workflows/configure-api-nginx-ssl.yml'
   workflow_dispatch:
 permissions:
   contents: read
