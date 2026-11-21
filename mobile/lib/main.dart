@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'core/network/kargozar_api_client.dart';
 import 'features/auth/customer_session.dart';
 import 'features/catalog/service_catalog_repository.dart';
@@ -250,9 +251,18 @@ class _MainShellState extends State<MainShell> {
         textDirection: TextDirection.rtl,
         child: ServiceCategoryDetailPage(
           category: category,
-          onContact: () {
+          onContact: () async {
             Navigator.of(context).pop();
-            _goToTab(3);
+            final phoneUri = Uri(scheme: 'tel', path: '09360952800');
+            final opened = await launchUrl(
+              phoneUri,
+              mode: LaunchMode.externalApplication,
+            );
+            if (!opened && mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('امکان باز کردن شماره‌گیر تلفن وجود ندارد.')),
+              );
+            }
           },
           onBrowseServices: () {
             if (category.children.isNotEmpty) {
@@ -1166,7 +1176,7 @@ class ServiceCategoryDetailPage extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 8),
-          const Text('برای ثبت درخواست، از صفحه تماس با کارگزار با شماره ۰۹۳۶۰۹۵۲۸۰۰ ارتباط بگیرید.',
+          const Text('با انتخاب ثبت درخواست، شماره کارگزار در صفحه شماره‌گیر تلفن آماده تماس می‌شود.',
             textAlign: TextAlign.center, style: TextStyle(color: _muted, fontSize: 10, height: 1.6)),
         ],
       ),
