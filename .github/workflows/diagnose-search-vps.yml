@@ -213,7 +213,7 @@ jobs:
             $SUDO tee /opt/kargozar-searxng/compose.yml >/dev/null <<'COMPOSE'
           services:
             searxng:
-              image: searxng/searxng:latest
+              image: ghcr.io/searxng/searxng:2026.11.13-8a53a6aa5
               container_name: kargozar-searxng
               restart: unless-stopped
               ports:
