@@ -12,6 +12,7 @@ on:
           - diagnose-proxy
           - install
           - test
+          - secure-proxy
         default: diagnose
 
 permissions:
@@ -232,6 +233,136 @@ jobs:
             echo "=== Docker containers (names, status, ports only) ==="
             $SUDO docker ps --format 'container={{.Names}} status={{.Status}} ports={{.Ports}}'
             echo "Proxy diagnostic completed; no configuration was changed."
+            exit 0
+          fi
+
+          if [[ "$task" == "secure-proxy" ]]; then
+            domain="search.barakmod.ir"
+            if [[ "$(id -u)" -ne 0 ]]; then
+              echo "ERROR: secure-proxy requires a root SSH user."
+              exit 1
+            fi
+            if ! command -v nginx >/dev/null 2>&1 || ! nginx -t >/dev/null 2>&1; then
+              echo "ERROR: Nginx is missing or its current configuration is invalid; refusing changes."
+              exit 1
+            fi
+            if ! curl -fsS --max-time 5 'http://127.0.0.1:8888/search?q=preflight&format=json' -o /dev/null; then
+              echo "ERROR: SearXNG loopback health check failed; refusing changes."
+              exit 1
+            fi
+            if ! ss -lnt 2>/dev/null | grep -Eq '(^|[[:space:]])0\\.0\\.0\\.0:80|\\*:80|\\[::\\]:80'; then
+              echo "ERROR: No public HTTP listener detected on port 80."
+              exit 1
+            fi
+            if ss -lnt 2>/dev/null | grep -Eq '0\\.0\\.0\\.0:443|\\*:443|\\[::\\]:443'; then
+              echo "ERROR: Port 443 already has a listener; refusing to alter an existing TLS service."
+              exit 1
+            fi
+            if [[ -e /etc/nginx/sites-enabled/search.barakmod.ir || -e /etc/nginx/sites-available/search.barakmod.ir ]]; then
+              echo "ERROR: A search.barakmod.ir Nginx site already exists; refusing to overwrite it."
+              exit 1
+            fi
+            if nginx -T 2>/dev/null | grep -qE 'server_name[[:space:]]+[^;]*search\\.barakmod\\.ir'; then
+              echo "ERROR: An existing Nginx server block already claims search.barakmod.ir."
+              exit 1
+            fi
+            if [[ ! -d /var/www/html ]]; then
+              echo "ERROR: Expected webroot /var/www/html is missing."
+              exit 1
+            fi
+            export DEBIAN_FRONTEND=noninteractive
+            apt-get update
+            apt-get install -y certbot
+            install -d -m 755 /var/www/html/.well-known/acme-challenge
+            cat > /etc/nginx/sites-available/search.barakmod.ir <<'HTTP'
+          server {
+              listen 80;
+              listen [::]:80;
+              server_name search.barakmod.ir;
+              location ^~ /.well-known/acme-challenge/ {
+                  root /var/www/html;
+                  default_type "text/plain";
+                  try_files $uri =404;
+              }
+              location / { return 404; }
+          }
+          HTTP
+            ln -s /etc/nginx/sites-available/search.barakmod.ir /etc/nginx/sites-enabled/search.barakmod.ir
+            nginx -t
+            systemctl reload nginx
+            certbot certonly --webroot -w /var/www/html -d "$domain" --non-interactive --agree-tos --register-unsafely-without-email
+            test -s "/etc/letsencrypt/live/$domain/fullchain.pem"
+            test -s "/etc/letsencrypt/live/$domain/privkey.pem"
+            install -d -m 700 -o root -g root /etc/nginx/searxng
+            token="$(openssl rand -hex 32)"
+            printf '"Bearer %s" 1;\n' "$token" > /etc/nginx/searxng/token.map
+            unset token
+            chown root:root /etc/nginx/searxng/token.map
+            chmod 600 /etc/nginx/searxng/token.map
+            cat > /etc/nginx/conf.d/searxng-auth.conf <<'MAP'
+          map $http_authorization $searxng_authorized {
+              default 0;
+              include /etc/nginx/searxng/token.map;
+          }
+          limit_req_zone $binary_remote_addr zone=searxng_search:10m rate=10r/s;
+          MAP
+            chown root:root /etc/nginx/conf.d/searxng-auth.conf
+            chmod 600 /etc/nginx/conf.d/searxng-auth.conf
+            cat > /etc/nginx/sites-available/search.barakmod.ir <<'TLS'
+          server {
+              listen 80;
+              listen [::]:80;
+              server_name search.barakmod.ir;
+              location ^~ /.well-known/acme-challenge/ {
+                  root /var/www/html;
+                  default_type "text/plain";
+                  try_files $uri =404;
+              }
+              location / { return 301 https://$host$request_uri; }
+          }
+          server {
+              listen 443 ssl;
+              listen [::]:443 ssl;
+              server_name search.barakmod.ir;
+              ssl_certificate /etc/letsencrypt/live/search.barakmod.ir/fullchain.pem;
+              ssl_certificate_key /etc/letsencrypt/live/search.barakmod.ir/privkey.pem;
+              ssl_protocols TLSv1.2 TLSv1.3;
+              access_log /var/log/nginx/search.barakmod.ir.access.log;
+              error_log /var/log/nginx/search.barakmod.ir.error.log warn;
+              location = /search {
+                  limit_req zone=searxng_search burst=20 nodelay;
+                  if ($request_method !~ ^(GET|HEAD)$) { return 405; }
+                  if ($searxng_authorized = 0) { return 401; }
+                  proxy_pass http://127.0.0.1:8888;
+                  proxy_http_version 1.1;
+                  proxy_set_header Host $host;
+                  proxy_set_header X-Real-IP $remote_addr;
+                  proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                  proxy_set_header X-Forwarded-Proto https;
+                  proxy_connect_timeout 5s;
+                  proxy_read_timeout 30s;
+              }
+              location / { return 404; }
+          }
+          TLS
+            nginx -t
+            systemctl reload nginx
+            if ! certbot renew --dry-run; then
+              echo "ERROR: TLS renewal dry-run failed; inspect Certbot configuration."
+              exit 1
+            fi
+            code="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 10 "https://$domain/search?q=health&format=json" || true)"
+            if [[ "$code" != "401" ]]; then
+              echo "ERROR: Unauthenticated endpoint did not return HTTP 401 (got $code)."
+              exit 1
+            fi
+            root_code="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 10 "https://$domain/" || true)"
+            if [[ "$root_code" != "404" ]]; then
+              echo "ERROR: Non-search paths are not closed (root returned $root_code)."
+              exit 1
+            fi
+            echo "Secure HTTPS reverse proxy configured. /search requires a new random Bearer token; token value was not printed."
+            echo "The token is stored root-only at /etc/nginx/searxng/token.map."
             exit 0
           fi
 
