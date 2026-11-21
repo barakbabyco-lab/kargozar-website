@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'core/network/kargozar_api_client.dart';
 import 'features/auth/customer_session.dart';
@@ -385,7 +386,9 @@ class _MainShellState extends State<MainShell> {
   }
 
   @override Widget build(BuildContext context) => Scaffold(
-    body: SafeArea(child: Stack(children: [
+    body: SafeArea(child: Column(children: [
+      Container(width: double.infinity, height: 64, color: Colors.white, alignment: Alignment.center, padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5), child: SvgPicture.asset('assets/brand/kargozar-logo-header.svg', fit: BoxFit.contain, height: 54, semanticsLabel: 'لوگوی کارگزار')),
+      Expanded(child: Stack(children: [
       PageView(
         key: const ValueKey('main-tabs'),
         controller: _pageController,
@@ -398,7 +401,7 @@ class _MainShellState extends State<MainShell> {
           SupportContentPage(onConsultation: _showConsultation, onNavigate: _goToTab),
         ],
       ),
-    ])),
+    ]))),
     bottomNavigationBar: NavigationBar(
       height: 61,
       backgroundColor: _brandRed,
