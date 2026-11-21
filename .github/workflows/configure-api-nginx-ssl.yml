@@ -9,6 +9,7 @@ permissions:
 jobs:
   configure:
     runs-on: ubuntu-latest
+    timeout-minutes: 8
     steps:
       - name: Prepare approved SSH access
         shell: bash
@@ -74,9 +75,8 @@ jobs:
           command -v certbot >/dev/null
           sudo -n true
 
-          echo "=== Install Certbot Nginx integration ==="
-          sudo -n apt-get update
-          sudo -n apt-get install -y python3-certbot-nginx
+          echo "=== Verify Certbot Nginx integration ==="
+          sudo -n certbot plugins | grep -qi nginx || { echo "::error::Certbot Nginx plugin is not installed"; exit 1; }
 
           if [ -e "$SITE" ]; then
             sudo -n cp -a "$SITE" "$SITE.backup.$(date +%Y%m%d%H%M%S)"
@@ -136,7 +136,7 @@ jobs:
           echo "=== Validate Nginx and certificate renewal ==="
           sudo -n nginx -t
           sudo -n systemctl reload nginx
-          sudo -n certbot renew --dry-run
+          timeout 90s sudo -n certbot renew --dry-run
 
           echo "=== Public TLS and API endpoint verification ==="
           curl --max-time 20 -sS -o /tmp/kargozar-api-https.body -w 'API_SERVICES_HTTPS=%{http_code} TLS_VERIFY=%{ssl_verify_result}\n' "https://$DOMAIN/api/v1/services"
