@@ -9,6 +9,7 @@ on:
         type: choice
         options:
           - diagnose
+          - diagnose-proxy
           - install
           - test
         default: diagnose
@@ -134,7 +135,7 @@ jobs:
         run: |
           set -euo pipefail
           case "$TASK" in
-            diagnose|install|test) ;;
+            diagnose|diagnose-proxy|install|test) ;;
             *) echo "::error::Unsupported task."; exit 1 ;;
           esac
           ssh -F "$SSH_CONFIG" kargozar-staging "bash -s -- '$TASK'" <<'REMOTE'
@@ -176,6 +177,61 @@ jobs:
               printf '%s -> ' "${url%%\\?*}"
               curl -L -sS -o /dev/null --connect-timeout 4 --max-time 8 -w 'HTTP %{http_code}; time=%{time_total}s\\n' "$url" || true
             done
+            exit 0
+          fi
+
+          if [[ "$task" == "diagnose-proxy" ]]; then
+            echo "=== Proxy diagnostic: read-only ==="
+            echo "=== Hostname and OS ==="
+            hostnamectl --static 2>/dev/null || hostname
+            . /etc/os-release 2>/dev/null && echo "$PRETTY_NAME"
+            echo "=== Listener ownership (80/443/8080/8888) ==="
+            $SUDO ss -lntp 2>/dev/null | awk 'NR==1 || /:80[[:space:]]|:443[[:space:]]|:8080[[:space:]]|:8888[[:space:]]/'
+            echo "=== Processes bound to relevant ports ==="
+            if command -v fuser >/dev/null 2>&1; then
+              for port in 80 443 8080 8888; do
+                printf 'port %s: ' "$port"
+                $SUDO fuser -n tcp "$port" 2>/dev/null || true
+              done
+            fi
+            echo "=== Nginx binary and service ==="
+            if command -v nginx >/dev/null 2>&1; then
+              nginx -v 2>&1 || true
+              $SUDO nginx -t 2>&1 || true
+              echo "--- filtered active nginx configuration ---"
+              $SUDO nginx -T 2>&1 | grep -E '(^# configuration file|^[[:space:]]*listen[[:space:]]|^[[:space:]]*server_name[[:space:]]|^[[:space:]]*ssl_certificate(_key)?[[:space:]]|^[[:space:]]*proxy_pass[[:space:]]|^[[:space:]]*access_log[[:space:]]|^[[:space:]]*error_log[[:space:]]|^[[:space:]]*include[[:space:]])' | head -n 240 || true
+            else
+              echo "nginx binary not found"
+            fi
+            echo "=== Web service units ==="
+            for unit in nginx apache2 httpd caddy; do
+              if systemctl list-unit-files "$unit.service" --no-legend 2>/dev/null | grep -q "$unit.service"; then
+                printf '%s: ' "$unit"
+                systemctl is-active "$unit.service" 2>/dev/null || true
+              fi
+            done
+            echo "=== Enabled nginx site links ==="
+            for dir in /etc/nginx/sites-enabled /etc/nginx/conf.d; do
+              if [[ -d "$dir" ]]; then
+                echo "--- $dir ---"
+                $SUDO find "$dir" -maxdepth 1 -type f -o -type l 2>/dev/null | sort | head -n 100
+              fi
+            done
+            echo "=== TLS certificate inventory (metadata only) ==="
+            if command -v certbot >/dev/null 2>&1; then
+              $SUDO certbot certificates 2>&1 | grep -E '^(  Certificate Name:|    Domains:|    Expiry Date:|    Certificate Path:|    Private Key Path:)' || true
+            else
+              echo "certbot not installed"
+            fi
+            echo "=== Certificate files for search.barakmod.ir (metadata only) ==="
+            for cert in /etc/letsencrypt/live/search.barakmod.ir/fullchain.pem /etc/ssl/certs/search.barakmod.ir.crt; do
+              if [[ -r "$cert" ]]; then
+                openssl x509 -in "$cert" -noout -subject -issuer -dates 2>/dev/null || true
+              fi
+            done
+            echo "=== Docker containers (names, status, ports only) ==="
+            $SUDO docker ps --format 'container={{.Names}} status={{.Status}} ports={{.Ports}}'
+            echo "Proxy diagnostic completed; no configuration was changed."
             exit 0
           fi
 
