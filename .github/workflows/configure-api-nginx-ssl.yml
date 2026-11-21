@@ -1,0 +1,142 @@
+name: Configure KarGozar API Nginx and SSL
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  configure:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Prepare approved SSH access
+        shell: bash
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_PORT: ${{ secrets.DEPLOY_PORT }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          DEPLOY_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+          DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+        run: |
+          set -euo pipefail
+          for name in DEPLOY_HOST DEPLOY_USER DEPLOY_SSH_KEY DEPLOY_KNOWN_HOSTS; do
+            [[ -n "${!name:-}" ]] || { echo "::error::Missing secret $name"; exit 1; }
+          done
+          DEPLOY_PORT="${DEPLOY_PORT:-22}"
+          install -d -m 700 "$RUNNER_TEMP/kargozar-ssh"
+          key="$RUNNER_TEMP/kargozar-ssh/id_key"
+          if [[ "$DEPLOY_SSH_KEY" == *"-----BEGIN OPENSSH PRIVATE KEY-----"* || "$DEPLOY_SSH_KEY" == *"-----BEGIN RSA PRIVATE KEY-----"* || "$DEPLOY_SSH_KEY" == *"-----BEGIN EC PRIVATE KEY-----"* ]]; then
+            printf '%s\\n' "$DEPLOY_SSH_KEY" | tr -d '\\r' > "$key"
+          else
+            printf '%s' "$DEPLOY_SSH_KEY" | tr -d '[:space:]' | base64 --decode > "$key"
+          fi
+          chmod 600 "$key"
+          fp="$(ssh-keygen -y -f "$key" 2>/dev/null | ssh-keygen -lf - | awk '{print $2}')"
+          case "$fp" in
+            SHA256:yZ0PY2OlUFSszk6GcX9R9DxA/ZWVFBQ8ecRpFBJz4NA|SHA256:5UUGhIltNpKwHnvln4NThvqhHUQ6O3ntmMuvS1Uiun4|SHA256:uT3cxt86sX2DOP7sI7Ku67r39Qsrwlx5SylBxoaW9Hw|SHA256:ZufQ/zpxkVWSj1pNE77vnLATiWfvyAT+1ZSzruClE48) ;;
+            *) echo "::error::Unapproved SSH key"; exit 1 ;;
+          esac
+          printf '%s\\n' "$DEPLOY_KNOWN_HOSTS" > "$RUNNER_TEMP/kargozar-ssh/known_hosts"
+          chmod 600 "$RUNNER_TEMP/kargozar-ssh/known_hosts"
+          hostkey="$DEPLOY_HOST"; [[ "$DEPLOY_PORT" == 22 ]] || hostkey="[$DEPLOY_HOST]:$DEPLOY_PORT"
+          ssh-keygen -F "$hostkey" -f "$RUNNER_TEMP/kargozar-ssh/known_hosts" >/dev/null
+          cat > "$RUNNER_TEMP/kargozar-ssh/config" <<EOF
+          Host staging
+            HostName $DEPLOY_HOST
+            Port $DEPLOY_PORT
+            User $DEPLOY_USER
+            IdentityFile $key
+            IdentitiesOnly yes
+            BatchMode yes
+            StrictHostKeyChecking yes
+            UserKnownHostsFile $RUNNER_TEMP/kargozar-ssh/known_hosts
+            ConnectTimeout 15
+          EOF
+          chmod 600 "$RUNNER_TEMP/kargozar-ssh/config"
+      - name: Configure API virtual host and issue SSL certificate
+        shell: bash
+        env:
+          SSH_CONFIG: ${{ runner.temp }}/kargozar-ssh/config
+        run: |
+          set -euo pipefail
+          ssh -F "$SSH_CONFIG" staging 'bash -s' <<'REMOTE'
+          set -euo pipefail
+          DOMAIN="api.barakmod.ir"
+          ROOT="/var/www/kargozar-staging/current/public"
+          SITE="/etc/nginx/sites-available/$DOMAIN"
+          ENABLED="/etc/nginx/sites-enabled/$DOMAIN"
+          PHP_SOCKET="/run/php/php8.3-fpm.sock"
+
+          test -d "$ROOT" || { echo "::error::Laravel public directory missing: $ROOT"; exit 1; }
+          test -S "$PHP_SOCKET" || { echo "::error::PHP-FPM socket missing: $PHP_SOCKET"; exit 1; }
+          command -v nginx >/dev/null
+          command -v certbot >/dev/null
+          sudo -n true
+
+          echo "=== Install Certbot Nginx integration ==="
+          sudo -n apt-get update
+          sudo -n apt-get install -y python3-certbot-nginx
+
+          if [ -e "$SITE" ]; then
+            sudo -n cp -a "$SITE" "$SITE.backup.$(date +%Y%m%d%H%M%S)"
+          fi
+
+          echo "=== Write dedicated API HTTP virtual host ==="
+          TMP="$(mktemp)"
+          cat > "$TMP" <<'NGINX'
+          server {
+              listen 80;
+              listen [::]:80;
+              server_name api.barakmod.ir;
+
+              root /var/www/kargozar-staging/current/public;
+              index index.php index.html;
+
+              access_log /var/log/nginx/api.barakmod.ir.access.log;
+              error_log /var/log/nginx/api.barakmod.ir.error.log;
+
+              location / {
+                  try_files $uri $uri/ /index.php?$query_string;
+              }
+
+              location ~ \\.php$ {
+                  include snippets/fastcgi-php.conf;
+                  fastcgi_pass unix:/run/php/php8.3-fpm.sock;
+              }
+
+              location ~ /\\. {
+                  deny all;
+              }
+          }
+          NGINX
+          sudo -n install -o root -g root -m 644 "$TMP" "$SITE"
+          rm -f "$TMP"
+          sudo -n ln -sfn "$SITE" "$ENABLED"
+
+          if ! sudo -n nginx -t; then
+            echo "::error::Nginx validation failed; restoring previous site state"
+            sudo -n rm -f "$ENABLED"
+            sudo -n rm -f "$SITE"
+            exit 1
+          fi
+          sudo -n systemctl reload nginx
+
+          echo "=== Verify HTTP Laravel routing before SSL ==="
+          HTTP_CODE="$(curl --max-time 15 -sS -o /tmp/kargozar-api-http.body -w '%{http_code}' -H "Host: $DOMAIN" http://127.0.0.1/api/v1/services)"
+          echo "API_SERVICES_HTTP_BEFORE_SSL=$HTTP_CODE"
+          if [ "$HTTP_CODE" = "404" ]; then
+            echo "::error::Laravel API route returned 404; refusing to request a certificate until routing is corrected."
+            exit 1
+          fi
+
+          echo "=== Request Let's Encrypt certificate and enable HTTPS redirect ==="
+          sudo -n certbot --nginx -d "$DOMAIN" --non-interactive --agree-tos --register-unsafely-without-email --redirect
+
+          echo "=== Validate Nginx and certificate renewal ==="
+          sudo -n nginx -t
+          sudo -n systemctl reload nginx
+          sudo -n certbot renew --dry-run
+
+          echo "=== Public TLS and API endpoint verification ==="
+          curl --max-time 20 -sS -o /tmp/kargozar-api-https.body -w 'API_SERVICES_HTTPS=%{http_code} TLS_VERIFY=%{ssl_verify_result}\\n' "https://$DOMAIN/api/v1/services"
+          echo "=== Certificate summary ==="
+          sudo -n certbot certificates
+          REMOTE
