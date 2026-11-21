@@ -352,7 +352,7 @@ class _MainShellState extends State<MainShell> {
   @override Widget build(BuildContext context) => Scaffold(
     body: SafeArea(child: Column(children: [
       Padding(padding: const EdgeInsetsDirectional.fromSTEB(16, 5, 16, 5), child: SizedBox(height: 58, child: Row(children: [
-        const Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.start, children: [
           RichText(text: TextSpan(children: [TextSpan(text: 'کار', style: TextStyle(color: _navy, fontSize: 22, fontWeight: FontWeight.w900, height: 1.1)), TextSpan(text: 'گزار', style: TextStyle(color: _brandRed, fontSize: 22, fontWeight: FontWeight.w900, height: 1.1))])),
           Text('همراه مطمئن کسب‌وکار شما', style: TextStyle(color: _muted, fontSize: 9, fontWeight: FontWeight.w600)),
         ]), const Spacer(),
