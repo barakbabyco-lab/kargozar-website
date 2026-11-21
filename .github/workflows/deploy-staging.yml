@@ -69,9 +69,32 @@ jobs:
           fi
 
           install -d -m 700 "$RUNNER_TEMP/kargozar-ssh"
-          printf '%s\n' "$DEPLOY_SSH_KEY" > "$RUNNER_TEMP/kargozar-ssh/id_ed25519"
+          key_file="$RUNNER_TEMP/kargozar-ssh/id_ed25519"
+          if [[ "$DEPLOY_SSH_KEY" == *"-----BEGIN OPENSSH PRIVATE KEY-----"* || "$DEPLOY_SSH_KEY" == *"-----BEGIN RSA PRIVATE KEY-----"* || "$DEPLOY_SSH_KEY" == *"-----BEGIN EC PRIVATE KEY-----"* ]]; then
+            printf '%s\n' "$DEPLOY_SSH_KEY" | tr -d '\r' > "$key_file"
+          else
+            if ! printf '%s' "$DEPLOY_SSH_KEY" | tr -d '[:space:]' | base64 --decode > "$key_file" 2>/dev/null; then
+              echo "::error::VPS_SSH_KEY is neither a valid raw private key nor valid Base64."
+              exit 1
+            fi
+          fi
+          chmod 600 "$key_file"
+          if ! public_key="$(ssh-keygen -y -f "$key_file" 2>/dev/null)"; then
+            echo "::error::Decoded VPS_SSH_KEY is not a parseable private key."
+            exit 1
+          fi
+          fingerprint="$(printf '%s\n' "$public_key" | ssh-keygen -lf - | awk '{print $2}')"
+          case "$fingerprint" in
+            SHA256:yZ0PY2OlUFSszk6GcX9R9DxA/ZWVFBQ8ecRpFBJz4NA|SHA256:5UUGhIltNpKwHnvln4NThvqhHUQ6O3ntmMuvS1Uiun4|SHA256:uT3cxt86sX2DOP7sI7Ku67r39Qsrwlx5SylBxoaW9Hw|SHA256:ZufQ/zpxkVWSj1pNE77vnLATiWfvyAT+1ZSzruClE48)
+              echo "SSH key fingerprint matches a deployment key installed on the VPS."
+              ;;
+            *)
+              echo "::error::SSH key fingerprint does not match a deployment key installed on the VPS."
+              exit 1
+              ;;
+          esac
           printf '%s\n' "$DEPLOY_KNOWN_HOSTS" > "$RUNNER_TEMP/kargozar-ssh/known_hosts"
-          chmod 600 "$RUNNER_TEMP/kargozar-ssh/id_ed25519" "$RUNNER_TEMP/kargozar-ssh/known_hosts"
+          chmod 600 "$key_file" "$RUNNER_TEMP/kargozar-ssh/known_hosts"
 
           known_hosts_target="$DEPLOY_HOST"
           if [[ "$DEPLOY_PORT" != "22" ]]; then
