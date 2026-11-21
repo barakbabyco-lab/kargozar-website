@@ -286,9 +286,9 @@ jobs:
           set -euo pipefail
           for endpoint in /up /api/v1/services; do
             output="$(mktemp)"
-            status="$(curl --max-time 20 -sS -o "$output" -w '%{http_code}' -H 'Host: api.barakmod.ir' "http://127.0.0.1$endpoint")"
-            echo "Endpoint $endpoint returned HTTP $status"
-            head -c 1000 "$output"
+            status="$(curl --resolve api.barakmod.ir:443:127.0.0.1 --max-time 20 -sS -o "$output" -w '%{http_code}' "https://api.barakmod.ir$endpoint")"
+            echo "HTTPS endpoint $endpoint returned HTTP $status"
+            head -c 600 "$output"
             echo
             rm -f "$output"
             test "$status" = "200"
