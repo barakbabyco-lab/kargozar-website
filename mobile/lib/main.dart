@@ -381,22 +381,29 @@ class _MainShellState extends State<MainShell> {
       ),
       Positioned(right: 14, bottom: 8, child: SupportChatLauncher(api: widget.api)),
     ])),
-    bottomNavigationBar: NavigationBar(
-      height: 76,
-      backgroundColor: _brandRed,
-      indicatorColor: Colors.transparent,
-      labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-      labelTextStyle: const WidgetStatePropertyAll(
-        TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w700),
+    bottomNavigationBar: Container(
+      decoration: const BoxDecoration(
+        border: Border(top: BorderSide(color: _brandRed, width: 2)),
       ),
-      selectedIndex: _index,
-      onDestinationSelected: _goToTab,
-      destinations: const [
-        NavigationDestination(icon: Icon(Icons.person_outline_rounded, color: Colors.white, size: 20), selectedIcon: Icon(Icons.person_rounded, color: Colors.white, size: 20), label: 'حساب کاربری من'),
-        NavigationDestination(icon: Icon(Icons.grid_view_outlined, color: Colors.white, size: 20), selectedIcon: Icon(Icons.grid_view_rounded, color: Colors.white, size: 20), label: 'خدمات'),
-        NavigationDestination(icon: Icon(Icons.business_center_outlined, color: Colors.white, size: 20), selectedIcon: Icon(Icons.business_center_rounded, color: Colors.white, size: 20), label: 'همراه کسب‌وکار'),
-        NavigationDestination(icon: Icon(Icons.support_agent_outlined, color: Colors.white, size: 20), selectedIcon: Icon(Icons.support_agent_rounded, color: Colors.white, size: 20), label: 'تماس و پشتیبانی'),
-      ],
+      child: NavigationBar(
+        height: 62,
+        backgroundColor: Colors.white,
+        indicatorColor: Color(0xFFF4EEFA),
+        labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+        labelTextStyle: WidgetStateProperty.resolveWith<TextStyle>((states) => TextStyle(
+          color: states.contains(WidgetState.selected) ? _brandRed : _navy,
+          fontSize: 9,
+          fontWeight: FontWeight.w700,
+        )),
+        selectedIndex: _index,
+        onDestinationSelected: _goToTab,
+        destinations: const [
+          NavigationDestination(icon: Icon(Icons.person_outline_rounded, color: _navy, size: 20), selectedIcon: Icon(Icons.person_rounded, color: _brandRed, size: 20), label: 'حساب کاربری من'),
+          NavigationDestination(icon: Icon(Icons.grid_view_outlined, color: _navy, size: 20), selectedIcon: Icon(Icons.grid_view_rounded, color: _brandRed, size: 20), label: 'خدمات'),
+          NavigationDestination(icon: Icon(Icons.business_center_outlined, color: _navy, size: 20), selectedIcon: Icon(Icons.business_center_rounded, color: _brandRed, size: 20), label: 'همراه کسب‌وکار'),
+          NavigationDestination(icon: Icon(Icons.support_agent_outlined, color: _navy, size: 20), selectedIcon: Icon(Icons.support_agent_rounded, color: _brandRed, size: 20), label: 'تماس و پشتیبانی'),
+        ],
+      ),
     ),
   );
 }
