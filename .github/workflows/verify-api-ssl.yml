@@ -155,3 +155,55 @@ jobs:
             head -c 1200 /tmp/kg-body
             echo
           done
+
+      - name: Test guest support chat API end to end
+        shell: bash
+        env:
+          SSH_CONFIG: ${{ runner.temp }}/kargozar-ssh/config
+        run: |
+          set -euo pipefail
+          ssh -F "$SSH_CONFIG" staging 'bash -s' <<'REMOTE'
+          set -euo pipefail
+          APP="$(readlink -f /var/www/kargozar-staging/current)"
+          cd "$APP"
+          echo "=== Staging migration status ==="
+          php artisan migrate:status --no-ansi | tail -n 18
+          tmp="$(mktemp -d)"
+          trap 'rm -rf "$tmp"' EXIT
+          umask 077
+          guest_token="$(openssl rand -hex 32)"
+          base="https://api.barakmod.ir/api/v1/guest/support-conversations"
+          start_status="$(curl --resolve api.barakmod.ir:443:127.0.0.1 --max-time 45 -sS -o "$tmp/start.json" -w '%{http_code}' -H "X-Support-Guest-Token: $guest_token" -H 'Content-Type: application/json' -d '{"body":"برای دریافت جواز کسب راهنمایی می‌خواهم."}' "$base")"
+          echo "Guest conversation create HTTP=$start_status"
+          test "$start_status" = "201"
+          conversation_id="$(php -r '$d=json_decode(file_get_contents($argv[1]), true); echo $d["data"]["id"] ?? "";' "$tmp/start.json")"
+          test -n "$conversation_id"
+          get_status="$(curl --resolve api.barakmod.ir:443:127.0.0.1 --max-time 30 -sS -o "$tmp/messages-1.json" -w '%{http_code}' -H "X-Support-Guest-Token: $guest_token" "$base/$conversation_id/messages")"
+          echo "Guest messages read HTTP=$get_status"
+          test "$get_status" = "200"
+          initial_count="$(php -r '$d=json_decode(file_get_contents($argv[1]), true); echo count($d["data"] ?? []);' "$tmp/messages-1.json")"
+          test "$initial_count" -ge 2
+          send_status="$(curl --resolve api.barakmod.ir:443:127.0.0.1 --max-time 45 -sS -o "$tmp/send.json" -w '%{http_code}' -H "X-Support-Guest-Token: $guest_token" -H 'Content-Type: application/json' -d '{"body":"مدارک لازم چیست؟"}' "$base/$conversation_id/messages")"
+          echo "Guest message send HTTP=$send_status"
+          test "$send_status" = "201"
+          final_status="$(curl --resolve api.barakmod.ir:443:127.0.0.1 --max-time 30 -sS -o "$tmp/messages-2.json" -w '%{http_code}' -H "X-Support-Guest-Token: $guest_token" "$base/$conversation_id/messages")"
+          echo "Guest messages refresh HTTP=$final_status"
+          test "$final_status" = "200"
+          final_count="$(php -r '$d=json_decode(file_get_contents($argv[1]), true); echo count($d["data"] ?? []);' "$tmp/messages-2.json")"
+          test "$final_count" -ge 4
+          TOKEN="$guest_token" CONVERSATION_ID="$conversation_id" php <<'PHP'
+          <?php
+          require getcwd().'/vendor/autoload.php';
+          $app = require getcwd().'/bootstrap/app.php';
+          $app->make('Illuminate\\Contracts\\Console\\Kernel')->bootstrap();
+          $id = (int) getenv('CONVERSATION_ID');
+          $hash = hash('sha256', (string) getenv('TOKEN'));
+          \\Illuminate\\Support\\Facades\\DB::table('support_messages')->where('conversation_id', $id)->delete();
+          if (\\Illuminate\\Support\\Facades\\Schema::hasTable('support_unanswered_question_events')) {
+              \\Illuminate\\Support\\Facades\\DB::table('support_unanswered_question_events')->where('conversation_id', $id)->delete();
+          }
+          \\Illuminate\\Support\\Facades\\DB::table('support_conversations')->where('id', $id)->where('guest_token_hash', $hash)->delete();
+          echo "Temporary guest conversation cleaned up".PHP_EOL;
+          PHP
+          echo "Guest support chat API: CREATE / READ / SEND / REFRESH all passed; messages=$final_count"
+          REMOTE
