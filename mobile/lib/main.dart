@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'core/network/kargozar_api_client.dart';
@@ -379,7 +378,6 @@ class _MainShellState extends State<MainShell> {
           SupportContentPage(onConsultation: _showConsultation, onNavigate: _goToTab),
         ],
       ),
-      Positioned(right: 14, bottom: 8, child: SupportChatLauncher(api: widget.api)),
     ])),
     bottomNavigationBar: NavigationBar(
       height: 76,
@@ -772,148 +770,6 @@ class _ProfileAction extends StatelessWidget {
    ),
  );
 }
-
-class SupportChatLauncher extends StatefulWidget {
- const SupportChatLauncher({super.key,required this.api});
- final KargozarApiClient api;
- @override State<SupportChatLauncher> createState()=>_SupportChatLauncherState();
-}
-class _SupportChatLauncherState extends State<SupportChatLauncher> {
- Timer? _inviteTimer; Timer? _dismissTimer; bool _showInvite=false; bool _opened=false;
- @override void initState(){super.initState();_inviteTimer=Timer(const Duration(seconds:25),(){
-   if(!mounted||_opened)return;setState(()=>_showInvite=true);
-   _dismissTimer=Timer(const Duration(seconds:9),(){if(mounted)setState(()=>_showInvite=false);});
- });}
- @override void dispose(){_inviteTimer?.cancel();_dismissTimer?.cancel();super.dispose();}
- Future<void> _openChat() async {
-   _opened=true;setState(()=>_showInvite=false);
-   if(!mounted)return;
-   await showModalBottomSheet<void>(context:context,isScrollControlled:true,backgroundColor:Colors.white,
-     shape:const RoundedRectangleBorder(borderRadius:BorderRadius.vertical(top:Radius.circular(20))),
-     builder:(ctx)=>SupportChatSheet(api:widget.api));
- }
- @override Widget build(BuildContext context)=>Column(mainAxisSize:MainAxisSize.min,crossAxisAlignment:CrossAxisAlignment.end,children:[
-   if(_showInvite)Container(constraints:const BoxConstraints(maxWidth:210),margin:const EdgeInsets.only(bottom:7),padding:const EdgeInsets.symmetric(horizontal:11,vertical:8),
-     decoration:BoxDecoration(color:Colors.white,borderRadius:BorderRadius.circular(13),border:Border.all(color:const Color(0xFFE7B4B4)),boxShadow:const [BoxShadow(color:Color(0x22000000),blurRadius:9,offset:Offset(0,3))]),
-     child:const Text('سؤالی دارید؟ برای راهنمایی در کنار شما هستیم.',style:TextStyle(color:_ink,fontSize:11,height:1.5))),
-   Material(color:_brandRed,shape:const CircleBorder(),elevation:4,child:InkWell(onTap:_openChat,customBorder:const CircleBorder(),child:const SizedBox(width:44,height:44,child:Icon(Icons.chat_bubble_outline_rounded,color:Colors.white,size:21)))),
- ]);
-}
-
-class SupportChatSheet extends StatefulWidget {
- const SupportChatSheet({super.key,required this.api});
- final KargozarApiClient api;
- @override State<SupportChatSheet> createState()=>_SupportChatSheetState();
-}
-class _SupportChatSheetState extends State<SupportChatSheet> {
- final _controller=TextEditingController();
- final _scroll=ScrollController();
- Timer? _pollTimer;
- List<Map<String,dynamic>> _messages=[];
- int? _conversationId;
- bool _busy=false;
- String? _error;
- @override void initState(){super.initState();_restoreConversation();}
- @override void dispose(){_pollTimer?.cancel();_controller.dispose();_scroll.dispose();super.dispose();}
- Future<void> _restoreConversation() async {
-   try {
-     final savedId=await widget.api.restoreGuestSupportConversationId();
-     if(savedId==null||!mounted)return;
-     _conversationId=savedId;
-     await _refresh();
-     if(mounted&&_conversationId!=null)_startPolling();
-   } on KargozarApiException catch(error) {
-     if(error.statusCode==401) {
-       await widget.api.clearGuestSupportConversation();
-       if(mounted)setState(()=>_error='گفت‌وگوی قبلی در دسترس نیست. پیام تازه‌ای ارسال کنید.');
-     } else if(mounted) {
-       setState(()=>_error=error.message);
-     }
-   } catch (_) {}
- }
- Future<void> _send() async {
-   final body=_controller.text.trim();if(body.isEmpty||_busy)return;
-   setState(()=>_busy=true);_controller.clear();
-   try{
-     final response=_conversationId==null
-       ? await widget.api.startGuestSupportConversation(body)
-       : await widget.api.sendGuestSupportMessage(_conversationId!,body);
-     final data=response['data'];
-     if(_conversationId==null&&data is Map<String,dynamic>){
-       _conversationId=(data['id'] as num?)?.toInt();
-       final initial=data['messages'];
-       if(initial is List){_messages=initial.whereType<Map>().map((e)=>Map<String,dynamic>.from(e)).toList();}
-       _startPolling();
-     }else if(data is Map<String,dynamic>){_messages.add(Map<String,dynamic>.from(data));}
-     if(mounted)setState(()=>_error=null);
-     if(_conversationId!=null)await _refresh();
-     _scrollToEnd();
-   }catch(error){
-     if(error is KargozarApiException&&(error.statusCode==401||error.code=='CONVERSATION_CLOSED')){
-       await widget.api.clearGuestSupportConversation();
-       _pollTimer?.cancel();
-       _conversationId=null;
-       _messages=[];
-     }
-     if(mounted){_controller.text=body;setState(()=>_error=errorText(error));}
-   }
-   finally{if(mounted)setState(()=>_busy=false);}
- }
- void _startPolling(){
-   _pollTimer?.cancel();
-   _pollTimer=Timer.periodic(const Duration(seconds:5),(_)=>_refresh());
- }
- Future<void> _refresh() async {
-   final id=_conversationId;if(id==null||!mounted)return;
-   try{
-     final response=await widget.api.getGuestSupportMessages(id);
-     final data=response['data'];
-     if(data is List&&mounted){
-       final next=data.whereType<Map>().map((e)=>Map<String,dynamic>.from(e)).toList();
-       if(next.length!=_messages.length||next.isNotEmpty&&_messages.isNotEmpty&&next.last['id']!=_messages.last['id']){
-         setState(()=>_messages=next);_scrollToEnd();
-       }
-     }
-   } on KargozarApiException catch(error) {
-     if(error.statusCode==401){
-       await widget.api.clearGuestSupportConversation();
-       _pollTimer?.cancel();
-       if(mounted)setState(() {
-         _conversationId=null;
-         _messages=[];
-         _error='گفت‌وگوی قبلی در دسترس نیست. پیام تازه‌ای ارسال کنید.';
-       });
-     }
-   } catch(_){}
- }
- void _scrollToEnd(){WidgetsBinding.instance.addPostFrameCallback((_){if(_scroll.hasClients)_scroll.animateTo(_scroll.position.maxScrollExtent,duration:const Duration(milliseconds:180),curve:Curves.easeOut);});}
- @override Widget build(BuildContext context)=>SizedBox(
-   height:MediaQuery.sizeOf(context).height*.68,
-   child:Padding(padding:EdgeInsets.fromLTRB(16,16,16,MediaQuery.viewInsetsOf(context).bottom+12),
-     child:Column(children:[
-       const Row(children:[Icon(Icons.smart_toy_outlined,color:_brandRed),SizedBox(width:8),Text('دستیار هوشمند کارگزار',style:TextStyle(fontSize:16,fontWeight:FontWeight.w800)),Spacer(),Text('پشتیبانی',style:TextStyle(fontSize:11,color:_muted))]),
-       const Align(alignment:Alignment.centerRight,child:Text('پاسخ‌گویی خودکار؛ در صورت نیاز ارجاع به کارشناس',style:TextStyle(color:_muted,fontSize:11))),
-       const Divider(height:22),
-       Expanded(child:_messages.isEmpty?const Center(child:Text('سؤال خود را بنویسید تا دستیار هوشمند کارگزار راهنمایی‌تان کند.',textAlign:TextAlign.center,style:TextStyle(color:_muted,height:1.8))):ListView.builder(controller:_scroll,itemCount:_messages.length,itemBuilder:(context,index){
-         final message=_messages[index];final mine=message['sender_type']=='customer';final assistant=message['sender_type']=='assistant';
-         return Align(alignment:mine?Alignment.centerRight:Alignment.centerLeft,child:Container(
-           constraints:BoxConstraints(maxWidth:MediaQuery.sizeOf(context).width*.76),
-           margin:const EdgeInsets.only(bottom:8),padding:const EdgeInsets.symmetric(horizontal:12,vertical:9),
-           decoration:BoxDecoration(color:mine?const Color(0xFFFCE8E8):assistant?const Color(0xFFF4EEFA):const Color(0xFFF1F5F9),borderRadius:BorderRadius.circular(13)),
-           child:Text('${assistant?'دستیار هوشمند کارگزار\n':''}${message['body']?.toString()??''}',style:const TextStyle(fontSize:12,height:1.6)),
-         ));
-       })),
-       if(_error!=null)Padding(padding:const EdgeInsets.only(bottom:8),child:Text(_error!,style:const TextStyle(color:Colors.red,fontSize:11))),
-       Row(children:[
-         Expanded(child:TextField(controller:_controller,minLines:1,maxLines:3,textInputAction:TextInputAction.send,onSubmitted:(_)=>_send(),decoration:const InputDecoration(hintText:'پیام شما...',contentPadding:EdgeInsets.symmetric(horizontal:12,vertical:10)))),
-         const SizedBox(width:8),
-         IconButton.filled(onPressed:_busy?null:_send,icon:_busy?const SizedBox(width:18,height:18,child:CircularProgressIndicator(strokeWidth:2)):const Icon(Icons.send_rounded),style:IconButton.styleFrom(backgroundColor:_brandRed,foregroundColor:Colors.white)),
-       ]),
-     ]),
-   ),
- );
-}
-
 
 class SectionHeading extends StatelessWidget {
   const SectionHeading({super.key, required this.title, this.action});
