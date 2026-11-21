@@ -380,7 +380,7 @@ class _MainShellState extends State<MainShell> {
       ),
     ])),
     bottomNavigationBar: NavigationBar(
-      height: 76,
+      height: 61,
       backgroundColor: _brandRed,
       indicatorColor: Colors.transparent,
       labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
