@@ -178,6 +178,13 @@ jobs:
 
           ln -sfn "$deploy_root/shared/.env" "$release/.env"
           mkdir -p "$deploy_root/shared/storage/framework/views" "$release/bootstrap/cache"
+          # Force a deterministic absolute Blade compilation directory; an empty
+          # VIEW_COMPILED_PATH in the shared .env overrides Laravel's default.
+          if grep -q '^VIEW_COMPILED_PATH=' "$deploy_root/shared/.env"; then
+            sed -i "s|^VIEW_COMPILED_PATH=.*|VIEW_COMPILED_PATH=$deploy_root/shared/storage/framework/views|" "$deploy_root/shared/.env"
+          else
+            printf '\nVIEW_COMPILED_PATH=%s\n' "$deploy_root/shared/storage/framework/views" >> "$deploy_root/shared/.env"
+          fi
           rm -rf "$release/storage"
           ln -s "$deploy_root/shared/storage" "$release/storage"
           chmod -R ug+rwX "$deploy_root/shared/storage" "$release/bootstrap/cache"
@@ -222,7 +229,10 @@ jobs:
           chmod --reference="$env_file" "$tmp_env"
           mv -f "$tmp_env" "$env_file"
           php artisan config:clear
+          php artisan view:clear
+          test -d "$deploy_root/shared/storage/framework/views"
           php artisan config:cache
+          php artisan tinker --execute="if (! is_dir(config('view.compiled'))) { throw new RuntimeException('Blade compiled view path is invalid: '.config('view.compiled')); }"
 
           if [[ "$run_migrations" == "true" ]]; then
             php artisan migrate --force
