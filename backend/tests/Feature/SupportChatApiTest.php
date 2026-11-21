@@ -12,6 +12,22 @@ class SupportChatApiTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_guest_unanswered_question_is_linked_to_its_conversation(): void
+    {
+        $guestToken = str_repeat('e5', 32);
+
+        $started = $this->withHeader('X-Support-Guest-Token', $guestToken)
+            ->postJson('/api/v1/guest/support-conversations', ['body' => 'هزینه دریافت جواز کسب چقدر است؟'])
+            ->assertCreated();
+
+        $conversationId = $started->json('data.id');
+
+        $this->assertDatabaseHas('support_unanswered_question_events', [
+            'conversation_id' => $conversationId,
+            'outcome' => 'human_escalation',
+        ]);
+    }
+
     public function test_customer_can_start_and_continue_a_support_conversation(): void
     {
         $customer = Customer::create(['mobile' => '09120000111', 'status' => 'active']);

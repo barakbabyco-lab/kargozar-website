@@ -238,7 +238,7 @@ class SupportChatController extends Controller
         } elseif ($isMissingRequirementFollowup) {
             $answer = (string) config('support_assistant.missing_requirement_response');
         } else {
-            $answer = app(SupportAssistant::class)->reply($customerMessage);
+            $answer = app(SupportAssistant::class)->reply($customerMessage, $conversation->id);
         }
 
         $reply = $conversation->messages()->create([
