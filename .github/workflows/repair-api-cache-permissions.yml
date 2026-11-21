@@ -1,0 +1,97 @@
+name: Repair KarGozar Laravel cache permissions
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Prepare approved SSH access
+        shell: bash
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_PORT: ${{ secrets.DEPLOY_PORT }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          DEPLOY_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+          DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+        run: |
+          set -euo pipefail
+          for name in DEPLOY_HOST DEPLOY_USER DEPLOY_SSH_KEY DEPLOY_KNOWN_HOSTS; do
+            [[ -n "${!name:-}" ]] || { echo "::error::Missing secret $name"; exit 1; }
+          done
+          DEPLOY_PORT="${DEPLOY_PORT:-22}"
+          install -d -m 700 "$RUNNER_TEMP/kargozar-ssh"
+          key="$RUNNER_TEMP/kargozar-ssh/id_key"
+          if [[ "$DEPLOY_SSH_KEY" == *"-----BEGIN OPENSSH PRIVATE KEY-----"* || "$DEPLOY_SSH_KEY" == *"-----BEGIN RSA PRIVATE KEY-----"* || "$DEPLOY_SSH_KEY" == *"-----BEGIN EC PRIVATE KEY-----"* ]]; then
+            printf '%s\\n' "$DEPLOY_SSH_KEY" | tr -d '\\r' > "$key"
+          else
+            printf '%s' "$DEPLOY_SSH_KEY" | tr -d '[:space:]' | base64 --decode > "$key"
+          fi
+          chmod 600 "$key"
+          fp="$(ssh-keygen -y -f "$key" 2>/dev/null | ssh-keygen -lf - | awk '{print $2}')"
+          case "$fp" in
+            SHA256:yZ0PY2OlUFSszk6GcX9R9DxA/ZWVFBQ8ecRpFBJz4NA|SHA256:5UUGhIltNpKwHnvln4NThvqhHUQ6O3ntmMuvS1Uiun4|SHA256:uT3cxt86sX2DOP7sI7Ku67r39Qsrwlx5SylBxoaW9Hw|SHA256:ZufQ/zpxkVWSj1pNE77vnLATiWfvyAT+1ZSzruClE48) ;;
+            *) echo "::error::Unapproved SSH key"; exit 1 ;;
+          esac
+          printf '%s\\n' "$DEPLOY_KNOWN_HOSTS" > "$RUNNER_TEMP/kargozar-ssh/known_hosts"
+          chmod 600 "$RUNNER_TEMP/kargozar-ssh/known_hosts"
+          hostkey="$DEPLOY_HOST"; [[ "$DEPLOY_PORT" == 22 ]] || hostkey="[$DEPLOY_HOST]:$DEPLOY_PORT"
+          ssh-keygen -F "$hostkey" -f "$RUNNER_TEMP/kargozar-ssh/known_hosts" >/dev/null
+          cat > "$RUNNER_TEMP/kargozar-ssh/config" <<EOF
+          Host staging
+            HostName $DEPLOY_HOST
+            Port $DEPLOY_PORT
+            User $DEPLOY_USER
+            IdentityFile $key
+            IdentitiesOnly yes
+            BatchMode yes
+            StrictHostKeyChecking yes
+            UserKnownHostsFile $RUNNER_TEMP/kargozar-ssh/known_hosts
+            ConnectTimeout 15
+          EOF
+          chmod 600 "$RUNNER_TEMP/kargozar-ssh/config"
+      - name: Repair only Laravel bootstrap cache access and verify HTTP
+        shell: bash
+        env:
+          SSH_CONFIG: ${{ runner.temp }}/kargozar-ssh/config
+        run: |
+          set -euo pipefail
+          ssh -F "$SSH_CONFIG" staging 'bash -s' <<'REMOTE'
+          set -euo pipefail
+          APP="$(readlink -f /var/www/kargozar-staging/current)"
+          CACHE="$APP/bootstrap/cache"
+          test -d "$CACHE"
+          FPM_USER="$(awk -F= '/^[[:space:]]*user[[:space:]]*=/{gsub(/[[:space:]]/,"",$2); print $2; exit}' /etc/php/8.3/fpm/pool.d/www.conf)"
+          FPM_GROUP="$(awk -F= '/^[[:space:]]*group[[:space:]]*=/{gsub(/[[:space:]]/,"",$2); print $2; exit}' /etc/php/8.3/fpm/pool.d/www.conf)"
+          echo "Active release: $APP"
+          echo "PHP-FPM pool identity: $FPM_USER:$FPM_GROUP"
+          echo "Before:"
+          namei -l "$CACHE/config.php" || true
+          stat -c '%A %U:%G %n' "$CACHE" "$CACHE/config.php" 2>/dev/null || true
+          if [[ "$FPM_USER" != "www-data" || "$FPM_GROUP" != "www-data" ]]; then
+            echo "Unexpected PHP-FPM identity; refusing permission changes."
+            exit 1
+          fi
+          sudo -n chgrp -R www-data "$CACHE"
+          sudo -n chmod -R u+rwX,g+rX,o-rwx "$CACHE"
+          sudo -n chmod g+s "$CACHE"
+          sudo -n -u www-data test -r "$CACHE/config.php"
+          echo "After:"
+          namei -l "$CACHE/config.php"
+          stat -c '%A %U:%G %n' "$CACHE" "$CACHE/config.php"
+          echo "=== Laravel health endpoint ==="
+          HEALTH="$(curl --max-time 15 -sS -o /tmp/kargozar-health.out -w '%{http_code}' -H 'Host: api.barakmod.ir' http://127.0.0.1/up)"
+          echo "HTTP_STATUS=$HEALTH"
+          cat /tmp/kargozar-health.out
+          [[ "$HEALTH" == "200" ]]
+          echo
+          echo "=== API services endpoint ==="
+          API="$(curl --max-time 20 -sS -o /tmp/kargozar-services.out -w '%{http_code}' -H 'Host: api.barakmod.ir' http://127.0.0.1/api/v1/services)"
+          echo "HTTP_STATUS=$API"
+          head -c 1500 /tmp/kargozar-services.out
+          [[ "$API" == "200" ]]
+          echo
+          echo "Laravel cache permissions repaired and API endpoint returned HTTP 200."
+          REMOTE
