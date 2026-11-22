@@ -25,9 +25,7 @@ class KargozarApiClient {
     SecureGuestSupportTokenStore? guestTokenStore,
   })  : _tokenStore = tokenStore ?? SecureAccessTokenStore(),
         _guestTokenStore = guestTokenStore ?? SecureGuestSupportTokenStore(),
-        _baseUri = Uri.parse(
-          _normalizeApiBaseUri(baseUrl),
-        ),
+        _baseUri = _normalizeApiBaseUri(baseUrl),
         _http = httpClient ?? http.Client(),
         _accessToken = accessToken;
 
