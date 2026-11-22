@@ -1,5 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:kargozar_mobile/core/network/kargozar_api_client.dart';
 import 'package:kargozar_mobile/features/auth/customer_session.dart';
 import 'package:kargozar_mobile/features/catalog/service_catalog_repository.dart';
@@ -90,7 +92,7 @@ class _HomeState extends State<HomePage> {
   @override void initState() { super.initState(); future = widget.catalog.getServices(); }
   @override Widget build(BuildContext context) => RefreshIndicator(onRefresh: () async { setState(() => future = widget.catalog.getServices()); await future; },
     child: ListView(padding: const EdgeInsets.all(20), children: [
-      const Text('کارگزار', style: TextStyle(fontSize: 23, fontWeight: FontWeight.w900, color: navy)),
+      SvgPicture.asset('assets/brand/kargozar-logo-header.svg', width: 150, height: 74, fit: BoxFit.contain),
       const Text('همراه مطمئن کسب‌وکار شما', style: TextStyle(color: muted)),
       const SizedBox(height: 24),
       Container(padding: const EdgeInsets.all(22), decoration: BoxDecoration(color: navy, borderRadius: BorderRadius.circular(22)),
@@ -305,7 +307,7 @@ class _ServicesState extends State<ServicesPage> {
                           title: Text(v.title),
                           subtitle: Text(v.description ?? v.categoryName ?? ''),
                           trailing: const Icon(Icons.chevron_left),
-                          onTap: () => makeRequest(v),
+                          onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => ServiceDetailPage(service: v))),
                         ),
                       ),
                     )
@@ -315,6 +317,36 @@ class _ServicesState extends State<ServicesPage> {
           ),
         ],
       );
+}
+
+
+class ServiceDetailPage extends StatelessWidget {
+  const ServiceDetailPage({super.key, required this.service});
+  final CatalogService service;
+  static const _phone = '09360952800';
+  Future<void> _call(BuildContext context) async {
+    final uri = Uri(scheme: 'tel', path: _phone);
+    final opened = await launchUrl(uri, mode: LaunchMode.externalApplication);
+    if (!opened && context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('امکان باز کردن شماره‌گیر وجود ندارد.')));
+    }
+  }
+  @override Widget build(BuildContext context) => Scaffold(
+    appBar: AppBar(title: const Text('جزئیات خدمت')),
+    body: ListView(padding: const EdgeInsets.all(20), children: [
+      Text(service.title, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: navy)),
+      const SizedBox(height: 12),
+      Text(service.description ?? service.categoryName ?? 'برای دریافت اطلاعات تکمیلی درباره این خدمت با کارشناسان کارگزار تماس بگیرید.', style: const TextStyle(color: muted, height: 1.8)),
+      const SizedBox(height: 24),
+      SizedBox(width: double.infinity, child: FilledButton.icon(
+        onPressed: () => _call(context),
+        icon: const Icon(Icons.phone_outlined),
+        label: const Text('ثبت درخواست'),
+      )),
+      const SizedBox(height: 10),
+      const Text('با انتخاب ثبت درخواست، شماره‌گیر گوشی باز می‌شود و می‌توانید با کارگزار تماس بگیرید.', textAlign: TextAlign.center, style: TextStyle(color: muted, fontSize: 12, height: 1.7)),
+    ]),
+  );
 }
 
 class _CategoryBranch extends StatelessWidget {
