@@ -40,6 +40,26 @@ void main() {
       client.close();
     });
 
+    test('normalizes a host-only API URL to the versioned API path', () async {
+      late http.Request captured;
+      final client = KargozarApiClient(
+        baseUrl: 'https://api.example.test',
+        httpClient: MockClient((request) async {
+          captured = request;
+          return http.Response(
+            jsonEncode({'data': <dynamic>[]}),
+            200,
+            headers: {'content-type': 'application/json; charset=utf-8'},
+          );
+        }),
+      );
+
+      await client.getServices();
+
+      expect(captured.url.path, '/api/v1/services');
+      client.close();
+    });
+
     test('requests services with versioned URL and query parameters', () async {
       late http.Request captured;
       final client = KargozarApiClient(
