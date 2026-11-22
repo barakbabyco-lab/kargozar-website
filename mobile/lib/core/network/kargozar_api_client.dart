@@ -5,6 +5,16 @@ import 'package:http/http.dart' as http;
 
 import 'access_token_store.dart';
 
+Uri _normalizeApiBaseUri(String? baseUrl) {
+  final raw = (baseUrl ?? const String.fromEnvironment('API_BASE_URL')).trim();
+  final uri = Uri.parse(raw);
+  if (uri.hasScheme && uri.host.isNotEmpty &&
+      (uri.path.isEmpty || uri.path == '/')) {
+    return uri.replace(path: '/api/v1');
+  }
+  return uri;
+}
+
 /// Lightweight client for the versioned Kargozar API.
 class KargozarApiClient {
   KargozarApiClient({
@@ -16,7 +26,7 @@ class KargozarApiClient {
   })  : _tokenStore = tokenStore ?? SecureAccessTokenStore(),
         _guestTokenStore = guestTokenStore ?? SecureGuestSupportTokenStore(),
         _baseUri = Uri.parse(
-          (baseUrl ?? const String.fromEnvironment('API_BASE_URL')).trim(),
+          _normalizeApiBaseUri(baseUrl),
         ),
         _http = httpClient ?? http.Client(),
         _accessToken = accessToken;
