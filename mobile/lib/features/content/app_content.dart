@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../core/network/kargozar_api_client.dart';
+import '../support/support_chat_page.dart';
 
 const kargozarAssetsBaseUrl = String.fromEnvironment(
   'KARGOZAR_ASSETS_BASE_URL',
@@ -583,8 +585,8 @@ class CompanionDescriptionPage extends StatelessWidget {
 }
 
 class SupportContentPage extends StatelessWidget {
- const SupportContentPage({super.key,required this.onConsultation,required this.onNavigate});
- final VoidCallback onConsultation; final ValueChanged<int> onNavigate;
+ const SupportContentPage({super.key,required this.onConsultation,required this.onNavigate,required this.api});
+ final VoidCallback onConsultation; final ValueChanged<int> onNavigate; final KargozarApiClient api;
  Future<void> _launch(Uri uri,BuildContext context) async {
    final ok=await launchUrl(uri,mode:LaunchMode.externalApplication);
    if(!ok&&context.mounted)ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content:Text('امکان باز کردن برنامه موردنظر وجود ندارد.')));
@@ -597,9 +599,9 @@ class SupportContentPage extends StatelessWidget {
      const SizedBox(height:7),
      _SupportAction(icon:Icons.email_outlined,title:'ارتباط از طریق ایمیل',subtitle:'ارسال پیام به info@kargozarr.ir',onTap:()=>_launch(Uri(scheme:'mailto',path:'info@kargozarr.ir',queryParameters:{'subject':'ارتباط با پشتیبانی کارگزار'}),context)),
      const SizedBox(height:7),
-     const _SupportAction(icon:Icons.confirmation_number_outlined,title:'ثبت و پیگیری تیکت',subtitle:'به‌زودی فعال می‌شود'),
+     _SupportAction(icon:Icons.confirmation_number_outlined,title:'ثبت و پیگیری تیکت',subtitle:'به‌زودی فعال می‌شود'),
      const SizedBox(height:7),
-     const _SupportAction(icon:Icons.smart_toy_outlined,title:'دستیار هوشمند کارگزار',subtitle:'به‌زودی فعال می‌شود'),
+     _SupportAction(icon:Icons.chat_bubble_outline_rounded,title:'گفت‌وگوی آنلاین با پشتیبانی',subtitle:'ارسال پیام بدون نیاز به ورود یا کد تأیید',onTap:()=>Navigator.of(context).push(MaterialPageRoute<void>(builder:(_)=>SupportChatPage(api:api)))),
      const SizedBox(height:7),
      _SupportAction(icon:Icons.privacy_tip_outlined,title:'سیاست حفظ حریم خصوصی',subtitle:'مطالعه قوانین و نحوه حفاظت از اطلاعات',onTap:()=>Navigator.of(context).push(MaterialPageRoute<void>(builder:(_)=>const PrivacyPolicyPage()))),
    ])),
