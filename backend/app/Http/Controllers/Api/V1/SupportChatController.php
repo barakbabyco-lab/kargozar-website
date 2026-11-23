@@ -238,7 +238,21 @@ class SupportChatController extends Controller
         } elseif ($isMissingRequirementFollowup) {
             $answer = (string) config('support_assistant.missing_requirement_response');
         } else {
-            $answer = app(SupportAssistant::class)->reply($customerMessage, $conversation->id);
+            // Keep the recent customer context so follow-up answers don't ask for
+            // an activity that the customer already named (e.g. real estate).
+            $recentCustomerMessages = $conversation->messages()
+                ->where('sender_type', 'customer')
+                ->latest('id')
+                ->limit(6)
+                ->pluck('body')
+                ->reverse()
+                ->values()
+                ->all();
+            $contextText = implode("\n", $recentCustomerMessages);
+            $normalizedContext = strtr(mb_strtolower($contextText, 'UTF-8'), ['ي' => 'ی', 'ك' => 'ک', '‌' => ' ']);
+            $isGuildConversation = preg_match('/جواز کسب|پروانه کسب|مجوز صنفی|مجوز کسب/u', $normalizedContext) === 1;
+            $assistantInput = $isGuildConversation ? $contextText : $customerMessage;
+            $answer = app(SupportAssistant::class)->reply($assistantInput, $conversation->id);
         }
 
         $reply = $conversation->messages()->create([
