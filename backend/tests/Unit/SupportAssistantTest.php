@@ -81,6 +81,17 @@ class SupportAssistantTest extends TestCase
         $this->assertStringNotContainsString('ناامید', $reply);
     }
 
+    public function test_real_estate_license_clarifies_natural_or_legal_person_first(): void
+    {
+        Config::set('support_assistant.missing_requirement_phrases', []);
+        Config::set('support_assistant.escalation_terms', []);
+        $reply = app(SupportAssistant::class)->reply('شرایط جواز کسب مشاور املاک چیست؟');
+        $this->assertStringContainsString('شخص حقیقی', $reply);
+        $this->assertStringContainsString('شخص حقوقی', $reply);
+        $this->assertStringNotContainsString('برای چه شغلی', $reply);
+        $this->assertStringNotContainsString('ناامید', $reply);
+    }
+
     public function test_unknown_question_uses_safe_fallback(): void
     {
         Config::set('support_assistant.missing_requirement_phrases', []);
