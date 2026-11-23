@@ -4,8 +4,15 @@ import 'package:flutter/material.dart';
 import '../../core/network/kargozar_api_client.dart';
 
 class SupportChatPage extends StatefulWidget {
-  const SupportChatPage({super.key, required this.api});
+  const SupportChatPage({
+    super.key,
+    required this.api,
+    this.embedded = false,
+    this.onClose,
+  });
   final KargozarApiClient api;
+  final bool embedded;
+  final VoidCallback? onClose;
 
   @override
   State<SupportChatPage> createState() => _SupportChatPageState();
