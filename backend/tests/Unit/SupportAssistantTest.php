@@ -19,7 +19,7 @@ class SupportAssistantTest extends TestCase
 
         $reply = app(SupportAssistant::class)->reply('برای جواز کسب مغازه ندارم');
 
-        $this->assertStringContainsString('راه‌های رسیدن به خدا زیاده!', $reply);
+        $this->assertStringContainsString('راهکارهای قانونی', $reply);
         $this->assertStringContainsString('شماره تماس', $reply);
         $this->assertStringNotContainsString('روش اجرایی', $reply);
     }
@@ -40,7 +40,7 @@ class SupportAssistantTest extends TestCase
         $reply = app(SupportAssistant::class)->reply('برای خدمات آزمایشی راهنمایی می‌خواهم');
 
         $this->assertStringContainsString('برای خدمات آزمایشی', $reply);
-        $this->assertStringContainsString("\n\nاگر مدرکی ندارید", $reply);
+        $this->assertStringNotContainsString('اگر مدرکی ندارید', $reply);
     }
 
     public function test_structured_service_bank_answers_document_questions(): void
@@ -68,6 +68,17 @@ class SupportAssistantTest extends TestCase
         $this->assertStringContainsString('کارت بهداشت', $reply);
         $this->assertStringContainsString('تأییدیه بهداشت', $reply);
         $this->assertStringContainsString('شماره تماس‌تان را ثبت کنید', $reply);
+    }
+
+    public function test_guild_license_general_conditions_question_asks_activity_and_city_first(): void
+    {
+        Config::set('support_assistant.missing_requirement_phrases', []);
+        Config::set('support_assistant.escalation_terms', []);
+        $reply = app(SupportAssistant::class)->reply('شرایط جواز کسب چیست؟');
+        $this->assertStringContainsString('نوع دقیق فعالیت', $reply);
+        $this->assertStringContainsString('کدوم شهر', $reply);
+        $this->assertStringNotContainsString('مدارک هویتی', $reply);
+        $this->assertStringNotContainsString('ناامید', $reply);
     }
 
     public function test_unknown_question_uses_safe_fallback(): void
