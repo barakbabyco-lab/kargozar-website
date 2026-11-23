@@ -208,6 +208,12 @@ class SupportAssistant
             return null;
         }
 
+        $isRealEstate = preg_match('/مشاور املاک|املاک|بنگاه املاک/u', $text) === 1;
+        $hasLegalPersonType = preg_match('/حقیقی|حقوقی/u', $text) === 1;
+        if ($isRealEstate && ! $hasLegalPersonType) {
+            return 'برای جواز مشاور املاک، اول باید مشخص کنیم درخواست به نام شخص حقیقیه یا شرکت (شخص حقوقی). شما می‌خواید جواز به نام خودتون صادر بشه یا به نام شرکت؟';
+        }
+
         $classification = $this->classifyGuildActivity($text);
         $labels = $this->requirementDisplayLabels();
         $commonKeys = $classification['common_preflight'] ?? [];
