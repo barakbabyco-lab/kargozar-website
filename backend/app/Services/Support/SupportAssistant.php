@@ -69,10 +69,6 @@ class SupportAssistant
 
         if ($best !== null && $bestScore >= $threshold && ($bestScore - $secondScore) >= $margin) {
             $answer = (string) ($best['answer'] ?? '');
-            if (($best['service_assurance'] ?? false) === true) {
-                $answer = $this->appendCustomerClosing($answer);
-            }
-
             return $answer;
         }
 
@@ -237,15 +233,17 @@ class SupportAssistant
             $answer .= $this->formatItems(array_values(array_unique($commonLabels)));
         }
 
-        if ($specialLabels !== []) {
-            $answer .= "\n\nبا توجه به نوع شغل، این موارد تخصصی هم ممکنه لازم باشه:\n";
-            $answer .= $this->formatItems(array_values(array_unique($specialLabels)));
-        } elseif (($classification['needs_clarification'] ?? true) === true) {
-            $answer .= "\n\nبرای مشخص‌کردن مدارک تخصصی، لطفاً نوع دقیق شغل و شهر محل فعالیت رو هم بفرمایید.";
+        if (($classification['needs_clarification'] ?? true) === true && $specialLabels === []) {
+            return "برای جواز کسب، شرایط و مدارک به نوع دقیق فعالیت و شهر محل کسب بستگی داره. لطفاً بفرمایید چه شغلی می‌خواید راه‌اندازی کنید و در کدوم شهر؟ تا موارد مرتبط با همون شغل رو بگم.";
         }
 
-        $answer .= "\n\nاین فهرست برای بررسی اولیه‌ست؛ شمول قطعی هر مورد با کاربرگ همان رسته و شرایط متقاضی تطبیق داده می‌شه.";
-        return $this->appendCustomerClosing($answer);
+        if ($specialLabels !== []) {
+            $answer .= "\n\nمدارک یا تأییدیه‌های مرتبط با این شغل هم ممکنه لازم باشه:\n";
+            $answer .= $this->formatItems(array_values(array_unique($specialLabels)));
+        }
+
+        $answer .= "\n\nاین موارد راهنمای اولیه‌اند؛ فهرست نهایی باید با ضوابط رسته و شهر شما تطبیق داده بشه.";
+        return $answer;
     }
 
     private function requirementDisplayLabels(): array
@@ -395,7 +393,7 @@ class SupportAssistant
             $answer .= "\n\nاین راهنمای اولیه‌ست؛ جزئیات نهایی باید با شرایط پرونده و آخرین ضوابط مرجع مربوط بررسی بشه.";
         }
 
-        return $this->appendCustomerClosing($answer);
+        return $answer;
     }
 
     private function appendCustomerClosing(string $answer): string
