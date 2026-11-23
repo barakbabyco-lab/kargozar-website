@@ -1,0 +1,103 @@
+name: Generate Bazaar Bundle Signer BIN
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_run_id:
+        description: "GitHub Actions run containing the exact AAB uploaded to Bazaar"
+        required: true
+        default: "45094314930"
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  generate-bazaar-bin:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Download the original release artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_RUN_ID: ${{ inputs.source_run_id }}
+        run: |
+          set -euo pipefail
+          gh run download "$SOURCE_RUN_ID" --repo "$GITHUB_REPOSITORY" --name kargozar-android-release --dir /tmp/kargozar-release
+          test -s /tmp/kargozar-release/bundle/release/app-release.aab
+          sha256sum /tmp/kargozar-release/bundle/release/app-release.aab | tee /tmp/aab-sha256.txt
+
+      - name: Load the existing private release signing key
+        env:
+          ANDROID_SIGNING_BUNDLE_BASE64: ${{ secrets.ANDROID_SIGNING_BUNDLE_BASE64 }}
+        run: |
+          set -euo pipefail
+          test -n "$ANDROID_SIGNING_BUNDLE_BASE64"
+          printf '%s' "$ANDROID_SIGNING_BUNDLE_BASE64" | base64 --decode > /tmp/kargozar-signing-bundle.zip
+          unzip -o /tmp/kargozar-signing-bundle.zip -d mobile
+          test -s mobile/android/app/upload-keystore.jks
+          test -s mobile/android/key.properties
+
+      - name: Download official Bazaar Bundle Signer
+        run: |
+          set -euo pipefail
+          curl --fail --location --silent --show-error \
+            https://github.com/cafebazaar/bundle-signer/releases/download/v0.1.14/bundlesigner-0.1.14.jar \
+            --output /tmp/bundlesigner-0.1.14.jar
+          test -s /tmp/bundlesigner-0.1.14.jar
+
+      - name: Generate BIN with the same release key
+        working-directory: mobile
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          props = {}
+          for raw in Path("android/key.properties").read_text(encoding="utf-8").splitlines():
+              line = raw.strip()
+              if not line or line.startswith(("#", "!")) or "=" not in line:
+                  continue
+              key, value = line.split("=", 1)
+              props[key.strip()] = value.strip()
+          required = ("keyAlias", "keyPassword", "storePassword", "storeFile")
+          missing = [key for key in required if not props.get(key)]
+          if missing:
+              raise SystemExit("Missing required signing properties: " + ", ".join(missing))
+          store = Path("android/app") / props["storeFile"]
+          if not store.is_file():
+              raise SystemExit("Configured release keystore file was not found.")
+          Path("/tmp/kargozar-ks-pass").write_text(props["storePassword"], encoding="utf-8")
+          Path("/tmp/kargozar-key-pass").write_text(props["keyPassword"], encoding="utf-8")
+          Path("/tmp/kargozar-ks-pass").chmod(0o600)
+          Path("/tmp/kargozar-key-pass").chmod(0o600)
+          Path("/tmp/kargozar-ks-path").write_text(str(store.resolve()), encoding="utf-8")
+          Path("/tmp/kargozar-ks-alias").write_text(props["keyAlias"], encoding="utf-8")
+          PY
+          mkdir -p /tmp/kargozar-bazaar-bin
+          java -jar /tmp/bundlesigner-0.1.14.jar genbin -v \
+            --bundle /tmp/kargozar-release/bundle/release/app-release.aab \
+            --bin /tmp/kargozar-bazaar-bin \
+            --v2-signing-enabled true \
+            --v3-signing-enabled false \
+            --ks "$(cat /tmp/kargozar-ks-path)" \
+            --ks-key-alias "$(cat /tmp/kargozar-ks-alias)" \
+            --ks-pass file:/tmp/kargozar-ks-pass \
+            --key-pass file:/tmp/kargozar-key-pass
+          find /tmp/kargozar-bazaar-bin -maxdepth 1 -type f -name '*.bin' -size +0c -print -quit | grep -q .
+          cp /tmp/aab-sha256.txt /tmp/kargozar-bazaar-bin/
+
+      - name: Upload Bazaar BIN artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: kargozar-bazaar-bin
+          path: /tmp/kargozar-bazaar-bin/*
+          if-no-files-found: error
+          retention-days: 14
