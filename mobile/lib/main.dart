@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -8,6 +9,7 @@ import 'features/catalog/service_catalog_repository.dart';
 import 'features/requests/customer_request_repository.dart';
 import 'features/catalog/service_taxonomy.dart';
 import 'features/content/app_content.dart';
+import 'features/support/support_chat_page.dart';
 
 void main() {
   runApp(const KargozarApp());
@@ -151,7 +153,34 @@ class MainShell extends StatefulWidget {
 }
 class _MainShellState extends State<MainShell> {
   int _index = 1, _revision = 0;
+  bool _chatOpen = false, _showChatInvite = false;
+  Timer? _chatInviteTimer, _chatInviteDismissTimer;
   late final PageController _pageController = PageController(initialPage: _index);
+
+  @override
+  void initState() {
+    super.initState();
+    _chatInviteTimer = Timer(const Duration(seconds: 25), () {
+      if (!mounted || _chatOpen) return;
+      setState(() => _showChatInvite = true);
+      _chatInviteDismissTimer = Timer(const Duration(seconds: 7), () {
+        if (mounted) setState(() => _showChatInvite = false);
+      });
+    });
+  }
+
+  void _openChat() {
+    _chatInviteTimer?.cancel();
+    _chatInviteDismissTimer?.cancel();
+    setState(() {
+      _showChatInvite = false;
+      _chatOpen = true;
+    });
+  }
+
+  void _closeChat() {
+    setState(() => _chatOpen = false);
+  }
   void _goToTab(int index) {
     if (index < 0 || index >= 4) return;
     if (_index != index) setState(() => _index = index);
@@ -160,7 +189,12 @@ class _MainShellState extends State<MainShell> {
     }
   }
   @override
-  void dispose() { _pageController.dispose(); super.dispose(); }
+  void dispose() {
+    _chatInviteTimer?.cancel();
+    _chatInviteDismissTimer?.cancel();
+    _pageController.dispose();
+    super.dispose();
+  }
   Future<void> _request(ServiceItem service) async {
     final id = service.apiId;
     if (id == null || id.isEmpty) {
@@ -389,19 +423,73 @@ class _MainShellState extends State<MainShell> {
     body: SafeArea(child: Column(children: [
       Container(width: double.infinity, height: 64, color: Colors.white, alignment: Alignment.center, padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5), child: SvgPicture.asset('assets/brand/kargozar-logo-header.svg', fit: BoxFit.contain, height: 54, semanticsLabel: 'لوگوی کارگزار')),
       Expanded(child: Stack(children: [
-      PageView(
-        key: const ValueKey('main-tabs'),
-        controller: _pageController,
-        physics: const PageScrollPhysics(),
-        onPageChanged: (value) => setState(() => _index = value),
-        children: [
-          ProfilePage(signedIn: widget.signedIn, onLogin: widget.onLogin, onLogout: widget.onLogout, onShowRequests: _showRequests, onNavigate: _goToTab),
-          ServicesPage(onRequest: _request, onOpenCategoryDetails: _openCategoryDetail, onExpandCategory: _showCategoryChildren, onNavigate: (tab) { if (tab == 4) { _goToTab(2); _openCompanionDetail(companionModules[0]); } else { _goToTab(tab); } }, onConsultation: _showConsultation),
-          CompanionContentPage(onOpenDetails: _openCompanionDetail, onExpand: _expandCompanion, onNavigate: (tab) { if (tab == 4) { _goToTab(2); _openCompanionDetail(companionModules[0]); } else { _goToTab(tab); } }, onConsultation: _showConsultation),
-          SupportContentPage(onConsultation: _showConsultation, onNavigate: _goToTab, api: widget.api),
-        ],
-      ),
-    ])),
+        PageView(
+          key: const ValueKey('main-tabs'),
+          controller: _pageController,
+          physics: const PageScrollPhysics(),
+          onPageChanged: (value) => setState(() => _index = value),
+          children: [
+            ProfilePage(signedIn: widget.signedIn, onLogin: widget.onLogin, onLogout: widget.onLogout, onShowRequests: _showRequests, onNavigate: _goToTab),
+            ServicesPage(onRequest: _request, onOpenCategoryDetails: _openCategoryDetail, onExpandCategory: _showCategoryChildren, onNavigate: (tab) { if (tab == 4) { _goToTab(2); _openCompanionDetail(companionModules[0]); } else { _goToTab(tab); } }, onConsultation: _showConsultation),
+            CompanionContentPage(onOpenDetails: _openCompanionDetail, onExpand: _expandCompanion, onNavigate: (tab) { if (tab == 4) { _goToTab(2); _openCompanionDetail(companionModules[0]); } else { _goToTab(tab); } }, onConsultation: _showConsultation),
+            SupportContentPage(onConsultation: _showConsultation, onNavigate: _goToTab),
+          ],
+        ),
+        Positioned(
+          right: 12,
+          bottom: 12,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              if (_chatOpen)
+                Container(
+                  width: min(MediaQuery.sizeOf(context).width - 28, 360.0),
+                  height: min(MediaQuery.sizeOf(context).height * .62, 470.0),
+                  margin: const EdgeInsets.only(bottom: 10),
+                  clipBehavior: Clip.antiAlias,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(18),
+                    boxShadow: const [
+                      BoxShadow(color: Color(0x33000000), blurRadius: 22, offset: Offset(0, 8)),
+                    ],
+                  ),
+                  child: SupportChatPage(api: widget.api, embedded: true, onClose: _closeChat),
+                ),
+              if (_showChatInvite && !_chatOpen)
+                GestureDetector(
+                  onTap: _openChat,
+                  child: Container(
+                    constraints: const BoxConstraints(maxWidth: 245),
+                    margin: const EdgeInsets.only(bottom: 9),
+                    padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 10),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(color: const Color(0xFFE30613).withOpacity(.22)),
+                      boxShadow: const [BoxShadow(color: Color(0x22000000), blurRadius: 12, offset: Offset(0, 4))],
+                    ),
+                    child: const Text(
+                      'سؤالی دارید؟ برای راهنمایی، گفت‌وگوی آنلاین را باز کنید.',
+                      textAlign: TextAlign.right,
+                      style: TextStyle(fontSize: 11, height: 1.6, color: Color(0xFF1E293B)),
+                    ),
+                  ),
+                ),
+              FloatingActionButton.small(
+                heroTag: 'kargozar-support-chat',
+                onPressed: _chatOpen ? _closeChat : _openChat,
+                backgroundColor: const Color(0xFFE30613),
+                foregroundColor: Colors.white,
+                elevation: 5,
+                tooltip: _chatOpen ? 'بستن گفت‌وگو' : 'گفت‌وگوی آنلاین',
+                child: Icon(_chatOpen ? Icons.close_rounded : Icons.chat_bubble_outline_rounded, size: 21),
+              ),
+            ],
+          ),
+        ),
+      ])),
     ])),
     bottomNavigationBar: NavigationBar(
       height: 61,
