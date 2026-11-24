@@ -2,6 +2,7 @@
 
 namespace App\Services\Support;
 
+use App\Models\Service;
 class SupportAssistant
 {
     /**
@@ -464,8 +465,37 @@ class SupportAssistant
         if (is_file($catalogMappingPath)) {
             $catalogMapping = json_decode((string) file_get_contents($catalogMappingPath), true);
             if (is_array($catalogMapping)) {
+                $catalogEntries = is_array($catalogMapping['services'] ?? null) ? $catalogMapping['services'] : [];
+                $mappedSlugs = array_values(array_unique(array_filter(array_map(
+                    fn ($entry) => is_array($entry)
+                        && in_array($entry['status'] ?? null, ['mapped_to_service_row', 'mapped_to_existing_related_service'], true)
+                        ? ($entry['catalog_slug'] ?? null)
+                        : null,
+                    $catalogEntries
+                ), 'is_string')));
+                $activeSlugs = $mappedSlugs === []
+                    ? []
+                    : Service::query()->whereIn('slug', $mappedSlugs)->where('is_active', true)->pluck('slug')->all();
+
+                $catalogEntries = array_map(function ($entry) use ($activeSlugs): array {
+                    if (! is_array($entry)) {
+                        return [];
+                    }
+
+                    $mapped = in_array($entry['status'] ?? null, ['mapped_to_service_row', 'mapped_to_existing_related_service'], true);
+                    $active = is_string($entry['catalog_slug'] ?? null)
+                        && in_array($entry['catalog_slug'], $activeSlugs, true);
+
+                    return array_merge($entry, [
+                        'orderable' => $mapped && $active,
+                        'availability_status' => ! $mapped
+                            ? 'not_orderable_pending_catalogue_setup'
+                            : ($active ? 'active_catalogue_row' : 'catalogue_row_missing_or_inactive'),
+                    ]);
+                }, $catalogEntries);
+
                 $context[] = [
-                    'service_catalog_mapping' => $catalogMapping['services'] ?? [],
+                    'service_catalog_mapping' => $catalogEntries,
                     'catalog_mapping_status' => $catalogMapping['status'] ?? 'unknown',
                     'catalog_mapping_note' => $catalogMapping['note'] ?? null,
                 ];
