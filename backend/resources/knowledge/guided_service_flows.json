@@ -1,0 +1,154 @@
+{
+  "version": 1,
+  "description": "Owner-maintained, deterministic service discovery flows. These flows collect customer facts; they do not replace current official eligibility checks.",
+  "flows": [
+    {
+      "key": "guild-business-license",
+      "title": "بررسی اولیه جواز کسب صنفی",
+      "aliases": ["جواز کسب", "پروانه کسب", "مجوز صنفی", "جواز مغازه", "جواز خرازی", "مجوز مغازه"],
+      "intro": "برای اینکه مسیر درست جواز کسب رو مشخص کنم، چند سؤال کوتاه می‌پرسم. پاسخ‌ها فقط برای پیش‌بررسی پرونده شماست.",
+      "questions": [
+        {
+          "key": "activity_group",
+          "question": "فعالیت شما به کدام گروه نزدیک‌تره؟",
+          "type": "choice",
+          "options": [
+            {"label": "فروشگاه و خرده‌فروشی", "value": "retail"},
+            {"label": "خدمات فنی و تعمیراتی", "value": "technical"},
+            {"label": "غذایی، خوراکی و بهداشتی", "value": "food_health"},
+            {"label": "تولیدی و کارگاهی", "value": "production"},
+            {"label": "خدمات تخصصی و حرفه‌ای", "value": "professional"},
+            {"label": "سایر موارد", "value": "other"}
+          ]
+        },
+        {
+          "key": "activity_detail",
+          "question": "اسم دقیق شغل یا فعالیتتون چیه؟ مثلاً خرازی، پوشاک، تعمیر موبایل یا ...",
+          "type": "text"
+        },
+        {
+          "key": "city",
+          "question": "محل فعالیت در کدوم شهره؟",
+          "type": "text"
+        },
+        {
+          "key": "applicant_type",
+          "question": "جواز رو به نام چه کسی می‌خواید بگیرید؟",
+          "type": "choice",
+          "options": [
+            {"label": "به نام خودم (شخص حقیقی)", "value": "natural_person"},
+            {"label": "به نام شرکت (شخص حقوقی)", "value": "legal_person"},
+            {"label": "هنوز مشخص نیست", "value": "unknown"}
+          ]
+        },
+        {
+          "key": "premises_status",
+          "question": "برای محل کسب چه وضعیتی دارید؟",
+          "type": "choice",
+          "options": [
+            {"label": "ملکی", "value": "owned"},
+            {"label": "اجاره‌ای", "value": "rented"},
+            {"label": "سرقفلی یا حق کسب", "value": "business_right"},
+            {"label": "هنوز محل مشخص نکردم", "value": "not_selected"}
+          ]
+        },
+        {
+          "key": "premises_document",
+          "question": "برای محل کسب چه مدرکی دارید؟",
+          "type": "choice",
+          "when": {"answer_key": "premises_status", "values": ["owned", "rented", "business_right"]},
+          "options": [
+            {"label": "سند مالکیت", "value": "deed"},
+            {"label": "اجاره‌نامه دارای کد رهگیری", "value": "lease_tracking"},
+            {"label": "اجاره‌نامه بدون کد رهگیری", "value": "lease_without_tracking"},
+            {"label": "مدرک دیگری دارم", "value": "other_document"},
+            {"label": "مدرک ندارم یا مطمئن نیستم", "value": "missing_or_unknown"}
+          ]
+        },
+        {
+          "key": "trade_rules_certificate",
+          "question": "گواهی دوره احکام تجارت و کسب‌وکار رو دارید؟",
+          "type": "choice",
+          "options": [
+            {"label": "بله، دارم", "value": "yes"},
+            {"label": "خیر، ندارم", "value": "no"},
+            {"label": "اطلاع ندارم که برای فعالیت من لازمه یا نه", "value": "unknown"}
+          ]
+        },
+        {
+          "key": "vocational_certificate",
+          "question": "گواهینامه فنی‌وحرفه‌ای مرتبط با این فعالیت رو دارید؟",
+          "type": "choice",
+          "when": {"answer_key": "activity_group", "values": ["technical"]},
+          "options": [
+            {"label": "بله، دارم", "value": "yes"},
+            {"label": "خیر، ندارم", "value": "no"},
+            {"label": "مطمئن نیستم که لازمه یا نه", "value": "unknown"}
+          ]
+        },
+        {
+          "key": "academic_degree",
+          "question": "مدرک تحصیلی مرتبط با این فعالیت رو دارید؟",
+          "type": "choice",
+          "when": {"answer_key": "activity_group", "values": ["professional"]},
+          "options": [
+            {"label": "بله، دارم", "value": "yes"},
+            {"label": "خیر، ندارم", "value": "no"},
+            {"label": "نمی‌دونم برای این فعالیت لازمه یا نه", "value": "unknown"}
+          ]
+        }
+      ],
+      "summary_note": "این نتیجه، پیش‌بررسی اطلاعات شماست و به معنی تأیید قطعی شرایط یا تضمین صدور مجوز نیست. الزامات نهایی باید با کاربرگ رسمی همان فعالیت در شهر اعلام‌شده تطبیق داده شود. هزینه و زمان نیز فقط پس از تأیید تعرفه و شرایط جاری اعلام می‌شود."
+    },
+    {
+      "key": "trademark-registration",
+      "title": "بررسی اولیه ثبت برند",
+      "aliases": ["ثبت برند", "ثبت علامت تجاری", "ثبت نام تجاری", "ثبت لوگو", "علامت تجاری"],
+      "intro": "برای اینکه مسیر ثبت برند رو درست مشخص کنم، چند سؤال کوتاه می‌پرسم.",
+      "questions": [
+        {
+          "key": "mark_type",
+          "question": "چه چیزی رو می‌خواید ثبت کنید؟",
+          "type": "choice",
+          "options": [
+            {"label": "نام یا عنوان برند", "value": "word_mark"},
+            {"label": "لوگو یا نشان تصویری", "value": "logo"},
+            {"label": "نام و لوگو با هم", "value": "combined"}
+          ]
+        },
+        {
+          "key": "business_activity",
+          "question": "برند برای چه کالا یا خدماتی استفاده می‌شه؟ لطفاً زمینه فعالیت رو بنویسید.",
+          "type": "text"
+        },
+        {
+          "key": "applicant_type",
+          "question": "مالک برند قراره چه کسی باشه؟",
+          "type": "choice",
+          "options": [
+            {"label": "شخص حقیقی (به نام خودم)", "value": "natural_person"},
+            {"label": "شرکت یا مؤسسه (شخص حقوقی)", "value": "legal_person"},
+            {"label": "هنوز تصمیم نگرفتم", "value": "unknown"}
+          ]
+        },
+        {
+          "key": "brand_name",
+          "question": "نام پیشنهادی برندتون چیه؟",
+          "type": "text"
+        },
+        {
+          "key": "registration_status",
+          "question": "وضعیت برند در حال حاضر چیه؟",
+          "type": "choice",
+          "options": [
+            {"label": "برای اولین بار می‌خوام ثبتش کنم", "value": "new"},
+            {"label": "قبلاً ثبت شده و تمدید می‌خوام", "value": "renewal"},
+            {"label": "می‌خوام مالکیت یا مشخصاتش رو تغییر بدم", "value": "change"},
+            {"label": "قبلاً اقدام کردم و پرونده در جریانه", "value": "in_progress"}
+          ]
+        }
+      ],
+      "summary_note": "این نتیجه، پیش‌بررسی درخواست شماست. امکان ثبت نام یا نشان باید با جست‌وجوی تشابه، طبقه‌بندی کالا و خدمات و ضوابط جاری مرجع رسمی بررسی شود. هزینه و زمان قطعی بدون بررسی پرونده و تعرفه معتبر اعلام نمی‌شود."
+    }
+  ]
+}
