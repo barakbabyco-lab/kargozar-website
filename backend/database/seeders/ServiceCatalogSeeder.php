@@ -186,6 +186,11 @@ class ServiceCatalogSeeder extends Seeder
             ['قرارداد استخدام', 'employment-contract', 'تهیه پیش‌نویس قرارداد استخدام متناسب با اطلاعات طرفین.', 'employment-contract'],
             ['قرارداد پیمانکاری', 'contractor-agreement', 'تهیه پیش‌نویس قرارداد پیمانکاری بر اساس شرح کار و توافق طرفین.', 'contractor-contract'],
             ['ساخت تیزر تبلیغاتی', 'advertising-video', 'طراحی و تولید تیزر معرفی محصول یا کسب‌وکار.', 'other-specialized-services'],
+            ['ثبت و تأسیس شرکت', 'company-incorporation', 'بررسی قالب حقوقی و پیگیری فرایند ثبت و تأسیس شرکت.', 'company-incorporation'],
+            ['تأییدیه پلیس اماکن', 'police-places-approval', 'بررسی شرایط و پیگیری تأییدیه پلیس نظارت بر اماکن عمومی.', 'police-places-approval'],
+            ['تأییدیه بهداشت محیط', 'environment-health-approval', 'بررسی الزامات و پیگیری تأییدیه بهداشت محیط متناسب با فعالیت.', 'environment-health-approval'],
+            ['گواهی احکام تجارت', 'trade-rules-certificate', 'راهنمایی و پیگیری دوره و گواهی احکام تجارت در صورت شمول.', 'trade-rules-certificate'],
+            ['گواهینامه فنی و حرفه‌ای', 'technical-vocational-certificate', 'راهنمایی و پیگیری مسیر دریافت گواهینامه مهارتی مرتبط با فعالیت.', 'technical-vocational-certificate'],
         ];
 
         foreach ($serviceDefinitions as $position => [$title, $slug, $description, $categorySlug]) {
