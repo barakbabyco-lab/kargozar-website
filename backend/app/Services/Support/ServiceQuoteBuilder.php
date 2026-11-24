@@ -21,6 +21,8 @@ class ServiceQuoteBuilder
 
         $priceValidityDays = max(1, (int) config('assistant_ai.quote_price_validity_days', 30));
         $durationValidityDays = max(1, (int) config('assistant_ai.quote_duration_validity_days', 90));
+        $configuredCurrency = strtoupper(trim((string) config('assistant_ai.quote_currency', '')));
+        $currency = in_array($configuredCurrency, ['IRR', 'IRT'], true) ? $configuredCurrency : null;
         $lineItems = [];
 
         foreach (array_values(array_unique(array_filter($serviceKeys, 'is_string'))) as $serviceKey) {
@@ -48,7 +50,8 @@ class ServiceQuoteBuilder
 
             $priceVerifiedAt = $service->price_verified_at;
             $durationVerifiedAt = $service->duration_verified_at;
-            $priceIsCurrent = $priceVerifiedAt instanceof Carbon
+            $priceIsCurrent = $currency !== null
+                && $priceVerifiedAt instanceof Carbon
                 && $priceVerifiedAt->greaterThanOrEqualTo(now()->subDays($priceValidityDays));
             $durationIsCurrent = $durationVerifiedAt instanceof Carbon
                 && $durationVerifiedAt->greaterThanOrEqualTo(now()->subDays($durationValidityDays));
@@ -67,8 +70,8 @@ class ServiceQuoteBuilder
                 'catalog_match_type' => ($entry['status'] ?? null) === 'mapped_to_existing_related_service' ? 'related_service' : 'direct',
                 'orderable' => true,
                 'price_amount' => $priceAmount,
-                'price_currency' => 'IRR',
-                'price_status' => $priceAmount !== null ? 'verified_current' : ($service->base_price === null ? 'not_configured' : 'verification_missing_or_stale'),
+                'price_currency' => $currency,
+                'price_status' => $currency === null ? 'currency_not_configured' : ($priceAmount !== null ? 'verified_current' : ($service->base_price === null ? 'not_configured' : 'verification_missing_or_stale')),
                 'price_verified_at' => $priceVerifiedAt?->toIso8601String(),
                 'estimated_days' => $estimatedDays,
                 'duration_status' => $estimatedDays !== null ? 'verified_current' : ($service->estimated_days === null ? 'not_configured' : 'verification_missing_or_stale'),
@@ -89,7 +92,8 @@ class ServiceQuoteBuilder
             'quote_status' => $allPricesVerified && $allDurationsVerified && count($orderable) === count($lineItems)
                 ? 'ready_for_confirmation'
                 : 'requires_review_or_missing_values',
-            'currency' => 'IRR',
+            'currency' => $currency,
+            'currency_status' => $currency !== null ? 'configured' : 'not_configured_owner_confirmation_required',
             'service_fee_subtotal' => $subtotal,
             'service_fee_subtotal_status' => $allPricesVerified ? 'verified_current_catalog_values' : 'not_complete',
             'estimated_days_status' => $allDurationsVerified ? 'verified_current_catalog_values' : 'not_complete',
@@ -99,7 +103,7 @@ class ServiceQuoteBuilder
             ],
             'line_items' => $lineItems,
             'checked_at' => now()->toIso8601String(),
-            'policy' => 'Only values with current verification timestamps are included. Missing or stale values must be quoted by a human; official/third-party fees are separate.',
+            'policy' => 'Only values with current verification timestamps and an explicitly configured currency are included. Missing, stale, or unit-ambiguous values must be quoted by a human; official/third-party fees are separate.',
         ];
     }
 
@@ -112,6 +116,7 @@ class ServiceQuoteBuilder
             'catalog_status' => $status,
             'price_amount' => null,
             'price_status' => 'not_quotable',
+            'price_currency' => null,
             'estimated_days' => null,
             'duration_status' => 'not_quotable',
             'official_fee_amount' => null,
