@@ -8,13 +8,15 @@ use Tests\TestCase;
 
 class KnowledgeSourceRouterTest extends TestCase
 {
-    public function test_company_registration_uses_local_knowledge_bank(): void
+    public function test_company_registration_uses_local_knowledge_and_official_live_verification(): void
     {
         $route = app(KnowledgeSourceRouter::class)->resolve('company-registration');
 
-        $this->assertSame('local', $route['mode']);
+        $this->assertSame('hybrid', $route['mode']);
         $this->assertSame('category_02_company_registration.json', $route['knowledge_file']);
-        $this->assertSame('local_knowledge_configured', $route['status']);
+        $this->assertSame('iran_company_registration_portal', $route['live_verification_source']);
+        $this->assertSame('official_domain_identified_exact_workflow_pending_verification', $route['status']);
+        $this->assertSame('https://irsherkat.ssaa.ir/', $route['live_source_url']);
     }
 
     public function test_all_ten_service_categories_have_dedicated_knowledge_files(): void
