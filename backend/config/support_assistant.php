@@ -2,7 +2,7 @@
 
 return [
     // Deliberately conservative until the business owner reviews the FAQ bank.
-    'confidence_threshold' => 0.75,
+    'confidence_threshold' => 0.50,
     'minimum_score_margin' => 0.20,
 
     // Route price, timing, legal-outcome and other sensitive questions to a human.
