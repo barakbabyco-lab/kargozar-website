@@ -153,4 +153,46 @@ class SupportAssistantAiIntegrationTest extends TestCase
         });
     }
 
+    public function test_structured_service_analysis_builds_a_customer_specific_quote_context(): void
+    {
+        app(\Database\Seeders\ServiceCatalogSeeder::class)->run();
+
+        $analysis = json_encode([
+            'requested_outcome' => 'دریافت جواز کسب فروشگاه پوشاک',
+            'matched_service_keys' => ['guild-business-license'],
+            'required_service_keys' => ['health-card'],
+            'missing_prerequisite_keys' => ['health_card'],
+            'customer_state' => [
+                ['requirement_key' => 'health_card', 'status' => 'missing'],
+            ],
+            'known_facts' => ['activity' => 'فروشگاه پوشاک'],
+            'missing_facts' => [],
+            'clarifying_question' => null,
+            'confidence' => 0.94,
+            'needs_human' => false,
+        ], JSON_UNESCAPED_UNICODE);
+
+        Http::fakeSequence()
+            ->push(['choices' => [['message' => ['content' => $analysis]]]], 200)
+            ->push(['choices' => [['message' => ['content' => 'برای تکمیل درخواست، خدمات موردنیاز را به شما اعلام می‌کنم.']]]], 200);
+
+        $answer = app(SupportAssistant::class)->reply('برای جواز کسب فروشگاه پوشاک راهنمایی می‌خواهم');
+
+        $this->assertStringContainsString('خدمات موردنیاز', $answer);
+        Http::assertSent(function ($request): bool {
+            $messages = $request->data()['messages'] ?? [];
+            $payload = json_decode((string) ($messages[1]['content'] ?? ''), true);
+            $analysis = collect($payload['service_knowledge'] ?? [])
+                ->firstWhere('service_need_analysis');
+            $quote = collect($payload['service_knowledge'] ?? [])
+                ->firstWhere('service_quote_context');
+            $lineItems = $quote['service_quote_context']['line_items'] ?? [];
+
+            return is_array($analysis)
+                && count($lineItems) === 2
+                && count(array_filter($lineItems, fn ($item) => ($item['orderable'] ?? false) === true)) === 2
+                && ($quote['service_quote_context']['service_fee_subtotal'] ?? null) === null;
+        });
+    }
+
 }
