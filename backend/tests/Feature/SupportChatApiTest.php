@@ -24,8 +24,35 @@ class SupportChatApiTest extends TestCase
 
         $this->assertDatabaseHas('support_unanswered_question_events', [
             'conversation_id' => $conversationId,
-            'outcome' => 'human_escalation',
+            'outcome' => 'guided_service_flow',
         ]);
+    }
+
+    public function test_guest_questions_outside_kargozar_scope_are_redirected(): void
+    {
+        $guestToken = str_repeat('f6', 32);
+
+        $started = $this->withHeader('X-Support-Guest-Token', $guestToken)
+            ->postJson('/api/v1/guest/support-conversations', ['body' => 'فردا هوا چطوره؟'])
+            ->assertCreated();
+
+        $reply = $started->json('data.messages.1.body');
+        $this->assertStringContainsString('دستیار تخصصی کارگزارم', $reply);
+        $this->assertDatabaseHas('support_unanswered_question_events', [
+            'conversation_id' => $started->json('data.id'),
+            'outcome' => 'out_of_scope',
+        ]);
+    }
+
+    public function test_guest_small_talk_is_acknowledged_without_leaving_service_scope(): void
+    {
+        $guestToken = str_repeat('f7', 32);
+
+        $started = $this->withHeader('X-Support-Guest-Token', $guestToken)
+            ->postJson('/api/v1/guest/support-conversations', ['body' => 'حالت چطوره؟'])
+            ->assertCreated();
+
+        $this->assertStringContainsString('ممنون، آماده‌ام', $started->json('data.messages.1.body'));
     }
 
     public function test_customer_can_start_and_continue_a_support_conversation(): void
@@ -84,7 +111,7 @@ class SupportChatApiTest extends TestCase
             ->assertUnauthorized();
     }
 
-    public function test_guest_missing_requirement_followup_stays_on_human_escalation_path(): void
+    public function test_guest_missing_premises_fact_is_prefilled_and_kept_in_guided_flow(): void
     {
         $guestToken = str_repeat('d4', 32);
 
@@ -94,7 +121,10 @@ class SupportChatApiTest extends TestCase
             ->assertJsonPath('data.messages.1.sender_type', 'assistant');
 
         $id = $started->json('data.id');
-        $this->assertStringContainsString('راه‌های رسیدن به خدا زیاده!', $started->json('data.messages.1.body'));
+        $this->assertStringContainsString('نوع شغل', $started->json('data.messages.1.body'));
+
+        $conversation = SupportConversation::findOrFail($id);
+        $this->assertSame('not_selected', $conversation->assistant_context['guided_flow']['answers']['premises_status']);
 
         $this->withHeader('X-Support-Guest-Token', $guestToken)
             ->postJson('/api/v1/guest/support-conversations/'.$id.'/messages', ['body' => 'چطوری؟'])
@@ -106,64 +136,41 @@ class SupportChatApiTest extends TestCase
             ->assertJsonCount(4, 'data')
             ->json('data');
 
-        $this->assertStringContainsString('راه‌های رسیدن به خدا زیاده!', $messages[3]['body']);
-        $this->assertStringContainsString('شماره تماس', $messages[3]['body']);
-
-        $this->withHeader('X-Support-Guest-Token', $guestToken)
-            ->postJson('/api/v1/guest/support-conversations/'.$id.'/messages', ['body' => '۰۹۱۲۳۴۵۶۷۸۷'])
-            ->assertCreated();
-
-        $this->assertSame('09123456787', SupportConversation::findOrFail($id)->contact_mobile);
+        $this->assertStringContainsString('نوع شغل', $messages[3]['body']);
+        $this->assertDatabaseMissing('support_unanswered_question_events', [
+            'conversation_id' => $id,
+            'outcome' => 'human_escalation',
+        ]);
     }
 
-    public function test_guest_can_submit_a_callback_mobile_after_requesting_a_human_agent(): void
+    public function test_guest_can_request_internal_review_without_a_callback_number(): void
     {
         $guestToken = str_repeat('c3', 32);
 
         $started = $this->withHeader('X-Support-Guest-Token', $guestToken)
             ->postJson('/api/v1/guest/support-conversations', ['body' => 'تماس کارشناس'])
             ->assertCreated()
-            ->assertJsonPath('data.messages.1.sender_type', 'assistant')
-            ->assertJsonPath('data.messages.1.body', fn ($value) => str_contains($value, 'شماره تماس'));
+            ->assertJsonPath('data.messages.1.sender_type', 'assistant');
 
-        $id = $started->json('data.id');
-
-        $this->withHeader('X-Support-Guest-Token', $guestToken)
-            ->postJson('/api/v1/guest/support-conversations/'.$id.'/messages', ['body' => '۰۹۱۲۳۴۵۶۷۸۹'])
-            ->assertCreated();
-
-        $this->assertSame('09123456789', SupportConversation::findOrFail($id)->contact_mobile);
-
-        $this->withHeader('X-Support-Guest-Token', $guestToken)
-            ->getJson('/api/v1/guest/support-conversations/'.$id.'/messages')
-            ->assertOk()
-            ->assertJsonCount(4, 'data')
-            ->assertJsonPath('data.3.sender_type', 'assistant');
+        $reply = $started->json('data.messages.1.body');
+        $this->assertStringContainsString('بررسی داخلی', $reply);
+        $this->assertStringContainsString('نیازی به ثبت شماره تماس نیست', $reply);
+        $this->assertNull(SupportConversation::findOrFail($started->json('data.id'))->contact_mobile);
     }
 
-    public function test_signed_in_customer_can_submit_a_callback_mobile_after_requesting_a_human_agent(): void
+    public function test_signed_in_customer_can_request_internal_review_without_a_callback_number(): void
     {
         $customer = Customer::create(['mobile' => '09120000115', 'status' => 'active']);
 
         $started = $this->actingAs($customer, 'sanctum')
             ->postJson('/api/v1/support-conversations', ['body' => 'تماس کارشناس'])
             ->assertCreated()
-            ->assertJsonPath('data.messages.1.sender_type', 'assistant')
-            ->assertJsonPath('data.messages.1.body', fn ($value) => str_contains($value, 'شماره تماس'));
+            ->assertJsonPath('data.messages.1.sender_type', 'assistant');
 
-        $id = $started->json('data.id');
-
-        $this->actingAs($customer, 'sanctum')
-            ->postJson('/api/v1/me/support-conversations/'.$id.'/messages', ['body' => '۰۹۱۲۳۴۵۶۷۸۸'])
-            ->assertCreated();
-
-        $this->assertSame('09123456788', SupportConversation::findOrFail($id)->contact_mobile);
-
-        $this->actingAs($customer, 'sanctum')
-            ->getJson('/api/v1/me/support-conversations/'.$id.'/messages')
-            ->assertOk()
-            ->assertJsonCount(4, 'data')
-            ->assertJsonPath('data.3.sender_type', 'assistant');
+        $reply = $started->json('data.messages.1.body');
+        $this->assertStringContainsString('بررسی داخلی', $reply);
+        $this->assertStringContainsString('نیازی به ثبت شماره تماس نیست', $reply);
+        $this->assertNull(SupportConversation::findOrFail($started->json('data.id'))->contact_mobile);
     }
 
     public function test_customer_cannot_read_or_send_messages_to_another_customers_conversation(): void

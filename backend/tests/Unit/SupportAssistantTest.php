@@ -15,12 +15,12 @@ class SupportAssistantTest extends TestCase
     public function test_missing_requirement_is_routed_to_human_without_explaining_workarounds(): void
     {
         Config::set('support_assistant.missing_requirement_phrases', ['مغازه ندارم']);
-        Config::set('support_assistant.missing_requirement_response', 'نگران نباشید، راه‌های رسیدن به خدا زیاده! شماره تماس‌تون رو ثبت کنید.');
+        Config::set('support_assistant.missing_requirement_response', 'نداشتن این مدرک به‌تنهایی به معنی رد درخواست نیست. نوع فعالیت و شهر را همین‌جا مشخص کنیم.');
 
         $reply = app(SupportAssistant::class)->reply('برای جواز کسب مغازه ندارم');
 
-        $this->assertStringContainsString('راهکارهای قانونی', $reply);
-        $this->assertStringContainsString('شماره تماس', $reply);
+        $this->assertStringContainsString('نداشتن این مدرک', $reply);
+        $this->assertStringNotContainsString('شماره تماس', $reply);
         $this->assertStringNotContainsString('روش اجرایی', $reply);
     }
 
@@ -53,7 +53,7 @@ class SupportAssistantTest extends TestCase
 
         $this->assertStringContainsString('ثبت شرکت', $reply);
         $this->assertStringContainsString('مدارک قابل بررسی', $reply);
-        $this->assertStringContainsString('شماره تماس‌تان را ثبت کنید', $reply);
+        $this->assertStringNotContainsString('شماره تماس', $reply);
     }
 
     public function test_guild_license_document_question_uses_shared_and_activity_specific_checklists(): void
@@ -67,7 +67,7 @@ class SupportAssistantTest extends TestCase
         $this->assertStringContainsString('چک‌لیست اولیه', $reply);
         $this->assertStringContainsString('کارت بهداشت', $reply);
         $this->assertStringContainsString('تأییدیه بهداشت', $reply);
-        $this->assertStringContainsString('شماره تماس‌تان را ثبت کنید', $reply);
+        $this->assertStringNotContainsString('شماره تماس', $reply);
     }
 
     public function test_guild_license_general_conditions_question_asks_activity_and_city_first(): void

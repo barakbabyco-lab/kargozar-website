@@ -161,6 +161,33 @@ class _SupportChatPageState extends State<SupportChatPage> {
     });
   }
 
+
+  List<String> _extractChoices(String body) {
+    if (!body.contains('شماره گزینه رو بفرستید')) return [];
+    final pattern = RegExp(r'^\s*\d+[.)]\s*(.+)$', multiLine: true);
+    return pattern
+        .allMatches(body)
+        .map((match) => match.group(1)?.trim() ?? '')
+        .where((value) => value.isNotEmpty)
+        .toList();
+  }
+
+  String _visibleMessageBody(String body) {
+    if (!body.contains('شماره گزینه رو بفرستید')) return body;
+    final lines = body.split('\n').where((line) {
+      final trimmed = line.trim();
+      return !RegExp(r'^\d+[.)]\s*').hasMatch(trimmed) &&
+          !trimmed.contains('شماره گزینه رو بفرستید');
+    });
+    return lines.join('\n').trim();
+  }
+
+  void _sendChoice(String choice) {
+    if (_sending) return;
+    _composer.text = choice;
+    _send();
+  }
+
   Widget _chatBody() => Column(
     children: [
       Container(
@@ -168,7 +195,7 @@ class _SupportChatPageState extends State<SupportChatPage> {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         color: const Color(0xFFFFF1F1),
         child: const Text(
-          'بدون نیاز به ورود یا کد تأیید پیام بفرستید. دستیار پاسخ می‌دهد و در صورت نیاز، گفت‌وگو برای کارشناس قابل پیگیری است.',
+          'بدون نیاز به ورود یا کد تأیید پیام بفرستید. دستیار شما را مرحله‌به‌مرحله راهنمایی می‌کند و در موارد خاص، درخواست برای بررسی داخلی ثبت می‌شود.',
           textAlign: TextAlign.center,
           style: TextStyle(fontSize: 11, height: 1.7, color: Color(0xFF7F1D1D)),
         ),
@@ -222,13 +249,38 @@ class _SupportChatPageState extends State<SupportChatPage> {
                                 ),
                               ),
                               const SizedBox(height: 4),
-                              Text(
-                                message['body']?.toString() ?? '',
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  height: 1.8,
-                                  color: mine ? Colors.white : const Color(0xFF1E293B),
-                                ),
+                              Builder(
+                                builder: (context) {
+                                  final body = message['body']?.toString() ?? '';
+                                  final choices = assistant ? _extractChoices(body) : <String>[];
+                                  return Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        _visibleMessageBody(body),
+                                        style: TextStyle(
+                                          fontSize: 13,
+                                          height: 1.8,
+                                          color: mine ? Colors.white : const Color(0xFF1E293B),
+                                        ),
+                                      ),
+                                      if (choices.isNotEmpty) ...[
+                                        const SizedBox(height: 9),
+                                        Wrap(
+                                          spacing: 6,
+                                          runSpacing: 6,
+                                          children: choices.map((choice) => ActionChip(
+                                            label: Text(choice, style: const TextStyle(fontSize: 11)),
+                                            onPressed: _sending ? null : () => _sendChoice(choice),
+                                            backgroundColor: Colors.white,
+                                            side: const BorderSide(color: Color(0xFFE30613), width: 0.7),
+                                            visualDensity: VisualDensity.compact,
+                                          )).toList(),
+                                        ),
+                                      ],
+                                    ],
+                                  );
+                                },
                               ),
                             ],
                           ),
