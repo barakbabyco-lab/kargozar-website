@@ -156,7 +156,9 @@ class SupportAssistantAiIntegrationTest extends TestCase
 
         $this->assertSame('company-incorporation', $companyMapping['catalog_slug'] ?? null);
         $this->assertSame('mapped_to_service_row', $companyMapping['status'] ?? null);
+        $this->assertTrue($companyMapping['orderable'] ?? false);
         $this->assertSame('pending_service_row', $changesMapping['status'] ?? null);
+        $this->assertFalse($changesMapping['orderable'] ?? true);
     }
 
     public function test_ai_receives_tax_file_service_intent_and_official_portal(): void
