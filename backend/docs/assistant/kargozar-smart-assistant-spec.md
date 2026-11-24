@@ -1,8 +1,11 @@
 # Kargozar Smart Assistant — Product and Behaviour Specification
 
-Status: implementation baseline for the first AI-enabled release  
+Status: superseded historical proposal  
 Owner: Kargozar product  
 Last updated: 2026-11-24
+
+> **تغییر جهت معماری:** این سند، طرح آزمایشی قبلی مبتنی بر دستیار عمومی و مدل زبانی است و دیگر مبنای محصول نیست. مبنای فعال طراحی، سند [معماری دستیار دامنه‌محور کارگزار](domain-guided-assistant-architecture-fa.md) است: بانک دانش، مسیرهای پرسش‌وپاسخ، قواعد و موتور تصمیم‌گیری متعلق به کارگزارند و مدل زبانی/جست‌وجوی بیرونی فقط ابزار اختیاری و محدود خواهند بود. موارد قدیمی این سند صرفاً برای سابقه تصمیم‌های قبلی حفظ شده‌اند و نباید به‌عنوان الزام اجرایی جدید تفسیر شوند.
+
 
 ## 1. Product definition
 
