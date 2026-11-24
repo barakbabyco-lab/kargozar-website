@@ -18,7 +18,7 @@ return [
         'industrial-establishment-permits' => ['mode' => 'live', 'source' => 'iran_national_license_portal', 'knowledge_file' => 'category_01_business_licenses.json'],
 
         // 02. ثبت شرکت
-        'company-registration' => ['mode' => 'local', 'source' => 'company_registration_knowledge', 'knowledge_file' => 'category_02_company_registration.json'],
+        'company-registration' => ['mode' => 'hybrid', 'source' => 'company_registration_knowledge', 'knowledge_file' => 'category_02_company_registration.json', 'live_verification_source' => 'iran_company_registration_portal'],
         'company-changes' => ['mode' => 'hybrid', 'source' => 'company_registration_knowledge', 'knowledge_file' => 'category_02_company_registration.json', 'live_verification_source' => 'iran_company_registration_portal'],
         'company-dissolution' => ['mode' => 'hybrid', 'source' => 'company_registration_knowledge', 'knowledge_file' => 'category_02_company_registration.json', 'live_verification_source' => 'iran_company_registration_portal'],
 
@@ -57,6 +57,7 @@ return [
 
         // 08. خدمات ملکی و قراردادها
         'lease-tracking-code' => ['mode' => 'hybrid', 'source' => 'property_knowledge', 'knowledge_file' => 'category_08_property_and_leases.json', 'live_verification_source' => 'iran_real_estate_transaction_system'],
+        'tax-file-and-tracking' => ['mode' => 'hybrid', 'source' => 'complementary_approvals_knowledge', 'knowledge_file' => 'category_04_complementary_documents_approvals.json', 'live_verification_source' => 'iran_tax_portal'],
         'property-contracts' => ['mode' => 'local', 'source' => 'property_knowledge', 'knowledge_file' => 'category_08_property_and_leases.json'],
         'property-document-followup' => ['mode' => 'hybrid', 'source' => 'property_knowledge', 'knowledge_file' => 'category_08_property_and_leases.json', 'live_verification_source' => 'relevant_official_property_authority'],
 
@@ -90,12 +91,12 @@ return [
         'business_development_knowledge' => ['name' => 'بانک دانش توسعه کسب‌وکار', 'base_url' => null, 'status' => 'local_document_pending_review', 'search_url' => null],
         'specialized_services_knowledge' => ['name' => 'بانک دانش خدمات تخصصی', 'base_url' => null, 'status' => 'local_document_pending_review', 'search_url' => null],
         'iran_national_license_portal' => ['name' => 'درگاه ملی مجوزهای کشور', 'base_url' => 'https://mojavez.ir/', 'status' => 'adapter_pending_portal_flow_verification', 'search_url' => null],
-        'iran_intellectual_property_portal' => ['name' => 'سامانه رسمی مالکیت صنعتی', 'base_url' => null, 'status' => 'source_url_and_flow_pending_verification', 'search_url' => null],
-        'iran_company_registration_portal' => ['name' => 'سامانه رسمی ثبت شرکت‌ها', 'base_url' => null, 'status' => 'source_url_and_flow_pending_verification', 'search_url' => null],
-        'iran_health_authority' => ['name' => 'مراجع رسمی وزارت بهداشت و دانشگاه‌های علوم پزشکی', 'base_url' => null, 'status' => 'source_url_and_flow_pending_verification', 'search_url' => null],
-        'iran_national_standards_portal' => ['name' => 'سازمان ملی استاندارد ایران', 'base_url' => null, 'status' => 'source_url_and_flow_pending_verification', 'search_url' => null],
-        'iran_tax_portal' => ['name' => 'درگاه رسمی خدمات مالیاتی', 'base_url' => null, 'status' => 'source_url_and_flow_pending_verification', 'search_url' => null],
-        'enamad_official_portal' => ['name' => 'سامانه رسمی نماد اعتماد الکترونیکی', 'base_url' => null, 'status' => 'source_url_and_flow_pending_verification', 'search_url' => null],
+        'iran_intellectual_property_portal' => ['name' => 'سامانه رسمی مالکیت صنعتی', 'base_url' => 'https://iripo.ssaa.ir/', 'status' => 'official_domain_identified_exact_workflow_pending_verification', 'search_url' => 'https://ipm.ssaa.ir/'],
+        'iran_company_registration_portal' => ['name' => 'سامانه رسمی ثبت شرکت‌ها', 'base_url' => 'https://irsherkat.ssaa.ir/', 'status' => 'official_domain_identified_exact_workflow_pending_verification', 'search_url' => null],
+        'iran_health_authority' => ['name' => 'مراجع رسمی وزارت بهداشت و دانشگاه‌های علوم پزشکی', 'base_url' => 'https://behdasht.gov.ir/', 'status' => 'ministry_domain_identified_local_health_authority_workflow_pending_verification', 'search_url' => null],
+        'iran_national_standards_portal' => ['name' => 'سازمان ملی استاندارد ایران', 'base_url' => 'https://inso.gov.ir/', 'status' => 'official_domain_identified_exact_workflow_pending_verification', 'search_url' => null],
+        'iran_tax_portal' => ['name' => 'درگاه رسمی خدمات مالیاتی', 'base_url' => 'https://my.tax.gov.ir/', 'status' => 'official_domain_identified_exact_workflow_pending_verification', 'search_url' => null],
+        'enamad_official_portal' => ['name' => 'سامانه رسمی نماد اعتماد الکترونیکی', 'base_url' => 'https://enamad.ir/', 'status' => 'official_domain_identified_exact_workflow_pending_verification', 'search_url' => null],
         'selected_bank_official_source' => ['name' => 'سامانه و دستورالعمل رسمی بانک انتخابی', 'base_url' => null, 'status' => 'provider_selected_per_request', 'search_url' => null],
         'iran_official_laws_portal' => ['name' => 'سامانه رسمی انتشار قوانین و مقررات', 'base_url' => null, 'status' => 'source_url_pending_verification', 'search_url' => null],
         'payment_provider_official_source' => ['name' => 'درگاه رسمی ارائه‌دهنده پرداخت انتخابی', 'base_url' => null, 'status' => 'provider_selected_per_request', 'search_url' => null],
