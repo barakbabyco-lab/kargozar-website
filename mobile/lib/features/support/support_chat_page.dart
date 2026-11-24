@@ -164,7 +164,32 @@ class _SupportChatPageState extends State<SupportChatPage> {
 
   List<String> _extractChoices(String body) {
     if (!body.contains('شماره گزینه رو بفرستید')) return [];
-    final pattern = RegExp(r'^\\s*\\d+[.)]\\s*(.+)    children: [
+    final pattern = RegExp(r'^\s*\d+[.)]\s*(.+)$', multiLine: true);
+    return pattern
+        .allMatches(body)
+        .map((match) => match.group(1)?.trim() ?? '')
+        .where((value) => value.isNotEmpty)
+        .toList();
+  }
+
+  String _visibleMessageBody(String body) {
+    if (!body.contains('شماره گزینه رو بفرستید')) return body;
+    final lines = body.split('\n').where((line) {
+      final trimmed = line.trim();
+      return !RegExp(r'^\d+[.)]\s*').hasMatch(trimmed) &&
+          !trimmed.contains('شماره گزینه رو بفرستید');
+    });
+    return lines.join('\n').trim();
+  }
+
+  void _sendChoice(String choice) {
+    if (_sending) return;
+    _composer.text = choice;
+    _send();
+  }
+
+  Widget _chatBody() => Column(
+    children: [
       Container(
         width: double.infinity,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
