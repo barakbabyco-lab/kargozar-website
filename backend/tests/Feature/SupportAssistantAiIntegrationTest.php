@@ -42,6 +42,7 @@ class SupportAssistantAiIntegrationTest extends TestCase
 
         $this->assertSame('توکیو پایتخت ژاپن است.', $answer);
         Http::assertSent(fn ($request) => str_contains($request->url(), '/chat/completions'));
+        Http::assertSentCount(1);
     }
 
 
@@ -70,6 +71,7 @@ class SupportAssistantAiIntegrationTest extends TestCase
         $this->assertStringContainsString('توکیو', $answer);
         Http::assertSent(fn ($request) => str_contains($request->url(), '127.0.0.1:8888/search'));
         Http::assertSent(fn ($request) => str_contains($request->url(), '/chat/completions'));
+        Http::assertSentCount(2);
     }
 
     public function test_ai_gets_first_chance_to_analyse_a_missing_service_prerequisite(): void
