@@ -18,10 +18,15 @@ class SupportAssistant
         if ((bool) config('assistant_ai.enabled', false)) {
             $serviceContext = $this->assistantServiceContext($message);
             $needsCurrentResearch = $serviceContext !== []
-                || preg_match('/قانون|مجوز|پروانه|جواز|ثبت شرکت|ثبت برند|مالیات|استاندارد|کارت بهداشت|امروز|جدیدترین|آخرین|امسال|قیمت روز|نرخ|وضعیت فعلی|هواشناسی|آب و هوا|دلار|طلا|بورس|اخبار|\\b20[2-9][0-9]\\b/u', $text) === 1;
+                || preg_match('/قانون|مجوز|پروانه|جواز|ثبت شرکت|ثبت برند|مالیات|استاندارد|کارت بهداشت|مغازه|فروشگاه|بوتیک|لباس فروشی|نجاری|راه اندازی|امروز|جدیدترین|آخرین|امسال|قیمت روز|نرخ|وضعیت فعلی|هواشناسی|آب و هوا|دلار|طلا|بورس|اخبار|\\b20[2-9][0-9]\\b/u', $text) === 1;
             $sources = [];
             if ($needsCurrentResearch && (bool) config('support_assistant.web_search.enabled', true)) {
-                $webResult = app(WebSearchService::class)->search($message);
+                $searchQuestion = $message;
+                if (preg_match('/مغازه|فروشگاه|بوتیک|لباس فروشی|نجاری/u', $text) === 1
+                    && preg_match('/جواز|پروانه|مجوز/u', $text) !== 1) {
+                    $searchQuestion = 'شرایط و مجوزهای رسمی راه‌اندازی کسب‌وکار برای: '.$message;
+                }
+                $webResult = app(WebSearchService::class)->search($searchQuestion);
                 $sources = is_array($webResult) && is_array($webResult['sources'] ?? null)
                     ? $webResult['sources']
                     : [];
@@ -327,7 +332,16 @@ class SupportAssistant
         }
         unset($record);
 
-        if (preg_match('/جواز|پروانه|مجوز|مغازه|فروشگاه|راه اندازی|راه‌اندازی|راه بندازی|راه بندازم/u', $this->normalize($question)) === 1) {
+        $normalizedQuestion = $this->normalize($question);
+        if (preg_match('/جواز|پروانه|مجوز|مغازه|فروشگاه|بوتیک|لباس فروشی|نجاری|راه اندازی|راه‌اندازی|راه بندازی|راه بندازم/u', $normalizedQuestion) === 1) {
+            $context[] = [
+                'service_key' => 'guild-business-license',
+                'title' => 'پروانه کسب و مجوزهای صنفی',
+                'scope' => 'خدمت احتمالی مرتبط با راه‌اندازی یا اداره محل کسب؛ فقط پس از روشن‌شدن نوع فعالیت و محل، applicability را بررسی کن.',
+                'verification_status' => 'needs_live_worksheet_retrieval',
+                'official_source' => 'درگاه ملی مجوزهای کشور و کاربرگ جاری فعالیت',
+                'source_url' => 'https://mojavez.ir/',
+            ];
             $context[] = [
                 'guild_activity_preflight' => $this->classifyGuildActivity($question),
                 'note' => 'این طبقه‌بندی فقط پیش‌بررسی است؛ کاربرگ رسمی رسته و شهر مرجع نهایی است.',
