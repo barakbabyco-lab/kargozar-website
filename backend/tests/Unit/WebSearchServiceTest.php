@@ -63,8 +63,12 @@ class WebSearchServiceTest extends TestCase
         });
     }
 
-    public function test_it_removes_email_and_mobile_number_before_searching(): void
+    public function test_it_removes_email_mobile_bank_identifiers_and_otp_before_searching(): void
     {
+        $card = str_repeat('6', 16);
+        $iban = 'IR'.str_repeat('1', 24);
+        $otp = str_repeat('7', 6);
+
         Http::fake([
             '127.0.0.1:8888/search*' => Http::response([
                 'results' => [[
@@ -75,16 +79,21 @@ class WebSearchServiceTest extends TestCase
             ], 200),
         ]);
 
-        app(WebSearchService::class)->search('قانون ثبت کسب‌وکار، تماس ۰۹۱۲۳۴۵۶۷۸۹ و user@example.com');
+        app(WebSearchService::class)->search(
+            'قانون ثبت کسب‌وکار، تماس ۰۹۱۲۳۴۵۶۷۸۹ و user@example.com، کارت '.$card.'، شبا '.$iban.' و رمز یکبارمصرف '.$otp
+        );
 
-        Http::assertSent(function (Request $request): bool {
+        Http::assertSent(function (Request $request) use ($card, $iban, $otp): bool {
             $query = [];
             parse_str((string) parse_url($request->url(), PHP_URL_QUERY), $query);
             $searched = (string) ($query['q'] ?? '');
 
             return ! str_contains($searched, '09123456789')
                 && ! str_contains($searched, 'user@example.com')
-                && str_contains($searched, 'قانون ثبت کسب‌وکار، تماس');
+                && ! str_contains($searched, $card)
+                && ! str_contains($searched, $iban)
+                && ! str_contains($searched, $otp)
+                && str_contains($searched, 'قانون ثبت کسب‌وکار');
         });
     }
 
