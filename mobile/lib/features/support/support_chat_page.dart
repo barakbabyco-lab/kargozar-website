@@ -195,7 +195,7 @@ class _SupportChatPageState extends State<SupportChatPage> {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         color: const Color(0xFFFFF1F1),
         child: const Text(
-          'بدون نیاز به ورود یا کد تأیید پیام بفرستید. دستیار پاسخ می‌دهد و در صورت نیاز، گفت‌وگو برای کارشناس قابل پیگیری است.',
+          'بدون نیاز به ورود یا کد تأیید پیام بفرستید. دستیار شما را مرحله‌به‌مرحله راهنمایی می‌کند و در موارد خاص، درخواست برای بررسی داخلی ثبت می‌شود.',
           textAlign: TextAlign.center,
           style: TextStyle(fontSize: 11, height: 1.7, color: Color(0xFF7F1D1D)),
         ),
