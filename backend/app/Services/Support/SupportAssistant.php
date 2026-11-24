@@ -33,8 +33,11 @@ class SupportAssistant
         // language needs analysis and safe answers outside the service catalogue.
         if ((bool) config('assistant_ai.enabled', false)) {
             $serviceContext = $this->assistantServiceContext($message);
-            $needsCurrentResearch = $serviceContext !== []
-                || preg_match('/قانون|مجوز|پروانه|جواز|ثبت شرکت|ثبت برند|مالیات|استاندارد|کارت بهداشت|مغازه|فروشگاه|بوتیک|لباس فروشی|نجاری|راه اندازی|امروز|جدیدترین|آخرین|امسال|فعلی|کنونی|در حال حاضر|قیمت روز|نرخ|جریمه|وضعیت فعلی|هواشناسی|آب و هوا|هوا فردا|دلار|طلا|بورس|اخبار|خبر|نتیجه بازی|نتایج زنده|مسابقه امروز|جدول لیگ|\\b20[2-9][0-9]\\b/u', $text) === 1;
+            $isShortAcknowledgement = preg_match('/^(سلام|درود|وقت بخیر|ممنون|متشکرم|مرسی|خداحافظ|خسته نباشید|بله|بلی|نه|خیر|اوکی|باشه|چشم|درسته)(\\s|[.!؟،]*)*$/u', $text) === 1;
+            // Search is the default for substantive, non-sensitive questions,
+            // including topics outside the Kargozar catalogue. This prevents
+            // the assistant from relying only on model training data.
+            $needsCurrentResearch = ! $isShortAcknowledgement;
             $sources = [];
             if ($needsCurrentResearch && (bool) config('support_assistant.web_search.enabled', true)) {
                 $searchQuestion = $message;
