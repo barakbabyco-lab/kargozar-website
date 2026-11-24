@@ -451,16 +451,10 @@ class SupportAssistant
             }
         }
 
+        // Quote only the directly matched service(s). Prerequisite candidates
+        // are not a customer-specific package until applicability and customer
+        // state have been established in the conversation.
         $serviceKeys = array_values(array_unique(array_filter(array_column($context, 'service_key'), 'is_string')));
-        foreach ($context as $item) {
-            foreach (($item['prerequisite_fulfillment_map'] ?? []) as $rule) {
-                $mappedKey = $rule['fulfillment']['service_key'] ?? null;
-                if (is_string($mappedKey) && $mappedKey !== '') {
-                    $serviceKeys[] = $mappedKey;
-                }
-            }
-        }
-        $serviceKeys = array_values(array_unique($serviceKeys));
 
         if ($serviceKeys !== []) {
             $context[] = [
