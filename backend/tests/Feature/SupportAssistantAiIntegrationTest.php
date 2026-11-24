@@ -78,9 +78,14 @@ class SupportAssistantAiIntegrationTest extends TestCase
             $context = $payload['service_knowledge'] ?? [];
             $keys = array_column($context, 'service_key');
             $preflight = collect($context)->first(fn ($item) => isset($item['guild_activity_preflight']));
+            $mapping = collect($context)->first(fn ($item) => isset($item['prerequisite_fulfillment_map']));
+            $healthCard = collect($mapping['prerequisite_fulfillment_map'] ?? [])
+                ->firstWhere('requirement_key', 'health_card');
 
             return in_array('guild-business-license', $keys, true)
-                && in_array('retail_sales', array_column($preflight['guild_activity_preflight']['groups'] ?? [], 'key'), true);
+                && in_array('retail_sales', array_column($preflight['guild_activity_preflight']['groups'] ?? [], 'key'), true)
+                && ($healthCard['fulfillment']['service_key'] ?? null) === 'health-card'
+                && ($healthCard['fulfillment']['status'] ?? null) === 'available_in_catalog';
         });
     }
 
