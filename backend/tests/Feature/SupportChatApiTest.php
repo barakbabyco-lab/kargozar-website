@@ -155,7 +155,9 @@ class SupportChatApiTest extends TestCase
         $reply = $started->json('data.messages.1.body');
         $this->assertStringContainsString('بررسی داخلی', $reply);
         $this->assertStringContainsString('نیازی به ثبت شماره تماس نیست', $reply);
-        $this->assertNull(SupportConversation::findOrFail($started->json('data.id'))->contact_mobile);
+        $conversation = SupportConversation::findOrFail($started->json('data.id'));
+        $this->assertNull($conversation->contact_mobile);
+        $this->assertTrue($conversation->assistant_context['internal_review']['required']);
     }
 
     public function test_signed_in_customer_can_request_internal_review_without_a_callback_number(): void
