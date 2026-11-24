@@ -107,4 +107,50 @@ class SupportAssistantAiIntegrationTest extends TestCase
         Http::assertNothingSent();
     }
 
+    public function test_ai_receives_company_registration_intent_and_official_portal(): void
+    {
+        Http::fake([
+            'api.example.test/v1/chat/completions' => Http::response([
+                'choices' => [[
+                    'message' => ['content' => 'برای ثبت شرکت، ابتدا نوع شرکت و تعداد شرکا را مشخص کنیم.'],
+                ]],
+            ], 200),
+        ]);
+
+        $answer = app(SupportAssistant::class)->reply('می‌خوام یک شرکت با مسئولیت محدود ثبت کنم');
+
+        $this->assertStringContainsString('نوع شرکت', $answer);
+        Http::assertSent(function ($request): bool {
+            $messages = $request->data()['messages'] ?? [];
+            $payload = json_decode((string) ($messages[1]['content'] ?? ''), true);
+            $company = collect($payload['service_knowledge'] ?? [])
+                ->firstWhere('service_key', 'company-registration');
+
+            return ($company['source_url'] ?? null) === 'https://irsherkat.ssaa.ir/';
+        });
+    }
+
+    public function test_ai_receives_tax_file_service_intent_and_official_portal(): void
+    {
+        Http::fake([
+            'api.example.test/v1/chat/completions' => Http::response([
+                'choices' => [[
+                    'message' => ['content' => 'برای تشکیل پرونده مالیاتی، اول مشخص کنیم شخص حقیقی هستید یا حقوقی؟'],
+                ]],
+            ], 200),
+        ]);
+
+        $answer = app(SupportAssistant::class)->reply('برای تشکیل پرونده مالیاتی راهنمایی می‌خوام');
+
+        $this->assertStringContainsString('حقیقی هستید یا حقوقی', $answer);
+        Http::assertSent(function ($request): bool {
+            $messages = $request->data()['messages'] ?? [];
+            $payload = json_decode((string) ($messages[1]['content'] ?? ''), true);
+            $tax = collect($payload['service_knowledge'] ?? [])
+                ->firstWhere('service_key', 'tax-file-and-tracking');
+
+            return ($tax['source_url'] ?? null) === 'https://my.tax.gov.ir/';
+        });
+    }
+
 }
