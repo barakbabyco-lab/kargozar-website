@@ -53,8 +53,9 @@ class GuidedSupportAssistant extends SupportAssistant
             'ممنون', 'متشکرم', 'مرسی', 'سپاس', 'خداحافظ', 'خسته نباشید',
             'حالت چطوره', 'خوبی', 'چه خبر',
         ];
+        $plainText = trim(preg_replace('/[؟?!.،]+$/u', '', $text) ?? $text);
         foreach ($smallTalk as $term) {
-            if ($text === $this->normalize($term) || str_starts_with($text, $this->normalize($term).' ')) {
+            if ($plainText === $this->normalize($term) || str_starts_with($plainText, $this->normalize($term).' ')) {
                 return true;
             }
         }
