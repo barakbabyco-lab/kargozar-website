@@ -354,6 +354,57 @@ class SupportAssistant
         unset($record);
 
         $normalizedQuestion = $this->normalize($question);
+
+        $intentHints = [
+            'company-registration' => ['pattern' => '/ثبت شرکت|تاسیس شرکت|تأسیس شرکت|شرکت حقوقی بزنم|شرکت بزنم/u', 'title' => 'ثبت شرکت و انتخاب قالب حقوقی'],
+            'company-changes' => ['pattern' => '/ثبت تغییرات شرکت|تغییر مدیران شرکت|افزایش سرمایه شرکت|تغییر آدرس شرکت/u', 'title' => 'ثبت تغییرات شرکت'],
+            'company-dissolution' => ['pattern' => '/انحلال شرکت|تعطیلی شرکت حقوقی/u', 'title' => 'انحلال و تصفیه شرکت'],
+            'trademark-registration' => ['pattern' => '/ثبت برند|ثبت علامت تجاری|ثبت نام تجاری/u', 'title' => 'ثبت علامت تجاری و برند'],
+            'logo-registration' => ['pattern' => '/ثبت لوگو|لوگو را ثبت|علامت تصویری/u', 'title' => 'ثبت لوگو به‌عنوان علامت'],
+            'industrial-design-registration' => ['pattern' => '/ثبت طرح صنعتی|ثبت ظاهر محصول/u', 'title' => 'ثبت طرح صنعتی'],
+            'invention-registration' => ['pattern' => '/ثبت اختراع|گواهی اختراع/u', 'title' => 'ثبت اختراع'],
+            'business-account-opening' => ['pattern' => '/افتتاح حساب|حساب جاری شرکتی|حساب تجاری/u', 'title' => 'افتتاح حساب جاری و حساب تجاری'],
+            'lease-tracking-code' => ['pattern' => '/کد رهگیری اجاره|اجاره نامه.*کد رهگیری|اجاره‌نامه.*کد رهگیری|ثبت قرارداد اجاره/u', 'title' => 'دریافت کد رهگیری اجاره‌نامه'],
+            'health-card' => ['pattern' => '/کارت بهداشت|گواهی سلامت شاغل/u', 'title' => 'کارت بهداشت و گواهی سلامت شاغلان'],
+            'environment-health-approval' => ['pattern' => '/تاییدیه بهداشت محیط|تأییدیه بهداشت محیط/u', 'title' => 'تأییدیه بهداشت محیط'],
+            'trade-law-training-certificate' => ['pattern' => '/احکام تجارت|گواهی احکام کسب|دوره احکام تجارت/u', 'title' => 'گواهی دوره احکام تجارت و کسب‌وکار'],
+            'national-standards-approval' => ['pattern' => '/نشان استاندارد|گواهی استاندارد|استاندارد محصول/u', 'title' => 'تأییدیه‌ها و نشان استاندارد'],
+            'enamad' => ['pattern' => '/اینماد|نماد اعتماد الکترونیکی/u', 'title' => 'دریافت و تمدید اینماد'],
+            'business-website' => ['pattern' => '/سایت فروشگاهی|وب سایت فروشگاهی|وب‌سایت فروشگاهی|طراحی سایت شرکتی/u', 'title' => 'طراحی و راه‌اندازی وب‌سایت'],
+            'payment-gateway' => ['pattern' => '/درگاه پرداخت اینترنتی|درگاه پرداخت/u', 'title' => 'درگاه پرداخت اینترنتی'],
+            'employment-contract' => ['pattern' => '/قرارداد کار|قرارداد استخدام|قرارداد پرسنل/u', 'title' => 'تنظیم قرارداد کار'],
+            'contractor-agreement' => ['pattern' => '/قرارداد پیمانکاری|قرارداد پیمانکار/u', 'title' => 'تنظیم قرارداد پیمانکاری'],
+            'accounting-software' => ['pattern' => '/نرم افزار حسابداری|نرم‌افزار حسابداری/u', 'title' => 'نرم‌افزار حسابداری و مالی'],
+            'payroll-hr' => ['pattern' => '/حقوق و دستمزد|نرم افزار حقوق|نرم‌افزار حقوق/u', 'title' => 'حقوق و دستمزد و مدیریت پرسنل'],
+            'crm' => ['pattern' => '/مدیریت ارتباط با مشتری|سیستم crm|\bcrm\b/iu', 'title' => 'مدیریت ارتباط با مشتریان'],
+            'inventory-management' => ['pattern' => '/مدیریت انبار|نرم افزار انبار|نرم‌افزار انبار/u', 'title' => 'مدیریت انبار و موجودی'],
+            'feasibility-study' => ['pattern' => '/طرح توجیهی|امکان سنجی|امکان‌سنجی/u', 'title' => 'طرح توجیهی و امکان‌سنجی'],
+            'business-plan' => ['pattern' => '/بیزینس پلن|بیزنس پلن|طرح کسب و کار|طرح کسب‌وکار/u', 'title' => 'تهیه طرح کسب‌وکار'],
+            'business-valuation' => ['pattern' => '/ارزش گذاری کسب و کار|ارزش‌گذاری کسب‌وکار/u', 'title' => 'ارزش‌گذاری کسب‌وکار'],
+            'fundraising' => ['pattern' => '/جذب سرمایه گذار|جذب سرمایه‌گذار|تامین سرمایه|تأمین سرمایه/u', 'title' => 'تأمین سرمایه و جذب سرمایه‌گذار'],
+        ];
+
+        $existingServiceKeys = array_values(array_filter(array_column($context, 'service_key'), 'is_string'));
+        foreach ($intentHints as $serviceKey => $hint) {
+            if (in_array($serviceKey, $existingServiceKeys, true)
+                || preg_match($hint['pattern'], $normalizedQuestion) !== 1) {
+                continue;
+            }
+
+            $route = config('knowledge_sources.services.'.$serviceKey, []);
+            $liveSourceKey = is_array($route) ? ($route['live_verification_source'] ?? null) : null;
+            $source = is_string($liveSourceKey) ? config('knowledge_sources.sources.'.$liveSourceKey, []) : [];
+
+            $context[] = [
+                'service_key' => $serviceKey,
+                'title' => $hint['title'],
+                'intent_hint' => true,
+                'verification_status' => 'requires_current_source_review',
+                'official_source' => is_array($source) ? ($source['name'] ?? null) : null,
+                'source_url' => is_array($source) ? ($source['base_url'] ?? null) : null,
+            ];
+        }
+
         if (preg_match('/مالیات|پرونده مالیاتی|کد رهگیری مالیاتی|شناسه مالیاتی/u', $normalizedQuestion) === 1) {
             $context[] = [
                 'service_key' => 'tax-file-and-tracking',
