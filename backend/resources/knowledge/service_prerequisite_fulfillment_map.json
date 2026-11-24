@@ -22,7 +22,7 @@
       "fulfillment": {
         "status": "available_in_catalog_conditional",
         "service_key": "lease-tracking-code",
-        "catalog_slug": "lease-tracking",
+        "catalog_slug": "lease-tracking-code",
         "catalog_title": "تنظیم اجاره‌نامه دارای کد رهگیری"
       },
       "customer_action_if_not_applicable": "اگر مشتری مالک است یا مدرک دیگری دارد، همان مدرک با کاربرگ تطبیق داده شود."
@@ -204,7 +204,7 @@
       "fulfillment": {
         "status": "available_in_catalog",
         "service_key": "tax-file-and-tracking",
-        "catalog_slug": "tax-tracking-code",
+        "catalog_slug": "tax-file",
         "catalog_title": "تشکیل پرونده و دریافت کد رهگیری مالیاتی"
       }
     },
