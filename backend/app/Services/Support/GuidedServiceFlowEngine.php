@@ -53,6 +53,12 @@ class GuidedServiceFlowEngine
             return null;
         }
 
+        if ($state !== null && ($state['status'] ?? null) === 'completed'
+            && ($state['flow_key'] ?? null) === ($matched['key'] ?? null)
+            && preg_match('/از اول|شروع مجدد|شروع دوباره|تکرار پرسش/u', $this->normalize($message)) !== 1) {
+            return null;
+        }
+
         $state = [
             'flow_key' => $matched['key'],
             'status' => 'active',
@@ -192,7 +198,12 @@ class GuidedServiceFlowEngine
 
         $options = $question['options'] ?? [];
         if (($question['type'] ?? 'text') === 'choice' && is_array($options)) {
-            $digits = $this->toEnglishDigits($value);
+            $choiceText = preg_replace('/^(گزینه|شماره|مورد)\s*/u', '', $value) ?? $value;
+            $digits = $this->toEnglishDigits($choiceText);
+            $wordNumbers = ['اول' => 1, 'اولی' => 1, 'یک' => 1, 'یکی' => 1, 'دوم' => 2, 'دومی' => 2, 'دو' => 2, 'سوم' => 3, 'سومی' => 3, 'سه' => 3, 'چهارم' => 4, 'چهارمی' => 4, 'چهار' => 4, 'پنجم' => 5, 'پنجمی' => 5, 'پنج' => 5, 'ششم' => 6, 'ششمی' => 6, 'شش' => 6];
+            if (isset($wordNumbers[$choiceText])) {
+                $digits = (string) $wordNumbers[$choiceText];
+            }
             if (preg_match('/^\d+$/', $digits) === 1) {
                 $option = array_values($options)[((int) $digits) - 1] ?? null;
                 return is_array($option) ? (string) ($option['value'] ?? '') : null;
@@ -204,7 +215,8 @@ class GuidedServiceFlowEngine
                 }
                 $label = $this->normalize((string) ($option['label'] ?? ''));
                 $optionValue = $this->normalize((string) ($option['value'] ?? ''));
-                if ($value === $label || $value === $optionValue) {
+                $aliases = array_map(fn ($alias) => $this->normalize((string) $alias), $option['aliases'] ?? []);
+                if ($value === $label || $value === $optionValue || in_array($value, $aliases, true)) {
                     return (string) ($option['value'] ?? '');
                 }
             }
