@@ -76,15 +76,21 @@ class AssistantLanguageModelTest extends TestCase
         ]);
 
         app(AssistantLanguageModel::class)->answer(
-            'شماره ۰۹۱۲۳۴۵۶۷۸۹ و ایمیل person@example.com برای پیگیری من است.'
+            'شماره ۰۹۱۲۳۴۵۶۷۸۹ و ایمیل person@example.com، کارت 6037991234567890، شبا IR123456789012345678901234 و رمز یکبارمصرف 123456 برای پیگیری من است.'
         );
 
         Http::assertSent(function (Request $request): bool {
             $body = json_encode($request->data(), JSON_UNESCAPED_UNICODE);
             return ! str_contains($body, '09123456789')
                 && ! str_contains($body, 'person@example.com')
+                && ! str_contains($body, '6037991234567890')
+                && ! str_contains($body, 'IR123456789012345678901234')
+                && ! str_contains($body, 'رمز یکبارمصرف 123456')
                 && str_contains($body, '[حذف شماره تماس]')
-                && str_contains($body, '[حذف ایمیل]');
+                && str_contains($body, '[حذف ایمیل]')
+                && str_contains($body, '[حذف شماره کارت/حساب]')
+                && str_contains($body, '[حذف شماره شبا]')
+                && str_contains($body, '[حذف کد یک‌بارمصرف]');
         });
     }
 
