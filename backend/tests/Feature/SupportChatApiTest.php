@@ -24,7 +24,7 @@ class SupportChatApiTest extends TestCase
 
         $this->assertDatabaseHas('support_unanswered_question_events', [
             'conversation_id' => $conversationId,
-            'outcome' => 'human_escalation',
+            'outcome' => 'guided_service_flow',
         ]);
     }
 
@@ -84,7 +84,7 @@ class SupportChatApiTest extends TestCase
             ->assertUnauthorized();
     }
 
-    public function test_guest_missing_requirement_followup_stays_on_human_escalation_path(): void
+    public function test_guest_missing_premises_fact_is_prefilled_and_kept_in_guided_flow(): void
     {
         $guestToken = str_repeat('d4', 32);
 
@@ -94,7 +94,10 @@ class SupportChatApiTest extends TestCase
             ->assertJsonPath('data.messages.1.sender_type', 'assistant');
 
         $id = $started->json('data.id');
-        $this->assertStringContainsString('راه‌های رسیدن به خدا زیاده!', $started->json('data.messages.1.body'));
+        $this->assertStringContainsString('نوع شغل', $started->json('data.messages.1.body'));
+
+        $conversation = SupportConversation::findOrFail($id);
+        $this->assertSame('not_selected', $conversation->assistant_context['guided_flow']['answers']['premises_status']);
 
         $this->withHeader('X-Support-Guest-Token', $guestToken)
             ->postJson('/api/v1/guest/support-conversations/'.$id.'/messages', ['body' => 'چطوری؟'])
@@ -106,14 +109,11 @@ class SupportChatApiTest extends TestCase
             ->assertJsonCount(4, 'data')
             ->json('data');
 
-        $this->assertStringContainsString('راه‌های رسیدن به خدا زیاده!', $messages[3]['body']);
-        $this->assertStringContainsString('شماره تماس', $messages[3]['body']);
-
-        $this->withHeader('X-Support-Guest-Token', $guestToken)
-            ->postJson('/api/v1/guest/support-conversations/'.$id.'/messages', ['body' => '۰۹۱۲۳۴۵۶۷۸۷'])
-            ->assertCreated();
-
-        $this->assertSame('09123456787', SupportConversation::findOrFail($id)->contact_mobile);
+        $this->assertStringContainsString('نوع شغل', $messages[3]['body']);
+        $this->assertDatabaseMissing('support_unanswered_question_events', [
+            'conversation_id' => $id,
+            'outcome' => 'human_escalation',
+        ]);
     }
 
     public function test_guest_can_submit_a_callback_mobile_after_requesting_a_human_agent(): void
