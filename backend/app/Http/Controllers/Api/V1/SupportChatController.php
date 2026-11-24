@@ -226,6 +226,12 @@ class SupportChatController extends Controller
      */
     private function scheduleAssistantReply(int $conversationId, string $customerMessage): void
     {
+        // Keep feature tests deterministic; production requests are always deferred.
+        if (app()->runningUnitTests()) {
+            $this->processAssistantReply($conversationId, $customerMessage);
+            return;
+        }
+
         dispatch(static function () use ($conversationId, $customerMessage): void {
             app(self::class)->processAssistantReply($conversationId, $customerMessage);
         })->afterResponse();
