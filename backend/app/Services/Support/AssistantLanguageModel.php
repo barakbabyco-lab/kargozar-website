@@ -122,9 +122,9 @@ PROMPT;
             return [];
         }
 
-        return $conversation->messages()
+        $history = $conversation->messages()
             ->latest('id')
-            ->limit(8)
+            ->limit(9)
             ->get(['sender_type', 'body'])
             ->reverse()
             ->map(function ($message): ?array {
@@ -145,6 +145,14 @@ PROMPT;
             ->filter()
             ->values()
             ->all();
+
+        // The controller persists the current customer message before calling
+        // the assistant; the current question is appended separately below.
+        if ($history !== [] && end($history)['role'] === 'user') {
+            array_pop($history);
+        }
+
+        return array_slice($history, -8);
     }
 
     private function limitSources(array $sources): array
