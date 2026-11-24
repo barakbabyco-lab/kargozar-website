@@ -105,6 +105,6 @@ class StaffCatalogQuoteVerificationTest extends TestCase
             'base_price' => 150000,
             'price_verified_at' => now()->addDay()->toIso8601String(),
         ])->assertUnprocessable()
-            ->assertJsonValidationErrors('price_verified_at');
+            ->assertJsonStructure(['error' => ['fields' => ['price_verified_at']]]);
     }
 }
