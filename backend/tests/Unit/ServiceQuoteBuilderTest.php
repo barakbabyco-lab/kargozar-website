@@ -91,4 +91,22 @@ class ServiceQuoteBuilderTest extends TestCase
         $this->assertSame(7, $quote['line_items'][0]['estimated_days']);
         $this->assertSame('verified_current', $quote['line_items'][0]['duration_status']);
     }
+    public function test_it_does_not_quote_verified_price_when_currency_is_not_configured(): void
+    {
+        Config::set('assistant_ai.quote_currency', null);
+        $this->createService('business-license', 1500000, 7, [
+            'price_verified_at' => now(),
+            'duration_verified_at' => now(),
+        ]);
+
+        $quote = app(ServiceQuoteBuilder::class)->build(['guild-business-license']);
+
+        $this->assertNull($quote['currency']);
+        $this->assertSame('not_configured_owner_confirmation_required', $quote['currency_status']);
+        $this->assertNull($quote['line_items'][0]['price_amount']);
+        $this->assertSame('currency_not_configured', $quote['line_items'][0]['price_status']);
+        $this->assertNull($quote['service_fee_subtotal']);
+    }
+
+
 }
