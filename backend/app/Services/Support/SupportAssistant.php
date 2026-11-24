@@ -12,6 +12,13 @@ class SupportAssistant
     {
         $text = $this->normalize($message);
 
+        foreach ((array) config('support_assistant.human_request_terms', []) as $term) {
+            if (is_string($term) && $term !== '' && str_contains($text, $this->normalize($term))) {
+                app(UnansweredQuestionTracker::class)->record($message, 'human_escalation', $conversationId);
+                return (string) config('support_assistant.human_handoff_response', config('support_assistant.fallback'));
+            }
+        }
+
         // Case-specific legal disputes and explicit requests for a human remain
         // hard handoff paths even when the AI provider is enabled.
         foreach ((array) config('support_assistant.hard_escalation_terms', []) as $term) {
