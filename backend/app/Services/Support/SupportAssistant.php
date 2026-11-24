@@ -77,7 +77,7 @@ class SupportAssistant
             return $dateTimeAnswer;
         }
 
-        $webAnswer = $this->publicWebReply($message);
+        $webAnswer = $this->publicWebReply($message, $conversationId);
         if ($webAnswer !== null) {
             $noResult = (string) config('support_assistant.web_search.no_result', '');
             $outcome = $noResult !== '' && str_starts_with($webAnswer, $noResult)
@@ -153,7 +153,7 @@ class SupportAssistant
      * Use public web search only after the internal service registry and FAQ miss.
      * Sensitive questions are intercepted earlier and never reach this method.
      */
-    private function publicWebReply(string $question): ?string
+    private function publicWebReply(string $question, ?int $conversationId = null): ?string
     {
         if (! (bool) config('support_assistant.web_search.enabled', true)) {
             return null;
@@ -161,12 +161,23 @@ class SupportAssistant
 
         $result = app(WebSearchService::class)->search($question);
         if (! is_array($result)) {
-            return (string) config('support_assistant.web_search.no_result', '') ?: null;
+            return app(AssistantLanguageModel::class)->answer($question, $conversationId, [], $this->assistantServiceContext($question))
+                ?? ((string) config('support_assistant.web_search.no_result', '') ?: null);
         }
 
         $answer = trim((string) ($result['answer'] ?? ''));
         if ($answer === '') {
             $answer = 'چند منبع مرتبط پیدا شد، اما خلاصه قابل اتکایی از آن‌ها به دست نیامد. لینک منابع را برای بررسی بیشتر می‌گذارم.';
+        }
+
+        $modelAnswer = app(AssistantLanguageModel::class)->answer(
+            $question,
+            $conversationId,
+            is_array($sources) ? $sources : [],
+            $this->assistantServiceContext($question),
+        );
+        if ($modelAnswer !== null) {
+            $answer = $modelAnswer;
         }
 
         $response = (string) config('support_assistant.web_search.fallback_intro', '')."\n\n".$answer;
@@ -177,8 +188,7 @@ class SupportAssistant
                 $title = trim((string) ($source['title'] ?? 'منبع وب'));
                 $url = trim((string) ($source['url'] ?? ''));
                 if ($url !== '') {
-                    $snippet = trim((string) ($source['snippet'] ?? ''));
-                    $response .= "\n".($index + 1).'. '.$title.' — '.$url;
+                    $snippet = trim((string) ($source['snippet'] ?? ''));                    $response .= "\n".($index + 1).'. '.$title.' — '.$url;
                     if ($snippet !== '') {
                         $response .= "\n   ".$snippet;
                     }
@@ -187,6 +197,92 @@ class SupportAssistant
         }
 
         return $response;
+    }
+
+    /**
+     * Provide a small, relevant slice of the service catalogue to the model.
+     * The model may explain these records but cannot invent catalogue entries.
+     */
+    private function assistantServiceContext(string $question): array
+    {
+        $context = [];
+        $registryPath = resource_path('knowledge/service_knowledge_registry.json');
+        if (is_file($registryPath)) {
+            $registry = json_decode((string) file_get_contents($registryPath), true);
+            foreach (($registry['categories'] ?? []) as $category) {
+                $file = $category['knowledge_file'] ?? null;
+                if (! is_string($file) || $file === '') {
+                    continue;
+                }
+
+                $path = resource_path('knowledge/'.$file);
+                if (! is_file($path)) {
+                    continue;
+                }
+
+                $document = json_decode((string) file_get_contents($path), true);
+                foreach (($document['services'] ?? []) as $record) {
+                    if (! is_array($record)) {
+                        continue;
+                    }
+
+                    $title = $this->normalize((string) ($record['title'] ?? ''));
+                    $questionText = $this->normalize($question);
+                    $tokens = preg_split('/\s+/u', $title, -1, PREG_SPLIT_NO_EMPTY) ?: [];
+                    $tokens = array_values(array_filter($tokens, fn ($token) => mb_strlen($token, 'UTF-8') >= 3));
+                    $score = 0;
+                    foreach ($tokens as $token) {
+                        if (str_contains($questionText, $token)) {
+                            $score++;
+                        }
+                    }
+
+                    if ($title !== '' && str_contains($questionText, $title)) {
+                        $score += 3;
+                    }
+
+                    if ($score < 1) {
+                        continue;
+                    }
+
+                    $context[] = [
+                        'category' => $category['title'] ?? null,
+                        'service_key' => $record['service_key'] ?? null,
+                        'title' => $record['title'] ?? null,
+                        'scope' => $record['scope'] ?? null,
+                        'what_is_it' => $record['what_is_it'] ?? null,
+                        'eligibility' => $record['eligibility'] ?? null,
+                        'conditions' => $record['conditions'] ?? [],
+                        'documents' => $record['documents'] ?? [],
+                        'steps' => $record['steps'] ?? [],
+                        'fees' => $record['fees'] ?? null,
+                        'issuance_time' => $record['issuance_time'] ?? null,
+                        'issuing_authority' => $record['issuing_authority'] ?? null,
+                        'official_source' => $record['official_source'] ?? null,
+                        'source_url' => $record['source_url'] ?? null,
+                        'verification_status' => $record['verification_status'] ?? 'needs_review',
+                        'catalogue_category' => $category['title'] ?? null,
+                        '_match_score' => $score,
+                    ];
+                }
+            }
+        }
+
+        usort($context, fn ($left, $right) => ($right['_match_score'] ?? 0) <=> ($left['_match_score'] ?? 0));
+        $context = array_slice($context, 0, 4);
+        foreach ($context as &$record) {
+            unset($record['_match_score']);
+        }
+        unset($record);
+
+        if (preg_match('/جواز کسب|پروانه کسب|مجوز صنفی|مجوز کسب/u', $this->normalize($question)) === 1) {
+            $context[] = [
+                'guild_activity_preflight' => $this->classifyGuildActivity($question),
+                'note' => 'این طبقه‌بندی فقط پیش‌بررسی است؛ کاربرگ رسمی رسته و شهر مرجع نهایی است.',
+            ];
+        }
+
+        return $context;
     }
 
     /**
@@ -357,8 +453,7 @@ class SupportAssistant
                     $best = $record;
                 } elseif ($score > $secondScore) {
                     $secondScore = $score;
-                }
-            }
+                }            }
         }
 
         if (! is_array($best) || $bestScore < 2 || ($bestScore - $secondScore) < 1) {
