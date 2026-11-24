@@ -179,6 +179,7 @@ class WebSearchService
     private function sanitizeQuery(string $question): string
     {
         $question = preg_replace('/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/iu', ' ', $question) ?? $question;
+        $question = preg_replace('/(?<![A-Z0-9])IR[0-9]{24}(?![0-9])/iu', ' ', $question) ?? $question;
         $question = strtr($question, [
             '۰' => '0', '۱' => '1', '۲' => '2', '۳' => '3', '۴' => '4',
             '۵' => '5', '۶' => '6', '۷' => '7', '۸' => '8', '۹' => '9',
@@ -186,6 +187,8 @@ class WebSearchService
             '٥' => '5', '٦' => '6', '٧' => '7', '٨' => '8', '٩' => '9',
         ]);
         $question = preg_replace('/(?<!\d)(?:(?:\+|00)?98|0)?9\d{9}(?!\d)/u', ' ', $question) ?? $question;
+        $question = preg_replace('/(?<!\d)\d{16,19}(?!\d)/u', ' ', $question) ?? $question;
+        $question = preg_replace('/(?:کد|رمز|otp)[^\d]{0,24}\d{4,8}/iu', ' ', $question) ?? $question;
         $question = preg_replace('/(?<!\d)\d{10}(?!\d)/u', ' ', $question) ?? $question;
 
         return trim(preg_replace('/\s+/u', ' ', $question) ?? $question);
