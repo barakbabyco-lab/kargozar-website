@@ -58,6 +58,7 @@ return [
         // 08. خدمات ملکی و قراردادها
         'lease-tracking-code' => ['mode' => 'hybrid', 'source' => 'property_knowledge', 'knowledge_file' => 'category_08_property_and_leases.json', 'live_verification_source' => 'iran_real_estate_transaction_system'],
         'tax-file-and-tracking' => ['mode' => 'hybrid', 'source' => 'complementary_approvals_knowledge', 'knowledge_file' => 'category_04_complementary_documents_approvals.json', 'live_verification_source' => 'iran_tax_portal'],
+        'technical-vocational-certificate' => ['mode' => 'hybrid', 'source' => 'complementary_approvals_knowledge', 'knowledge_file' => 'category_04_complementary_documents_approvals.json', 'live_verification_source' => 'iran_technical_vocational_portal'],
         'property-contracts' => ['mode' => 'local', 'source' => 'property_knowledge', 'knowledge_file' => 'category_08_property_and_leases.json'],
         'property-document-followup' => ['mode' => 'hybrid', 'source' => 'property_knowledge', 'knowledge_file' => 'category_08_property_and_leases.json', 'live_verification_source' => 'relevant_official_property_authority'],
 
@@ -96,6 +97,7 @@ return [
         'iran_health_authority' => ['name' => 'مراجع رسمی وزارت بهداشت و دانشگاه‌های علوم پزشکی', 'base_url' => 'https://behdasht.gov.ir/', 'status' => 'ministry_domain_identified_local_health_authority_workflow_pending_verification', 'search_url' => null],
         'iran_national_standards_portal' => ['name' => 'سازمان ملی استاندارد ایران', 'base_url' => 'https://inso.gov.ir/', 'status' => 'official_domain_identified_exact_workflow_pending_verification', 'search_url' => null],
         'iran_tax_portal' => ['name' => 'درگاه رسمی خدمات مالیاتی', 'base_url' => 'https://my.tax.gov.ir/', 'status' => 'official_domain_identified_exact_workflow_pending_verification', 'search_url' => null],
+        'iran_technical_vocational_portal' => ['name' => 'پورتال سازمان آموزش فنی و حرفه‌ای کشور', 'base_url' => null, 'status' => 'official_domain_and_exact_workflow_pending_verification', 'search_url' => null],
         'enamad_official_portal' => ['name' => 'سامانه رسمی نماد اعتماد الکترونیکی', 'base_url' => 'https://enamad.ir/', 'status' => 'official_domain_identified_exact_workflow_pending_verification', 'search_url' => null],
         'selected_bank_official_source' => ['name' => 'سامانه و دستورالعمل رسمی بانک انتخابی', 'base_url' => null, 'status' => 'provider_selected_per_request', 'search_url' => null],
         'iran_official_laws_portal' => ['name' => 'سامانه رسمی انتشار قوانین و مقررات', 'base_url' => null, 'status' => 'source_url_pending_verification', 'search_url' => null],
