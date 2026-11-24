@@ -32,7 +32,7 @@ if not re.search(
 
 manifest_text, replacements = re.subn(
     r'android:label="[^"]+"',
-    'android:label="کارگزار"',
+    'android:label="@string/app_name"',
     manifest_text,
     count=1,
 )
@@ -47,6 +47,21 @@ if not re.search(
 
 manifest.write_text(manifest_text, encoding="utf-8")
 
+main_strings = Path("android/app/src/main/res/values/strings.xml")
+main_strings.parent.mkdir(parents=True, exist_ok=True)
+main_strings.write_text(
+    '<?xml version="1.0" encoding="utf-8"?>\\n'
+    '<resources>\\n    <string name="app_name">کارگزار</string>\\n</resources>\\n',
+    encoding="utf-8",
+)
+debug_strings = Path("android/app/src/debug/res/values/strings.xml")
+debug_strings.parent.mkdir(parents=True, exist_ok=True)
+debug_strings.write_text(
+    '<?xml version="1.0" encoding="utf-8"?>\\n'
+    '<resources>\\n    <string name="app_name">تست</string>\\n</resources>\\n',
+    encoding="utf-8",
+)
+
 gradle_text = gradle.read_text(encoding="utf-8")
 for key in ("namespace", "applicationId"):
     match = re.search(rf'{key}\s*=\s*"([^"]+)"', gradle_text)
@@ -54,7 +69,12 @@ for key in ("namespace", "applicationId"):
         actual = match.group(1) if match else "missing"
         sys.exit(f"Unexpected Android {key}: {actual}")
 
-print(
-    "Android label configured; INTERNET permission verified; "
-    f"application ID verified: {EXPECTED_APPLICATION_ID}"
+gradle.write_text(
+    gradle_text
+    + "\\n\\nandroid {\\n    buildTypes {\\n"
+    + '        getByName("debug") { applicationIdSuffix = ".test" }\\n'
+    + "    }\\n}\\n",
+    encoding="utf-8",
 )
+
+print("Debug APK uses a separate .test package and app label.")
