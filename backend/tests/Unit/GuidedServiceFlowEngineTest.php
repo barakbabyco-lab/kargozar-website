@@ -80,4 +80,18 @@ class GuidedServiceFlowEngineTest extends TestCase
         $this->assertStringContainsString('چه چیزی رو می‌خواید ثبت کنید؟', $reply);
         $this->assertSame('trademark-registration', $conversation->fresh()->assistant_context['guided_flow']['flow_key']);
     }
+
+    public function test_accounting_software_request_starts_a_bounded_requirements_interview(): void
+    {
+        $conversation = SupportConversation::query()->create(['status' => 'open']);
+
+        $reply = app(GuidedServiceFlowEngine::class)->handle(
+            'برای کسب و کارم نرم افزار حسابداری می‌خوام',
+            (int) $conversation->id
+        );
+
+        $this->assertStringContainsString('نوع فعالیت کسب‌وکارتون چیه؟', $reply);
+        $this->assertStringContainsString('فروشگاهی و خرده‌فروشی', $reply);
+        $this->assertSame('accounting-software', $conversation->fresh()->assistant_context['guided_flow']['flow_key']);
+    }
 }
