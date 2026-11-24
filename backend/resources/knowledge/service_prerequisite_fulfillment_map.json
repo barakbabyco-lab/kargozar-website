@@ -264,7 +264,7 @@
       ],
       "fulfillment": {
         "status": "available_in_catalog",
-        "service_key": null,
+        "service_key": "technical-vocational-certificate",
         "catalog_slug": "technical-vocational-certificate",
         "catalog_title": "گواهینامه فنی و حرفه‌ای"
       }
