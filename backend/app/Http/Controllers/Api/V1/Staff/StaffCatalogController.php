@@ -184,6 +184,8 @@ class StaffCatalogController extends Controller
             'requirements.*' => ['string', 'max:300'],
             'estimated_days' => ['sometimes', 'nullable', 'integer', 'min:1', 'max:365'],
             'base_price' => ['sometimes', 'nullable', 'numeric', 'min:0', 'max:99999999999'],
+            'price_verified_at' => ['sometimes', 'nullable', 'date', 'before_or_equal:now'],
+            'duration_verified_at' => ['sometimes', 'nullable', 'date', 'before_or_equal:now'],
             'sort_order' => ['sometimes', 'integer', 'min:0', 'max:100000'],
             'is_active' => ['sometimes', 'boolean'],
         ]);
