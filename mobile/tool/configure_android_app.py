@@ -50,15 +50,15 @@ manifest.write_text(manifest_text, encoding="utf-8")
 main_strings = Path("android/app/src/main/res/values/strings.xml")
 main_strings.parent.mkdir(parents=True, exist_ok=True)
 main_strings.write_text(
-    '<?xml version="1.0" encoding="utf-8"?>\\n'
-    '<resources>\\n    <string name="app_name">کارگزار</string>\\n</resources>\\n',
+    '<?xml version="1.0" encoding="utf-8"?>\n'
+    '<resources>\n    <string name="app_name">کارگزار</string>\n</resources>\n',
     encoding="utf-8",
 )
 debug_strings = Path("android/app/src/debug/res/values/strings.xml")
 debug_strings.parent.mkdir(parents=True, exist_ok=True)
 debug_strings.write_text(
-    '<?xml version="1.0" encoding="utf-8"?>\\n'
-    '<resources>\\n    <string name="app_name">تست</string>\\n</resources>\\n',
+    '<?xml version="1.0" encoding="utf-8"?>\n'
+    '<resources>\n    <string name="app_name">تست</string>\n</resources>\n',
     encoding="utf-8",
 )
 
@@ -71,9 +71,9 @@ for key in ("namespace", "applicationId"):
 
 gradle.write_text(
     gradle_text
-    + "\\n\\nandroid {\\n    buildTypes {\\n"
-    + '        getByName("debug") { applicationIdSuffix = ".test" }\\n'
-    + "    }\\n}\\n",
+    + "\n\nandroid {\n    buildTypes {\n"
+    + '        getByName("debug") { applicationIdSuffix = ".test" }\n'
+    + "    }\n}\n",
     encoding="utf-8",
 )
 
