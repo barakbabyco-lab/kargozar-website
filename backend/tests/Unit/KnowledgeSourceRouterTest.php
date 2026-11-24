@@ -69,4 +69,19 @@ class KnowledgeSourceRouterTest extends TestCase
         $this->assertNull($result['knowledge']);
         $this->assertNull($result['live_lookup']);
     }
+    public function test_tax_and_vocational_prerequisites_have_dedicated_knowledge_and_source_routes(): void
+    {
+        $tax = app(KnowledgeSourceRouter::class)->resolve('tax-file-and-tracking');
+        $vocational = app(KnowledgeSourceRouter::class)->resolve('technical-vocational-certificate');
+
+        $this->assertSame('hybrid', $tax['mode']);
+        $this->assertSame('iran_tax_portal', $tax['live_verification_source']);
+        $this->assertSame('https://my.tax.gov.ir/', $tax['live_source_url']);
+
+        $this->assertSame('hybrid', $vocational['mode']);
+        $this->assertSame('iran_technical_vocational_portal', $vocational['live_verification_source']);
+        $this->assertSame('official_domain_and_exact_workflow_pending_verification', $vocational['status']);
+    }
+
+
 }
