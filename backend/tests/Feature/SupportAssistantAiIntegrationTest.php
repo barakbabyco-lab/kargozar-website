@@ -44,6 +44,34 @@ class SupportAssistantAiIntegrationTest extends TestCase
         Http::assertSent(fn ($request) => str_contains($request->url(), '/chat/completions'));
     }
 
+
+    public function test_unknown_general_questions_use_public_web_search_before_ai_answering(): void
+    {
+        Config::set('support_assistant.web_search.enabled', true);
+        Config::set('support_assistant.web_search.endpoint', 'http://127.0.0.1:8888/search');
+
+        Http::fake([
+            '127.0.0.1:8888/search*' => Http::response([
+                'results' => [[
+                    'title' => 'منبع عمومی درباره توکیو',
+                    'url' => 'https://example.org/tokyo',
+                    'content' => 'توکیو پایتخت ژاپن است.',
+                ]],
+            ], 200),
+            'api.example.test/v1/chat/completions' => Http::response([
+                'choices' => [[
+                    'message' => ['content' => 'توکیو پایتخت ژاپن است.'],
+                ]],
+            ], 200),
+        ]);
+
+        $answer = app(SupportAssistant::class)->reply('پایتخت ژاپن کجاست؟');
+
+        $this->assertStringContainsString('توکیو', $answer);
+        Http::assertSent(fn ($request) => str_contains($request->url(), '127.0.0.1:8888/search'));
+        Http::assertSent(fn ($request) => str_contains($request->url(), '/chat/completions'));
+    }
+
     public function test_ai_gets_first_chance_to_analyse_a_missing_service_prerequisite(): void
     {
         Http::fake([
