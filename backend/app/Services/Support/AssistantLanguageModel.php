@@ -199,6 +199,9 @@ PROMPT;
     private function sanitize(string $value): string
     {
         $value = preg_replace('/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/iu', '[حذف ایمیل]', $value) ?? $value;
+        $value = preg_replace('/(?<![A-Z0-9])IR[0-9]{24}(?![0-9])/iu', '[حذف شماره شبا]', $value) ?? $value;
+        $value = preg_replace('/(?<!\d)(?:\d[\s-]?){16,19}(?!\d)/u', '[حذف شماره کارت/حساب]', $value) ?? $value;
+        $value = preg_replace('/((?:کد|رمز|otp)(?:\s*یک\s*بار\s*مصرف)?\s*[:：]?\s*)\d{4,8}/iu', '$1[حذف کد یک‌بارمصرف]', $value) ?? $value;
         $value = strtr($value, [
             '۰' => '0', '۱' => '1', '۲' => '2', '۳' => '3', '۴' => '4',
             '۵' => '5', '۶' => '6', '۷' => '7', '۸' => '8', '۹' => '9',
