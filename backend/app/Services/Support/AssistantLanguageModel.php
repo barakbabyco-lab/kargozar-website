@@ -45,8 +45,8 @@ class AssistantLanguageModel
         }
 
         $payload = [
-            'question' => $this->sanitize($question),
-            'service_knowledge' => $this->limitContext($serviceContext, 20000),
+            'question' => mb_substr($this->sanitize($question), 0, 4000, 'UTF-8'),
+            'service_knowledge' => $this->limitContext($serviceContext, 24000),
             'web_search_results' => $this->limitSources($sources),
             'evidence_note' => $sources === []
                 ? 'هیچ نتیجه وبی در اختیار مدل نیست. برای اطلاعات پایدار می‌توان از دانش عمومی استفاده کرد؛ برای اطلاعات روز، قانون و فرایند رسمی ادعای تأییدنشده نکن.'
