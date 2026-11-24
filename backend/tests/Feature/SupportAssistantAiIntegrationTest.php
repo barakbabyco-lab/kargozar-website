@@ -146,7 +146,7 @@ class SupportAssistantAiIntegrationTest extends TestCase
 
         $this->assertIsArray($company);
         $this->assertSame('https://irsherkat.ssaa.ir/', $company['source_url'] ?? null);
-        $this->assertSame('سامانه رسمی ثبت شرکت‌ها', $company['official_source'] ?? null);
+        $this->assertSame('سامانه جامع ثبت شرکت‌ها و مؤسسات غیرتجاری', $company['official_source'] ?? null);
     }
 
     public function test_ai_receives_tax_file_service_intent_and_official_portal(): void
