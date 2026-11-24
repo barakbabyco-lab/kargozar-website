@@ -132,7 +132,7 @@ class AssistantLanguageModelTest extends TestCase
         $analysisJson = json_encode([
             'requested_outcome' => 'دریافت جواز کسب',
             'matched_service_keys' => ['guild-business-license', 'made-up-service'],
-            'required_service_keys' => ['lease-tracking-code'],
+            'required_service_keys' => ['health-card', 'trade-law-training-certificate', 'lease-tracking-code'],
             'missing_prerequisite_keys' => ['health_card', 'made-up-requirement'],
             'customer_state' => [
                 ['requirement_key' => 'health_card', 'status' => 'missing'],
@@ -162,8 +162,8 @@ class AssistantLanguageModelTest extends TestCase
         );
 
         $this->assertSame(['guild-business-license'], $analysis['matched_service_keys']);
-        $this->assertSame(['lease-tracking-code'], $analysis['required_service_keys']);
-        $this->assertSame(['health_card'], $analysis['missing_prerequisite_keys']);
+        $this->assertSame(['health-card', 'trade-law-training-certificate'], $analysis['required_service_keys']);
+        $this->assertSame(['health_card', 'trade_law_training'], $analysis['missing_prerequisite_keys']);
         $this->assertSame('missing', $analysis['customer_state'][0]['status']);
         $this->assertSame('trade_law_training', $analysis['customer_state'][1]['requirement_key']);
         $this->assertSame('expired', $analysis['customer_state'][1]['status']);
