@@ -8,10 +8,17 @@
   "rules": [
     {
       "requirement_key": "premises_legal_possession",
-      "applies_to": ["guild-business-license"],
+      "applies_to": [
+        "guild-business-license"
+      ],
       "applicability": "conditional",
       "condition": "فقط اگر کاربرگ رسمی همان مجوز مدرک محل بخواهد و مشتری محل را با اجاره‌نامه تأمین کرده باشد؛ سند مالکیت یا سایر مدارک را به اجاره‌نامه تبدیل نکن.",
-      "customer_state": ["has", "missing", "unknown", "not_applicable"],
+      "customer_state": [
+        "has",
+        "missing",
+        "unknown",
+        "not_applicable"
+      ],
       "fulfillment": {
         "status": "available_in_catalog_conditional",
         "service_key": "lease-tracking-code",
@@ -22,10 +29,17 @@
     },
     {
       "requirement_key": "premises_use_compatibility",
-      "applies_to": ["guild-business-license"],
+      "applies_to": [
+        "guild-business-license"
+      ],
       "applicability": "activity_and_premises_specific",
       "condition": "فقط در صورت مطالبه کاربرگ یا استعلام مرجع برای همان فعالیت و محل.",
-      "customer_state": ["has", "missing", "unknown", "not_applicable"],
+      "customer_state": [
+        "has",
+        "missing",
+        "unknown",
+        "not_applicable"
+      ],
       "fulfillment": {
         "status": "pending_owner_confirmation",
         "service_key": null,
@@ -35,10 +49,17 @@
     },
     {
       "requirement_key": "business_signage",
-      "applies_to": ["guild-business-license"],
+      "applies_to": [
+        "guild-business-license"
+      ],
       "applicability": "activity_and_local_rule_specific",
       "condition": "فقط اگر کاربرگ یا ضابطه محلی همان فعالیت تابلو را لازم بداند.",
-      "customer_state": ["has", "missing", "unknown", "not_applicable"],
+      "customer_state": [
+        "has",
+        "missing",
+        "unknown",
+        "not_applicable"
+      ],
       "fulfillment": {
         "status": "pending_owner_confirmation",
         "service_key": null,
@@ -48,10 +69,17 @@
     },
     {
       "requirement_key": "cctv_installation",
-      "applies_to": ["guild-business-license"],
+      "applies_to": [
+        "guild-business-license"
+      ],
       "applicability": "activity_and_location_specific",
       "condition": "هیچ‌گاه شرط عمومی همه واحدهای صنفی فرض نشود؛ فقط با سند رسمی همان رسته/محل.",
-      "customer_state": ["has", "missing", "unknown", "not_applicable"],
+      "customer_state": [
+        "has",
+        "missing",
+        "unknown",
+        "not_applicable"
+      ],
       "fulfillment": {
         "status": "pending_owner_confirmation",
         "service_key": null,
@@ -61,10 +89,17 @@
     },
     {
       "requirement_key": "neighbor_privacy_and_overlooking",
-      "applies_to": ["guild-business-license"],
+      "applies_to": [
+        "guild-business-license"
+      ],
       "applicability": "premises_specific",
       "condition": "بر اساس ضابطه رسمی و وضعیت واقعی ملک؛ پیش‌نیاز اجرایی عمومی نیست.",
-      "customer_state": ["compliant", "needs_review", "unknown", "not_applicable"],
+      "customer_state": [
+        "compliant",
+        "needs_review",
+        "unknown",
+        "not_applicable"
+      ],
       "fulfillment": {
         "status": "customer_or_property_condition",
         "service_key": null,
@@ -74,10 +109,17 @@
     },
     {
       "requirement_key": "public_places_police_approval",
-      "applies_to": ["guild-business-license"],
+      "applies_to": [
+        "guild-business-license"
+      ],
       "applicability": "activity_specific_official_worksheet",
       "condition": "فقط در صورت درج در کاربرگ جاری همان مجوز.",
-      "customer_state": ["has", "missing", "unknown", "not_applicable"],
+      "customer_state": [
+        "has",
+        "missing",
+        "unknown",
+        "not_applicable"
+      ],
       "fulfillment": {
         "status": "available_in_catalog",
         "service_key": "police-public-places-approval",
@@ -87,10 +129,17 @@
     },
     {
       "requirement_key": "health_card",
-      "applies_to": ["guild-business-license"],
+      "applies_to": [
+        "guild-business-license"
+      ],
       "applicability": "food_health_hygiene_group_only",
       "condition": "فقط برای شاغلان و فعالیت‌هایی که ضابطه جاری بهداشت مشمول می‌داند.",
-      "customer_state": ["has", "missing", "unknown", "not_applicable"],
+      "customer_state": [
+        "has",
+        "missing",
+        "unknown",
+        "not_applicable"
+      ],
       "fulfillment": {
         "status": "available_in_catalog",
         "service_key": "health-card",
@@ -100,10 +149,17 @@
     },
     {
       "requirement_key": "environmental_health_approval",
-      "applies_to": ["guild-business-license"],
+      "applies_to": [
+        "guild-business-license"
+      ],
       "applicability": "food_health_hygiene_group_and_premises_specific",
       "condition": "بر اساس نوع فعالیت، فرایند و کاربرگ جاری؛ کارت بهداشت و تأییدیه بهداشت محیط دو خدمت جدا هستند.",
-      "customer_state": ["has", "missing", "unknown", "not_applicable"],
+      "customer_state": [
+        "has",
+        "missing",
+        "unknown",
+        "not_applicable"
+      ],
       "fulfillment": {
         "status": "available_in_catalog",
         "service_key": "environment-health-approval",
@@ -113,10 +169,18 @@
     },
     {
       "requirement_key": "trade_law_training",
-      "applies_to": ["guild-business-license"],
+      "applies_to": [
+        "guild-business-license"
+      ],
       "applicability": "applicant_or_director_if_required_by_current_worksheet",
       "condition": "اعتبار گواهی قبلی و شمول متقاضی/مباشر بررسی شود؛ فقط در صورت فقدان یا انقضای گواهی، خدمت جدید پیشنهاد شود.",
-      "customer_state": ["valid", "missing", "expired", "unknown", "not_applicable"],
+      "customer_state": [
+        "valid",
+        "missing",
+        "expired",
+        "unknown",
+        "not_applicable"
+      ],
       "fulfillment": {
         "status": "available_in_catalog",
         "service_key": "trade-law-training-certificate",
@@ -126,23 +190,38 @@
     },
     {
       "requirement_key": "tax_file_and_tracking",
-      "applies_to": ["guild-business-license"],
+      "applies_to": [
+        "guild-business-license"
+      ],
       "applicability": "taxpayer_and_activity_specific",
       "condition": "شناسه دقیق موردنیاز و وضعیت پرونده از کاربرگ و درگاه رسمی مالیاتی استخراج شود؛ اصطلاح کلی کد رهگیری کافی نیست.",
-      "customer_state": ["has", "missing", "unknown", "not_applicable"],
+      "customer_state": [
+        "has",
+        "missing",
+        "unknown",
+        "not_applicable"
+      ],
       "fulfillment": {
         "status": "available_in_catalog",
-        "service_key": null,
+        "service_key": "tax-file-and-tracking",
         "catalog_slug": "tax-tracking-code",
         "catalog_title": "تشکیل پرونده و دریافت کد رهگیری مالیاتی"
       }
     },
     {
       "requirement_key": "military_service_status",
-      "applies_to": ["guild-business-license"],
+      "applies_to": [
+        "guild-business-license"
+      ],
       "applicability": "applicant_status_and_official_worksheet_specific",
       "condition": "وضعیت شخص متقاضی و موارد معافیت/عدم شمول با کاربرگ تطبیق داده شود.",
-      "customer_state": ["has_valid_evidence", "missing", "exempt", "unknown", "not_applicable"],
+      "customer_state": [
+        "has_valid_evidence",
+        "missing",
+        "exempt",
+        "unknown",
+        "not_applicable"
+      ],
       "fulfillment": {
         "status": "customer_provided_or_authority_verified",
         "service_key": null,
@@ -152,10 +231,17 @@
     },
     {
       "requirement_key": "national_housing_postal_code_registration",
-      "applies_to": ["guild-business-license"],
+      "applies_to": [
+        "guild-business-license"
+      ],
       "applicability": "address_and_official_worksheet_specific",
       "condition": "شمول ثبت محل فعالیت و امکان تطبیق کدپستی از سامانه و کاربرگ جاری بررسی شود.",
-      "customer_state": ["registered", "missing", "unknown", "not_applicable"],
+      "customer_state": [
+        "registered",
+        "missing",
+        "unknown",
+        "not_applicable"
+      ],
       "fulfillment": {
         "status": "pending_owner_confirmation",
         "service_key": null,
@@ -165,10 +251,17 @@
     },
     {
       "requirement_key": "vocational_skill_certificate",
-      "applies_to": ["guild-business-license"],
+      "applies_to": [
+        "guild-business-license"
+      ],
       "applicability": "technical_and_skill_based_activities_only",
       "condition": "فقط در صورتی که کاربرگ همان فعالیت گواهی مهارت مرتبط را بخواهد؛ نوع رشته و سطح مدرک تطبیق داده شود.",
-      "customer_state": ["has_valid_certificate", "missing", "unknown", "not_applicable"],
+      "customer_state": [
+        "has_valid_certificate",
+        "missing",
+        "unknown",
+        "not_applicable"
+      ],
       "fulfillment": {
         "status": "available_in_catalog",
         "service_key": null,
@@ -178,10 +271,17 @@
     },
     {
       "requirement_key": "related_academic_degree",
-      "applies_to": ["guild-business-license"],
+      "applies_to": [
+        "guild-business-license"
+      ],
       "applicability": "regulated_professional_activities_requiring_related_education",
       "condition": "فقط برای فعالیتی که قانون یا کاربرگ جاری مدرک مرتبط را شرط کرده باشد.",
-      "customer_state": ["has_valid_degree", "missing", "unknown", "not_applicable"],
+      "customer_state": [
+        "has_valid_degree",
+        "missing",
+        "unknown",
+        "not_applicable"
+      ],
       "fulfillment": {
         "status": "customer_provided",
         "service_key": null,
