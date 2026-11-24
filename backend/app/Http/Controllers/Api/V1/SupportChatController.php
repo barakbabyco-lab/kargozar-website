@@ -226,14 +226,22 @@ class SupportChatController extends Controller
      */
     private function scheduleAssistantReply(int $conversationId, string $customerMessage): void
     {
-        dispatch(function () use ($conversationId, $customerMessage): void {
-            $conversation = SupportConversation::query()->find($conversationId);
-            if ($conversation === null || $conversation->status !== 'open') {
-                return;
-            }
-
-            $this->appendAssistantReply($conversation, $customerMessage);
+        dispatch(static function () use ($conversationId, $customerMessage): void {
+            app(self::class)->processAssistantReply($conversationId, $customerMessage);
         })->afterResponse();
+    }
+
+    /**
+     * Execute the deferred assistant reply after the customer response is sent.
+     */
+    public function processAssistantReply(int $conversationId, string $customerMessage): void
+    {
+        $conversation = SupportConversation::query()->find($conversationId);
+        if ($conversation === null || $conversation->status !== 'open') {
+            return;
+        }
+
+        $this->appendAssistantReply($conversation, $customerMessage);
     }
 
     private function appendAssistantReply(SupportConversation $conversation, string $customerMessage): void
