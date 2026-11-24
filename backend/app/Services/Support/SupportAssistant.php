@@ -319,6 +319,7 @@ class SupportAssistant
                         'category' => $category['title'] ?? null,
                         'service_key' => $record['service_key'] ?? null,
                         'title' => $record['title'] ?? null,
+                        'record_status' => $record['status'] ?? 'needs_review',
                         'scope' => $record['scope'] ?? null,
                         'what_is_it' => $record['what_is_it'] ?? null,
                         'eligibility' => $record['eligibility'] ?? null,
