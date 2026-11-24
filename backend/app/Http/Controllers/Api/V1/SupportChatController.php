@@ -229,8 +229,8 @@ class SupportChatController extends Controller
 
         $normalizedMessage = strtr($customerMessage, ['ي' => 'ی', 'ك' => 'ک', '‌' => ' ']);
         $isMissingRequirementFollowup = $lastAssistant !== null
-            && str_contains($lastAssistant->body, 'راه‌های رسیدن به خدا زیاده!')
-            && preg_match('/چطوری|چطور|چه راهکاری|یعنی چی|از چه راهی/u', $normalizedMessage) === 1;
+            && str_contains($lastAssistant->body, 'این مورد لزوماً به معنی متوقف‌شدن درخواست شما نیست.')
+            && preg_match('/چطوری|چطور|چه راهکاری|یعنی چی|از چه راهی|راه ?حل|چه کار کنم|چیکار کنم|چه جوری/u', $normalizedMessage) === 1;
 
         if ($mobile !== null && $lastAssistant !== null && str_contains($lastAssistant->body, 'شماره تماس')) {
             $conversation->update(['contact_mobile' => $mobile]);
@@ -251,7 +251,9 @@ class SupportChatController extends Controller
             $contextText = implode("\n", $recentCustomerMessages);
             $normalizedContext = strtr(mb_strtolower($contextText, 'UTF-8'), ['ي' => 'ی', 'ك' => 'ک', '‌' => ' ']);
             $isGuildConversation = preg_match('/جواز کسب|پروانه کسب|مجوز صنفی|مجوز کسب/u', $normalizedContext) === 1;
-            $assistantInput = $isGuildConversation ? $contextText : $customerMessage;
+            $isContextualFollowup = preg_match('/^(این|اون|آن|همین|پس|یعنی|چطور|چطوری|چه جوری|برای همین|مدارکش|شرایطش|هزینه اش|هزینه‌اش|مراحلش|بعدش|خب حالا)/u', trim($normalizedMessage)) === 1
+                || mb_strlen(trim($customerMessage), 'UTF-8') <= 32;
+            $assistantInput = ($isGuildConversation || $isContextualFollowup) ? $contextText : $customerMessage;
             $answer = app(SupportAssistant::class)->reply($assistantInput, $conversation->id);
         }
 
