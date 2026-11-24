@@ -63,7 +63,7 @@ class GuidedServiceFlowEngine
             'flow_key' => $matched['key'],
             'status' => 'active',
             'question_index' => 0,
-            'answers' => [],
+            'answers' => $this->prefillAnswers($matched, $message),
             'started_at' => now()->toISOString(),
         ];
         $context['guided_flow'] = $state;
@@ -116,6 +116,10 @@ class GuidedServiceFlowEngine
         $questions = $flow['questions'] ?? [];
         while (isset($questions[$state['question_index']])) {
             $question = $questions[$state['question_index']];
+            if (array_key_exists($question['key'] ?? '', $state['answers'] ?? [])) {
+                $state['question_index']++;
+                continue;
+            }
             $condition = $question['when'] ?? null;
             if (is_array($condition)) {
                 $actual = $state['answers'][$condition['answer_key'] ?? ''] ?? null;
@@ -171,6 +175,70 @@ class GuidedServiceFlowEngine
         $lines[] = 'اگر خدمت دیگری مدنظرتونه، اسمش رو بنویسید.';
 
         return implode("\n", $lines);
+    }
+
+
+    /**
+     * Preserve facts the customer already supplied in the opening message.
+     * This is intentionally conservative: uncertain facts remain questions.
+     */
+    private function prefillAnswers(array $flow, string $message): array
+    {
+        $text = $this->normalize($message);
+        $answers = [];
+
+        if (($flow['key'] ?? null) === 'guild-business-license') {
+            if (preg_match('/مغازه ندارم|محل کسب ندارم|محل فعالیت ندارم|هنوز محل(ی)? مشخص نکردم/u', $text) === 1) {
+                $answers['premises_status'] = 'not_selected';
+            } elseif (preg_match('/اجاره(ای|‌ای)?|مستاجر/u', $text) === 1) {
+                $answers['premises_status'] = 'rented';
+            } elseif (preg_match('/ملکی|ملک خودم|مالک(م)? هستم/u', $text) === 1) {
+                $answers['premises_status'] = 'owned';
+            } elseif (str_contains($text, 'سرقفلی')) {
+                $answers['premises_status'] = 'business_right';
+            }
+
+            $activities = [
+                'خرازی' => ['retail', 'خرازی'],
+                'پوشاک' => ['retail', 'فروش پوشاک'],
+                'لباس فروشی' => ['retail', 'فروش پوشاک'],
+                'بوتیک' => ['retail', 'بوتیک پوشاک'],
+                'سوپرمارکت' => ['retail', 'سوپرمارکت'],
+                'نجاری' => ['technical', 'نجاری'],
+                'تعمیر موبایل' => ['technical', 'تعمیر موبایل'],
+                'آرایشگاه' => ['food_health', 'آرایشگاه'],
+                'رستوران' => ['food_health', 'رستوران'],
+                'تولیدی' => ['production', 'تولیدی'],
+            ];
+            foreach ($activities as $needle => [$group, $detail]) {
+                if (str_contains($text, $needle)) {
+                    $answers['activity_group'] = $group;
+                    $answers['activity_detail'] = $detail;
+                    break;
+                }
+            }
+
+            if (preg_match('/(?:شهر|در)\s*(تهران|کرج|مشهد|اصفهان|شیراز|تبریز|قم|اهواز|رشت|اراک)/u', $text, $matches) === 1) {
+                $answers['city'] = $matches[1];
+            }
+            if (preg_match('/شخص حقیقی|به نام خودم|به نام من/u', $text) === 1) {
+                $answers['applicant_type'] = 'natural_person';
+            } elseif (preg_match('/شخص حقوقی|به نام شرکت|شرکت(م)?/u', $text) === 1) {
+                $answers['applicant_type'] = 'legal_person';
+            }
+            if (preg_match('/احکام تجارت.{0,20}(دارم|گرفتم)/u', $text) === 1) {
+                $answers['trade_rules_certificate'] = 'yes';
+            } elseif (preg_match('/احکام تجارت.{0,20}(ندارم|نگرفتم)/u', $text) === 1) {
+                $answers['trade_rules_certificate'] = 'no';
+            }
+            if (preg_match('/فنی.?حرفه.?ای.{0,20}(دارم|گرفتم)/u', $text) === 1) {
+                $answers['vocational_certificate'] = 'yes';
+            } elseif (preg_match('/فنی.?حرفه.?ای.{0,20}(ندارم|نگرفتم)/u', $text) === 1) {
+                $answers['vocational_certificate'] = 'no';
+            }
+        }
+
+        return $answers;
     }
 
     private function renderQuestion(array $question): string
