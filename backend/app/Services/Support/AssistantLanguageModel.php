@@ -118,7 +118,7 @@ class AssistantLanguageModel
   "matched_service_keys": ["service-key"],
   "required_service_keys": ["service-key"],
   "missing_prerequisite_keys": ["requirement-key"],
-  "customer_state": [{"requirement_key":"requirement-key","status":"has|missing|unknown|not_applicable"}],
+  "customer_state": [{"requirement_key":"requirement-key","status":"one of the allowed customer_state values defined for that requirement in prerequisite_fulfillment_map"}],
   "known_facts": {"field":"value"},
   "missing_facts": ["field"],
   "clarifying_question": null,
@@ -190,7 +190,18 @@ ANALYZER,
 
             $prerequisitePath = resource_path('knowledge/service_prerequisite_fulfillment_map.json');
             $prerequisiteMap = is_file($prerequisitePath) ? json_decode((string) file_get_contents($prerequisitePath), true) : [];
-            $allowedRequirements = array_values(array_filter(array_column($prerequisiteMap['rules'] ?? [], 'requirement_key'), 'is_string'));
+            $requirementRules = [];
+            foreach (($prerequisiteMap['rules'] ?? []) as $rule) {
+                if (! is_array($rule) || ! is_string($rule['requirement_key'] ?? null)) {
+                    continue;
+                }
+
+                $requirementRules[$rule['requirement_key']] = array_values(array_filter(
+                    is_array($rule['customer_state'] ?? null) ? $rule['customer_state'] : [],
+                    'is_string'
+                ));
+            }
+            $allowedRequirements = array_keys($requirementRules);
 
             $filterKeys = static fn ($values, $allowed) => array_values(array_unique(array_filter(
                 is_array($values) ? $values : [],
@@ -199,15 +210,26 @@ ANALYZER,
 
             $customerState = [];
             foreach (($analysis['customer_state'] ?? []) as $item) {
-                if (! is_array($item)
-                    || ! in_array($item['requirement_key'] ?? null, $allowedRequirements, true)
-                    || ! in_array($item['status'] ?? null, ['has', 'missing', 'unknown', 'not_applicable'], true)) {
+                if (! is_array($item)) {
+                    continue;
+                }
+
+                $requirementKey = $item['requirement_key'] ?? null;
+                $status = $item['status'] ?? null;
+                $allowedStatuses = is_string($requirementKey)
+                    ? ($requirementRules[$requirementKey] ?? [])
+                    : [];
+
+                if (! is_string($requirementKey)
+                    || ! in_array($requirementKey, $allowedRequirements, true)
+                    || ! is_string($status)
+                    || ! in_array($status, $allowedStatuses, true)) {
                     continue;
                 }
 
                 $customerState[] = [
-                    'requirement_key' => $item['requirement_key'],
-                    'status' => $item['status'],
+                    'requirement_key' => $requirementKey,
+                    'status' => $status,
                 ];
             }
 
