@@ -12,6 +12,15 @@ class SupportAssistant
     {
         $text = $this->normalize($message);
 
+        // Case-specific legal disputes and explicit requests for a human remain
+        // hard handoff paths even when the AI provider is enabled.
+        foreach ((array) config('support_assistant.hard_escalation_terms', []) as $term) {
+            if (is_string($term) && $term !== '' && str_contains($text, $this->normalize($term))) {
+                app(UnansweredQuestionTracker::class)->record($message, 'human_escalation', $conversationId);
+                return (string) config('support_assistant.fallback');
+            }
+        }
+
         // When the server-side model is configured, let it interpret the whole
         // turn before legacy keyword rules. This is what enables natural
         // language needs analysis and safe answers outside the service catalogue.
