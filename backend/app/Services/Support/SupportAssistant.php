@@ -87,6 +87,17 @@ class SupportAssistant
             return $webAnswer;
         }
 
+        $modelAnswer = app(AssistantLanguageModel::class)->answer(
+            $message,
+            $conversationId,
+            [],
+            $this->assistantServiceContext($message),
+        );
+        if ($modelAnswer !== null) {
+            app(UnansweredQuestionTracker::class)->record($message, 'ai_answered', $conversationId);
+            return $modelAnswer;
+        }
+
         app(UnansweredQuestionTracker::class)->record($message, 'no_answer', $conversationId);
         return (string) config('support_assistant.fallback');
     }
