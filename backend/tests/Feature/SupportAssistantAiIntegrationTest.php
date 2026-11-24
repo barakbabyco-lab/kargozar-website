@@ -97,4 +97,14 @@ class SupportAssistantAiIntegrationTest extends TestCase
         $this->assertContains('vocational_skill_certificate', $result['requirements']);
     }
 
+    public function test_case_specific_tax_debt_questions_still_require_human_review(): void
+    {
+        Http::fake();
+
+        $answer = app(SupportAssistant::class)->reply('برای بدهی مالیاتی من چه کار کنم؟');
+
+        $this->assertStringContainsString('بررسی دقیق‌تر', $answer);
+        Http::assertNothingSent();
+    }
+
 }
