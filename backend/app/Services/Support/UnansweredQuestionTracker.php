@@ -21,7 +21,7 @@ class UnansweredQuestionTracker
         SupportUnansweredQuestionEvent::create([
             'question_hash' => hash('sha256', $normalized),
             'question_sample' => $sample,
-            'outcome' => in_array($outcome, ['web_answered', 'web_no_result', 'human_escalation', 'guided_service_flow', 'no_answer'], true) ? $outcome : 'no_answer',
+            'outcome' => in_array($outcome, ['web_answered', 'web_no_result', 'human_escalation', 'guided_service_flow', 'out_of_scope', 'no_answer'], true) ? $outcome : 'no_answer',
             'conversation_id' => $conversationId,
             'created_at' => now(),
         ]);
