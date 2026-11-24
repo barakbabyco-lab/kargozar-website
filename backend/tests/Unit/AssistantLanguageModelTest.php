@@ -67,6 +67,10 @@ class AssistantLanguageModelTest extends TestCase
 
     public function test_it_does_not_send_personal_contact_details_to_the_model(): void
     {
+        $card = str_repeat('6', 16);
+        $iban = 'IR'.str_repeat('1', 24);
+        $otp = str_repeat('7', 6);
+
         Http::fake([
             'api.example.test/v1/chat/completions' => Http::response([
                 'choices' => [[
@@ -76,22 +80,25 @@ class AssistantLanguageModelTest extends TestCase
         ]);
 
         app(AssistantLanguageModel::class)->answer(
-            'شماره ۰۹۱۲۳۴۵۶۷۸۹ و ایمیل person@example.com، کارت 6037991234567890، شبا IR123456789012345678901234 و رمز یکبارمصرف 123456 برای پیگیری من است.'
+            'شماره ۰۹۱۲۳۴۵۶۷۸۹ و ایمیل person@example.com، کارت '.$card.'، شبا '.$iban.' و رمز یکبارمصرف '.$otp.' برای پیگیری من است.'
         );
 
-        Http::assertSent(function (Request $request): bool {
-            $body = json_encode($request->data(), JSON_UNESCAPED_UNICODE);
-            return ! str_contains($body, '09123456789')
-                && ! str_contains($body, 'person@example.com')
-                && ! str_contains($body, '6037991234567890')
-                && ! str_contains($body, 'IR123456789012345678901234')
-                && ! str_contains($body, 'رمز یکبارمصرف 123456')
-                && str_contains($body, '[حذف شماره تماس]')
-                && str_contains($body, '[حذف ایمیل]')
-                && str_contains($body, '[حذف شماره کارت/حساب]')
-                && str_contains($body, '[حذف شماره شبا]')
-                && str_contains($body, '[حذف کد یک‌بارمصرف]');
+        $sentBody = null;
+        Http::assertSent(function (Request $request) use (&$sentBody): bool {
+            $sentBody = json_encode($request->data(), JSON_UNESCAPED_UNICODE);
+            return true;
         });
+
+        $this->assertStringNotContainsString('09123456789', $sentBody);
+        $this->assertStringNotContainsString('person@example.com', $sentBody);
+        $this->assertStringNotContainsString($card, $sentBody);
+        $this->assertStringNotContainsString($iban, $sentBody);
+        $this->assertStringNotContainsString($otp, $sentBody);
+        $this->assertStringContainsString('[حذف شماره تماس]', $sentBody);
+        $this->assertStringContainsString('[حذف ایمیل]', $sentBody);
+        $this->assertStringContainsString('[حذف شماره کارت/حساب]', $sentBody);
+        $this->assertStringContainsString('[حذف شماره شبا]', $sentBody);
+        $this->assertStringContainsString('[حذف کد یک‌بارمصرف]', $sentBody);
     }
 
     public function test_it_returns_null_when_provider_is_not_configured(): void
