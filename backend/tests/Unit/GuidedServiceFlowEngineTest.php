@@ -4,6 +4,7 @@ namespace Tests\Unit;
 
 use App\Models\SupportConversation;
 use App\Services\Support\GuidedServiceFlowEngine;
+use App\Services\Support\SupportAssistant;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -64,5 +65,18 @@ class GuidedServiceFlowEngineTest extends TestCase
 
         $this->assertStringContainsString('گواهی دوره احکام تجارت', $reply);
         $this->assertStringNotContainsString('گواهینامه فنی‌وحرفه‌ای مرتبط با این فعالیت رو دارید؟', $reply);
+    }
+    public function test_the_registered_support_assistant_uses_guided_flows_without_a_model_provider(): void
+    {
+        config(['assistant_ai.enabled' => false]);
+        $conversation = SupportConversation::query()->create(['status' => 'open']);
+
+        $reply = app(SupportAssistant::class)->reply(
+            'برای ثبت برند راهنمایی می‌خوام',
+            (int) $conversation->id
+        );
+
+        $this->assertStringContainsString('چه چیزی رو می‌خواید ثبت کنید؟', $reply);
+        $this->assertSame('trademark-registration', $conversation->fresh()->assistant_context['guided_flow']['flow_key']);
     }
 }
