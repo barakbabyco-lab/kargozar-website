@@ -18,7 +18,7 @@ class SupportAssistant
         if ((bool) config('assistant_ai.enabled', false)) {
             $serviceContext = $this->assistantServiceContext($message);
             $needsCurrentResearch = $serviceContext !== []
-                || preg_match('/قانون|مجوز|پروانه|جواز|ثبت شرکت|ثبت برند|مالیات|استاندارد|کارت بهداشت|امروز|جدیدترین|آخرین|امسال|قیمت روز|نرخ|وضعیت فعلی|\\b20[2-9][0-9]\\b/u', $text) === 1;
+                || preg_match('/قانون|مجوز|پروانه|جواز|ثبت شرکت|ثبت برند|مالیات|استاندارد|کارت بهداشت|امروز|جدیدترین|آخرین|امسال|قیمت روز|نرخ|وضعیت فعلی|هواشناسی|آب و هوا|دلار|طلا|بورس|اخبار|\\b20[2-9][0-9]\\b/u', $text) === 1;
             $sources = [];
             if ($needsCurrentResearch && (bool) config('support_assistant.web_search.enabled', true)) {
                 $webResult = app(WebSearchService::class)->search($message);
@@ -325,7 +325,7 @@ class SupportAssistant
         }
         unset($record);
 
-        if (preg_match('/جواز کسب|پروانه کسب|مجوز صنفی|مجوز کسب/u', $this->normalize($question)) === 1) {
+        if (preg_match('/جواز|پروانه|مجوز|مغازه|فروشگاه|راه اندازی|راه‌اندازی|راه بندازی|راه بندازم/u', $this->normalize($question)) === 1) {
             $context[] = [
                 'guild_activity_preflight' => $this->classifyGuildActivity($question),
                 'note' => 'این طبقه‌بندی فقط پیش‌بررسی است؛ کاربرگ رسمی رسته و شهر مرجع نهایی است.',
