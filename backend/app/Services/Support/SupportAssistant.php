@@ -322,6 +322,11 @@ class SupportAssistant
                         continue;
                     }
 
+                    $serviceKey = (string) ($record['service_key'] ?? '');
+                    $route = $serviceKey !== '' ? config('knowledge_sources.services.'.$serviceKey, []) : [];
+                    $liveSourceKey = is_array($route) ? ($route['live_verification_source'] ?? null) : null;
+                    $liveSource = is_string($liveSourceKey) ? config('knowledge_sources.sources.'.$liveSourceKey, []) : [];
+
                     $context[] = [
                         'category' => $category['title'] ?? null,
                         'service_key' => $record['service_key'] ?? null,
@@ -336,8 +341,8 @@ class SupportAssistant
                         'fees' => $record['fees'] ?? null,
                         'issuance_time' => $record['issuance_time'] ?? null,
                         'issuing_authority' => $record['issuing_authority'] ?? null,
-                        'official_source' => $record['official_source'] ?? null,
-                        'source_url' => $record['source_url'] ?? null,
+                        'official_source' => $record['official_source'] ?? (is_array($liveSource) ? ($liveSource['name'] ?? null) : null),
+                        'source_url' => $record['source_url'] ?? (is_array($liveSource) ? ($liveSource['base_url'] ?? null) : null),
                         'verification_status' => $record['verification_status'] ?? 'needs_review',
                         'catalogue_category' => $category['title'] ?? null,
                         '_match_score' => $score,
