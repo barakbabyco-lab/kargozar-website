@@ -196,10 +196,7 @@ ANALYZER,
                     continue;
                 }
 
-                $requirementRules[$rule['requirement_key']] = array_values(array_filter(
-                    is_array($rule['customer_state'] ?? null) ? $rule['customer_state'] : [],
-                    'is_string'
-                ));
+                $requirementRules[$rule['requirement_key']] = $rule;
             }
             $allowedRequirements = array_keys($requirementRules);
 
@@ -217,7 +214,12 @@ ANALYZER,
                 $requirementKey = $item['requirement_key'] ?? null;
                 $status = $item['status'] ?? null;
                 $allowedStatuses = is_string($requirementKey)
-                    ? ($requirementRules[$requirementKey] ?? [])
+                    ? array_values(array_filter(
+                        is_array($requirementRules[$requirementKey]['customer_state'] ?? null)
+                            ? $requirementRules[$requirementKey]['customer_state']
+                            : [],
+                        'is_string'
+                    ))
                     : [];
 
                 if (! is_string($requirementKey)
@@ -248,8 +250,12 @@ ANALYZER,
             return [
                 'requested_outcome' => mb_substr($this->sanitize((string) ($analysis['requested_outcome'] ?? '')), 0, 500, 'UTF-8'),
                 'matched_service_keys' => $filterKeys($analysis['matched_service_keys'] ?? [], $allowedServices),
-                'required_service_keys' => $filterKeys($analysis['required_service_keys'] ?? [], $allowedServices),
-                'missing_prerequisite_keys' => $filterKeys($analysis['missing_prerequisite_keys'] ?? [], $allowedRequirements),
+                'required_service_keys' => $this->verifiedMissingPrerequisiteServices(
+                    $filterKeys($analysis['required_service_keys'] ?? [], $allowedServices),
+                    $customerState,
+                    $requirementRules
+                ),
+                'missing_prerequisite_keys' => $this->verifiedMissingPrerequisites($customerState),
                 'customer_state' => $customerState,
                 'known_facts' => $knownFacts,
                 'missing_facts' => array_slice(array_values(array_filter(
@@ -263,6 +269,45 @@ ANALYZER,
         } catch (Throwable) {
             return null;
         }
+    }
+
+    /**
+     * Only treat explicitly missing or expired customer states as missing
+     * prerequisites. Derive their service keys from the reviewed fulfillment
+     * map instead of trusting model-generated cross-links.
+     */
+    private function verifiedMissingPrerequisites(array $customerState): array
+    {
+        $missing = [];
+        foreach ($customerState as $item) {
+            if (in_array($item['status'] ?? null, ['missing', 'expired'], true)) {
+                $missing[] = $item['requirement_key'];
+            }
+        }
+
+        return array_values(array_unique($missing));
+    }
+
+    private function verifiedMissingPrerequisiteServices(
+        array $proposedServiceKeys,
+        array $customerState,
+        array $requirementRules,
+    ): array {
+        $eligible = [];
+        foreach ($customerState as $item) {
+            if (! in_array($item['status'] ?? null, ['missing', 'expired'], true)) {
+                continue;
+            }
+
+            $rule = $requirementRules[$item['requirement_key'] ?? ''] ?? [];
+            $fulfillment = is_array($rule['fulfillment'] ?? null) ? $rule['fulfillment'] : [];
+            if (in_array($fulfillment['status'] ?? null, ['available_in_catalog', 'available_in_catalog_conditional'], true)
+                && is_string($fulfillment['service_key'] ?? null)) {
+                $eligible[] = $fulfillment['service_key'];
+            }
+        }
+
+        return array_values(array_intersect($proposedServiceKeys, array_unique($eligible)));
     }
 
     private function systemPrompt(): string
