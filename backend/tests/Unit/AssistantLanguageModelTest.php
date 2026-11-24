@@ -85,7 +85,7 @@ class AssistantLanguageModelTest extends TestCase
 
         $sentBody = null;
         Http::assertSent(function (Request $request) use (&$sentBody): bool {
-            $sentBody = json_encode($request->data(), JSON_UNESCAPED_UNICODE);
+            $sentBody = json_encode($request->data(), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
             return true;
         });
 
