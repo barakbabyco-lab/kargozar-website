@@ -460,6 +460,18 @@ class SupportAssistant
             ];
         }
 
+        $catalogMappingPath = resource_path('knowledge/service_catalog_mapping.json');
+        if (is_file($catalogMappingPath)) {
+            $catalogMapping = json_decode((string) file_get_contents($catalogMappingPath), true);
+            if (is_array($catalogMapping)) {
+                $context[] = [
+                    'service_catalog_mapping' => $catalogMapping['services'] ?? [],
+                    'catalog_mapping_status' => $catalogMapping['status'] ?? 'unknown',
+                    'catalog_mapping_note' => $catalogMapping['note'] ?? null,
+                ];
+            }
+        }
+
         if (preg_match('/جواز|پروانه|مجوز|مغازه|فروشگاه|بوتیک|لباس فروشی|نجاری|راه اندازی|راه‌اندازی|راه بندازی|راه بندازم/u', $normalizedQuestion) === 1) {
             $context[] = [
                 'service_key' => 'guild-business-license',
