@@ -3,6 +3,7 @@
 namespace App\Services\Support;
 
 use App\Models\Service;
+
 class SupportAssistant
 {
     /**
