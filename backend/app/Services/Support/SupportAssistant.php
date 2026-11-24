@@ -26,7 +26,8 @@ class SupportAssistant
                     && preg_match('/جواز|پروانه|مجوز/u', $text) !== 1) {
                     $searchQuestion = 'شرایط و مجوزهای رسمی راه‌اندازی کسب‌وکار برای: '.$message;
                 }
-                $webResult = app(WebSearchService::class)->search($searchQuestion);
+                $serviceKeys = array_values(array_unique(array_filter(array_column($serviceContext, 'service_key'), 'is_string')));
+                $webResult = app(WebSearchService::class)->search($searchQuestion, $serviceKeys);
                 $sources = is_array($webResult) && is_array($webResult['sources'] ?? null)
                     ? $webResult['sources']
                     : [];
@@ -336,6 +337,16 @@ class SupportAssistant
         unset($record);
 
         $normalizedQuestion = $this->normalize($question);
+        if (preg_match('/مالیات|پرونده مالیاتی|کد رهگیری مالیاتی|شناسه مالیاتی/u', $normalizedQuestion) === 1) {
+            $context[] = [
+                'service_key' => 'tax-file-and-tracking',
+                'title' => 'تشکیل پرونده و پیگیری امور مالیاتی',
+                'verification_status' => 'needs_live_tax_portal_review',
+                'official_source' => 'درگاه ملی خدمات الکترونیک سازمان امور مالیاتی',
+                'source_url' => 'https://my.tax.gov.ir/',
+            ];
+        }
+
         if (preg_match('/جواز|پروانه|مجوز|مغازه|فروشگاه|بوتیک|لباس فروشی|نجاری|راه اندازی|راه‌اندازی|راه بندازی|راه بندازم/u', $normalizedQuestion) === 1) {
             $context[] = [
                 'service_key' => 'guild-business-license',
