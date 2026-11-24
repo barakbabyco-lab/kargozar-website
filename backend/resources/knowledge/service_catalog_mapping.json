@@ -1,0 +1,253 @@
+{
+  "schema_version": 1,
+  "status": "draft_mapping_from_ServiceCatalogSeeder",
+  "source": "backend/database/seeders/ServiceCatalogSeeder.php",
+  "note": "mapped_to_service_row means the seeder creates an active Service row; pending_service_row means a category/knowledge record exists but the seeder does not currently create an orderable Service row. Runtime still verifies is_active in the database.",
+  "services": [
+    {
+      "service_key": "guild-business-license",
+      "catalog_slug": "business-license",
+      "status": "mapped_to_service_row"
+    },
+    {
+      "service_key": "home-business-license",
+      "catalog_slug": null,
+      "status": "pending_service_row"
+    },
+    {
+      "service_key": "industrial-establishment-permits",
+      "catalog_slug": null,
+      "status": "pending_service_row"
+    },
+    {
+      "service_key": "commercial-card",
+      "catalog_slug": "commercial-card",
+      "status": "mapped_to_service_row"
+    },
+    {
+      "service_key": "company-registration",
+      "catalog_slug": "company-incorporation",
+      "status": "mapped_to_service_row"
+    },
+    {
+      "service_key": "company-changes",
+      "catalog_slug": null,
+      "status": "pending_service_row"
+    },
+    {
+      "service_key": "company-dissolution",
+      "catalog_slug": null,
+      "status": "pending_service_row"
+    },
+    {
+      "service_key": "trademark-registration",
+      "catalog_slug": "trademark-registration",
+      "status": "mapped_to_service_row"
+    },
+    {
+      "service_key": "logo-registration",
+      "catalog_slug": "trademark-registration",
+      "status": "mapped_to_existing_related_service"
+    },
+    {
+      "service_key": "industrial-design-registration",
+      "catalog_slug": "industrial-design-registration",
+      "status": "mapped_to_service_row"
+    },
+    {
+      "service_key": "invention-registration",
+      "catalog_slug": null,
+      "status": "pending_service_row"
+    },
+    {
+      "service_key": "police-public-places-approval",
+      "catalog_slug": "police-places-approval",
+      "status": "mapped_to_service_row"
+    },
+    {
+      "service_key": "health-card",
+      "catalog_slug": "health-card",
+      "status": "mapped_to_service_row"
+    },
+    {
+      "service_key": "environment-health-approval",
+      "catalog_slug": "environment-health-approval",
+      "status": "mapped_to_service_row"
+    },
+    {
+      "service_key": "trade-law-training-certificate",
+      "catalog_slug": "trade-rules-certificate",
+      "status": "mapped_to_service_row"
+    },
+    {
+      "service_key": "national-standards-approval",
+      "catalog_slug": "standard-mark",
+      "status": "mapped_to_service_row"
+    },
+    {
+      "service_key": "other-regulatory-approvals",
+      "catalog_slug": null,
+      "status": "pending_service_row"
+    },
+    {
+      "service_key": "tax-file-and-tracking",
+      "catalog_slug": "tax-file",
+      "status": "mapped_to_service_row"
+    },
+    {
+      "service_key": "technical-vocational-certificate",
+      "catalog_slug": "technical-vocational-certificate",
+      "status": "mapped_to_service_row"
+    },
+    {
+      "service_key": "business-account-opening",
+      "catalog_slug": "current-account-opening",
+      "status": "mapped_to_service_row"
+    },
+    {
+      "service_key": "banking-facilities",
+      "catalog_slug": null,
+      "status": "pending_service_row"
+    },
+    {
+      "service_key": "bank-guarantees",
+      "catalog_slug": null,
+      "status": "pending_service_row"
+    },
+    {
+      "service_key": "employment-contract",
+      "catalog_slug": "employment-contract",
+      "status": "mapped_to_service_row"
+    },
+    {
+      "service_key": "contractor-agreement",
+      "catalog_slug": "contractor-agreement",
+      "status": "mapped_to_service_row"
+    },
+    {
+      "service_key": "business-contracts",
+      "catalog_slug": null,
+      "status": "pending_service_row"
+    },
+    {
+      "service_key": "legal-documentation",
+      "catalog_slug": null,
+      "status": "pending_service_row"
+    },
+    {
+      "service_key": "enamad",
+      "catalog_slug": "enamad-online-store",
+      "status": "mapped_to_service_row"
+    },
+    {
+      "service_key": "business-website",
+      "catalog_slug": null,
+      "status": "pending_service_row"
+    },
+    {
+      "service_key": "payment-gateway",
+      "catalog_slug": "payment-gateway",
+      "status": "mapped_to_service_row"
+    },
+    {
+      "service_key": "business-domain",
+      "catalog_slug": null,
+      "status": "pending_service_row"
+    },
+    {
+      "service_key": "bulk-sms",
+      "catalog_slug": "bulk-sms-panel",
+      "status": "mapped_to_service_row"
+    },
+    {
+      "service_key": "internet-phone",
+      "catalog_slug": "internet-phone",
+      "status": "mapped_to_service_row"
+    },
+    {
+      "service_key": "lease-tracking-code",
+      "catalog_slug": "lease-tracking-code",
+      "status": "mapped_to_service_row"
+    },
+    {
+      "service_key": "property-contracts",
+      "catalog_slug": null,
+      "status": "pending_service_row"
+    },
+    {
+      "service_key": "property-document-followup",
+      "catalog_slug": null,
+      "status": "pending_service_row"
+    },
+    {
+      "service_key": "accounting-software",
+      "catalog_slug": null,
+      "status": "pending_service_row"
+    },
+    {
+      "service_key": "sales-invoicing",
+      "catalog_slug": null,
+      "status": "pending_service_row"
+    },
+    {
+      "service_key": "payroll-hr",
+      "catalog_slug": null,
+      "status": "pending_service_row"
+    },
+    {
+      "service_key": "human-resources",
+      "catalog_slug": null,
+      "status": "pending_service_row"
+    },
+    {
+      "service_key": "contract-management",
+      "catalog_slug": null,
+      "status": "pending_service_row"
+    },
+    {
+      "service_key": "crm",
+      "catalog_slug": null,
+      "status": "pending_service_row"
+    },
+    {
+      "service_key": "inventory-management",
+      "catalog_slug": null,
+      "status": "pending_service_row"
+    },
+    {
+      "service_key": "business-consulting",
+      "catalog_slug": null,
+      "status": "pending_service_row"
+    },
+    {
+      "service_key": "feasibility-study",
+      "catalog_slug": null,
+      "status": "pending_service_row"
+    },
+    {
+      "service_key": "business-plan",
+      "catalog_slug": null,
+      "status": "pending_service_row"
+    },
+    {
+      "service_key": "business-valuation",
+      "catalog_slug": null,
+      "status": "pending_service_row"
+    },
+    {
+      "service_key": "fundraising",
+      "catalog_slug": null,
+      "status": "pending_service_row"
+    },
+    {
+      "service_key": "advertising-video",
+      "catalog_slug": "advertising-video",
+      "status": "mapped_to_service_row"
+    },
+    {
+      "service_key": "business-branding",
+      "catalog_slug": null,
+      "status": "pending_service_row"
+    }
+  ]
+}
