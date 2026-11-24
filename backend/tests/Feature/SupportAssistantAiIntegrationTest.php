@@ -147,6 +147,16 @@ class SupportAssistantAiIntegrationTest extends TestCase
         $this->assertIsArray($company);
         $this->assertSame('https://irsherkat.ssaa.ir/', $company['source_url'] ?? null);
         $this->assertSame('سامانه جامع ثبت شرکت‌ها و مؤسسات غیرتجاری', $company['official_source'] ?? null);
+
+        $catalog = collect($context)->first(fn ($item) => isset($item['service_catalog_mapping']));
+        $companyMapping = collect($catalog['service_catalog_mapping'] ?? [])
+            ->firstWhere('service_key', 'company-registration');
+        $changesMapping = collect($catalog['service_catalog_mapping'] ?? [])
+            ->firstWhere('service_key', 'company-changes');
+
+        $this->assertSame('company-incorporation', $companyMapping['catalog_slug'] ?? null);
+        $this->assertSame('mapped_to_service_row', $companyMapping['status'] ?? null);
+        $this->assertSame('pending_service_row', $changesMapping['status'] ?? null);
     }
 
     public function test_ai_receives_tax_file_service_intent_and_official_portal(): void
