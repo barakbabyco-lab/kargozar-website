@@ -10,6 +10,8 @@ return [
     'timeout' => (int) env('ASSISTANT_AI_TIMEOUT', 20),
     'temperature' => (float) env('ASSISTANT_AI_TEMPERATURE', 0.2),
     'max_tokens' => (int) env('ASSISTANT_AI_MAX_TOKENS', 900),
+    // Leave unset until the owner confirms whether catalogue prices are IRR or IRT.
+    'quote_currency' => env('ASSISTANT_QUOTE_CURRENCY'),
     'quote_price_validity_days' => (int) env('ASSISTANT_QUOTE_PRICE_VALIDITY_DAYS', 30),
     'quote_duration_validity_days' => (int) env('ASSISTANT_QUOTE_DURATION_VALIDITY_DAYS', 90),
 ];
