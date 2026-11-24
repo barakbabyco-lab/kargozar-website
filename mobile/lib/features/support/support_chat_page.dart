@@ -161,6 +161,215 @@ class _SupportChatPageState extends State<SupportChatPage> {
     });
   }
 
+
+  List<String> _extractChoices(String body) {
+    if (!body.contains('شماره گزینه رو بفرستید')) return [];
+    final pattern = RegExp(r'^\\s*\\d+[.)]\\s*(.+)    children: [
+      Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        color: const Color(0xFFFFF1F1),
+        child: const Text(
+          'بدون نیاز به ورود یا کد تأیید پیام بفرستید. دستیار پاسخ می‌دهد و در صورت نیاز، گفت‌وگو برای کارشناس قابل پیگیری است.',
+          textAlign: TextAlign.center,
+          style: TextStyle(fontSize: 11, height: 1.7, color: Color(0xFF7F1D1D)),
+        ),
+      ),
+      Expanded(
+        child: _loading
+            ? const Center(child: CircularProgressIndicator())
+            : _messages.isEmpty
+                ? const Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(28),
+                      child: Text(
+                        'سلام. سؤال یا موضوعی را که درباره خدمات کارگزار دارید بنویسید تا راهنمایی‌تان کنیم.',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(height: 1.9, color: Color(0xFF64748B)),
+                      ),
+                    ),
+                  )
+                : ListView.builder(
+                    controller: _scroll,
+                    padding: const EdgeInsets.all(14),
+                    itemCount: _messages.length,
+                    itemBuilder: (context, index) {
+                      final message = _messages[index];
+                      final sender = message['sender_type']?.toString();
+                      final mine = sender == 'customer';
+                      final assistant = sender == 'assistant';
+                      return Align(
+                        alignment: mine ? Alignment.centerLeft : Alignment.centerRight,
+                        child: Container(
+                          constraints: const BoxConstraints(maxWidth: 320),
+                          margin: const EdgeInsets.only(bottom: 10),
+                          padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 10),
+                          decoration: BoxDecoration(
+                            color: mine
+                                ? const Color(0xFFE30613)
+                                : assistant
+                                    ? const Color(0xFFF1F5F9)
+                                    : const Color(0xFFE8F5F2),
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                mine ? 'شما' : assistant ? 'دستیار هوشمند کارگزار' : 'کارشناس کارگزار',
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w800,
+                                  color: mine ? Colors.white70 : const Color(0xFF64748B),
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Builder(
+                                builder: (context) {
+                                  final body = message['body']?.toString() ?? '';
+                                  final choices = assistant ? _extractChoices(body) : <String>[];
+                                  return Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        _visibleMessageBody(body),
+                                        style: TextStyle(
+                                          fontSize: 13,
+                                          height: 1.8,
+                                          color: mine ? Colors.white : const Color(0xFF1E293B),
+                                        ),
+                                      ),
+                                      if (choices.isNotEmpty) ...[
+                                        const SizedBox(height: 9),
+                                        Wrap(
+                                          spacing: 6,
+                                          runSpacing: 6,
+                                          children: choices.map((choice) => ActionChip(
+                                            label: Text(choice, style: const TextStyle(fontSize: 11)),
+                                            onPressed: _sending ? null : () => _sendChoice(choice),
+                                            backgroundColor: Colors.white,
+                                            side: const BorderSide(color: Color(0xFFE30613), width: 0.7),
+                                            visualDensity: VisualDensity.compact,
+                                          )).toList(),
+                                        ),
+                                      ],
+                                    ],
+                                  );
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+      ),
+      if (_error != null)
+        Padding(
+          padding: const EdgeInsets.fromLTRB(12, 0, 12, 8),
+          child: Text(_error!, style: const TextStyle(color: Colors.red, fontSize: 11)),
+        ),
+      SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(10, 6, 10, 10),
+          child: Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: _composer,
+                  minLines: 1,
+                  maxLines: 4,
+                  textInputAction: TextInputAction.send,
+                  onSubmitted: (_) => _send(),
+                  decoration: const InputDecoration(
+                    hintText: 'پیام خود را بنویسید...',
+                    contentPadding: EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              IconButton.filled(
+                onPressed: _sending ? null : _send,
+                icon: _sending
+                    ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
+                    : const Icon(Icons.send_rounded),
+                tooltip: 'ارسال پیام',
+              ),
+            ],
+          ),
+        ),
+      ),
+    ],
+  );
+
+  @override
+  Widget build(BuildContext context) {
+    if (widget.embedded) {
+      return Material(
+        color: Colors.white,
+        child: Column(
+          children: [
+            Container(
+              height: 48,
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              decoration: const BoxDecoration(
+                color: Color(0xFFE30613),
+                borderRadius: BorderRadius.vertical(top: Radius.circular(18)),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.support_agent_rounded, color: Colors.white, size: 21),
+                  const SizedBox(width: 8),
+                  const Expanded(
+                    child: Text(
+                      'گفت‌وگوی آنلاین کارگزار',
+                      style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w800),
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: widget.onClose,
+                    icon: const Icon(Icons.keyboard_arrow_down_rounded, color: Colors.white),
+                    tooltip: 'بستن گفت‌وگو',
+                  ),
+                ],
+              ),
+            ),
+            Expanded(child: _chatBody()),
+          ],
+        ),
+      );
+    }
+    return Scaffold(
+      appBar: AppBar(title: const Text('گفت‌وگوی آنلاین کارگزار')),
+      body: _chatBody(),
+    );
+  }
+}
+, multiLine: true);
+    return pattern
+        .allMatches(body)
+        .map((match) => match.group(1)?.trim() ?? '')
+        .where((value) => value.isNotEmpty)
+        .toList();
+  }
+
+  String _visibleMessageBody(String body) {
+    if (!body.contains('شماره گزینه رو بفرستید')) return body;
+    final lines = body.split('\\n').where((line) {
+      final trimmed = line.trim();
+      return !RegExp(r'^\\d+[.)]\\s*').hasMatch(trimmed) &&
+          !trimmed.contains('شماره گزینه رو بفرستید');
+    });
+    return lines.join('\\n').trim();
+  }
+
+  void _sendChoice(String choice) {
+    if (_sending) return;
+    _composer.text = choice;
+    _send();
+  }
+
   Widget _chatBody() => Column(
     children: [
       Container(
