@@ -48,6 +48,18 @@ SEARXNG_API_TOKEN=
 
 If SearXNG is not running, the model can still answer general questions from its model knowledge, but it must not claim to have performed live research.
 
+## Verify service catalogue prices and durations
+
+The assistant does not quote a number merely because `base_price` or `estimated_days` is populated. An authorized admin/supervisor must verify those values through the staff catalogue API:
+
+- `PATCH /api/v1/staff/catalog/services/{serviceId}`
+- send `base_price` together with `price_verified_at` when the current Kargozar fee has been checked;
+- send `estimated_days` together with `duration_verified_at` when the current handling estimate has been checked.
+
+Price verification is considered current for 30 days; duration verification is considered current for 90 days by default. Changing either value clears its previous verification timestamp unless a new timestamp is explicitly supplied. Never mark a value verified without checking it.
+
+The assistant keeps government and third-party fees separate. They require current official-source evidence and are not included in the Kargozar service-fee subtotal automatically.
+
 ## Apply configuration
 
 After setting the environment variables on the staging server:
