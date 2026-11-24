@@ -62,7 +62,7 @@ class SupportChatController extends Controller
             return $conversation->load(['customer', 'messages']);
         });
 
-        $this->appendAssistantReply($conversation, $validator->validated()['body']);
+        $this->scheduleAssistantReply($conversation->id, $validator->validated()['body']);
         $conversation->load(['customer', 'messages']);
 
         return response()->json(['data' => $this->conversationPayload($conversation)], 201);
@@ -108,7 +108,7 @@ class SupportChatController extends Controller
             return $message;
         });
 
-        $this->appendAssistantReply($conversation, $validator->validated()['body']);
+        $this->scheduleAssistantReply($conversation->id, $validator->validated()['body']);
 
         return response()->json(['data' => $this->messagePayload($message)], 201);
     }
@@ -159,7 +159,7 @@ class SupportChatController extends Controller
             return $conversation->load('messages');
         });
 
-        $this->appendAssistantReply($conversation, $validator->validated()['body']);
+        $this->scheduleAssistantReply($conversation->id, $validator->validated()['body']);
         $conversation->load('messages');
 
         return response()->json(['data' => [
@@ -214,9 +214,26 @@ class SupportChatController extends Controller
             return $message;
         });
 
-        $this->appendAssistantReply($conversation, $validator->validated()['body']);
+        $this->scheduleAssistantReply($conversation->id, $validator->validated()['body']);
 
         return response()->json(['data' => $this->messagePayload($message)], 201);
+    }
+
+    /**
+     * Return the customer's message response before running assistant processing.
+     * Laravel executes this callback after the HTTP response has been sent, so a
+     * slow knowledge lookup cannot leave the mobile composer spinning.
+     */
+    private function scheduleAssistantReply(int $conversationId, string $customerMessage): void
+    {
+        dispatch(function () use ($conversationId, $customerMessage): void {
+            $conversation = SupportConversation::query()->find($conversationId);
+            if ($conversation === null || $conversation->status !== 'open') {
+                return;
+            }
+
+            $this->appendAssistantReply($conversation, $customerMessage);
+        })->afterResponse();
     }
 
     private function appendAssistantReply(SupportConversation $conversation, string $customerMessage): void
