@@ -512,6 +512,13 @@ class SupportAssistant
             return null;
         }
 
+        if (($best['service_key'] ?? null) === 'guild-business-license') {
+            $activity = $this->classifyGuildActivity($text);
+            if (($activity['needs_clarification'] ?? true) === true) {
+                return 'برای اینکه مسیر درست جواز کسب رو مشخص کنیم، لطفاً اول نوع شغل دقیق‌تون رو بفرمایید و بگید محل فعالیت در کدوم شهره؟';
+            }
+        }
+
         $answer = 'برای «'.($best['title'] ?? 'این خدمت').'»، راهنمای اولیه کارگزار به این صورته:';
         $lowerText = $text;
 
