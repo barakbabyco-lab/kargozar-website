@@ -195,20 +195,24 @@ class ServiceCatalogSeeder extends Seeder
 
         foreach ($serviceDefinitions as $position => [$title, $slug, $description, $categorySlug]) {
             $category = ServiceCategory::query()->where('slug', $categorySlug)->firstOrFail();
+            $service = Service::query()->firstOrNew(['slug' => $slug]);
+            $isNewService = ! $service->exists;
 
-            Service::updateOrCreate(
-                ['slug' => $slug],
-                [
-                    'category_id' => $category->id,
-                    'title' => $title,
-                    'description' => $description,
-                    'requirements' => [],
-                    'estimated_days' => null,
-                    'base_price' => null,
-                    'is_active' => true,
-                    'sort_order' => $position + 1,
-                ],
-            );
+            $service->category_id = $category->id;
+            $service->title = $title;
+            $service->description = $description;
+            $service->is_active = true;
+            $service->sort_order = $position + 1;
+
+            if ($isNewService) {
+                $service->requirements = [];
+                $service->estimated_days = null;
+                $service->base_price = null;
+            }
+
+            // Existing staff-entered requirements, prices, durations and their
+            // verification timestamps must survive every catalogue seed run.
+            $service->save();
         }
 
     }
