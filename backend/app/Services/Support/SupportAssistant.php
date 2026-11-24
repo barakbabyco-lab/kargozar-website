@@ -346,6 +346,18 @@ class SupportAssistant
                 'guild_activity_preflight' => $this->classifyGuildActivity($question),
                 'note' => 'این طبقه‌بندی فقط پیش‌بررسی است؛ کاربرگ رسمی رسته و شهر مرجع نهایی است.',
             ];
+
+            $mapPath = resource_path('knowledge/service_prerequisite_fulfillment_map.json');
+            if (is_file($mapPath)) {
+                $prerequisiteMap = json_decode((string) file_get_contents($mapPath), true);
+                if (is_array($prerequisiteMap)) {
+                    $context[] = [
+                        'prerequisite_fulfillment_map' => $prerequisiteMap['rules'] ?? [],
+                        'assistant_rules' => $prerequisiteMap['assistant_rules'] ?? [],
+                        'mapping_status' => $prerequisiteMap['status'] ?? 'unknown',
+                    ];
+                }
+            }
         }
 
         return $context;
