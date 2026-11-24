@@ -30,6 +30,7 @@ class WebPageContentService
                 continue;
             }
 
+            $source['content_type'] = $source['content_type'] ?? 'search_result_snippet';
             if (count($enriched) >= $maxPages) {
                 $enriched[] = $source;
                 continue;
