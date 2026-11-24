@@ -40,7 +40,7 @@ class GuidedServiceFlowEngineTest extends TestCase
 
         $reply = $engine->handle('۲', (int) $conversation->id);
 
-        $this->assertStringContainsString('مالک برند قراره چه کسی باشه؟', $reply);
+        $this->assertStringContainsString('برند برای چه کالا یا خدماتی استفاده می‌شه؟', $reply);
         $this->assertSame('logo', $conversation->fresh()->assistant_context['guided_flow']['answers']['mark_type']);
     }
 
