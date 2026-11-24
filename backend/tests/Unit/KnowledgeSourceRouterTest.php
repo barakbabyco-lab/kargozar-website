@@ -42,6 +42,16 @@ class KnowledgeSourceRouterTest extends TestCase
         $this->assertSame('iran_national_license_portal', $route['live_verification_source']);
     }
 
+    public function test_commercial_card_uses_the_official_comprehensive_trade_system(): void
+    {
+        $route = app(KnowledgeSourceRouter::class)->resolve('commercial-card');
+
+        $this->assertSame('hybrid', $route['mode']);
+        $this->assertSame('iran_commercial_card_portal', $route['live_verification_source']);
+        $this->assertSame('https://ntsw.ir/', $route['live_source_url']);
+        $this->assertSame('official_domain_identified_exact_workflow_pending_verification', $route['status']);
+    }
+
     public function test_business_license_uses_live_national_portal_without_claiming_it_is_ready(): void
     {
         $result = app(KnowledgeRetrievalService::class)->retrieve('guild-business-license');
