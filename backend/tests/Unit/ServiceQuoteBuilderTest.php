@@ -12,6 +12,12 @@ class ServiceQuoteBuilderTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+        Config::set('assistant_ai.quote_currency', 'IRT');
+    }
+
     private function createService(string $slug, ?float $price, ?int $days, array $timestamps = []): Service
     {
         $category = ServiceCategory::query()->firstOrCreate(
@@ -58,6 +64,7 @@ class ServiceQuoteBuilderTest extends TestCase
         $this->assertSame(1500000.0, $quote['service_fee_subtotal']);
         $this->assertSame(1500000.0, $quote['line_items'][0]['price_amount']);
         $this->assertSame(7, $quote['line_items'][0]['estimated_days']);
+        $this->assertSame('IRT', $quote['currency']);
         $this->assertNull($quote['official_and_third_party_fees']['amount']);
     }
 
