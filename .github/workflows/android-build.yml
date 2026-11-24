@@ -1,9 +1,13 @@
 name: Build KarGozar Android app
 
 on:
-  # Build installable Android artifacts whenever the mobile app or this workflow changes.
+  # Build installable Android artifacts for main and test pull requests.
   push:
     branches: [main]
+    paths:
+      - "mobile/**"
+      - ".github/workflows/android-build.yml"
+  pull_request:
     paths:
       - "mobile/**"
       - ".github/workflows/android-build.yml"
