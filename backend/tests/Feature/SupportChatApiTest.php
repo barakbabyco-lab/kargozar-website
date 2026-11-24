@@ -28,6 +28,33 @@ class SupportChatApiTest extends TestCase
         ]);
     }
 
+    public function test_guest_questions_outside_kargozar_scope_are_redirected(): void
+    {
+        $guestToken = str_repeat('f6', 32);
+
+        $started = $this->withHeader('X-Support-Guest-Token', $guestToken)
+            ->postJson('/api/v1/guest/support-conversations', ['body' => 'فردا هوا چطوره؟'])
+            ->assertCreated();
+
+        $reply = $started->json('data.messages.1.body');
+        $this->assertStringContainsString('دستیار تخصصی کارگزارم', $reply);
+        $this->assertDatabaseHas('support_unanswered_question_events', [
+            'conversation_id' => $started->json('data.id'),
+            'outcome' => 'out_of_scope',
+        ]);
+    }
+
+    public function test_guest_small_talk_is_acknowledged_without_leaving_service_scope(): void
+    {
+        $guestToken = str_repeat('f7', 32);
+
+        $started = $this->withHeader('X-Support-Guest-Token', $guestToken)
+            ->postJson('/api/v1/guest/support-conversations', ['body' => 'حالت چطوره؟'])
+            ->assertCreated();
+
+        $this->assertStringContainsString('ممنون، آماده‌ام', $started->json('data.messages.1.body'));
+    }
+
     public function test_customer_can_start_and_continue_a_support_conversation(): void
     {
         $customer = Customer::create(['mobile' => '09120000111', 'status' => 'active']);
