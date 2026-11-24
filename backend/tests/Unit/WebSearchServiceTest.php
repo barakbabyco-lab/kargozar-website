@@ -177,4 +177,40 @@ class WebSearchServiceTest extends TestCase
 
         Http::assertSentCount(1);
     }
+    public function test_service_key_routes_search_to_its_registered_official_portal(): void
+    {
+        config([
+            'knowledge_sources.services.guild-business-license' => [
+                'mode' => 'live',
+                'source' => 'iran_national_license_portal',
+            ],
+            'knowledge_sources.sources.iran_national_license_portal' => [
+                'base_url' => 'https://mojavez.ir/',
+                'search_url' => null,
+            ],
+            'support_assistant.web_search.official_context_terms' => [],
+        ]);
+
+        Http::fake([
+            '127.0.0.1:8888/search*' => Http::response([
+                'results' => [[
+                    'title' => 'درگاه ملی مجوزها',
+                    'url' => 'https://mojavez.ir/',
+                    'content' => 'نتیجه رسمی',
+                ]],
+            ], 200),
+        ]);
+
+        app(WebSearchService::class)->search('فروشگاه پوشاک', ['guild-business-license']);
+
+        Http::assertSent(function (Request $request): bool {
+            $query = [];
+            parse_str((string) parse_url($request->url(), PHP_URL_QUERY), $query);
+
+            return str_contains((string) ($query['q'] ?? ''), 'site:mojavez.ir')
+                && ! str_contains((string) ($query['q'] ?? ''), 'site:gov.ir');
+        });
+    }
+
+
 }
