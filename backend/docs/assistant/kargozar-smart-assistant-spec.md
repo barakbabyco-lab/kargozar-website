@@ -216,6 +216,8 @@ The first AI-enabled release is not accepted until these scenarios pass:
 ## 11. Quote and catalogue verification
 
 The assistant may quote only active `Service` rows that are mapped from a service key and have current verification timestamps:
+
+The price unit must also be explicitly configured as `IRR` (rial) or `IRT` (toman) through `ASSISTANT_QUOTE_CURRENCY`. Until the owner confirms the unit, the assistant must not emit a numeric catalogue price, even if a price and verification timestamp exist.
 - `price_verified_at`: default validity window 30 days;
 - `duration_verified_at`: default validity window 90 days.
 
