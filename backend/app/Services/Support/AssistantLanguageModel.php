@@ -148,7 +148,8 @@ PROMPT;
 
         // The controller persists the current customer message before calling
         // the assistant; the current question is appended separately below.
-        if ($history !== [] && end($history)['role'] === 'user') {
+        $lastTurn = $history === [] ? null : $history[array_key_last($history)];
+        if (($lastTurn['role'] ?? null) === 'user') {
             array_pop($history);
         }
 
