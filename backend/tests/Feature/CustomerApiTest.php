@@ -168,7 +168,7 @@ class CustomerApiTest extends TestCase
         $this->assertSame($originalServiceId, Service::query()
             ->where('slug', 'business-license')
             ->value('id'));
-        $this->assertSame(17, Service::query()->count());
+        $this->assertSame(22, Service::query()->count());
     }
 
     public function test_public_catalog_returns_only_active_services(): void
