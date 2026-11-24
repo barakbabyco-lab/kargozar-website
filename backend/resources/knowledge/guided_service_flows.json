@@ -10,7 +10,7 @@
       "questions": [
         {
           "key": "activity_group",
-          "question": "فعالیت شما به کدام گروه نزدیک‌تره؟",
+          "question": "نوع شغل شما به کدوم یک از گروه‌های زیر نزدیک‌تره؟",
           "type": "choice",
           "options": [
             {"label": "فروشگاه و خرده‌فروشی", "value": "retail"},
