@@ -8,13 +8,15 @@ use Tests\TestCase;
 
 class KnowledgeSourceRouterTest extends TestCase
 {
-    public function test_company_registration_uses_local_knowledge_bank(): void
+    public function test_company_registration_uses_local_knowledge_and_official_live_verification(): void
     {
         $route = app(KnowledgeSourceRouter::class)->resolve('company-registration');
 
-        $this->assertSame('local', $route['mode']);
+        $this->assertSame('hybrid', $route['mode']);
         $this->assertSame('category_02_company_registration.json', $route['knowledge_file']);
-        $this->assertSame('local_knowledge_configured', $route['status']);
+        $this->assertSame('iran_company_registration_portal', $route['live_verification_source']);
+        $this->assertSame('official_domain_identified_exact_workflow_pending_verification', $route['status']);
+        $this->assertSame('https://irsherkat.ssaa.ir/', $route['live_source_url']);
     }
 
     public function test_all_ten_service_categories_have_dedicated_knowledge_files(): void
@@ -38,6 +40,16 @@ class KnowledgeSourceRouterTest extends TestCase
         $this->assertSame('hybrid', $route['mode']);
         $this->assertSame('category_04_complementary_documents_approvals.json', $route['knowledge_file']);
         $this->assertSame('iran_national_license_portal', $route['live_verification_source']);
+    }
+
+    public function test_commercial_card_uses_the_official_comprehensive_trade_system(): void
+    {
+        $route = app(KnowledgeSourceRouter::class)->resolve('commercial-card');
+
+        $this->assertSame('hybrid', $route['mode']);
+        $this->assertSame('iran_commercial_card_portal', $route['live_verification_source']);
+        $this->assertSame('https://ntsw.ir/', $route['live_source_url']);
+        $this->assertSame('official_domain_identified_exact_workflow_pending_verification', $route['status']);
     }
 
     public function test_business_license_uses_live_national_portal_without_claiming_it_is_ready(): void
@@ -67,4 +79,30 @@ class KnowledgeSourceRouterTest extends TestCase
         $this->assertNull($result['knowledge']);
         $this->assertNull($result['live_lookup']);
     }
+    public function test_tax_and_vocational_prerequisites_have_dedicated_knowledge_and_source_routes(): void
+    {
+        $tax = app(KnowledgeSourceRouter::class)->resolve('tax-file-and-tracking');
+        $vocational = app(KnowledgeSourceRouter::class)->resolve('technical-vocational-certificate');
+
+        $this->assertSame('hybrid', $tax['mode']);
+        $this->assertSame('iran_tax_portal', $tax['live_verification_source']);
+        $this->assertSame('https://my.tax.gov.ir/', $tax['live_source_url']);
+
+        $this->assertSame('hybrid', $vocational['mode']);
+        $this->assertSame('iran_technical_vocational_portal', $vocational['live_verification_source']);
+        $this->assertSame('official_domain_and_exact_workflow_pending_verification', $vocational['status']);
+    }
+
+
+    public function test_lease_tracking_uses_the_official_khodnevis_portal(): void
+    {
+        $route = app(KnowledgeSourceRouter::class)->resolve('lease-tracking-code');
+
+        $this->assertSame('hybrid', $route['mode']);
+        $this->assertSame('iran_real_estate_transaction_system', $route['live_verification_source']);
+        $this->assertSame('https://khodnevis.mrud.ir/', $route['live_source_url']);
+        $this->assertSame('official_domain_identified_exact_workflow_pending_verification', $route['status']);
+    }
+
+
 }

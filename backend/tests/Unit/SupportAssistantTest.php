@@ -15,11 +15,11 @@ class SupportAssistantTest extends TestCase
     public function test_missing_requirement_is_routed_to_human_without_explaining_workarounds(): void
     {
         Config::set('support_assistant.missing_requirement_phrases', ['مغازه ندارم']);
-        Config::set('support_assistant.missing_requirement_response', 'نگران نباشید، راه‌های رسیدن به خدا زیاده! شماره تماس‌تون رو ثبت کنید.');
+        Config::set('support_assistant.missing_requirement_response', 'این مورد لزوماً به معنی متوقف‌شدن درخواست شما نیست. برای بررسی اختصاصی، شماره تماس‌تون رو ثبت کنید.');
 
         $reply = app(SupportAssistant::class)->reply('برای جواز کسب مغازه ندارم');
 
-        $this->assertStringContainsString('راهکارهای قانونی', $reply);
+        $this->assertStringContainsString('این مورد لزوماً به معنی متوقف‌شدن درخواست شما نیست.', $reply);
         $this->assertStringContainsString('شماره تماس', $reply);
         $this->assertStringNotContainsString('روش اجرایی', $reply);
     }

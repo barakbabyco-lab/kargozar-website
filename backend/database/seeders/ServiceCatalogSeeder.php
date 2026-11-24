@@ -186,24 +186,33 @@ class ServiceCatalogSeeder extends Seeder
             ['قرارداد استخدام', 'employment-contract', 'تهیه پیش‌نویس قرارداد استخدام متناسب با اطلاعات طرفین.', 'employment-contract'],
             ['قرارداد پیمانکاری', 'contractor-agreement', 'تهیه پیش‌نویس قرارداد پیمانکاری بر اساس شرح کار و توافق طرفین.', 'contractor-contract'],
             ['ساخت تیزر تبلیغاتی', 'advertising-video', 'طراحی و تولید تیزر معرفی محصول یا کسب‌وکار.', 'other-specialized-services'],
+            ['ثبت و تأسیس شرکت', 'company-incorporation', 'بررسی قالب حقوقی و پیگیری فرایند ثبت و تأسیس شرکت.', 'company-incorporation'],
+            ['تأییدیه پلیس اماکن', 'police-places-approval', 'بررسی شرایط و پیگیری تأییدیه پلیس نظارت بر اماکن عمومی.', 'police-places-approval'],
+            ['تأییدیه بهداشت محیط', 'environment-health-approval', 'بررسی الزامات و پیگیری تأییدیه بهداشت محیط متناسب با فعالیت.', 'environment-health-approval'],
+            ['گواهی احکام تجارت', 'trade-rules-certificate', 'راهنمایی و پیگیری دوره و گواهی احکام تجارت در صورت شمول.', 'trade-rules-certificate'],
+            ['گواهینامه فنی و حرفه‌ای', 'technical-vocational-certificate', 'راهنمایی و پیگیری مسیر دریافت گواهینامه مهارتی مرتبط با فعالیت.', 'technical-vocational-certificate'],
         ];
 
         foreach ($serviceDefinitions as $position => [$title, $slug, $description, $categorySlug]) {
             $category = ServiceCategory::query()->where('slug', $categorySlug)->firstOrFail();
+            $service = Service::query()->firstOrNew(['slug' => $slug]);
+            $isNewService = ! $service->exists;
 
-            Service::updateOrCreate(
-                ['slug' => $slug],
-                [
-                    'category_id' => $category->id,
-                    'title' => $title,
-                    'description' => $description,
-                    'requirements' => [],
-                    'estimated_days' => null,
-                    'base_price' => null,
-                    'is_active' => true,
-                    'sort_order' => $position + 1,
-                ],
-            );
+            $service->category_id = $category->id;
+            $service->title = $title;
+            $service->description = $description;
+            $service->is_active = true;
+            $service->sort_order = $position + 1;
+
+            if ($isNewService) {
+                $service->requirements = [];
+                $service->estimated_days = null;
+                $service->base_price = null;
+            }
+
+            // Existing staff-entered requirements, prices, durations and their
+            // verification timestamps must survive every catalogue seed run.
+            $service->save();
         }
 
     }

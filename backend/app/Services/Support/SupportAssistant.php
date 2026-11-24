@@ -2,6 +2,8 @@
 
 namespace App\Services\Support;
 
+use App\Models\Service;
+
 class SupportAssistant
 {
     /**
@@ -11,6 +13,107 @@ class SupportAssistant
     public function reply(string $message, ?int $conversationId = null): string
     {
         $text = $this->normalize($message);
+
+        foreach ((array) config('support_assistant.human_request_terms', []) as $term) {
+            if (is_string($term) && $term !== '' && str_contains($text, $this->normalize($term))) {
+                app(UnansweredQuestionTracker::class)->record($message, 'human_escalation', $conversationId);
+                return (string) config('support_assistant.human_handoff_response', config('support_assistant.fallback'));
+            }
+        }
+
+        // Case-specific legal disputes and explicit requests for a human remain
+        // hard handoff paths even when the AI provider is enabled.
+        foreach ((array) config('support_assistant.hard_escalation_terms', []) as $term) {
+            if (is_string($term) && $term !== '' && str_contains($text, $this->normalize($term))) {
+                app(UnansweredQuestionTracker::class)->record($message, 'human_escalation', $conversationId);
+                return (string) config('support_assistant.fallback');
+            }
+        }
+
+        // When the server-side model is configured, let it interpret the whole
+        // turn before legacy keyword rules. This is what enables natural
+        // language needs analysis and safe answers outside the service catalogue.
+        if ((bool) config('assistant_ai.enabled', false)) {
+            $serviceContext = $this->assistantServiceContext($message);
+            $isShortAcknowledgement = preg_match('/^(سلام|درود|وقت بخیر|ممنون|متشکرم|مرسی|خداحافظ|خسته نباشید|بله|بلی|نه|خیر|اوکی|باشه|چشم|درسته)(\\s|[.!؟،]*)*$/u', $text) === 1;
+            // Search is the default for substantive, non-sensitive questions,
+            // including topics outside the Kargozar catalogue. This prevents
+            // the assistant from relying only on model training data.
+            $needsCurrentResearch = ! $isShortAcknowledgement;
+            $sources = [];
+            if ($needsCurrentResearch && (bool) config('support_assistant.web_search.enabled', true)) {
+                $searchQuestion = $message;
+                if (preg_match('/مغازه|فروشگاه|بوتیک|لباس فروشی|نجاری/u', $text) === 1
+                    && preg_match('/جواز|پروانه|مجوز/u', $text) !== 1) {
+                    $searchQuestion = 'شرایط و مجوزهای رسمی راه‌اندازی کسب‌وکار برای: '.$message;
+                }
+                $serviceKeys = array_values(array_unique(array_filter(array_column($serviceContext, 'service_key'), 'is_string')));
+                $webResult = app(WebSearchService::class)->search($searchQuestion, $serviceKeys);
+                $sources = is_array($webResult) && is_array($webResult['sources'] ?? null)
+                    ? $webResult['sources']
+                    : [];
+                if ($sources !== []) {
+                    $sources = app(WebPageContentService::class)->enrich($sources);
+                }
+            }
+
+            $hasServiceIntent = count(array_filter($serviceContext, fn ($item) => is_array($item) && is_string($item['service_key'] ?? null))) > 0;
+            if ($hasServiceIntent) {
+                $analysis = app(AssistantLanguageModel::class)->analyzeServiceNeed(
+                    $message,
+                    $conversationId,
+                    $sources,
+                    $serviceContext,
+                );
+
+                if ($analysis !== null) {
+                    if (($analysis['needs_human'] ?? false) === true) {
+                        app(UnansweredQuestionTracker::class)->record($message, 'human_escalation', $conversationId);
+                        return (string) config('support_assistant.human_handoff_response', config('support_assistant.fallback'));
+                    }
+
+                    if (is_string($analysis['clarifying_question'] ?? null) && $analysis['clarifying_question'] !== '') {
+                        app(UnansweredQuestionTracker::class)->record($message, 'service_clarification', $conversationId);
+                        return $analysis['clarifying_question'];
+                    }
+
+                    $selectedServiceKeys = array_values(array_unique(array_merge(
+                        $analysis['matched_service_keys'] ?? [],
+                        $analysis['required_service_keys'] ?? [],
+                    )));
+                    if ($selectedServiceKeys !== []) {
+                        $serviceContext[] = [
+                            'service_quote_context' => app(ServiceQuoteBuilder::class)->build($selectedServiceKeys),
+                        ];
+                    }
+
+                    $serviceContext[] = ['service_need_analysis' => $analysis];
+                }
+            }
+
+            $aiAnswer = app(AssistantLanguageModel::class)->answer(
+                $message,
+                $conversationId,
+                $sources,
+                $serviceContext,
+            );
+
+            if ($aiAnswer !== null) {
+                if ($sources !== []) {
+                    $aiAnswer .= "\n\nمنابع اولیه برای بررسی:";
+                    foreach (array_slice($sources, 0, 5) as $index => $source) {
+                        $url = trim((string) ($source['url'] ?? ''));
+                        if (str_starts_with(strtolower($url), 'https://')) {
+                            $title = trim((string) ($source['title'] ?? 'منبع وب'));
+                            $aiAnswer .= "\n".($index + 1).'. '.$title.' — '.$url;
+                        }
+                    }
+                }
+
+                app(UnansweredQuestionTracker::class)->record($message, 'ai_answered', $conversationId);
+                return $aiAnswer;
+            }
+        }
 
         foreach (config('support_assistant.missing_requirement_phrases', []) as $phrase) {
             if ($phrase !== '' && str_contains($text, $this->normalize($phrase))) {
@@ -77,7 +180,7 @@ class SupportAssistant
             return $dateTimeAnswer;
         }
 
-        $webAnswer = $this->publicWebReply($message);
+        $webAnswer = $this->publicWebReply($message, $conversationId);
         if ($webAnswer !== null) {
             $noResult = (string) config('support_assistant.web_search.no_result', '');
             $outcome = $noResult !== '' && str_starts_with($webAnswer, $noResult)
@@ -85,6 +188,17 @@ class SupportAssistant
                 : (str_contains($webAnswer, 'منابع برای بررسی بیشتر:') ? 'web_answered' : 'no_answer');
             app(UnansweredQuestionTracker::class)->record($message, $outcome, $conversationId);
             return $webAnswer;
+        }
+
+        $modelAnswer = app(AssistantLanguageModel::class)->answer(
+            $message,
+            $conversationId,
+            [],
+            $this->assistantServiceContext($message),
+        );
+        if ($modelAnswer !== null) {
+            app(UnansweredQuestionTracker::class)->record($message, 'ai_answered', $conversationId);
+            return $modelAnswer;
         }
 
         app(UnansweredQuestionTracker::class)->record($message, 'no_answer', $conversationId);
@@ -153,7 +267,7 @@ class SupportAssistant
      * Use public web search only after the internal service registry and FAQ miss.
      * Sensitive questions are intercepted earlier and never reach this method.
      */
-    private function publicWebReply(string $question): ?string
+    private function publicWebReply(string $question, ?int $conversationId = null): ?string
     {
         if (! (bool) config('support_assistant.web_search.enabled', true)) {
             return null;
@@ -161,12 +275,24 @@ class SupportAssistant
 
         $result = app(WebSearchService::class)->search($question);
         if (! is_array($result)) {
-            return (string) config('support_assistant.web_search.no_result', '') ?: null;
+            return app(AssistantLanguageModel::class)->answer($question, $conversationId, [], $this->assistantServiceContext($question))
+                ?? ((string) config('support_assistant.web_search.no_result', '') ?: null);
         }
 
+        $sources = $result['sources'] ?? [];
         $answer = trim((string) ($result['answer'] ?? ''));
         if ($answer === '') {
-            $answer = 'چند منبع مرتبط پیدا شد، اما خلاصه قابل اتکایی از آن‌ها به دست نیامد. لینک منابع را برای بررسی بیشتر می‌گذارم.';
+            $answer = 'چند نتیجه جست‌وجو پیدا شد، اما فقط خلاصه‌های کوتاه نتایج در دسترس است و متن کامل صفحات هنوز بررسی نشده است.';
+        }
+
+        $modelAnswer = app(AssistantLanguageModel::class)->answer(
+            $question,
+            $conversationId,
+            is_array($sources) ? $sources : [],
+            $this->assistantServiceContext($question),
+        );
+        if ($modelAnswer !== null) {
+            $answer = $modelAnswer;
         }
 
         $response = (string) config('support_assistant.web_search.fallback_intro', '')."\n\n".$answer;
@@ -190,6 +316,243 @@ class SupportAssistant
     }
 
     /**
+     * Provide a small, relevant slice of the service catalogue to the model.
+     * The model may explain these records but cannot invent catalogue entries.
+     */
+    private function assistantServiceContext(string $question): array
+    {
+        $context = [];
+        $registryPath = resource_path('knowledge/service_knowledge_registry.json');
+        if (is_file($registryPath)) {
+            $registry = json_decode((string) file_get_contents($registryPath), true);
+            foreach (($registry['categories'] ?? []) as $category) {
+                $file = $category['knowledge_file'] ?? null;
+                if (! is_string($file) || $file === '') {
+                    continue;
+                }
+
+                $path = resource_path('knowledge/'.$file);
+                if (! is_file($path)) {
+                    continue;
+                }
+
+                $document = json_decode((string) file_get_contents($path), true);
+                foreach (($document['services'] ?? []) as $record) {
+                    if (! is_array($record)) {
+                        continue;
+                    }
+
+                    $title = $this->normalize((string) ($record['title'] ?? ''));
+                    $questionText = $this->normalize($question);
+                    $tokens = preg_split('/\s+/u', $title, -1, PREG_SPLIT_NO_EMPTY) ?: [];
+                    $tokens = array_values(array_filter($tokens, fn ($token) => mb_strlen($token, 'UTF-8') >= 3));
+                    $score = 0;
+                    foreach ($tokens as $token) {
+                        if (str_contains($questionText, $token)) {
+                            $score++;
+                        }
+                    }
+
+                    if ($title !== '' && str_contains($questionText, $title)) {
+                        $score += 3;
+                    }
+
+                    if ($score < 1) {
+                        continue;
+                    }
+
+                    $serviceKey = (string) ($record['service_key'] ?? '');
+                    $route = $serviceKey !== '' ? config('knowledge_sources.services.'.$serviceKey, []) : [];
+                    $liveSourceKey = is_array($route)
+                        ? ($route['live_verification_source'] ?? (($route['mode'] ?? null) === 'live' ? ($route['source'] ?? null) : null))
+                        : null;
+                    $liveSource = is_string($liveSourceKey) ? config('knowledge_sources.sources.'.$liveSourceKey, []) : [];
+                    $recordOfficialSource = trim((string) ($record['official_source'] ?? ''));
+                    $recordSourceUrl = trim((string) ($record['source_url'] ?? ''));
+                    $liveSourceName = is_array($liveSource) ? trim((string) ($liveSource['name'] ?? '')) : '';
+                    $liveSourceUrl = is_array($liveSource) ? trim((string) ($liveSource['base_url'] ?? '')) : '';
+
+                    $context[] = [
+                        'category' => $category['title'] ?? null,
+                        'service_key' => $record['service_key'] ?? null,
+                        'title' => $record['title'] ?? null,
+                        'record_status' => $record['status'] ?? 'needs_review',
+                        'scope' => $record['scope'] ?? null,
+                        'what_is_it' => $record['what_is_it'] ?? null,
+                        'eligibility' => $record['eligibility'] ?? null,
+                        'conditions' => $record['conditions'] ?? [],
+                        'documents' => $record['documents'] ?? [],
+                        'steps' => $record['steps'] ?? [],
+                        'fees' => $record['fees'] ?? null,
+                        'issuance_time' => $record['issuance_time'] ?? null,
+                        'issuing_authority' => $record['issuing_authority'] ?? null,
+                        'official_source' => $recordOfficialSource !== '' ? $recordOfficialSource : ($liveSourceName !== '' ? $liveSourceName : null),
+                        'source_url' => $recordSourceUrl !== '' ? $recordSourceUrl : ($liveSourceUrl !== '' ? $liveSourceUrl : null),
+                        'verification_status' => $record['verification_status'] ?? 'needs_review',
+                        'catalogue_category' => $category['title'] ?? null,
+                        '_match_score' => $score,
+                    ];
+                }
+            }
+        }
+
+        usort($context, fn ($left, $right) => ($right['_match_score'] ?? 0) <=> ($left['_match_score'] ?? 0));
+        $context = array_slice($context, 0, 4);
+        foreach ($context as &$record) {
+            unset($record['_match_score']);
+        }
+        unset($record);
+
+        $normalizedQuestion = $this->normalize($question);
+
+        $intentHints = [
+            'commercial-card' => ['pattern' => '/کارت بازرگانی|صدور کارت بازرگانی|تمدید کارت بازرگانی/u', 'title' => 'صدور و تمدید کارت بازرگانی'],
+            'company-registration' => ['pattern' => '/ثبت شرکت|تاسیس شرکت|تأسیس شرکت|شرکت حقوقی بزنم|شرکت بزنم|شرکت سهامی خاص|شرکت با مسئولیت محدود|مسئولیت محدود ثبت/u', 'title' => 'ثبت شرکت و انتخاب قالب حقوقی'],
+            'company-changes' => ['pattern' => '/ثبت تغییرات شرکت|تغییر مدیران شرکت|افزایش سرمایه شرکت|تغییر آدرس شرکت/u', 'title' => 'ثبت تغییرات شرکت'],
+            'company-dissolution' => ['pattern' => '/انحلال شرکت|تعطیلی شرکت حقوقی/u', 'title' => 'انحلال و تصفیه شرکت'],
+            'trademark-registration' => ['pattern' => '/ثبت برند|برند.*ثبت|ثبت.*برند|ثبت علامت تجاری|علامت تجاری|ثبت نام تجاری/u', 'title' => 'ثبت علامت تجاری و برند'],
+            'logo-registration' => ['pattern' => '/ثبت لوگو|لوگو را ثبت|علامت تصویری/u', 'title' => 'ثبت لوگو به‌عنوان علامت'],
+            'industrial-design-registration' => ['pattern' => '/ثبت طرح صنعتی|ثبت ظاهر محصول/u', 'title' => 'ثبت طرح صنعتی'],
+            'invention-registration' => ['pattern' => '/ثبت اختراع|گواهی اختراع/u', 'title' => 'ثبت اختراع'],
+            'business-account-opening' => ['pattern' => '/افتتاح حساب|حساب جاری شرکتی|حساب تجاری/u', 'title' => 'افتتاح حساب جاری و حساب تجاری'],
+            'lease-tracking-code' => ['pattern' => '/کد رهگیری اجاره|اجاره نامه.*کد رهگیری|اجاره‌نامه.*کد رهگیری|ثبت قرارداد اجاره/u', 'title' => 'دریافت کد رهگیری اجاره‌نامه'],
+            'health-card' => ['pattern' => '/کارت بهداشت|گواهی سلامت شاغل/u', 'title' => 'کارت بهداشت و گواهی سلامت شاغلان'],
+            'environment-health-approval' => ['pattern' => '/تاییدیه بهداشت محیط|تأییدیه بهداشت محیط/u', 'title' => 'تأییدیه بهداشت محیط'],
+            'trade-law-training-certificate' => ['pattern' => '/احکام تجارت|گواهی احکام کسب|دوره احکام تجارت/u', 'title' => 'گواهی دوره احکام تجارت و کسب‌وکار'],
+            'national-standards-approval' => ['pattern' => '/نشان استاندارد|گواهی استاندارد|استاندارد محصول/u', 'title' => 'تأییدیه‌ها و نشان استاندارد'],
+            'enamad' => ['pattern' => '/اینماد|نماد اعتماد الکترونیکی/u', 'title' => 'دریافت و تمدید اینماد'],
+            'business-website' => ['pattern' => '/سایت فروشگاهی|وب سایت فروشگاهی|وب‌سایت فروشگاهی|طراحی سایت شرکتی/u', 'title' => 'طراحی و راه‌اندازی وب‌سایت'],
+            'payment-gateway' => ['pattern' => '/درگاه پرداخت اینترنتی|درگاه پرداخت/u', 'title' => 'درگاه پرداخت اینترنتی'],
+            'employment-contract' => ['pattern' => '/قرارداد کار|قرارداد استخدام|قرارداد پرسنل/u', 'title' => 'تنظیم قرارداد کار'],
+            'contractor-agreement' => ['pattern' => '/قرارداد پیمانکاری|قرارداد پیمانکار/u', 'title' => 'تنظیم قرارداد پیمانکاری'],
+            'accounting-software' => ['pattern' => '/نرم افزار حسابداری|نرم‌افزار حسابداری/u', 'title' => 'نرم‌افزار حسابداری و مالی'],
+            'payroll-hr' => ['pattern' => '/حقوق و دستمزد|نرم افزار حقوق|نرم‌افزار حقوق/u', 'title' => 'حقوق و دستمزد و مدیریت پرسنل'],
+            'crm' => ['pattern' => '/مدیریت ارتباط با مشتری|سیستم crm|\bcrm\b/iu', 'title' => 'مدیریت ارتباط با مشتریان'],
+            'inventory-management' => ['pattern' => '/مدیریت انبار|نرم افزار انبار|نرم‌افزار انبار/u', 'title' => 'مدیریت انبار و موجودی'],
+            'feasibility-study' => ['pattern' => '/طرح توجیهی|امکان سنجی|امکان‌سنجی/u', 'title' => 'طرح توجیهی و امکان‌سنجی'],
+            'business-plan' => ['pattern' => '/بیزینس پلن|بیزنس پلن|طرح کسب و کار|طرح کسب‌وکار/u', 'title' => 'تهیه طرح کسب‌وکار'],
+            'business-valuation' => ['pattern' => '/ارزش گذاری کسب و کار|ارزش‌گذاری کسب‌وکار/u', 'title' => 'ارزش‌گذاری کسب‌وکار'],
+            'fundraising' => ['pattern' => '/جذب سرمایه گذار|جذب سرمایه‌گذار|تامین سرمایه|تأمین سرمایه/u', 'title' => 'تأمین سرمایه و جذب سرمایه‌گذار'],
+        ];
+
+        $existingServiceKeys = array_values(array_filter(array_column($context, 'service_key'), 'is_string'));
+        foreach ($intentHints as $serviceKey => $hint) {
+            if (in_array($serviceKey, $existingServiceKeys, true)
+                || preg_match($hint['pattern'], $normalizedQuestion) !== 1) {
+                continue;
+            }
+
+            $route = config('knowledge_sources.services.'.$serviceKey, []);
+            $liveSourceKey = is_array($route)
+                        ? ($route['live_verification_source'] ?? (($route['mode'] ?? null) === 'live' ? ($route['source'] ?? null) : null))
+                        : null;
+            $source = is_string($liveSourceKey) ? config('knowledge_sources.sources.'.$liveSourceKey, []) : [];
+
+            $context[] = [
+                'service_key' => $serviceKey,
+                'title' => $hint['title'],
+                'intent_hint' => true,
+                'verification_status' => 'requires_current_source_review',
+                'official_source' => is_array($source) ? ($source['name'] ?? null) : null,
+                'source_url' => is_array($source) ? ($source['base_url'] ?? null) : null,
+            ];
+        }
+
+        if (preg_match('/مالیات|پرونده مالیاتی|کد رهگیری مالیاتی|شناسه مالیاتی/u', $normalizedQuestion) === 1) {
+            $context[] = [
+                'service_key' => 'tax-file-and-tracking',
+                'title' => 'تشکیل پرونده و پیگیری امور مالیاتی',
+                'verification_status' => 'needs_live_tax_portal_review',
+                'official_source' => 'درگاه ملی خدمات الکترونیک سازمان امور مالیاتی',
+                'source_url' => 'https://my.tax.gov.ir/',
+            ];
+        }
+
+        if (preg_match('/جواز|پروانه|مجوز|مغازه|فروشگاه|بوتیک|لباس فروشی|نجاری|راه اندازی|راه‌اندازی|راه بندازی|راه بندازم/u', $normalizedQuestion) === 1) {
+            $context[] = [
+                'service_key' => 'guild-business-license',
+                'title' => 'پروانه کسب و مجوزهای صنفی',
+                'scope' => 'خدمت احتمالی مرتبط با راه‌اندازی یا اداره محل کسب؛ فقط پس از روشن‌شدن نوع فعالیت و محل، applicability را بررسی کن.',
+                'verification_status' => 'needs_live_worksheet_retrieval',
+                'official_source' => 'درگاه ملی مجوزهای کشور و کاربرگ جاری فعالیت',
+                'source_url' => 'https://mojavez.ir/',
+            ];
+            $context[] = [
+                'guild_activity_preflight' => $this->classifyGuildActivity($question),
+                'note' => 'این طبقه‌بندی فقط پیش‌بررسی است؛ کاربرگ رسمی رسته و شهر مرجع نهایی است.',
+            ];
+
+            $mapPath = resource_path('knowledge/service_prerequisite_fulfillment_map.json');
+            if (is_file($mapPath)) {
+                $prerequisiteMap = json_decode((string) file_get_contents($mapPath), true);
+                if (is_array($prerequisiteMap)) {
+                    $context[] = [
+                        'prerequisite_fulfillment_map' => $prerequisiteMap['rules'] ?? [],
+                        'assistant_rules' => $prerequisiteMap['assistant_rules'] ?? [],
+                        'mapping_status' => $prerequisiteMap['status'] ?? 'unknown',
+                    ];
+                }
+            }
+        }
+
+        $catalogMappingPath = resource_path('knowledge/service_catalog_mapping.json');
+        if (is_file($catalogMappingPath)) {
+            $catalogMapping = json_decode((string) file_get_contents($catalogMappingPath), true);
+            if (is_array($catalogMapping)) {
+                $relevantServiceKeys = array_values(array_unique(array_filter(array_column($context, 'service_key'), 'is_string')));
+                foreach ($context as $item) {
+                    foreach (($item['prerequisite_fulfillment_map'] ?? []) as $rule) {
+                        $mappedKey = $rule['fulfillment']['service_key'] ?? null;
+                        if (is_string($mappedKey) && $mappedKey !== '') {
+                            $relevantServiceKeys[] = $mappedKey;
+                        }
+                    }
+                }
+                $relevantServiceKeys = array_values(array_unique($relevantServiceKeys));
+
+                $catalogEntries = array_values(array_filter(
+                    is_array($catalogMapping['services'] ?? null) ? $catalogMapping['services'] : [],
+                    fn ($entry) => is_array($entry)
+                        && in_array($entry['service_key'] ?? null, $relevantServiceKeys, true)
+                ));
+                $mappedSlugs = array_values(array_unique(array_filter(array_map(
+                    fn ($entry) => is_array($entry)
+                        && in_array($entry['status'] ?? null, ['mapped_to_service_row', 'mapped_to_existing_related_service'], true)
+                        ? ($entry['catalog_slug'] ?? null)
+                        : null,
+                    $catalogEntries
+                ), 'is_string')));
+                $activeSlugs = $mappedSlugs === []
+                    ? []
+                    : Service::query()->whereIn('slug', $mappedSlugs)->where('is_active', true)->pluck('slug')->all();
+
+                $catalogEntries = array_map(function ($entry) use ($activeSlugs): array {
+                    $mapped = in_array($entry['status'] ?? null, ['mapped_to_service_row', 'mapped_to_existing_related_service'], true);
+                    $active = is_string($entry['catalog_slug'] ?? null)
+                        && in_array($entry['catalog_slug'], $activeSlugs, true);
+
+                    return array_merge($entry, [
+                        'orderable' => $mapped && $active,
+                        'availability_status' => ! $mapped
+                            ? 'not_orderable_pending_catalogue_setup'
+                            : ($active ? 'active_catalogue_row' : 'catalogue_row_missing_or_inactive'),
+                    ]);
+                }, $catalogEntries);
+
+                if ($relevantServiceKeys !== []) {
+                    $context[] = [
+                        'service_catalog_mapping' => $catalogEntries,
+                        'catalog_mapping_status' => $catalogMapping['status'] ?? 'unknown',
+                        'catalog_mapping_note' => $catalogMapping['note'] ?? null,
+                    ];
+                }
+            }
+        }
+
+        return $context;
+    }
+
+    /**
      * Answer common guild-license document questions using the shared checklist
      * plus the activity classifier. This is a preflight, not a universal legal list.
      */
@@ -204,8 +567,18 @@ class SupportAssistant
             }
         }
 
-        if (! $isGuildQuestion || preg_match('/مدرک|مدارک|شرط|شرایط|لازم|نیاز|پیش نیاز/u', $text) !== 1) {
+        if (! $isGuildQuestion) {
             return null;
+        }
+
+        $asksRequirements = preg_match('/مدرک|مدارک|شرط|شرایط|لازم|نیاز|پیش نیاز/u', $text) === 1;
+        if (! $asksRequirements) {
+            $classification = $this->classifyGuildActivity($text);
+            if (($classification['needs_clarification'] ?? true) === true) {
+                return 'برای راهنمایی دقیق جواز کسب، لطفاً نوع شغل دقیق‌تون رو بفرمایید و بگید محل فعالیت در کدوم شهره؟';
+            }
+
+            return 'نوع فعالیت رو مشخص کردیم. برای تطبیق کاربرگ رسمی و شرایط همون رسته، لطفاً بفرمایید محل کسب در کدوم شهره؟';
         }
 
         $isRealEstate = preg_match('/مشاور املاک|املاک|بنگاه املاک/u', $text) === 1;
@@ -240,7 +613,7 @@ class SupportAssistant
         }
 
         if (($classification['needs_clarification'] ?? true) === true && $specialLabels === []) {
-            return "برای جواز کسب، شرایط و مدارک به نوع دقیق فعالیت و شهر محل کسب بستگی داره. لطفاً بفرمایید چه شغلی می‌خواید راه‌اندازی کنید و در کدوم شهر؟ تا موارد مرتبط با همون شغل رو بگم.";
+            return "برای جواز کسب، شرایط و مدارک به نوع دقیق فعالیت و شهر محل کسب بستگی داره. لطفاً اول نوع شغل دقیق‌تون رو بفرمایید و بگید محل کسب در کدوم شهره تا موارد مرتبط با همون فعالیت رو بررسی کنیم.";
         }
 
         if ($specialLabels !== []) {
@@ -249,7 +622,7 @@ class SupportAssistant
         }
 
         $answer .= "\n\nاین موارد راهنمای اولیه‌اند؛ فهرست نهایی باید با ضوابط رسته و شهر شما تطبیق داده بشه.";
-        return $answer;
+        return $this->appendCustomerClosing($answer);
     }
 
     private function requirementDisplayLabels(): array
@@ -357,12 +730,18 @@ class SupportAssistant
                     $best = $record;
                 } elseif ($score > $secondScore) {
                     $secondScore = $score;
-                }
-            }
+                }            }
         }
 
         if (! is_array($best) || $bestScore < 2 || ($bestScore - $secondScore) < 1) {
             return null;
+        }
+
+        if (($best['service_key'] ?? null) === 'guild-business-license') {
+            $activity = $this->classifyGuildActivity($text);
+            if (($activity['needs_clarification'] ?? true) === true) {
+                return 'برای اینکه مسیر درست جواز کسب رو مشخص کنیم، لطفاً اول نوع شغل دقیق‌تون رو بفرمایید و بگید محل فعالیت در کدوم شهره؟';
+            }
         }
 
         $answer = 'برای «'.($best['title'] ?? 'این خدمت').'»، راهنمای اولیه کارگزار به این صورته:';
@@ -399,7 +778,7 @@ class SupportAssistant
             $answer .= "\n\nاین راهنمای اولیه‌ست؛ جزئیات نهایی باید با شرایط پرونده و آخرین ضوابط مرجع مربوط بررسی بشه.";
         }
 
-        return $answer;
+        return $this->appendCustomerClosing($answer);
     }
 
     private function appendCustomerClosing(string $answer): string

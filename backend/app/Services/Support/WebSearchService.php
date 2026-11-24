@@ -12,7 +12,7 @@ class WebSearchService
      * Search SearXNG for an unanswered, non-sensitive question.
      * Search snippets are untrusted data; never treat page text as instructions.
      */
-    public function search(string $question): ?array
+    public function search(string $question, array $serviceKeys = []): ?array
     {
         $endpoint = trim((string) config('support_assistant.web_search.endpoint', 'http://127.0.0.1:8888/search'));
         $token = trim((string) config('support_assistant.web_search.token', ''));
@@ -34,15 +34,17 @@ class WebSearchService
             }
         }
 
-        if ($officialContext) {
+        $domains = $this->officialDomainsForServices($serviceKeys);
+        if ($domains === [] && $officialContext) {
             $domains = array_values(array_filter(
                 (array) config('support_assistant.web_search.official_domains', []),
                 fn ($domain) => is_string($domain) && preg_match('/^[a-z0-9.-]+$/i', $domain) === 1
             ));
-            if ($domains !== []) {
-                $siteQuery = implode(' OR ', array_map(fn ($domain) => 'site:'.$domain, $domains));
-                $query .= ' ('.$siteQuery.')';
-            }
+        }
+
+        if ($domains !== []) {
+            $siteQuery = implode(' OR ', array_map(fn ($domain) => 'site:'.$domain, $domains));
+            $query .= ' ('.$siteQuery.')';
         }
 
         $cacheKey = 'support-web-search:'.hash('sha256', mb_strtolower($query, 'UTF-8'));
@@ -107,6 +109,45 @@ class WebSearchService
     }
 
     /**
+     * Resolve preferred official domains from the shared service-source registry.
+     */
+    private function officialDomainsForServices(array $serviceKeys): array
+    {
+        $domains = [];
+
+        foreach (array_unique(array_filter($serviceKeys, 'is_string')) as $serviceKey) {
+            $route = config('knowledge_sources.services.'.$serviceKey, []);
+            if (! is_array($route)) {
+                continue;
+            }
+
+            foreach ([$route['source'] ?? null, $route['live_verification_source'] ?? null] as $sourceKey) {
+                if (! is_string($sourceKey) || $sourceKey === '') {
+                    continue;
+                }
+
+                $source = config('knowledge_sources.sources.'.$sourceKey, []);
+                if (! is_array($source)) {
+                    continue;
+                }
+
+                foreach ([$source['base_url'] ?? null, $source['search_url'] ?? null] as $sourceUrl) {
+                    if (! is_string($sourceUrl) || ! str_starts_with(strtolower($sourceUrl), 'https://')) {
+                        continue;
+                    }
+
+                    $host = strtolower((string) parse_url($sourceUrl, PHP_URL_HOST));
+                    if ($host !== '' && preg_match('/^[a-z0-9.-]+$/i', $host) === 1) {
+                        $domains[] = $host;
+                    }
+                }
+            }
+        }
+
+        return array_values(array_unique($domains));
+    }
+
+    /**
      * Allow HTTPS endpoints, or the exact loopback endpoint used by the
      * co-located staging Laravel application. Never permit arbitrary HTTP hosts.
      */
@@ -138,6 +179,7 @@ class WebSearchService
     private function sanitizeQuery(string $question): string
     {
         $question = preg_replace('/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/iu', ' ', $question) ?? $question;
+        $question = preg_replace('/(?<![A-Z0-9])IR[0-9]{24}(?![0-9])/iu', ' ', $question) ?? $question;
         $question = strtr($question, [
             '۰' => '0', '۱' => '1', '۲' => '2', '۳' => '3', '۴' => '4',
             '۵' => '5', '۶' => '6', '۷' => '7', '۸' => '8', '۹' => '9',
@@ -145,6 +187,8 @@ class WebSearchService
             '٥' => '5', '٦' => '6', '٧' => '7', '٨' => '8', '٩' => '9',
         ]);
         $question = preg_replace('/(?<!\d)(?:(?:\+|00)?98|0)?9\d{9}(?!\d)/u', ' ', $question) ?? $question;
+        $question = preg_replace('/(?<!\d)\d{16,19}(?!\d)/u', ' ', $question) ?? $question;
+        $question = preg_replace('/(?:کد|رمز|otp)[^\d]{0,24}\d{4,8}/iu', ' ', $question) ?? $question;
         $question = preg_replace('/(?<!\d)\d{10}(?!\d)/u', ' ', $question) ?? $question;
 
         return trim(preg_replace('/\s+/u', ' ', $question) ?? $question);
