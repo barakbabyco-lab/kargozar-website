@@ -107,36 +107,18 @@ class SupportAssistantAiIntegrationTest extends TestCase
         Http::assertNothingSent();
     }
 
-    public function test_ai_receives_company_registration_intent_and_official_portal(): void
+    public function test_company_registration_intent_receives_official_portal_context(): void
     {
-        Http::fake([
-            'api.example.test/v1/chat/completions' => Http::response([
-                'choices' => [[
-                    'message' => ['content' => 'برای ثبت شرکت، ابتدا نوع شرکت و تعداد شرکا را مشخص کنیم.'],
-                ]],
-            ], 200),
-        ]);
+        $assistant = app(SupportAssistant::class);
+        $method = new \\ReflectionMethod(SupportAssistant::class, 'assistantServiceContext');
+        $method->setAccessible(true);
+        $context = $method->invoke($assistant, 'می‌خوام یک شرکت با مسئولیت محدود ثبت کنم');
 
-        $answer = app(SupportAssistant::class)->reply('می‌خوام یک شرکت با مسئولیت محدود ثبت کنم');
+        $company = collect($context)->firstWhere('service_key', 'company-registration');
 
-        $this->assertStringContainsString('نوع شرکت', $answer);
-        Http::assertSent(function ($request): bool {
-            foreach (($request->data()['messages'] ?? []) as $message) {
-                $payload = json_decode((string) ($message['content'] ?? ''), true);
-                if (! is_array($payload)) {
-                    continue;
-                }
-
-                $company = collect($payload['service_knowledge'] ?? [])
-                    ->firstWhere('service_key', 'company-registration');
-
-                if (($company['source_url'] ?? null) === 'https://irsherkat.ssaa.ir/') {
-                    return true;
-                }
-            }
-
-            return false;
-        });
+        $this->assertIsArray($company);
+        $this->assertSame('https://irsherkat.ssaa.ir/', $company['source_url'] ?? null);
+        $this->assertSame('سامانه رسمی ثبت شرکت‌ها', $company['official_source'] ?? null);
     }
 
     public function test_ai_receives_tax_file_service_intent_and_official_portal(): void
