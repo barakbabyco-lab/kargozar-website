@@ -215,9 +215,10 @@ class SupportAssistant
                 ?? ((string) config('support_assistant.web_search.no_result', '') ?: null);
         }
 
+        $sources = $result['sources'] ?? [];
         $answer = trim((string) ($result['answer'] ?? ''));
         if ($answer === '') {
-            $answer = 'چند منبع مرتبط پیدا شد، اما خلاصه قابل اتکایی از آن‌ها به دست نیامد. لینک منابع را برای بررسی بیشتر می‌گذارم.';
+            $answer = 'چند نتیجه جست‌وجو پیدا شد، اما فقط خلاصه‌های کوتاه نتایج در دسترس است و متن کامل صفحات هنوز بررسی نشده است.';
         }
 
         $modelAnswer = app(AssistantLanguageModel::class)->answer(
@@ -238,7 +239,8 @@ class SupportAssistant
                 $title = trim((string) ($source['title'] ?? 'منبع وب'));
                 $url = trim((string) ($source['url'] ?? ''));
                 if ($url !== '') {
-                    $snippet = trim((string) ($source['snippet'] ?? ''));                    $response .= "\n".($index + 1).'. '.$title.' — '.$url;
+                    $snippet = trim((string) ($source['snippet'] ?? ''));
+                    $response .= "\n".($index + 1).'. '.$title.' — '.$url;
                     if ($snippet !== '') {
                         $response .= "\n   ".$snippet;
                     }
@@ -386,7 +388,7 @@ class SupportAssistant
         }
 
         if (($classification['needs_clarification'] ?? true) === true && $specialLabels === []) {
-            return "برای جواز کسب، شرایط و مدارک به نوع دقیق فعالیت و شهر محل کسب بستگی داره. لطفاً بفرمایید چه شغلی می‌خواید راه‌اندازی کنید و در کدوم شهر؟ تا موارد مرتبط با همون شغل رو بگم.";
+            return "برای جواز کسب، شرایط و مدارک به نوع دقیق فعالیت و شهر محل کسب بستگی داره. لطفاً اول نوع شغل دقیق‌تون رو بفرمایید و بگید محل کسب در کدوم شهره تا موارد مرتبط با همون فعالیت رو بررسی کنیم.";
         }
 
         if ($specialLabels !== []) {
@@ -395,7 +397,7 @@ class SupportAssistant
         }
 
         $answer .= "\n\nاین موارد راهنمای اولیه‌اند؛ فهرست نهایی باید با ضوابط رسته و شهر شما تطبیق داده بشه.";
-        return $answer;
+        return $this->appendCustomerClosing($answer);
     }
 
     private function requirementDisplayLabels(): array
@@ -544,7 +546,7 @@ class SupportAssistant
             $answer .= "\n\nاین راهنمای اولیه‌ست؛ جزئیات نهایی باید با شرایط پرونده و آخرین ضوابط مرجع مربوط بررسی بشه.";
         }
 
-        return $answer;
+        return $this->appendCustomerClosing($answer);
     }
 
     private function appendCustomerClosing(string $answer): string
