@@ -12,6 +12,45 @@ class SupportAssistant
     {
         $text = $this->normalize($message);
 
+        // When the server-side model is configured, let it interpret the whole
+        // turn before legacy keyword rules. This is what enables natural
+        // language needs analysis and safe answers outside the service catalogue.
+        if ((bool) config('assistant_ai.enabled', false)) {
+            $serviceContext = $this->assistantServiceContext($message);
+            $needsCurrentResearch = $serviceContext !== []
+                || preg_match('/قانون|مجوز|پروانه|جواز|ثبت شرکت|ثبت برند|مالیات|استاندارد|کارت بهداشت|امروز|جدیدترین|آخرین|امسال|قیمت روز|نرخ|وضعیت فعلی|\\b20[2-9][0-9]\\b/u', $text) === 1;
+            $sources = [];
+            if ($needsCurrentResearch && (bool) config('support_assistant.web_search.enabled', true)) {
+                $webResult = app(WebSearchService::class)->search($message);
+                $sources = is_array($webResult) && is_array($webResult['sources'] ?? null)
+                    ? $webResult['sources']
+                    : [];
+            }
+
+            $aiAnswer = app(AssistantLanguageModel::class)->answer(
+                $message,
+                $conversationId,
+                $sources,
+                $serviceContext,
+            );
+
+            if ($aiAnswer !== null) {
+                if ($sources !== []) {
+                    $aiAnswer .= "\n\nمنابع اولیه برای بررسی:";
+                    foreach (array_slice($sources, 0, 5) as $index => $source) {
+                        $url = trim((string) ($source['url'] ?? ''));
+                        if (str_starts_with(strtolower($url), 'https://')) {
+                            $title = trim((string) ($source['title'] ?? 'منبع وب'));
+                            $aiAnswer .= "\n".($index + 1).'. '.$title.' — '.$url;
+                        }
+                    }
+                }
+
+                app(UnansweredQuestionTracker::class)->record($message, 'ai_answered', $conversationId);
+                return $aiAnswer;
+            }
+        }
+
         foreach (config('support_assistant.missing_requirement_phrases', []) as $phrase) {
             if ($phrase !== '' && str_contains($text, $this->normalize($phrase))) {
                 app(UnansweredQuestionTracker::class)->record($message, 'human_escalation', $conversationId);
