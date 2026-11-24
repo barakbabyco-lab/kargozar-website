@@ -213,7 +213,23 @@ The first AI-enabled release is not accepted until these scenarios pass:
 14. A request for a human is handed off.
 15. If the model provider is unavailable, the assistant degrades safely and does not fabricate a model-generated answer.
 
-## 11. Rollout and safety
+## 11. Quote and catalogue verification
+
+The assistant may quote only active `Service` rows that are mapped from a service key and have current verification timestamps:
+- `price_verified_at`: default validity window 30 days;
+- `duration_verified_at`: default validity window 90 days.
+
+Changing `base_price` clears the previous price verification unless staff explicitly supplies a fresh verification timestamp. Changing `estimated_days` similarly clears duration verification. Staff catalogue endpoints expose these fields for authorized staff. Missing, stale, or unverified values are not sent as numeric quotes.
+
+The quote builder separates:
+- Kargozar service fees;
+- government/official fees;
+- third-party fees;
+- duration estimates.
+
+Official and third-party amounts are not included unless separately verified from the current official source. A quote for the primary service must never be presented as the total package price when customer-specific prerequisite services have not yet been selected.
+
+## 12. Rollout and safety
 
 - Keep the existing live chat available while the new AI path is developed behind a feature flag.
 - Do not merge or deploy to production until backend tests, provider configuration, security review, and acceptance scenarios pass.
