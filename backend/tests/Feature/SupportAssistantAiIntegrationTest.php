@@ -137,6 +137,7 @@ class SupportAssistantAiIntegrationTest extends TestCase
 
     public function test_company_registration_intent_receives_official_portal_context(): void
     {
+        app(\\Database\\Seeders\\ServiceCatalogSeeder::class)->run();
         $assistant = app(SupportAssistant::class);
         $method = new \ReflectionMethod(SupportAssistant::class, 'assistantServiceContext');
         $method->setAccessible(true);
