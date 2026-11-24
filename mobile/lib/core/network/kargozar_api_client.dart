@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 
@@ -143,8 +144,16 @@ class KargozarApiClient {
         request.headers['Idempotency-Key'] = idempotencyKey;
       }
       if (body != null) request.body = jsonEncode(body);
-      final streamed = await _http.send(request);
-      response = await http.Response.fromStream(streamed);
+      response = await (() async {
+        final streamed = await _http.send(request);
+        return await http.Response.fromStream(streamed);
+      })().timeout(const Duration(seconds: 20));
+    } on TimeoutException {
+      throw const KargozarApiException(
+        code: 'REQUEST_TIMEOUT',
+        message: 'پاسخ سرور بیش از ۲۰ ثانیه طول کشید. وضعیت گفت‌وگو را تازه‌سازی کنید؛ ممکن است پیام قبلاً ثبت شده باشد.',
+        statusCode: 0,
+      );
     } on Exception {
       throw const KargozarApiException(
         code: 'NETWORK_ERROR',
