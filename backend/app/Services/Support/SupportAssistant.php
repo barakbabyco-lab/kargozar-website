@@ -57,7 +57,8 @@ class SupportAssistant
                 }
             }
 
-            if ($serviceContext !== []) {
+            $hasServiceIntent = count(array_filter($serviceContext, fn ($item) => is_array($item) && is_string($item['service_key'] ?? null))) > 0;
+            if ($hasServiceIntent) {
                 $analysis = app(AssistantLanguageModel::class)->analyzeServiceNeed(
                     $message,
                     $conversationId,
@@ -533,11 +534,13 @@ class SupportAssistant
                     ]);
                 }, $catalogEntries);
 
-                $context[] = [
-                    'service_catalog_mapping' => $catalogEntries,
-                    'catalog_mapping_status' => $catalogMapping['status'] ?? 'unknown',
-                    'catalog_mapping_note' => $catalogMapping['note'] ?? null,
-                ];
+                if ($relevantServiceKeys !== []) {
+                    $context[] = [
+                        'service_catalog_mapping' => $catalogEntries,
+                        'catalog_mapping_status' => $catalogMapping['status'] ?? 'unknown',
+                        'catalog_mapping_note' => $catalogMapping['note'] ?? null,
+                    ];
+                }
             }
         }
 
