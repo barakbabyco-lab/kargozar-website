@@ -27,6 +27,11 @@
           "service_key": "industrial-establishment-permits",
           "title": "مجوزهای صنعتی و دستگاهی",
           "knowledge_mode": "live"
+        },
+        {
+          "service_key": "commercial-card",
+          "title": "صدور و تمدید کارت بازرگانی",
+          "knowledge_mode": "hybrid"
         }
       ],
       "notes": "عنوان مجوز، کاربرگ، شرایط، مدارک، هزینه و زمان فقط از مرجع رسمی جاری استخراج شود. بانک داخلی برای قواعد عمومی، پرسش‌های تشخیص فعالیت و راهنمایی استفاده می‌شود."
