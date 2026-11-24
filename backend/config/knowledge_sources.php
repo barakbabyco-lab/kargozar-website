@@ -17,6 +17,8 @@ return [
         'home-business-license' => ['mode' => 'live', 'source' => 'iran_national_license_portal', 'knowledge_file' => 'category_01_business_licenses.json'],
         'industrial-establishment-permits' => ['mode' => 'live', 'source' => 'iran_national_license_portal', 'knowledge_file' => 'category_01_business_licenses.json'],
 
+        'commercial-card' => ['mode' => 'hybrid', 'source' => 'commercial_card_knowledge', 'knowledge_file' => 'category_01_business_licenses.json', 'live_verification_source' => 'iran_commercial_card_portal'],
+
         // 02. ثبت شرکت
         'company-registration' => ['mode' => 'hybrid', 'source' => 'company_registration_knowledge', 'knowledge_file' => 'category_02_company_registration.json', 'live_verification_source' => 'iran_company_registration_portal'],
         'company-changes' => ['mode' => 'hybrid', 'source' => 'company_registration_knowledge', 'knowledge_file' => 'category_02_company_registration.json', 'live_verification_source' => 'iran_company_registration_portal'],
@@ -91,6 +93,8 @@ return [
         'property_knowledge' => ['name' => 'بانک دانش خدمات ملکی', 'base_url' => null, 'status' => 'local_document_pending_legal_review', 'search_url' => null],
         'business_development_knowledge' => ['name' => 'بانک دانش توسعه کسب‌وکار', 'base_url' => null, 'status' => 'local_document_pending_review', 'search_url' => null],
         'specialized_services_knowledge' => ['name' => 'بانک دانش خدمات تخصصی', 'base_url' => null, 'status' => 'local_document_pending_review', 'search_url' => null],
+        'commercial_card_knowledge' => ['name' => 'بانک دانش کارت بازرگانی', 'base_url' => null, 'status' => 'local_document_pending_official_review', 'search_url' => null],
+        'iran_commercial_card_portal' => ['name' => 'سامانه جامع تجارت ایران', 'base_url' => 'https://ntsw.ir/', 'status' => 'official_domain_identified_exact_workflow_pending_verification', 'search_url' => null],
         'iran_national_license_portal' => ['name' => 'درگاه ملی مجوزهای کشور', 'base_url' => 'https://mojavez.ir/', 'status' => 'adapter_pending_portal_flow_verification', 'search_url' => null],
         'iran_intellectual_property_portal' => ['name' => 'سامانه رسمی مالکیت صنعتی', 'base_url' => 'https://iripo.ssaa.ir/', 'status' => 'official_domain_identified_exact_workflow_pending_verification', 'search_url' => 'https://ipm.ssaa.ir/'],
         'iran_company_registration_portal' => ['name' => 'سامانه رسمی ثبت شرکت‌ها', 'base_url' => 'https://irsherkat.ssaa.ir/', 'status' => 'official_domain_identified_exact_workflow_pending_verification', 'search_url' => null],
