@@ -22,6 +22,10 @@ class GuidedSupportAssistant extends SupportAssistant
             return $guidedReply;
         }
 
+        if ($conversationId !== null && $this->requestsInternalReview($conversationId)) {
+            return $this->registerInternalReview($conversationId);
+        }
+
         if ($conversationId !== null && ! $this->isInScope($message, $conversationId)) {
             app(UnansweredQuestionTracker::class)->record($message, 'out_of_scope', $conversationId);
 
@@ -33,6 +37,48 @@ class GuidedSupportAssistant extends SupportAssistant
         }
 
         return parent::reply($message, $conversationId);
+    }
+
+
+    private function requestsInternalReview(int $conversationId): bool
+    {
+        $latest = SupportConversation::query()
+            ->find($conversationId)?->messages()
+            ->where('sender_type', 'customer')
+            ->latest('id')
+            ->value('body');
+
+        if (! is_string($latest) || $latest === '') {
+            return false;
+        }
+
+        $text = $this->normalize($latest);
+        if (preg_match('/نمی ?خوام|نمی ?خواهم|نیازی ندارم/u', $text) === 1) {
+            return false;
+        }
+
+        return preg_match('/تماس با کارشناس|تماس کارشناس|کارشناس انسانی|پیگیری انسانی/u', $text) === 1;
+    }
+
+    private function registerInternalReview(int $conversationId): string
+    {
+        $conversation = SupportConversation::query()->find($conversationId);
+        if ($conversation !== null) {
+            $context = is_array($conversation->assistant_context) ? $conversation->assistant_context : [];
+            $context['internal_review'] = [
+                'required' => true,
+                'requested_at' => now()->toISOString(),
+            ];
+            $conversation->forceFill(['assistant_context' => $context])->save();
+        }
+
+        app(UnansweredQuestionTracker::class)->record(
+            'درخواست بررسی داخلی توسط مشتری',
+            'internal_review_requested',
+            $conversationId
+        );
+
+        return 'درخواست شما برای بررسی داخلی ثبت شد. پیگیری از همین گفت‌وگو ادامه پیدا می‌کند؛ نیازی به ثبت شماره تماس نیست.';
     }
 
     private function isInScope(string $message, int $conversationId): bool
