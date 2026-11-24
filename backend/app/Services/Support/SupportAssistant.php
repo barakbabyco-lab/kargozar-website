@@ -326,6 +326,10 @@ class SupportAssistant
                     $route = $serviceKey !== '' ? config('knowledge_sources.services.'.$serviceKey, []) : [];
                     $liveSourceKey = is_array($route) ? ($route['live_verification_source'] ?? null) : null;
                     $liveSource = is_string($liveSourceKey) ? config('knowledge_sources.sources.'.$liveSourceKey, []) : [];
+                    $recordOfficialSource = trim((string) ($record['official_source'] ?? ''));
+                    $recordSourceUrl = trim((string) ($record['source_url'] ?? ''));
+                    $liveSourceName = is_array($liveSource) ? trim((string) ($liveSource['name'] ?? '')) : '';
+                    $liveSourceUrl = is_array($liveSource) ? trim((string) ($liveSource['base_url'] ?? '')) : '';
 
                     $context[] = [
                         'category' => $category['title'] ?? null,
@@ -341,8 +345,8 @@ class SupportAssistant
                         'fees' => $record['fees'] ?? null,
                         'issuance_time' => $record['issuance_time'] ?? null,
                         'issuing_authority' => $record['issuing_authority'] ?? null,
-                        'official_source' => $record['official_source'] ?? (is_array($liveSource) ? ($liveSource['name'] ?? null) : null),
-                        'source_url' => $record['source_url'] ?? (is_array($liveSource) ? ($liveSource['base_url'] ?? null) : null),
+                        'official_source' => $recordOfficialSource !== '' ? $recordOfficialSource : ($liveSourceName !== '' ? $liveSourceName : null),
+                        'source_url' => $recordSourceUrl !== '' ? $recordSourceUrl : ($liveSourceUrl !== '' ? $liveSourceUrl : null),
                         'verification_status' => $record['verification_status'] ?? 'needs_review',
                         'catalogue_category' => $category['title'] ?? null,
                         '_match_score' => $score,
