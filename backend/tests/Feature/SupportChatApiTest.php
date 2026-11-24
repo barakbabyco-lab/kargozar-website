@@ -94,7 +94,7 @@ class SupportChatApiTest extends TestCase
             ->assertJsonPath('data.messages.1.sender_type', 'assistant');
 
         $id = $started->json('data.id');
-        $this->assertStringContainsString('راه‌های رسیدن به خدا زیاده!', $started->json('data.messages.1.body'));
+        $this->assertStringContainsString('این مورد لزوماً به معنی متوقف‌شدن درخواست شما نیست.', $started->json('data.messages.1.body'));
 
         $this->withHeader('X-Support-Guest-Token', $guestToken)
             ->postJson('/api/v1/guest/support-conversations/'.$id.'/messages', ['body' => 'چطوری؟'])
@@ -106,7 +106,7 @@ class SupportChatApiTest extends TestCase
             ->assertJsonCount(4, 'data')
             ->json('data');
 
-        $this->assertStringContainsString('راه‌های رسیدن به خدا زیاده!', $messages[3]['body']);
+        $this->assertStringContainsString('این مورد لزوماً به معنی متوقف‌شدن درخواست شما نیست.', $messages[3]['body']);
         $this->assertStringContainsString('شماره تماس', $messages[3]['body']);
 
         $this->withHeader('X-Support-Guest-Token', $guestToken)
