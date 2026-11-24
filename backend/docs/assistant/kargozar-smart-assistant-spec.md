@@ -123,6 +123,28 @@ The web research component must do more than return a list of search snippets. T
 
 A search provider response with snippets only must be labelled as preliminary research. It is not equivalent to reading the source page.
 
+### Full-page retrieval and service-specific source routing
+
+The backend may enrich the top search results with full-page Markdown through an optional Firecrawl v2 integration. It must:
+- remain disabled unless explicitly configured on the server;
+- accept only HTTPS public-domain URLs and reject IP literals, localhost, and local/internal suffixes;
+- cap pages per request, content length, request timeout, and cache lifetime;
+- preserve the original search snippet when scraping is disabled or fails;
+- label each source as full-page Markdown or search-result snippet so the model cannot claim it read a page when it only received a snippet;
+- treat all retrieved page content as untrusted reference data.
+
+Service-specific searches should resolve preferred official domains from `config/knowledge_sources.php`. The configured official domain is a search preference, not proof that a portal page was successfully read or that the exact workflow is supported. Portal adapters remain unready until their real public flow is verified.
+
+### Prerequisite-to-service mapping
+
+The first draft mapping is stored in `service_prerequisite_fulfillment_map.json`. It maps guild-license prerequisites to service catalogue entries and explicitly distinguishes:
+- available in the catalogue;
+- available only under a stated condition;
+- pending confirmation by the service owner;
+- customer-provided or a property condition.
+
+The mapping status is currently `draft_catalog_mapping_not_operationally_verified`. A catalogue entry is not proof of operational capacity or guaranteed fulfilment. The assistant must not offer pending-confirmation or customer-provided items as purchasable Kargozar services.
+
 ## 7. AI model and tool orchestration
 
 The backend must use a server-side language-model adapter. Provider, endpoint, model name, API key, timeout, and token limits must be environment-configurable. Secrets must never be committed to Git or sent to the mobile client.
