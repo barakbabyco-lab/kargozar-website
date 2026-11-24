@@ -150,6 +150,8 @@ class StaffCatalogController extends Controller
             'requirements.*' => ['string', 'max:300'],
             'estimated_days' => ['nullable', 'integer', 'min:1', 'max:365'],
             'base_price' => ['nullable', 'numeric', 'min:0', 'max:99999999999'],
+            'price_verified_at' => ['nullable', 'date', 'before_or_equal:now'],
+            'duration_verified_at' => ['nullable', 'date', 'before_or_equal:now'],
             'sort_order' => ['nullable', 'integer', 'min:0', 'max:100000'],
             'is_active' => ['sometimes', 'boolean'],
         ]);
@@ -191,8 +193,19 @@ class StaffCatalogController extends Controller
         }
 
         DB::transaction(function () use ($request, $service, $validator): void {
-            $service->update($validator->validated());
-            $this->audit($request, 'catalog.service_updated', $service, ['fields' => array_keys($validator->validated())]);
+            $validated = $validator->validated();
+
+            // Any changed quote input invalidates its previous verification unless
+            // the staff member explicitly supplies a fresh verification timestamp.
+            if (array_key_exists('base_price', $validated) && ! array_key_exists('price_verified_at', $validated)) {
+                $validated['price_verified_at'] = null;
+            }
+            if (array_key_exists('estimated_days', $validated) && ! array_key_exists('duration_verified_at', $validated)) {
+                $validated['duration_verified_at'] = null;
+            }
+
+            $service->update($validated);
+            $this->audit($request, 'catalog.service_updated', $service, ['fields' => array_keys($validated)]);
         });
 
         return response()->json([
