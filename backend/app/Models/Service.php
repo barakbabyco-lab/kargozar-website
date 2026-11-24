@@ -16,6 +16,8 @@ class Service extends Model
         'requirements',
         'estimated_days',
         'base_price',
+        'price_verified_at',
+        'duration_verified_at',
         'is_active',
         'sort_order',
     ];
@@ -26,6 +28,8 @@ class Service extends Model
             'requirements' => 'array',
             'estimated_days' => 'integer',
             'base_price' => 'decimal:2',
+            'price_verified_at' => 'datetime',
+            'duration_verified_at' => 'datetime',
             'is_active' => 'boolean',
         ];
     }
