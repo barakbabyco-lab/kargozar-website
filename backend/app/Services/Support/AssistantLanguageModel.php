@@ -253,7 +253,8 @@ ANALYZER,
                 'required_service_keys' => $this->verifiedMissingPrerequisiteServices(
                     $filterKeys($analysis['required_service_keys'] ?? [], $allowedServices),
                     $customerState,
-                    $requirementRules
+                    $requirementRules,
+                    $serviceContext
                 ),
                 'missing_prerequisite_keys' => $this->verifiedMissingPrerequisites($customerState),
                 'customer_state' => $customerState,
@@ -292,7 +293,18 @@ ANALYZER,
         array $proposedServiceKeys,
         array $customerState,
         array $requirementRules,
+        array $serviceContext,
     ): array {
+        $orderableServiceKeys = [];
+        foreach ($serviceContext as $contextItem) {
+            foreach (($contextItem['service_catalog_mapping'] ?? []) as $entry) {
+                if (is_array($entry) && ($entry['orderable'] ?? false) === true
+                    && is_string($entry['service_key'] ?? null)) {
+                    $orderableServiceKeys[] = $entry['service_key'];
+                }
+            }
+        }
+
         $eligible = [];
         foreach ($customerState as $item) {
             if (! in_array($item['status'] ?? null, ['missing', 'expired'], true)) {
@@ -307,7 +319,11 @@ ANALYZER,
             }
         }
 
-        return array_values(array_intersect($proposedServiceKeys, array_unique($eligible)));
+        return array_values(array_intersect(
+            $proposedServiceKeys,
+            array_unique($eligible),
+            array_unique($orderableServiceKeys)
+        ));
     }
 
     private function systemPrompt(): string
