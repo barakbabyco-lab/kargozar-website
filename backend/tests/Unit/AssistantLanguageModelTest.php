@@ -158,7 +158,14 @@ class AssistantLanguageModelTest extends TestCase
             'برای جواز کسب راهنمایی می‌خواهم',
             null,
             [],
-            [['service_key' => 'guild-business-license']]
+            [
+                ['service_key' => 'guild-business-license'],
+                ['service_catalog_mapping' => [
+                    ['service_key' => 'health-card', 'orderable' => true],
+                    ['service_key' => 'trade-law-training-certificate', 'orderable' => true],
+                    ['service_key' => 'lease-tracking-code', 'orderable' => false],
+                ]],
+            ]
         );
 
         $this->assertSame(['guild-business-license'], $analysis['matched_service_keys']);
