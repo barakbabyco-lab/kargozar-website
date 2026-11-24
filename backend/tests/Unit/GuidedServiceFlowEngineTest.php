@@ -22,9 +22,10 @@ class GuidedServiceFlowEngineTest extends TestCase
         );
 
         $this->assertStringContainsString('چند سؤال کوتاه', $reply);
-        $this->assertStringContainsString('نوع شغل شما به کدوم یک از گروه‌های زیر نزدیک‌تره؟', $reply);
-        $this->assertStringContainsString('فروشگاه و خرده‌فروشی', $reply);
+        $this->assertStringContainsString('محل فعالیت در کدوم شهره؟', $reply);
         $this->assertSame('guild-business-license', $conversation->fresh()->assistant_context['guided_flow']['flow_key']);
+        $this->assertSame('retail', $conversation->fresh()->assistant_context['guided_flow']['answers']['activity_group']);
+        $this->assertSame('خرازی', $conversation->fresh()->assistant_context['guided_flow']['answers']['activity_detail']);
     }
 
     public function test_it_accepts_persian_numeric_choices_and_advances_the_flow(): void
