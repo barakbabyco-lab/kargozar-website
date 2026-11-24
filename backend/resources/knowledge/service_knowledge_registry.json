@@ -122,6 +122,16 @@
           "service_key": "other-regulatory-approvals",
           "title": "سایر تأییدیه‌های تخصصی",
           "knowledge_mode": "hybrid"
+        },
+        {
+          "service_key": "tax-file-and-tracking",
+          "title": "تشکیل پرونده و پیگیری امور مالیاتی",
+          "knowledge_mode": "hybrid"
+        },
+        {
+          "service_key": "technical-vocational-certificate",
+          "title": "گواهینامه فنی و حرفه‌ای مرتبط با فعالیت",
+          "knowledge_mode": "hybrid"
         }
       ],
       "notes": "الزامات عمومی مشترک از الزامات اختصاصی هر شغل جدا شوند. هر شرط باید دامنه شمول، مرجع، سند، تاریخ و وضعیت اعتبار داشته باشد."
