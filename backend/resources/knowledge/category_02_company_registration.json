@@ -46,12 +46,12 @@
         "estimate": null
       },
       "issuing_authority": "سازمان ثبت اسناد و املاک کشور / مرجع ثبت شرکت‌ها و مؤسسات غیرتجاری",
-      "official_source": "درگاه یکپارچه خدمات الکترونیکی سازمان ثبت اسناد و املاک کشور",
-      "source_url": "https://my.ssaa.ir/portal/company",
+      "official_source": "سامانه جامع ثبت شرکت‌ها و مؤسسات غیرتجاری",
+      "source_url": "https://irsherkat.ssaa.ir/",
       "source_date": null,
       "verified_at": null,
       "reviewed_at": "2026-11-21",
-      "verification_status": "needs_live_portal_and_latest_forms_review",
+      "verification_status": "official_domain_identified_exact_current_workflow_pending_validation",
       "shared_requirement_refs": [],
       "activity_specific_requirements": [],
       "customer_questions": [
@@ -107,12 +107,12 @@
         "estimate": null
       },
       "issuing_authority": "سازمان ثبت اسناد و املاک کشور / مرجع ثبت شرکت‌ها و مؤسسات غیرتجاری",
-      "official_source": "درگاه یکپارچه خدمات الکترونیکی سازمان ثبت اسناد و املاک کشور",
-      "source_url": "https://my.ssaa.ir/portal/company",
+      "official_source": "سامانه جامع ثبت شرکت‌ها و مؤسسات غیرتجاری",
+      "source_url": "https://irsherkat.ssaa.ir/",
       "source_date": null,
       "verified_at": null,
       "reviewed_at": "2026-11-21",
-      "verification_status": "needs_live_portal_and_latest_forms_review",
+      "verification_status": "official_domain_identified_exact_current_workflow_pending_validation",
       "shared_requirement_refs": [],
       "activity_specific_requirements": [],
       "customer_questions": [
@@ -166,12 +166,12 @@
         "estimate": null
       },
       "issuing_authority": "سازمان ثبت اسناد و املاک کشور / مرجع ثبت شرکت‌ها و مؤسسات غیرتجاری",
-      "official_source": "درگاه یکپارچه خدمات الکترونیکی سازمان ثبت اسناد و املاک کشور",
-      "source_url": "https://my.ssaa.ir/portal/company",
+      "official_source": "سامانه جامع ثبت شرکت‌ها و مؤسسات غیرتجاری",
+      "source_url": "https://irsherkat.ssaa.ir/",
       "source_date": null,
       "verified_at": null,
       "reviewed_at": "2026-11-21",
-      "verification_status": "needs_live_portal_and_latest_forms_review",
+      "verification_status": "official_domain_identified_exact_current_workflow_pending_validation",
       "shared_requirement_refs": [],
       "activity_specific_requirements": [],
       "customer_questions": [
