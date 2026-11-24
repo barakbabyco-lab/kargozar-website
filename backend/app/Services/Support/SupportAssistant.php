@@ -356,10 +356,10 @@ class SupportAssistant
         $normalizedQuestion = $this->normalize($question);
 
         $intentHints = [
-            'company-registration' => ['pattern' => '/ثبت شرکت|تاسیس شرکت|تأسیس شرکت|شرکت حقوقی بزنم|شرکت بزنم/u', 'title' => 'ثبت شرکت و انتخاب قالب حقوقی'],
+            'company-registration' => ['pattern' => '/ثبت شرکت|تاسیس شرکت|تأسیس شرکت|شرکت حقوقی بزنم|شرکت بزنم|شرکت سهامی خاص|شرکت با مسئولیت محدود|مسئولیت محدود ثبت/u', 'title' => 'ثبت شرکت و انتخاب قالب حقوقی'],
             'company-changes' => ['pattern' => '/ثبت تغییرات شرکت|تغییر مدیران شرکت|افزایش سرمایه شرکت|تغییر آدرس شرکت/u', 'title' => 'ثبت تغییرات شرکت'],
             'company-dissolution' => ['pattern' => '/انحلال شرکت|تعطیلی شرکت حقوقی/u', 'title' => 'انحلال و تصفیه شرکت'],
-            'trademark-registration' => ['pattern' => '/ثبت برند|ثبت علامت تجاری|ثبت نام تجاری/u', 'title' => 'ثبت علامت تجاری و برند'],
+            'trademark-registration' => ['pattern' => '/ثبت برند|برند.*ثبت|ثبت.*برند|ثبت علامت تجاری|علامت تجاری|ثبت نام تجاری/u', 'title' => 'ثبت علامت تجاری و برند'],
             'logo-registration' => ['pattern' => '/ثبت لوگو|لوگو را ثبت|علامت تصویری/u', 'title' => 'ثبت لوگو به‌عنوان علامت'],
             'industrial-design-registration' => ['pattern' => '/ثبت طرح صنعتی|ثبت ظاهر محصول/u', 'title' => 'ثبت طرح صنعتی'],
             'invention-registration' => ['pattern' => '/ثبت اختراع|گواهی اختراع/u', 'title' => 'ثبت اختراع'],
