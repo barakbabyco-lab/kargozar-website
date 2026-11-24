@@ -127,4 +127,68 @@ class AssistantLanguageModelTest extends TestCase
 
         $this->assertNull(app(AssistantLanguageModel::class)->answer('یک سؤال عمومی'));
     }
+    public function test_service_need_analysis_validates_catalogue_and_prerequisite_keys(): void
+    {
+        $analysisJson = json_encode([
+            'requested_outcome' => 'دریافت جواز کسب',
+            'matched_service_keys' => ['guild-business-license', 'made-up-service'],
+            'required_service_keys' => ['lease-tracking-code'],
+            'missing_prerequisite_keys' => ['health_card', 'made-up-requirement'],
+            'customer_state' => [
+                ['requirement_key' => 'health_card', 'status' => 'missing'],
+                ['requirement_key' => 'made-up-requirement', 'status' => 'missing'],
+            ],
+            'known_facts' => ['city' => 'تهران'],
+            'missing_facts' => ['نوع دقیق فعالیت'],
+            'clarifying_question' => 'نوع دقیق فعالیت شما چیست؟',
+            'confidence' => 0.91,
+            'needs_human' => false,
+        ], JSON_UNESCAPED_UNICODE);
+
+        Http::fake([
+            'api.example.test/v1/chat/completions' => Http::response([
+                'choices' => [[
+                    'message' => ['content' => $analysisJson],
+                ]],
+            ], 200),
+        ]);
+
+        $analysis = app(AssistantLanguageModel::class)->analyzeServiceNeed(
+            'برای جواز کسب راهنمایی می‌خواهم',
+            null,
+            [],
+            [['service_key' => 'guild-business-license']]
+        );
+
+        $this->assertSame(['guild-business-license'], $analysis['matched_service_keys']);
+        $this->assertSame(['lease-tracking-code'], $analysis['required_service_keys']);
+        $this->assertSame(['health_card'], $analysis['missing_prerequisite_keys']);
+        $this->assertSame('missing', $analysis['customer_state'][0]['status']);
+        $this->assertSame('نوع دقیق فعالیت شما چیست؟', $analysis['clarifying_question']);
+        $this->assertSame(0.91, $analysis['confidence']);
+
+        Http::assertSent(fn (Request $request) =>
+            ($request->data()['response_format']['type'] ?? null) === 'json_object'
+        );
+    }
+
+    public function test_service_need_analysis_falls_back_on_invalid_json(): void
+    {
+        Http::fake([
+            'api.example.test/v1/chat/completions' => Http::response([
+                'choices' => [[
+                    'message' => ['content' => 'این پاسخ JSON نیست.'],
+                ]],
+            ], 200),
+        ]);
+
+        $this->assertNull(app(AssistantLanguageModel::class)->analyzeServiceNeed(
+            'برای جواز کسب راهنمایی می‌خواهم',
+            null,
+            [],
+            [['service_key' => 'guild-business-license']]
+        ));
+    }
+
+
 }
