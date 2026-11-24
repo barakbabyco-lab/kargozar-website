@@ -22,7 +22,7 @@ class GuidedServiceFlowEngineTest extends TestCase
         );
 
         $this->assertStringContainsString('چند سؤال کوتاه', $reply);
-        $this->assertStringContainsString('فعالیت شما به کدام گروه نزدیک‌تره؟', $reply);
+        $this->assertStringContainsString('نوع شغل شما به کدوم یک از گروه‌های زیر نزدیک‌تره؟', $reply);
         $this->assertStringContainsString('فروشگاه و خرده‌فروشی', $reply);
         $this->assertSame('guild-business-license', $conversation->fresh()->assistant_context['guided_flow']['flow_key']);
     }
