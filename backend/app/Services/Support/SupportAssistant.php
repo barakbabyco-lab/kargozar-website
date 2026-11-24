@@ -363,7 +363,7 @@ class SupportAssistant
 
                     $serviceKey = (string) ($record['service_key'] ?? '');
                     $route = $serviceKey !== '' ? config('knowledge_sources.services.'.$serviceKey, []) : [];
-                    $liveSourceKey = is_array($route) ? ($route['live_verification_source'] ?? null) : null;
+                    $liveSourceKey = is_array($route) ? ($route['live_verification_source'] ?? $route['source'] ?? null) : null;
                     $liveSource = is_string($liveSourceKey) ? config('knowledge_sources.sources.'.$liveSourceKey, []) : [];
                     $recordOfficialSource = trim((string) ($record['official_source'] ?? ''));
                     $recordSourceUrl = trim((string) ($record['source_url'] ?? ''));
@@ -404,6 +404,7 @@ class SupportAssistant
         $normalizedQuestion = $this->normalize($question);
 
         $intentHints = [
+            'commercial-card' => ['pattern' => '/کارت بازرگانی|صدور کارت بازرگانی|تمدید کارت بازرگانی/u', 'title' => 'صدور و تمدید کارت بازرگانی'],
             'company-registration' => ['pattern' => '/ثبت شرکت|تاسیس شرکت|تأسیس شرکت|شرکت حقوقی بزنم|شرکت بزنم|شرکت سهامی خاص|شرکت با مسئولیت محدود|مسئولیت محدود ثبت/u', 'title' => 'ثبت شرکت و انتخاب قالب حقوقی'],
             'company-changes' => ['pattern' => '/ثبت تغییرات شرکت|تغییر مدیران شرکت|افزایش سرمایه شرکت|تغییر آدرس شرکت/u', 'title' => 'ثبت تغییرات شرکت'],
             'company-dissolution' => ['pattern' => '/انحلال شرکت|تعطیلی شرکت حقوقی/u', 'title' => 'انحلال و تصفیه شرکت'],
@@ -440,7 +441,7 @@ class SupportAssistant
             }
 
             $route = config('knowledge_sources.services.'.$serviceKey, []);
-            $liveSourceKey = is_array($route) ? ($route['live_verification_source'] ?? null) : null;
+            $liveSourceKey = is_array($route) ? ($route['live_verification_source'] ?? $route['source'] ?? null) : null;
             $source = is_string($liveSourceKey) ? config('knowledge_sources.sources.'.$liveSourceKey, []) : [];
 
             $context[] = [
