@@ -366,8 +366,18 @@ class SupportAssistant
             }
         }
 
-        if (! $isGuildQuestion || preg_match('/مدرک|مدارک|شرط|شرایط|لازم|نیاز|پیش نیاز/u', $text) !== 1) {
+        if (! $isGuildQuestion) {
             return null;
+        }
+
+        $asksRequirements = preg_match('/مدرک|مدارک|شرط|شرایط|لازم|نیاز|پیش نیاز/u', $text) === 1;
+        if (! $asksRequirements) {
+            $classification = $this->classifyGuildActivity($text);
+            if (($classification['needs_clarification'] ?? true) === true) {
+                return 'برای راهنمایی دقیق جواز کسب، لطفاً نوع شغل دقیق‌تون رو بفرمایید و بگید محل فعالیت در کدوم شهره؟';
+            }
+
+            return 'نوع فعالیت رو مشخص کردیم. برای تطبیق کاربرگ رسمی و شرایط همون رسته، لطفاً بفرمایید محل کسب در کدوم شهره؟';
         }
 
         $isRealEstate = preg_match('/مشاور املاک|املاک|بنگاه املاک/u', $text) === 1;
