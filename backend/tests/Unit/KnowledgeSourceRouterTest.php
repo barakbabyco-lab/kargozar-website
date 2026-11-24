@@ -84,4 +84,15 @@ class KnowledgeSourceRouterTest extends TestCase
     }
 
 
+    public function test_lease_tracking_uses_the_official_khodnevis_portal(): void
+    {
+        $route = app(KnowledgeSourceRouter::class)->resolve('lease-tracking-code');
+
+        $this->assertSame('hybrid', $route['mode']);
+        $this->assertSame('iran_real_estate_transaction_system', $route['live_verification_source']);
+        $this->assertSame('https://khodnevis.mrud.ir/', $route['live_source_url']);
+        $this->assertSame('official_domain_identified_exact_workflow_pending_verification', $route['status']);
+    }
+
+
 }
