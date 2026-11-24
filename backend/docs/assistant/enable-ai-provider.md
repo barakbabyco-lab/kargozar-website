@@ -38,7 +38,9 @@ Firecrawl and the model provider are separate services and use separate credenti
 
 ## Search-provider settings
 
-The current backend expects the self-hosted SearXNG endpoint to be reachable from the Laravel host:
+Substantive, non-sensitive customer questions are sent to public web search by default, including general questions outside the Kargozar catalogue. Short acknowledgements such as «سلام»، «بله» and «ممنون» do not trigger a search. Personal identifiers are scrubbed before a query is sent.
+
+If Laravel runs on the same VPS as SearXNG, use the loopback endpoint:
 
 ```dotenv
 SUPPORT_WEB_SEARCH_ENABLED=true
@@ -46,9 +48,19 @@ SEARXNG_URL=http://127.0.0.1:8888/search
 SEARXNG_API_TOKEN=
 ```
 
-If SearXNG is not running, the model can still answer general questions from its model knowledge, but it must not claim to have performed live research.
+If Laravel runs on cPanel while SearXNG remains on the VPS, do **not** use the loopback address. Configure the HTTPS reverse-proxy bridge described in `docs/searxng-production-bridge.md`, then set:
+
+```dotenv
+SUPPORT_WEB_SEARCH_ENABLED=true
+SEARXNG_URL=https://search.YOUR-OWNED-DOMAIN/search
+SEARXNG_API_TOKEN=YOUR_SERVER_SIDE_BEARER_SECRET
+```
+
+Never expose port 8888 publicly. A remote search endpoint is rejected unless it uses HTTPS and a non-empty bearer token. If search is unavailable, the assistant must not claim that it performed live research.
 
 ## Verify service catalogue prices and durations
+
+Before any numeric price is shown, set `ASSISTANT_QUOTE_CURRENCY=IRT` (toman) or `IRR` (rial) only after the owner confirms the unit used in the service catalogue. If it remains unset, no numeric price is quoted.
 
 The assistant does not quote a number merely because `base_price` or `estimated_days` is populated. An authorized admin/supervisor must verify those values through the staff catalogue API:
 
@@ -90,5 +102,5 @@ Never paste a live API key into a chat, issue, pull request, source file, or cli
 - Firecrawl page retrieval: implemented, disabled by default.
 - Official source routing: configured for selected services; exact workflows still require validation.
 - Guild-license prerequisite map: draft catalogue mapping, not operationally verified.
-- Quote builder: not implemented; no price/time estimate may be invented.
+- Quote builder: implemented; it uses only active catalogue rows with current staff verification timestamps. Prices remain hidden until the currency unit is explicitly configured. Official and third-party charges remain separate.
 - Production: unchanged until explicit merge and deployment.
