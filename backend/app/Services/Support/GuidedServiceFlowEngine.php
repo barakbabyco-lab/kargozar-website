@@ -27,6 +27,17 @@ class GuidedServiceFlowEngine
         $flows = $this->flows();
 
         if ($state !== null && ($state['status'] ?? null) === 'active') {
+            // The controller may pass a multi-turn context string to the legacy
+            // assistant. During a guided flow, only the customer's latest turn
+            // is the answer to the current question.
+            $latestCustomerMessage = $conversation->messages()
+                ->where('sender_type', 'customer')
+                ->latest('id')
+                ->value('body');
+            if (is_string($latestCustomerMessage) && $latestCustomerMessage !== '') {
+                $message = $latestCustomerMessage;
+            }
+
             $flow = $flows[$state['flow_key'] ?? ''] ?? null;
             if (! is_array($flow)) {
                 unset($context['guided_flow']);
