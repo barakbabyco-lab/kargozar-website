@@ -52,6 +52,39 @@ class SupportAssistant
                 }
             }
 
+            if ($serviceContext !== []) {
+                $analysis = app(AssistantLanguageModel::class)->analyzeServiceNeed(
+                    $message,
+                    $conversationId,
+                    $sources,
+                    $serviceContext,
+                );
+
+                if ($analysis !== null) {
+                    if (($analysis['needs_human'] ?? false) === true) {
+                        app(UnansweredQuestionTracker::class)->record($message, 'human_escalation', $conversationId);
+                        return (string) config('support_assistant.human_handoff_response', config('support_assistant.fallback'));
+                    }
+
+                    if (is_string($analysis['clarifying_question'] ?? null) && $analysis['clarifying_question'] !== '') {
+                        app(UnansweredQuestionTracker::class)->record($message, 'service_clarification', $conversationId);
+                        return $analysis['clarifying_question'];
+                    }
+
+                    $selectedServiceKeys = array_values(array_unique(array_merge(
+                        $analysis['matched_service_keys'] ?? [],
+                        $analysis['required_service_keys'] ?? [],
+                    )));
+                    if ($selectedServiceKeys !== []) {
+                        $serviceContext[] = [
+                            'service_quote_context' => app(ServiceQuoteBuilder::class)->build($selectedServiceKeys),
+                        ];
+                    }
+
+                    $serviceContext[] = ['service_need_analysis' => $analysis];
+                }
+            }
+
             $aiAnswer = app(AssistantLanguageModel::class)->answer(
                 $message,
                 $conversationId,
@@ -449,17 +482,6 @@ class SupportAssistant
                     ];
                 }
             }
-        }
-
-        // Quote only the directly matched service(s). Prerequisite candidates
-        // are not a customer-specific package until applicability and customer
-        // state have been established in the conversation.
-        $serviceKeys = array_values(array_unique(array_filter(array_column($context, 'service_key'), 'is_string')));
-
-        if ($serviceKeys !== []) {
-            $context[] = [
-                'service_quote_context' => app(ServiceQuoteBuilder::class)->build($serviceKeys),
-            ];
         }
 
         return $context;
