@@ -16,7 +16,9 @@ class ServiceResource extends JsonResource
             'description' => $this->description,
             'requirements' => $this->requirements ?? [],
             'estimated_days' => $this->estimated_days,
+            'duration_verified_at' => $this->duration_verified_at?->toIso8601String(),
             'base_price' => $this->base_price,
+            'price_verified_at' => $this->price_verified_at?->toIso8601String(),
             'is_active' => (bool) $this->is_active,
             'sort_order' => (int) $this->sort_order,
             'category' => $this->whenLoaded('category', fn () => [
