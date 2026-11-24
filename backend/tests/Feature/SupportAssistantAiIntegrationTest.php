@@ -110,7 +110,7 @@ class SupportAssistantAiIntegrationTest extends TestCase
     public function test_company_registration_intent_receives_official_portal_context(): void
     {
         $assistant = app(SupportAssistant::class);
-        $method = new \\ReflectionMethod(SupportAssistant::class, 'assistantServiceContext');
+        $method = new \ReflectionMethod(SupportAssistant::class, 'assistantServiceContext');
         $method->setAccessible(true);
         $context = $method->invoke($assistant, 'می‌خوام یک شرکت با مسئولیت محدود ثبت کنم');
 
