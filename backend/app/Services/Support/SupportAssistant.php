@@ -30,6 +30,9 @@ class SupportAssistant
                 $sources = is_array($webResult) && is_array($webResult['sources'] ?? null)
                     ? $webResult['sources']
                     : [];
+                if ($sources !== []) {
+                    $sources = app(WebPageContentService::class)->enrich($sources);
+                }
             }
 
             $aiAnswer = app(AssistantLanguageModel::class)->answer(
