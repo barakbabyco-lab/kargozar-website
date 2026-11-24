@@ -5,7 +5,6 @@ namespace Tests\Feature;
 use App\Models\Customer;
 use App\Models\StaffUser;
 use App\Models\SupportConversation;
-use App\Http\Controllers\Api\V1\SupportChatController;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -22,7 +21,6 @@ class SupportChatApiTest extends TestCase
             ->assertCreated();
 
         $conversationId = $started->json('data.id');
-        app(SupportChatController::class)->processAssistantReply($conversationId, 'هزینه دریافت جواز کسب چقدر است؟');
 
         $this->assertDatabaseHas('support_unanswered_question_events', [
             'conversation_id' => $conversationId,
@@ -38,15 +36,10 @@ class SupportChatApiTest extends TestCase
             ->postJson('/api/v1/guest/support-conversations', ['body' => 'فردا هوا چطوره؟'])
             ->assertCreated();
 
-        $conversationId = $started->json('data.id');
-        app(SupportChatController::class)->processAssistantReply($conversationId, 'فردا هوا چطوره؟');
-        $messages = $this->withHeader('X-Support-Guest-Token', $guestToken)
-            ->getJson('/api/v1/guest/support-conversations/'.$conversationId.'/messages')
-            ->assertOk()
-            ->json('data');
-        $this->assertStringContainsString('دستیار تخصصی کارگزارم', $messages[1]['body']);
+        $reply = $started->json('data.messages.1.body');
+        $this->assertStringContainsString('دستیار تخصصی کارگزارم', $reply);
         $this->assertDatabaseHas('support_unanswered_question_events', [
-            'conversation_id' => $conversationId,
+            'conversation_id' => $started->json('data.id'),
             'outcome' => 'out_of_scope',
         ]);
     }
@@ -59,13 +52,7 @@ class SupportChatApiTest extends TestCase
             ->postJson('/api/v1/guest/support-conversations', ['body' => 'حالت چطوره؟'])
             ->assertCreated();
 
-        $conversationId = $started->json('data.id');
-        app(SupportChatController::class)->processAssistantReply($conversationId, 'حالت چطوره؟');
-        $messages = $this->withHeader('X-Support-Guest-Token', $guestToken)
-            ->getJson('/api/v1/guest/support-conversations/'.$conversationId.'/messages')
-            ->assertOk()
-            ->json('data');
-        $this->assertStringContainsString('ممنون، آماده‌ام', $messages[1]['body']);
+        $this->assertStringContainsString('ممنون، آماده‌ام', $started->json('data.messages.1.body'));
     }
 
     public function test_customer_can_start_and_continue_a_support_conversation(): void
@@ -79,13 +66,11 @@ class SupportChatApiTest extends TestCase
             ->assertJsonPath('data.messages.0.sender_type', 'customer');
 
         $id = $started->json('data.id');
-        app(SupportChatController::class)->processAssistantReply($id, 'برای دریافت جواز کسب راهنمایی می‌خواهم.');
 
         $this->actingAs($customer, 'sanctum')
             ->postJson('/api/v1/me/support-conversations/'.$id.'/messages', ['body' => 'مدارک لازم چیست؟'])
             ->assertCreated()
             ->assertJsonPath('data.sender_type', 'customer');
-        app(SupportChatController::class)->processAssistantReply($id, 'مدارک لازم چیست؟');
 
         $this->actingAs($customer, 'sanctum')
             ->getJson('/api/v1/me/support-conversations/'.$id.'/messages')
@@ -106,7 +91,6 @@ class SupportChatApiTest extends TestCase
             ->assertJsonPath('data.messages.1.body', fn ($value) => str_contains($value, 'نوع شغل'));
 
         $id = $started->json('data.id');
-        app(SupportChatController::class)->processAssistantReply($id, 'برای دریافت جواز کسب راهنمایی می‌خواهم.');
         $conversation = SupportConversation::findOrFail($id);
         $this->assertNull($conversation->customer_id);
         $this->assertSame(hash('sha256', $guestToken), $conversation->guest_token_hash);
@@ -116,7 +100,6 @@ class SupportChatApiTest extends TestCase
             ->postJson('/api/v1/guest/support-conversations/'.$id.'/messages', ['body' => 'مدارک لازم چیست؟'])
             ->assertCreated()
             ->assertJsonPath('data.sender_type', 'customer');
-        app(SupportChatController::class)->processAssistantReply($id, 'مدارک لازم چیست؟');
 
         $this->withHeader('X-Support-Guest-Token', $guestToken)
             ->getJson('/api/v1/guest/support-conversations/'.$id.'/messages')
@@ -134,15 +117,11 @@ class SupportChatApiTest extends TestCase
 
         $started = $this->withHeader('X-Support-Guest-Token', $guestToken)
             ->postJson('/api/v1/guest/support-conversations', ['body' => 'برای جواز کسب مغازه ندارم'])
-            ->assertCreated();
+            ->assertCreated()
+            ->assertJsonPath('data.messages.1.sender_type', 'assistant');
 
         $id = $started->json('data.id');
-        app(SupportChatController::class)->processAssistantReply($id, 'برای جواز کسب مغازه ندارم');
-        $messages = $this->withHeader('X-Support-Guest-Token', $guestToken)
-            ->getJson('/api/v1/guest/support-conversations/'.$id.'/messages')
-            ->assertOk()
-            ->json('data');
-        $this->assertStringContainsString('نوع شغل', $messages[1]['body']);
+        $this->assertStringContainsString('نوع شغل', $started->json('data.messages.1.body'));
 
         $conversation = SupportConversation::findOrFail($id);
         $this->assertSame('not_selected', $conversation->assistant_context['guided_flow']['answers']['premises_status']);
@@ -150,7 +129,6 @@ class SupportChatApiTest extends TestCase
         $this->withHeader('X-Support-Guest-Token', $guestToken)
             ->postJson('/api/v1/guest/support-conversations/'.$id.'/messages', ['body' => 'چطوری؟'])
             ->assertCreated();
-        app(SupportChatController::class)->processAssistantReply($id, 'چطوری؟');
 
         $messages = $this->withHeader('X-Support-Guest-Token', $guestToken)
             ->getJson('/api/v1/guest/support-conversations/'.$id.'/messages')
@@ -171,15 +149,10 @@ class SupportChatApiTest extends TestCase
 
         $started = $this->withHeader('X-Support-Guest-Token', $guestToken)
             ->postJson('/api/v1/guest/support-conversations', ['body' => 'تماس کارشناس'])
-            ->assertCreated();
+            ->assertCreated()
+            ->assertJsonPath('data.messages.1.sender_type', 'assistant');
 
-        $conversationId = $started->json('data.id');
-        app(SupportChatController::class)->processAssistantReply($conversationId, 'تماس کارشناس');
-        $messages = $this->withHeader('X-Support-Guest-Token', $guestToken)
-            ->getJson('/api/v1/guest/support-conversations/'.$conversationId.'/messages')
-            ->assertOk()
-            ->json('data');
-        $reply = $messages[1]['body'];
+        $reply = $started->json('data.messages.1.body');
         $this->assertStringContainsString('بررسی داخلی', $reply);
         $this->assertStringContainsString('نیازی به ثبت شماره تماس نیست', $reply);
         $conversation = SupportConversation::findOrFail($started->json('data.id'));
@@ -193,15 +166,10 @@ class SupportChatApiTest extends TestCase
 
         $started = $this->actingAs($customer, 'sanctum')
             ->postJson('/api/v1/support-conversations', ['body' => 'تماس کارشناس'])
-            ->assertCreated();
+            ->assertCreated()
+            ->assertJsonPath('data.messages.1.sender_type', 'assistant');
 
-        $conversationId = $started->json('data.id');
-        app(SupportChatController::class)->processAssistantReply($conversationId, 'تماس کارشناس');
-        $messages = $this->actingAs($customer, 'sanctum')
-            ->getJson('/api/v1/me/support-conversations/'.$conversationId.'/messages')
-            ->assertOk()
-            ->json('data');
-        $reply = $messages[1]['body'];
+        $reply = $started->json('data.messages.1.body');
         $this->assertStringContainsString('بررسی داخلی', $reply);
         $this->assertStringContainsString('نیازی به ثبت شماره تماس نیست', $reply);
         $this->assertNull(SupportConversation::findOrFail($started->json('data.id'))->contact_mobile);
