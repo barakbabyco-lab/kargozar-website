@@ -105,7 +105,7 @@ return [
         'domain_registry_official_source' => ['name' => 'مرجع رسمی ثبت دامنه', 'base_url' => null, 'status' => 'source_url_pending_verification', 'search_url' => null],
         'selected_sms_provider' => ['name' => 'ارائه‌دهنده پنل پیامک انتخابی', 'base_url' => null, 'status' => 'provider_selected_per_request', 'search_url' => null],
         'selected_voip_provider' => ['name' => 'ارائه‌دهنده تلفن اینترنتی انتخابی', 'base_url' => null, 'status' => 'provider_selected_per_request', 'search_url' => null],
-        'iran_real_estate_transaction_system' => ['name' => 'سامانه رسمی معاملات املاک و مستغلات', 'base_url' => null, 'status' => 'source_url_and_flow_pending_verification', 'search_url' => null],
+        'iran_real_estate_transaction_system' => ['name' => 'سامانه خودنویس وزارت راه و شهرسازی برای ثبت قراردادهای اجاره', 'base_url' => 'https://khodnevis.mrud.ir/', 'status' => 'official_domain_identified_exact_workflow_pending_verification', 'search_url' => null],
         'relevant_official_authority' => ['name' => 'مرجع رسمی ذی‌ربط بر اساس موضوع خدمت', 'base_url' => null, 'status' => 'authority_selected_per_request', 'search_url' => null],
         'selected_investment_or_funding_authority' => ['name' => 'مرجع تأمین مالی یا سرمایه‌گذاری انتخابی', 'base_url' => null, 'status' => 'authority_selected_per_request', 'search_url' => null],
     ],
