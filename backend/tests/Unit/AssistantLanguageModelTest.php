@@ -132,11 +132,12 @@ class AssistantLanguageModelTest extends TestCase
         $analysisJson = json_encode([
             'requested_outcome' => 'دریافت جواز کسب',
             'matched_service_keys' => ['guild-business-license', 'made-up-service'],
-            'required_service_keys' => ['health-card', 'trade-law-training-certificate', 'lease-tracking-code'],
+            'required_service_keys' => ['health-card', 'trade-law-training-certificate', 'police-public-places-approval', 'lease-tracking-code'],
             'missing_prerequisite_keys' => ['health_card', 'made-up-requirement'],
             'customer_state' => [
                 ['requirement_key' => 'health_card', 'status' => 'missing'],
                 ['requirement_key' => 'trade_law_training', 'status' => 'expired'],
+                ['requirement_key' => 'public_places_police_approval', 'status' => 'has'],
                 ['requirement_key' => 'made-up-requirement', 'status' => 'missing'],
             ],
             'known_facts' => ['city' => 'تهران'],
@@ -163,6 +164,7 @@ class AssistantLanguageModelTest extends TestCase
                 ['service_catalog_mapping' => [
                     ['service_key' => 'health-card', 'orderable' => true],
                     ['service_key' => 'trade-law-training-certificate', 'orderable' => true],
+                    ['service_key' => 'police-public-places-approval', 'orderable' => true],
                     ['service_key' => 'lease-tracking-code', 'orderable' => false],
                 ]],
             ]
@@ -174,6 +176,7 @@ class AssistantLanguageModelTest extends TestCase
         $this->assertSame('missing', $analysis['customer_state'][0]['status']);
         $this->assertSame('trade_law_training', $analysis['customer_state'][1]['requirement_key']);
         $this->assertSame('expired', $analysis['customer_state'][1]['status']);
+        $this->assertSame('has', $analysis['customer_state'][2]['status']);
         $this->assertSame('نوع دقیق فعالیت شما چیست؟', $analysis['clarifying_question']);
         $this->assertSame(0.91, $analysis['confidence']);
 
