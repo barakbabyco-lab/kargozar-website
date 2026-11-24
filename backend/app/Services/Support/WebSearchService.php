@@ -12,7 +12,7 @@ class WebSearchService
      * Search SearXNG for an unanswered, non-sensitive question.
      * Search snippets are untrusted data; never treat page text as instructions.
      */
-    public function search(string $question): ?array
+    public function search(string $question, array $serviceKeys = []): ?array
     {
         $endpoint = trim((string) config('support_assistant.web_search.endpoint', 'http://127.0.0.1:8888/search'));
         $token = trim((string) config('support_assistant.web_search.token', ''));
@@ -34,15 +34,17 @@ class WebSearchService
             }
         }
 
-        if ($officialContext) {
+        $domains = $this->officialDomainsForServices($serviceKeys);
+        if ($domains === [] && $officialContext) {
             $domains = array_values(array_filter(
                 (array) config('support_assistant.web_search.official_domains', []),
                 fn ($domain) => is_string($domain) && preg_match('/^[a-z0-9.-]+$/i', $domain) === 1
             ));
-            if ($domains !== []) {
-                $siteQuery = implode(' OR ', array_map(fn ($domain) => 'site:'.$domain, $domains));
-                $query .= ' ('.$siteQuery.')';
-            }
+        }
+
+        if ($domains !== []) {
+            $siteQuery = implode(' OR ', array_map(fn ($domain) => 'site:'.$domain, $domains));
+            $query .= ' ('.$siteQuery.')';
         }
 
         $cacheKey = 'support-web-search:'.hash('sha256', mb_strtolower($query, 'UTF-8'));
@@ -104,6 +106,45 @@ class WebSearchService
                 return null;
             }
         });
+    }
+
+    /**
+     * Resolve preferred official domains from the shared service-source registry.
+     */
+    private function officialDomainsForServices(array $serviceKeys): array
+    {
+        $domains = [];
+
+        foreach (array_unique(array_filter($serviceKeys, 'is_string')) as $serviceKey) {
+            $route = config('knowledge_sources.services.'.$serviceKey, []);
+            if (! is_array($route)) {
+                continue;
+            }
+
+            foreach ([$route['source'] ?? null, $route['live_verification_source'] ?? null] as $sourceKey) {
+                if (! is_string($sourceKey) || $sourceKey === '') {
+                    continue;
+                }
+
+                $source = config('knowledge_sources.sources.'.$sourceKey, []);
+                if (! is_array($source)) {
+                    continue;
+                }
+
+                foreach ([$source['base_url'] ?? null, $source['search_url'] ?? null] as $sourceUrl) {
+                    if (! is_string($sourceUrl) || ! str_starts_with(strtolower($sourceUrl), 'https://')) {
+                        continue;
+                    }
+
+                    $host = strtolower((string) parse_url($sourceUrl, PHP_URL_HOST));
+                    if ($host !== '' && preg_match('/^[a-z0-9.-]+$/i', $host) === 1) {
+                        $domains[] = $host;
+                    }
+                }
+            }
+        }
+
+        return array_values(array_unique($domains));
     }
 
     /**
