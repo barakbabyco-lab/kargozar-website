@@ -121,12 +121,21 @@ class SupportAssistantAiIntegrationTest extends TestCase
 
         $this->assertStringContainsString('نوع شرکت', $answer);
         Http::assertSent(function ($request): bool {
-            $messages = $request->data()['messages'] ?? [];
-            $payload = json_decode((string) ($messages[1]['content'] ?? ''), true);
-            $company = collect($payload['service_knowledge'] ?? [])
-                ->firstWhere('service_key', 'company-registration');
+            foreach (($request->data()['messages'] ?? []) as $message) {
+                $payload = json_decode((string) ($message['content'] ?? ''), true);
+                if (! is_array($payload)) {
+                    continue;
+                }
 
-            return ($company['source_url'] ?? null) === 'https://irsherkat.ssaa.ir/';
+                $company = collect($payload['service_knowledge'] ?? [])
+                    ->firstWhere('service_key', 'company-registration');
+
+                if (($company['source_url'] ?? null) === 'https://irsherkat.ssaa.ir/') {
+                    return true;
+                }
+            }
+
+            return false;
         });
     }
 
