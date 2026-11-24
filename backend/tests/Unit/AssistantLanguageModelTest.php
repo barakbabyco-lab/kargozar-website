@@ -42,6 +42,9 @@ class AssistantLanguageModelTest extends TestCase
                 'title' => 'درگاه ملی مجوزها',
                 'url' => 'https://mojavez.ir/',
                 'snippet' => 'اطلاعات اولیه مجوز',
+                'page_content' => 'متن کامل کاربرگ رسمی',
+                'content_type' => 'full_page_markdown',
+                'page_title' => 'کاربرگ رسمی',
             ]],
             [['service_key' => 'guild-license', 'title' => 'پروانه کسب صنفی']],
         );
@@ -56,6 +59,8 @@ class AssistantLanguageModelTest extends TestCase
                 && $request->hasHeader('Authorization', 'Bearer test-api-key')
                 && ($payload['model'] ?? null) === 'test-model'
                 && ($userMessage['web_search_results'][0]['url'] ?? null) === 'https://mojavez.ir/'
+                && ($userMessage['web_search_results'][0]['page_content'] ?? null) === 'متن کامل کاربرگ رسمی'
+                && ($userMessage['web_search_results'][0]['content_type'] ?? null) === 'full_page_markdown'
                 && ($userMessage['service_knowledge'][0]['service_key'] ?? null) === 'guild-license';
         });
     }
