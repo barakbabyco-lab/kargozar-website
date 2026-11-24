@@ -158,7 +158,7 @@ The model should receive:
 
 The model must not receive the entire service catalogue or entire conversation history by default. Use bounded retrieval and context windows.
 
-The model may propose a service match, but the backend must validate service keys against the active catalogue before quoting availability, price, time, or claiming Kargozar fulfilment.
+The model may propose a service match, but the backend must validate service keys against the active catalogue before quoting availability, price, time, or claiming Kargozar fulfilment. For each relevant turn, the backend sends only the applicable catalogue-mapping rows and enriches them with an `orderable` flag derived from active database rows. The model may recommend only entries with `orderable=true`; the quote builder independently rechecks the active row.
 
 If no model credentials are configured or the provider is unavailable, use a safe fallback and existing reviewed knowledge. Do not silently claim that generative AI or live research ran.
 
