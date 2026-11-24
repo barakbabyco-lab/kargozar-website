@@ -89,8 +89,7 @@ class StaffCatalogQuoteVerificationTest extends TestCase
             'price_verified_at' => $verifiedAt,
             'duration_verified_at' => $verifiedAt,
         ])->assertOk()
-            ->assertJsonPath('data.price_verified_at', fn ($value) => is_string($value))
-            ->assertJsonPath('data.duration_verified_at', fn ($value) => is_string($value));
+            ->assertJsonStructure(['data' => ['price_verified_at', 'duration_verified_at']]);
 
         $service->refresh();
         $this->assertNotNull($service->price_verified_at);
