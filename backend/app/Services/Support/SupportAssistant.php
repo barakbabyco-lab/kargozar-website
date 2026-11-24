@@ -363,7 +363,9 @@ class SupportAssistant
 
                     $serviceKey = (string) ($record['service_key'] ?? '');
                     $route = $serviceKey !== '' ? config('knowledge_sources.services.'.$serviceKey, []) : [];
-                    $liveSourceKey = is_array($route) ? ($route['live_verification_source'] ?? $route['source'] ?? null) : null;
+                    $liveSourceKey = is_array($route)
+                        ? ($route['live_verification_source'] ?? (($route['mode'] ?? null) === 'live' ? ($route['source'] ?? null) : null))
+                        : null;
                     $liveSource = is_string($liveSourceKey) ? config('knowledge_sources.sources.'.$liveSourceKey, []) : [];
                     $recordOfficialSource = trim((string) ($record['official_source'] ?? ''));
                     $recordSourceUrl = trim((string) ($record['source_url'] ?? ''));
@@ -441,7 +443,9 @@ class SupportAssistant
             }
 
             $route = config('knowledge_sources.services.'.$serviceKey, []);
-            $liveSourceKey = is_array($route) ? ($route['live_verification_source'] ?? $route['source'] ?? null) : null;
+            $liveSourceKey = is_array($route)
+                        ? ($route['live_verification_source'] ?? (($route['mode'] ?? null) === 'live' ? ($route['source'] ?? null) : null))
+                        : null;
             $source = is_string($liveSourceKey) ? config('knowledge_sources.sources.'.$liveSourceKey, []) : [];
 
             $context[] = [
